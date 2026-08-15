@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allocation ETF — Profilage, allocation et arbitrages</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="entete">
+  <div class="marque">
+    <strong>ALLOCATION ETF</strong>
+    <span>Profilage investisseur · Allocation d'actifs · Arbitrages tactiques</span>
+  </div>
+  <div class="actions-entete">
+    <button class="bouton discret" id="btn-sauver">Enregistrer</button>
+    <button class="bouton discret" id="btn-exporter">Exporter le dossier</button>
+    <button class="bouton discret" id="btn-importer">Importer</button>
+    <button class="bouton discret" id="btn-reinit">Nouveau dossier</button>
+    <input type="file" id="fichier-import" accept="application/json" hidden>
+  </div>
+</header>
+
+<div class="corps">
+
+  <nav class="nav" id="nav">
+    <button data-vue="client"        class="actif"><span class="num"><span>1</span></span> Client &amp; enveloppe</button>
+    <button data-vue="questionnaire"><span class="num"><span>2</span></span> Questionnaire</button>
+    <button data-vue="profil"><span class="num"><span>3</span></span> Profil de risque</button>
+    <div class="separateur"></div>
+    <button data-vue="macro"><span class="num"><span>4</span></span> Contexte macro</button>
+    <button data-vue="allocation"><span class="num"><span>5</span></span> Allocation cible</button>
+    <button data-vue="portefeuille"><span class="num"><span>6</span></span> Sélection ETF</button>
+    <button data-vue="arbitrages"><span class="num"><span>7</span></span> Arbitrages</button>
+    <button data-vue="revenus"><span class="num"><span>8</span></span> Revenus &amp; rachats</button>
+    <div class="separateur"></div>
+    <button data-vue="univers"><span class="num"><span>9</span></span> Univers ETF</button>
+    <button data-vue="journal"><span class="num"><span>10</span></span> Suivi &amp; journal</button>
+    <button data-vue="rapport"><span class="num"><span>11</span></span> Rapport</button>
+  </nav>
+
+  <main class="contenu">
+
+    <!-- ============ 1. CLIENT ============ -->
+    <section class="vue actif" id="vue-client">
+      <h2>Client &amp; enveloppe</h2>
+      <p class="intro">Ces informations déterminent l'univers de supports réellement accessible et les montants
+      utilisés dans les propositions d'arbitrage. Elles ne sont pas notées dans le score de risque, à l'exception
+      de l'âge qui déclenche des points de vigilance.</p>
+
+      <div class="carte">
+        <div class="grille deux" id="champs-identite"></div>
+      </div>
+
+      <div class="carte">
+        <h3>Contraintes de sélection</h3>
+        <div class="grille trois">
+          <div class="champ">
+            <label for="f-etoiles">Notation Morningstar minimale</label>
+            <select id="f-etoiles">
+              <option value="0">Aucun filtre</option>
+              <option value="3">3 étoiles et plus</option>
+              <option value="4" selected>4 étoiles et plus</option>
+              <option value="5">5 étoiles uniquement</option>
+            </select>
+          </div>
+          <div class="champ">
+            <label for="f-encours">Encours minimum (M€)</label>
+            <input type="number" id="f-encours" value="500" min="0" step="100">
+          </div>
+          <div class="champ">
+            <label for="f-ter">Frais courants maximum (%)</label>
+            <input type="number" id="f-ter" value="0.60" min="0" step="0.05">
+          </div>
+          <div class="champ">
+            <label for="f-synthetique">Réplication synthétique</label>
+            <select id="f-synthetique">
+              <option value="0" selected>Autorisée</option>
+              <option value="1">Exclue (réplication physique uniquement)</option>
+            </select>
+          </div>
+          <div class="champ">
+            <label for="f-intensite">Intensité de la gestion tactique</label>
+            <input type="range" id="f-intensite" min="0" max="100" value="60" step="10">
+            <span class="suffixe" id="f-intensite-val">60 % — déviations modérées</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="barre-actions">
+        <button class="bouton" data-aller="questionnaire">Passer au questionnaire →</button>
+      </div>
+    </section>
+
+    <!-- ============ 2. QUESTIONNAIRE ============ -->
+    <section class="vue" id="vue-questionnaire">
+      <h2>Questionnaire de profilage</h2>
+      <p class="intro">Structure conforme aux exigences MIF 2 / DDA : connaissance et expérience, situation
+      financière et capacité à subir des pertes, objectifs et horizon, tolérance au risque, préférences de durabilité.</p>
+
+      <div class="carte compacte sans-impression">
+        <div class="progression"><div id="barre-progression" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gris-doux)">
+          <span id="txt-progression">0 / 0 questions</span>
+          <span><a href="#" id="lien-remplir-demo">Pré-remplir un exemple</a></span>
+        </div>
+      </div>
+
+      <div id="questions"></div>
+
+      <div class="barre-actions">
+        <button class="bouton" data-aller="profil">Voir le profil →</button>
+      </div>
+    </section>
+
+    <!-- ============ 3. PROFIL ============ -->
+    <section class="vue" id="vue-profil">
+      <h2>Profil de risque</h2>
+      <div id="profil-contenu"></div>
+      <div class="barre-actions">
+        <button class="bouton" data-aller="macro">Contexte de marché →</button>
+      </div>
+    </section>
+
+    <!-- ============ 4. MACRO ============ -->
+    <section class="vue" id="vue-macro">
+      <h2>Contexte économique, géopolitique et fiscal</h2>
+      <p class="intro">Le conseiller renseigne sa lecture du contexte. Le moteur en déduit une distribution de
+      scénarios, puis des déviations tactiques bornées par rapport à l'allocation stratégique du profil.
+      Les probabilités calculées peuvent être ajustées manuellement.</p>
+
+      <div class="grille deux">
+        <div>
+          <div class="carte" id="indicateurs"></div>
+        </div>
+        <div>
+          <div class="carte">
+            <h3>Scénarios retenus</h3>
+            <p class="intro" style="font-size:12px">Probabilités déduites des indicateurs. Ajustez les curseurs
+            pour imposer votre propre vue ; la somme est ramenée à 100 %.</p>
+            <div id="scenarios"></div>
+            <div class="barre-actions">
+              <button class="bouton secondaire" id="btn-reset-scenarios">Recalculer depuis les indicateurs</button>
+            </div>
+          </div>
+          <div class="carte" id="overlays-macro"></div>
+        </div>
+      </div>
+
+      <div class="barre-actions">
+        <button class="bouton" data-aller="allocation">Allocation cible →</button>
+      </div>
+    </section>
+
+    <!-- ============ 5. ALLOCATION ============ -->
+    <section class="vue" id="vue-allocation">
+      <h2>Allocation cible</h2>
+      <div id="allocation-contenu"></div>
+      <div class="barre-actions">
+        <button class="bouton" data-aller="portefeuille">Sélection des ETF →</button>
+      </div>
+    </section>
+
+    <!-- ============ 6. PORTEFEUILLE ============ -->
+    <section class="vue" id="vue-portefeuille">
+      <h2>Sélection des supports</h2>
+      <div id="portefeuille-contenu"></div>
+      <div class="barre-actions">
+        <button class="bouton" data-aller="arbitrages">Arbitrages →</button>
+      </div>
+    </section>
+
+    <!-- ============ 7. ARBITRAGES ============ -->
+    <section class="vue" id="vue-arbitrages">
+      <h2>Arbitrages proposés</h2>
+      <p class="intro">Saisissez le portefeuille actuellement détenu pour obtenir les mouvements à réaliser.
+      Un dossier sans détention existante donne simplement le plan d'investissement initial.</p>
+
+      <div class="carte">
+        <h3>Portefeuille détenu</h3>
+        <div class="tableau-defilant">
+          <table id="table-detention">
+            <thead>
+              <tr>
+                <th style="width:38%">Support</th>
+                <th style="width:18%">ISIN</th>
+                <th class="num" style="width:16%">Montant (€)</th>
+                <th class="num" style="width:16%">Plus-value latente (%)</th>
+                <th style="width:6%"></th>
+              </tr>
+            </thead>
+            <tbody id="corps-detention"></tbody>
+            <tfoot>
+              <tr><td colspan="2">Total détenu</td><td class="num" id="total-detention">0 €</td><td colspan="2"></td></tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="barre-actions">
+          <button class="bouton secondaire" id="btn-ajouter-ligne">+ Ajouter une ligne</button>
+          <button class="bouton secondaire" id="btn-charger-cible">Partir de l'allocation cible</button>
+          <button class="bouton secondaire" id="btn-coller-valos">Coller les valorisations du contrat</button>
+          <div class="champ" style="margin:0 0 0 auto;min-width:200px">
+            <label for="f-apport">Apport / versement complémentaire (€)</label>
+            <input type="number" id="f-apport" value="0" min="0" step="500">
+          </div>
+        </div>
+
+        <div id="bloc-valos" hidden style="border-top:1px solid var(--gris-ligne);padding-top:14px;margin-top:6px">
+          <label for="zone-valos">Une ligne par support : <code>ISIN ; montant</code> ou <code>ISIN ; quantité ; valeur liquidative</code>
+          (séparateur <code>;</code>, <code>,</code> ou tabulation — un copier-coller du relevé de l'assureur fonctionne)</label>
+          <textarea id="zone-valos" rows="7" placeholder="IE00B4L5Y983 ; 24 800&#10;LU0290358497 ; 6 100&#10;IE00B3F81R35 ; 120 ; 58,42"></textarea>
+          <div class="barre-actions">
+            <button class="bouton" id="btn-appliquer-valos">Mettre à jour la détention</button>
+            <button class="bouton secondaire" id="btn-annuler-valos">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="arbitrages-contenu"></div>
+    </section>
+
+    <!-- ============ 8. REVENUS ============ -->
+    <section class="vue" id="vue-revenus">
+      <h2>Revenus &amp; rachats programmés</h2>
+      <p class="intro">Détermine sur quels supports prélever le revenu, dans quel ordre et pour quel coût fiscal.
+      Le plan s'appuie sur la détention saisie dans l'onglet « Arbitrages » et sur l'allocation cible.</p>
+
+      <div class="carte">
+        <h3>Besoin de revenu</h3>
+        <div class="grille quatre" id="champs-revenus"></div>
+      </div>
+
+      <div id="revenus-contenu"></div>
+    </section>
+
+    <!-- ============ 8. UNIVERS ============ -->
+    <section class="vue" id="vue-univers">
+      <h2>Univers ETF référencé</h2>
+      <div class="message alerte">
+        <strong>Données à contrôler avant utilisation en clientèle.</strong>
+        Les ISIN, frais courants, encours, notations Morningstar et référencements en assurance-vie livrés
+        avec l'application sont indicatifs. Vérifiez chaque ligne sur Quantalys / Morningstar et dans la liste
+        des supports du contrat, puis cochez la colonne « Vérifié ». Toutes les cellules sont modifiables.
+      </div>
+
+      <div class="carte">
+        <div class="filtres" id="filtres-univers"></div>
+        <div class="tableau-defilant">
+          <table id="table-univers">
+            <thead>
+              <tr>
+                <th>Nom</th><th>ISIN</th><th>Poche</th>
+                <th class="num">Frais</th><th class="num">Encours</th>
+                <th class="num">Morningstar</th><th>Réplication</th>
+                <th>PEA</th><th>Univers AV</th><th>ISR</th><th>Vérifié</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="corps-univers"></tbody>
+          </table>
+        </div>
+        <div class="barre-actions">
+          <button class="bouton secondaire" id="btn-ajouter-etf">+ Ajouter un ETF</button>
+          <button class="bouton secondaire" id="btn-exporter-univers">Exporter l'univers (JSON)</button>
+          <button class="bouton secondaire" id="btn-importer-univers">Importer un univers (JSON)</button>
+          <button class="bouton secondaire" id="btn-restaurer-univers">Restaurer l'univers livré</button>
+          <input type="file" id="fichier-univers" accept="application/json" hidden>
+        </div>
+      </div>
+
+      <div class="carte">
+        <h3>Mise à jour des données</h3>
+        <p class="intro">Aucune source de données n'est interrogée automatiquement : Quantalys et Morningstar
+        sont des services sur abonnement sans interface publique. Le rafraîchissement est manuel ou par import
+        d'un fichier JSON produit à partir de vos extractions.</p>
+        <ul id="liste-sources"></ul>
+      </div>
+    </section>
+
+    <!-- ============ 9. JOURNAL ============ -->
+    <section class="vue" id="vue-journal">
+      <h2>Suivi &amp; journal des arbitrages</h2>
+      <p class="intro">Chaque revue validée est horodatée et conservée localement. Ce journal constitue la trace
+      du suivi « au fil de l'eau » : dérive constatée, contexte retenu, mouvements proposés.</p>
+      <div id="journal-contenu"></div>
+    </section>
+
+    <!-- ============ 10. RAPPORT ============ -->
+    <section class="vue" id="vue-rapport">
+      <h2>Rapport de préconisation</h2>
+      <div class="barre-actions sans-impression">
+        <button class="bouton" id="btn-imprimer">Imprimer / enregistrer en PDF</button>
+      </div>
+      <div id="rapport-contenu"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/data/questionnaire.js"></script>
+<script src="js/data/allocations.js"></script>
+<script src="js/data/macro.js"></script>
+<script src="js/data/etf-univers.js"></script>
+<script src="js/data/fiscalite.js"></script>
+<script src="js/engine/profil.js"></script>
+<script src="js/engine/allocation.js"></script>
+<script src="js/engine/selection.js"></script>
+<script src="js/engine/arbitrage.js"></script>
+<script src="js/engine/revenus.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

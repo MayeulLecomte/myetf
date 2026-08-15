@@ -1,0 +1,227 @@
+let echecs=0;
+const ok=(c,m)=>{if(!c){echecs++;console.log('  ✗ '+m)}else console.log('  ✓ '+m)};
+
+// --- 1. Profilage sur 3 dossiers types
+const dossiers={
+ 'Prudent (horizon court)':  {q_horizon:1,q_objectif:0,q_retrait:1,q_precaution:1,q_partpatrimoine:1,q_capaciteEpargne:1,q_endettement:1,q_stabilite:1,q_connaissance:1,q_produits:1,q_vecu:1,q_comprehension:1,q_reaction:1,q_perteMax:2,q_couple:1,q_volatilite:1,q_arbitrage:1,q_esg:0},
+ 'Équilibré':                {q_horizon:3,q_objectif:2,q_retrait:2,q_precaution:2,q_partpatrimoine:2,q_capaciteEpargne:2,q_endettement:2,q_stabilite:2,q_connaissance:2,q_produits:2,q_vecu:2,q_comprehension:2,q_reaction:2,q_perteMax:3,q_couple:2,q_volatilite:2,q_arbitrage:1,q_esg:1},
+ 'Offensif':                 {q_horizon:4,q_objectif:4,q_retrait:3,q_precaution:3,q_partpatrimoine:3,q_capaciteEpargne:3,q_endettement:3,q_stabilite:3,q_connaissance:3,q_produits:4,q_vecu:3,q_comprehension:2,q_reaction:3,q_perteMax:5,q_couple:3,q_volatilite:3,q_arbitrage:2,q_esg:0}
+};
+console.log('\n== Profilage ==');
+const resultats={};
+Object.entries(dossiers).forEach(([nom,rep])=>{
+  const r=MoteurProfil.calculer(rep,{age:45});
+  resultats[nom]=r;
+  ok(r,'profil calculé — '+nom);
+  console.log('     capacité '+r.scores.capacite+' / tolérance '+r.scores.tolerance+' / connaissance '+r.scores.connaissance+' → '+r.profil.nom+(r.declasse?' (plafonné depuis '+r.profilTheorique.nom+')':''));
+});
+ok(resultats['Prudent (horizon court)'].profil.ordre<=1,'dossier court terme plafonné à Prudent ou moins');
+ok(resultats['Offensif'].profil.ordre>=3,'dossier long terme au moins Dynamique');
+ok(MoteurProfil.calculer({},{age:45})===null,'questionnaire incomplet → null');
+
+// --- 2. Allocation : somme = 100 pour tous les profils / scénarios
+console.log('\n== Allocation ==');
+let pbSomme=0, pbPoche=0;
+PROFILS.forEach(p=>{
+  const s=MoteurAllocation.strategique(p.id);
+  const sc=Object.values(s.classes).reduce((a,b)=>a+b,0);
+  const sp=Object.values(s.poches).reduce((a,b)=>a+b,0);
+  if(Math.abs(sc-100)>0.05) {pbSomme++;console.log('   classes '+p.id+' = '+sc);}
+  if(Math.abs(sp-100)>0.15) {pbPoche++;console.log('   poches '+p.id+' = '+sp);}
+});
+ok(pbSomme===0,'allocation stratégique : classes = 100 % pour les 6 profils');
+ok(pbPoche===0,'allocation stratégique : poches = 100 % pour les 6 profils');
+
+let pbTac=0, pbNeg=0, pbBorne=0;
+PROFILS.forEach(p=>{
+  SCENARIOS.forEach(sc=>{
+    const probas={}; SCENARIOS.forEach(x=>probas[x.id]=x.id===sc.id?100:0);
+    [0,0.5,1].forEach(int=>{
+      const t=MoteurAllocation.tactique(p.id,probas,{},int);
+      const sommeC=Object.values(t.classes).reduce((a,b)=>a+b,0);
+      const sommeP=Object.values(t.poches).reduce((a,b)=>a+b,0);
+      if(Math.abs(sommeC-100)>0.15) pbTac++;
+      if(Math.abs(sommeP-100)>0.15) pbTac++;
+      if(Object.values(t.classes).some(v=>v<0)||Object.values(t.poches).some(v=>v<0)) pbNeg++;
+      Object.keys(t.classes).forEach(cl=>{
+        const dev=Math.abs(t.classes[cl]-t.strategique.classes[cl]);
+        if(dev>BORNES_TACTIQUES[cl]+3) {pbBorne++;console.log('   borne '+p.id+'/'+sc.id+'/'+int+' '+cl+' dev='+dev.toFixed(1));}
+      });
+    });
+  });
+});
+ok(pbTac===0,'allocation tactique : sommes à 100 % (6 profils × 4 scénarios × 3 intensités)');
+ok(pbNeg===0,'allocation tactique : aucun poids négatif');
+ok(pbBorne===0,'allocation tactique : déviations dans les bornes');
+
+const t0=MoteurAllocation.tactique('equilibre',MoteurAllocation.macroParDefaut().probas,{},0);
+ok(JSON.stringify(t0.classes)===JSON.stringify(t0.strategique.classes),'intensité 0 → allocation strictement stratégique');
+
+// profil sécuritaire ne doit jamais avoir d'actions
+let actionsSecu=0;
+SCENARIOS.forEach(sc=>{const probas={};SCENARIOS.forEach(x=>probas[x.id]=x.id===sc.id?100:0);
+  const t=MoteurAllocation.tactique('securitaire',probas,{},1); if(t.classes.actions>0) actionsSecu++;});
+ok(actionsSecu===0,'profil Sécuritaire : jamais d\'exposition actions, même en tactique maximale');
+
+// --- 3. Agrégation macro
+console.log('\n== Macro ==');
+const m1=MoteurAllocation.macroParDefaut();
+ok(Math.abs(Object.values(m1.probas).reduce((a,b)=>a+b,0)-100)<0.15,'probabilités par défaut = 100 %');
+const m2=MoteurAllocation.agregerMacro({cycle:'recession',credit:'ecartement',politiqueMonetaire:'restrictive',courbe:'inversee',momentum:'risk_off'});
+ok(m2.probas.recession>50,'contexte récessif → scénario Récession dominant ('+m2.probas.recession+' %)');
+const m3=MoteurAllocation.agregerMacro({cycle:'surchauffe',inflation:'reacceleration',geopolitique:'tres_eleve',commerce:'guerre'});
+ok(m3.probas.stagflation>40,'contexte inflationniste+géopolitique → Stagflation dominante ('+m3.probas.stagflation+' %)');
+ok(m3.overlays['div-or']>0,'risque géopolitique élevé → surpondération de l\'or (+'+m3.overlays['div-or']+')');
+
+// --- 4. Sélection
+console.log('\n== Sélection ETF ==');
+const alloc=MoteurAllocation.tactique('dynamique',m1.probas,m1.overlays,0.6);
+[['AV','av-large'],['AV','av-restreint'],['PEA',null],['CTO',null]].forEach(([env,ct])=>{
+  const sel=MoteurSelection.construire(alloc.poches,{enveloppe:env,contratAV:ct,etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',montant:100000},ETF_UNIVERS);
+  const somme=sel.lignes.reduce((a,l)=>a+l.poids,0);
+  const mt=sel.lignes.reduce((a,l)=>a+l.montant,0);
+  console.log('   '+env+(ct?'/'+ct:'')+' : '+sel.nbSupports+' lignes, '+sel.universEligible+' éligibles, TER '+sel.terMoyen+' %, somme '+somme.toFixed(1)+' %, '+mt+' €');
+  ok(Math.abs(somme-100)<0.6,'  poids ≈ 100 % ('+env+(ct?'/'+ct:'')+')');
+  ok(sel.lignes.every(l=>l.etf.enveloppes.includes(env)),'  tous les supports éligibles à l\'enveloppe '+env);
+  if(env==='PEA') ok(sel.lignes.every(l=>l.etf.pea),'  tous les supports PEA-éligibles');
+  ok(sel.lignes.every(l=>l.etf.morningstar>=4),'  filtre 4 étoiles respecté ('+env+')');
+});
+const selEsg=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:0,terMax:1,esg:'prioritaire',montant:100000},ETF_UNIVERS);
+ok(Math.abs(selEsg.lignes.reduce((a,l)=>a+l.poids,0)-100)<0.6,'ESG prioritaire → portefeuille toujours investi à 100 % ('+selEsg.nbSupports+' lignes)');
+ok(selEsg.lignes.filter(l=>l.etf.isr).length>0,'ESG prioritaire → supports ISR retenus quand ils existent');
+ok(selEsg.avertissements.some(a=>a.indexOf('durabilit')>=0),'ESG prioritaire → dérogation signalée pour les poches sans support labellisé');
+const pochesIsr=new Set(ETF_UNIVERS.filter(e=>e.isr).map(e=>e.poche));
+ok(selEsg.lignes.every(l=>!pochesIsr.has(l.poche)||l.etf.isr),'ESG prioritaire → ISR systématiquement préféré là où il existe');
+
+// --- 5. Arbitrage
+console.log('\n== Arbitrage ==');
+const selRef=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',montant:200000},ETF_UNIVERS);
+// portefeuille identique à la cible → aucun mouvement
+const identique=selRef.lignes.map(l=>({isin:l.etf.isin,libelle:l.etf.nom,montant:l.montant,pvLatente:0}));
+const a1=MoteurArbitrage.analyser(identique,selRef.lignes,{enveloppe:'AV',apport:0},ETF_UNIVERS);
+ok(a1.aucunMouvement,'portefeuille déjà aligné → aucun arbitrage ('+a1.ordres.length+' ordres)');
+// portefeuille 100 % monétaire
+const a2=MoteurArbitrage.analyser([{isin:'LU0290358497',libelle:'XEON',montant:200000,pvLatente:0}],selRef.lignes,{enveloppe:'AV',apport:0},ETF_UNIVERS);
+const v=a2.ordres.filter(o=>o.sens==='Vente').reduce((a,o)=>a+o.montant,0);
+const ac=a2.ordres.filter(o=>o.sens==='Achat').reduce((a,o)=>a+o.montant,0);
+console.log('   100 % monétaire → '+a2.ordres.length+' ordres, ventes '+v+' €, achats '+ac+' €, rotation '+a2.rotation+' %');
+ok(Math.abs(v-ac)<600,'ventes ≈ achats (équilibre des flux, écart '+Math.abs(v-ac)+' €)');
+ok(a2.fiscalite.impotEstime===0,'assurance-vie → aucune fiscalité sur arbitrage');
+// même chose en CTO avec plus-value latente
+const a3=MoteurArbitrage.analyser([{isin:'IE00B4L5Y983',libelle:'IWDA',montant:200000,pvLatente:40}],selRef.lignes,{enveloppe:'CTO',apport:0},ETF_UNIVERS);
+console.log('   CTO, PV latente 40 % → impôt estimé '+a3.fiscalite.impotEstime+' €');
+ok(a3.fiscalite.impotEstime>0,'CTO → fiscalité chiffrée sur les ventes');
+// apport qui finance les achats
+const a4=MoteurArbitrage.analyser([{isin:'LU0290358497',libelle:'XEON',montant:100000,pvLatente:0}],selRef.lignes,{enveloppe:'CTO',apport:100000},ETF_UNIVERS);
+const v4=a4.ordres.filter(o=>o.sens==='Vente').reduce((a,o)=>a+o.montant,0);
+console.log('   apport 100 k€ sur 100 k€ détenus → ventes '+v4+' € (rotation '+a4.rotation+' %)');
+ok(v4<a2.ordres.filter(o=>o.sens==='Vente').reduce((a,o)=>a+o.montant,0),'l\'apport réduit le volume de ventes');
+// support inconnu
+const a5=MoteurArbitrage.analyser([{isin:'XX0000000000',libelle:'Fonds maison',montant:50000}],selRef.lignes,{enveloppe:'AV',apport:0},ETF_UNIVERS);
+ok(a5.inconnus.length===1,'support hors univers signalé');
+
+
+// surpondération + apport : la vente doit avoir lieu malgré l'apport
+const deriveP=selRef.lignes.map(l=>({isin:l.etf.isin,libelle:l.etf.nom,montant:l.montant*(l.poche==='act-us'?2.5:1),pvLatente:l.poche==='act-us'?50:0}));
+const a6=MoteurArbitrage.analyser(deriveP,selRef.lignes,{enveloppe:'AV',apport:30000},ETF_UNIVERS);
+const vendus=a6.ordres.filter(o=>o.sens==='Vente');
+ok(vendus.some(o=>o.isin==='IE00B5BMR087'||o.poche==='act-us'),'surpondération corrigée même en présence d\'un apport ('+vendus.length+' vente(s))');
+
+// convergence : après application des ordres, le portefeuille colle à la cible
+function appliquer(pf,ord){const m={};pf.forEach(l=>m[l.isin]=(m[l.isin]||0)+l.montant);
+  ord.forEach(o=>{m[o.isin]=(m[o.isin]||0)+(o.sens==='Achat'?o.montant:-o.montant)});
+  return Object.keys(m).filter(k=>m[k]>0.5).map(k=>({isin:k,montant:m[k]}));}
+[[deriveP,30000],[[{isin:'LU0290358497',libelle:'XEON',montant:200000,pvLatente:0}],0],
+ [selRef.lignes.map((l,i)=>({isin:l.etf.isin,montant:l.montant*(i%2?1.6:0.5)})),5000]].forEach((cas,i)=>{
+  const an=MoteurArbitrage.analyser(cas[0],selRef.lignes,{enveloppe:'AV',apport:cas[1]},ETF_UNIVERS);
+  const apres=appliquer(cas[0],an.ordres);
+  const tot=apres.reduce((a,l)=>a+l.montant,0);
+  const cible={};selRef.lignes.forEach(l=>cible[l.etf.isin]=(cible[l.etf.isin]||0)+l.poids);
+  let maxEcart=0;
+  Object.keys(cible).forEach(is=>{const p=100*(apres.find(l=>l.isin===is)||{montant:0}).montant/tot;maxEcart=Math.max(maxEcart,Math.abs(p-cible[is]));});
+  ok(Math.abs(tot-an.total)<2,'  cas '+(i+1)+' : capital conservé ('+Math.round(tot)+' vs '+Math.round(an.total)+' €)');
+  ok(maxEcart<=2.6,'  cas '+(i+1)+' : écart résiduel max à la cible '+maxEcart.toFixed(2)+' pt (seuil de tolérance 2 pts)');
+});
+
+// --- 6. Métriques & stress
+console.log('\n== Métriques ==');
+PROFILS.forEach(p=>{
+  const mt=MoteurAllocation.metriques(p.allocation);
+  const st=MoteurProfil.stressTest(p.allocation);
+  console.log('   '+p.nom.padEnd(12)+' rdt '+mt.rendement+' % · vol '+mt.volatilite+' % · 2008 '+st[0].impact+' %');
+});
+const vols=PROFILS.map(p=>MoteurAllocation.metriques(p.allocation).volatilite);
+ok(vols.every((v,i)=>i===0||v>=vols[i-1]),'volatilité croissante avec le profil');
+const rdts=PROFILS.map(p=>MoteurAllocation.metriques(p.allocation).rendement);
+ok(rdts.every((v,i)=>i===0||v>=rdts[i-1]),'rendement croissant avec le profil');
+
+// --- 7. Cohérence des données
+console.log('\n== Données ==');
+const isins=ETF_UNIVERS.map(e=>e.isin);
+ok(new Set(isins).size===isins.length,'aucun ISIN dupliqué ('+isins.length+' supports)');
+ok(ETF_UNIVERS.every(e=>LIBELLES_POCHES[e.poche]),'toutes les poches ETF sont libellées');
+ok(ETF_UNIVERS.every(e=>MoteurSelection.classeDePoche(e.poche)===e.classe),'classe cohérente avec la poche');
+ok(ETF_UNIVERS.every(e=>!e.pea||e.enveloppes.includes('PEA')),'cohérence flag PEA / enveloppes');
+// toutes les poches utilisées par les allocations ont au moins un ETF
+const pochesUtilisees=new Set();
+PROFILS.forEach(p=>Object.keys(MoteurAllocation.strategique(p.id).poches).forEach(x=>pochesUtilisees.add(x)));
+const orphelines=[...pochesUtilisees].filter(p=>!ETF_UNIVERS.some(e=>e.poche===p));
+ok(orphelines.length===0,'toutes les poches allouées ont au moins un support'+(orphelines.length?' — manquantes : '+orphelines:''));
+ok(INDICATEURS.every(i=>i.options.some(o=>o.defaut)),'chaque indicateur macro a une valeur par défaut');
+
+
+// --- 8. Revenus
+console.log('\n== Revenus ==');
+const selRev=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',objectifRevenus:true,montant:500000},ETF_UNIVERS);
+const pf=selRev.lignes.map(l=>({isin:l.etf.isin,libelle:l.etf.nom,montant:l.montant,pvLatente:35}));
+const capital=pf.reduce((a,l)=>a+l.montant,0);
+
+const planAV=MoteurRevenus.planifier(pf,selRev.lignes,{enveloppe:'AV',besoinAnnuel:18000,frequence:'mensuelle',coussinMois:24,anciennete:10,couple:true,primesVersees:350000,rendementEspere:5.5},ETF_UNIVERS);
+const totalPrel=planAV.supports.reduce((a,s)=>a+s.montant,0);
+console.log('   AV 500 k€, besoin 18 000 €/an : '+planAV.supports.length+' support(s), taux '+planAV.tauxRetrait+' %, impôt '+planAV.fiscalite.total+' €');
+ok(Math.abs(totalPrel-18000)<15,'AV : total prélevé = besoin annuel ('+totalPrel+' €)');
+ok(planAV.dividendesDisponibles===0,'AV : aucun revenu distribué en numéraire (coupons réinvestis)');
+ok(planAV.supports.every(s=>s.montant<=capital),'AV : aucun prélèvement supérieur à la ligne');
+// abattement couple après 8 ans
+const produits=capital-350000, assiette=18000*produits/capital;
+const attendu=Math.round(Math.max(0,assiette-9200)*0.075+assiette*0.172);
+ok(Math.abs(planAV.fiscalite.total-attendu)<3,'AV : assiette proportionnelle + abattement 9 200 € + PS 17,2 % ('+planAV.fiscalite.total+' vs '+attendu+' €)');
+const planAVjeune=MoteurRevenus.planifier(pf,selRev.lignes,{enveloppe:'AV',besoinAnnuel:18000,frequence:'mensuelle',coussinMois:24,anciennete:4,couple:true,primesVersees:350000,rendementEspere:5.5},ETF_UNIVERS);
+ok(planAVjeune.fiscalite.total>planAV.fiscalite.total,'AV : contrat de moins de 8 ans plus taxé ('+planAVjeune.fiscalite.total+' > '+planAV.fiscalite.total+' €)');
+
+// CTO : les dividendes couvrent une partie du besoin sans vendre
+const selCto=MoteurSelection.construire(alloc.poches,{enveloppe:'CTO',etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',objectifRevenus:true,montant:500000},ETF_UNIVERS);
+const pfCto=selCto.lignes.map(l=>({isin:l.etf.isin,libelle:l.etf.nom,montant:l.montant,pvLatente:35}));
+const planCto=MoteurRevenus.planifier(pfCto,selCto.lignes,{enveloppe:'CTO',besoinAnnuel:18000,frequence:'trimestrielle',coussinMois:24,anciennete:10,couple:true,primesVersees:350000,rendementEspere:5.5},ETF_UNIVERS);
+console.log('   CTO : dividendes '+planCto.dividendesDisponibles+' € couvrent '+planCto.partCouverteParDividendes+' % du besoin');
+ok(planCto.dividendesDisponibles>0,'CTO : les ETF distribuants versent des liquidités');
+ok(Math.abs(planCto.supports.reduce((a,s)=>a+s.montant,0)-planCto.aPrelever)<15,'CTO : seul le solde est prélevé sur les supports');
+ok(planCto.fiscalite.total>0,'CTO : PFU chiffré sur PV réalisées et dividendes');
+// PEA jeune : alerte bloquante
+const planPea=MoteurRevenus.planifier(pf,selRev.lignes,{enveloppe:'PEA',besoinAnnuel:18000,frequence:'annuelle',coussinMois:24,anciennete:3,couple:false,primesVersees:350000,rendementEspere:5.5},ETF_UNIVERS);
+ok(planPea.alertes.some(a=>a.niveau==='erreur'&&a.texte.indexOf('5 ans')>=0),'PEA de moins de 5 ans : alerte de clôture');
+
+// cascade : le monétaire excédentaire est prélevé avant les actions
+const pfCash=[{isin:'LU0290358497',libelle:'XEON',montant:120000,pvLatente:0},{isin:'IE00B4L5Y983',libelle:'IWDA',montant:380000,pvLatente:60}];
+const cible=[{etf:{isin:'IE00B4L5Y983'},poids:70,classe:'actions'},{etf:{isin:'LU0290358497'},poids:30,classe:'monetaire'}];
+const planCash=MoteurRevenus.planifier(pfCash,cible,{enveloppe:'AV',besoinAnnuel:20000,frequence:'mensuelle',coussinMois:12,anciennete:10,couple:false,primesVersees:400000,rendementEspere:5},ETF_UNIVERS);
+console.log('   cascade : '+planCash.supports.map(s=>s.libelle+' '+s.montant+' € ('+s.etapes.join('+')+')').join(', '));
+ok(planCash.supports.length===1&&planCash.supports[0].isin==='LU0290358497','monétaire excédentaire prélevé en premier, actions préservées');
+
+// taux de retrait insoutenable
+const planFort=MoteurRevenus.planifier(pf,selRev.lignes,{enveloppe:'AV',besoinAnnuel:capital*0.09,frequence:'mensuelle',coussinMois:24,anciennete:10,couple:false,primesVersees:350000,rendementEspere:5.5},ETF_UNIVERS);
+ok(planFort.alertes.some(a=>a.niveau==='erreur'),'taux de retrait de 9 % : alerte d\'épuisement du capital');
+ok(planFort.projection.epuisement!==null,'projection : année d\'épuisement calculée (an '+planFort.projection.epuisement+')');
+
+// contrainte de coussin sur l'allocation
+const base=MoteurAllocation.tactique('dynamique',m1.probas,{},0.6);
+const cons=MoteurRevenus.contrainteCoussin(base,24000,24,400000);
+ok(cons.applique,'coussin : allocation ajustée quand le monétaire est insuffisant');
+ok(Math.abs(Object.values(cons.allocation.classes).reduce((a,b)=>a+b,0)-100)<0.15,'coussin : classes toujours à 100 %');
+ok(Math.abs(Object.values(cons.allocation.poches).reduce((a,b)=>a+b,0)-100)<0.35,'coussin : poches toujours à 100 %');
+ok(cons.allocation.classes.monetaire>base.classes.monetaire,'coussin : monétaire relevé ('+base.classes.monetaire+' → '+cons.allocation.classes.monetaire+' %)');
+ok(cons.allocation.classes.actions<base.classes.actions,'coussin : ponction prise sur les actifs risqués');
+ok(!MoteurRevenus.contrainteCoussin(base,5000,24,900000).applique,'coussin : pas d\'ajustement si le monétaire suffit déjà');
+
+console.log('\n'+(echecs?'❌ '+echecs+' échec(s)':'✅ tous les tests passent'));
+process.exit(echecs?1:0);

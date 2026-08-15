@@ -1,0 +1,21 @@
+# ---------------------------------------------------------------
+# Données clients : ne JAMAIS committer.
+# Les dossiers exportés contiennent nom, patrimoine, revenus et
+# endettement — données personnelles au sens du RGPD.
+# ---------------------------------------------------------------
+dossier-*.json
+dossiers/
+clients/
+*.client.json
+*.local.json
+
+# Univers ETF personnalisé (peut refléter la liste des supports
+# d'un contrat, information commercialement sensible).
+univers-etf.json
+
+# Système / éditeurs
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

@@ -1,0 +1,1453 @@
+/* =============================================================
+   APPLICATION — état, rendu et interactions
+   ============================================================= */
+
+const CLE_STOCKAGE = 'allocation-etf-dossier-v1';
+
+const Etat = {
+  identite: {},
+  filtres: { etoilesMin: 4, encoursMin: 500, terMax: 0.60, exclureSynthetique: false, intensite: 0.6 },
+  reponses: {},
+  macroChoix: {},
+  scenariosManuels: null,
+  detention: [],
+  apport: 0,
+  revenus: { besoin: 0, frequence: 'mensuelle', coussinMois: 24, anciennete: 8, couple: false, primesVersees: 0 },
+  univers: JSON.parse(JSON.stringify(ETF_UNIVERS)),
+  journal: [],
+  filtreUnivers: { classe: '', enveloppe: '', texte: '' }
+};
+
+/* ============================================================
+   UTILITAIRES
+   ============================================================ */
+
+const $  = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+
+function euro(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Math.round(n).toLocaleString('fr-FR') + ' €';
+}
+function pct(n, d) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return n.toFixed(d === undefined ? 1 : d).replace('.', ',') + ' %';
+}
+function signe(n, d) { return (n > 0 ? '+' : '') + pct(n, d); }
+function etoiles(n) {
+  return '<span class="etoiles" title="' + n + ' étoiles Morningstar">' +
+    '★★★★★'.slice(0, n) + '<span style="color:var(--gris-ligne)">' + '★★★★★'.slice(0, 5 - n) + '</span></span>';
+}
+function echapper(s) {
+  return String(s === undefined || s === null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function dateFr(iso) {
+  const d = iso ? new Date(iso) : new Date();
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function donut(segments, taille, epaisseur) {
+  taille = taille || 190; epaisseur = epaisseur || 36;
+  const r = (taille - epaisseur) / 2, cx = taille / 2, cy = taille / 2;
+  const total = segments.reduce((a, s) => a + s.valeur, 0);
+  if (total <= 0) return '<svg width="' + taille + '" height="' + taille + '"></svg>';
+  let angle = -Math.PI / 2, contenu = '';
+  segments.forEach(s => {
+    if (s.valeur <= 0) return;
+    const arc = 2 * Math.PI * s.valeur / total;
+    const fin = angle + arc;
+    if (arc >= 2 * Math.PI - 0.0001) {
+      contenu += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + s.couleur + '" stroke-width="' + epaisseur + '"/>';
+    } else {
+      const x1 = cx + r * Math.cos(angle), y1 = cy + r * Math.sin(angle);
+      const x2 = cx + r * Math.cos(fin),   y2 = cy + r * Math.sin(fin);
+      contenu += '<path d="M ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' A ' + r + ' ' + r + ' 0 ' +
+        (arc > Math.PI ? 1 : 0) + ' 1 ' + x2.toFixed(2) + ' ' + y2.toFixed(2) +
+        '" fill="none" stroke="' + s.couleur + '" stroke-width="' + epaisseur + '"/>';
+    }
+    angle = fin;
+  });
+  return '<svg width="' + taille + '" height="' + taille + '" viewBox="0 0 ' + taille + ' ' + taille + '">' + contenu + '</svg>';
+}
+
+function legende(segments) {
+  return '<div class="legende">' + segments.filter(s => s.valeur > 0).map(s =>
+    '<div class="item"><span class="pastille" style="background:' + s.couleur + '"></span>' +
+    echapper(s.label) + '<span class="valeur">' + pct(s.valeur) + '</span></div>').join('') + '</div>';
+}
+
+/* ============================================================
+   PERSISTANCE
+   ============================================================ */
+
+function sauver(silencieux) {
+  try {
+    localStorage.setItem(CLE_STOCKAGE, JSON.stringify({
+      identite: Etat.identite, filtres: Etat.filtres, reponses: Etat.reponses,
+      macroChoix: Etat.macroChoix, scenariosManuels: Etat.scenariosManuels,
+      detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal
+    }));
+    if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
+  } catch (e) { notifier('Enregistrement impossible : ' + e.message, 'erreur'); }
+}
+
+function charger() {
+  try {
+    const brut = localStorage.getItem(CLE_STOCKAGE);
+    if (!brut) return false;
+    const d = JSON.parse(brut);
+    Object.keys(d).forEach(k => { if (d[k] !== undefined && d[k] !== null) Etat[k] = d[k]; });
+    return true;
+  } catch (e) { return false; }
+}
+
+function notifier(texte, type) {
+  const div = document.createElement('div');
+  div.className = 'message ' + (type || 'succes');
+  div.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:200;max-width:380px;box-shadow:var(--ombre)';
+  div.textContent = texte;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 4000);
+}
+
+/* ============================================================
+   CALCULS DÉRIVÉS
+   ============================================================ */
+
+function resultatProfil() {
+  return MoteurProfil.calculer(Etat.reponses, Etat.identite);
+}
+
+function macroCourante() {
+  const agrege = MoteurAllocation.agregerMacro(Etat.macroChoix);
+  const probas = Etat.scenariosManuels ? Object.assign({}, Etat.scenariosManuels) : agrege.probas;
+  MoteurAllocation.normaliserA100(probas);
+  const dominant = Object.keys(probas).sort((a, b) => probas[b] - probas[a])[0];
+  return { probas, overlays: agrege.overlays, journal: agrege.journal, dominant, calculees: agrege.probas };
+}
+
+function contexteSelection() {
+  const p = resultatProfil();
+  return {
+    enveloppe: Etat.identite.enveloppe || 'AV',
+    contratAV: Etat.identite.contratAV || 'av-large',
+    etoilesMin: Number(Etat.filtres.etoilesMin),
+    encoursMin: Number(Etat.filtres.encoursMin),
+    terMax: Number(Etat.filtres.terMax),
+    exclureSynthetique: !!Etat.filtres.exclureSynthetique,
+    esg: p ? p.preferences.esg : 'aucune',
+    objectifRevenus: besoinDeRevenu(),
+    montant: Number(Etat.identite.montant) || 0
+  };
+}
+
+/** Le client attend-il un revenu régulier de ce placement ? */
+function besoinDeRevenu() {
+  const p = resultatProfil();
+  return Number(Etat.revenus.besoin) > 0 || (p && p.preferences.objectif === 'revenus');
+}
+
+/** Capital de référence : détention saisie si elle existe, sinon montant à investir. */
+function capitalReference() {
+  const detenu = Etat.detention.reduce((a, l) => a + (Number(l.montant) || 0), 0);
+  return detenu > 0 ? detenu : (Number(Etat.identite.montant) || 0);
+}
+
+function intensiteEffective() {
+  const p = resultatProfil();
+  if (p && p.preferences.gestion === 'passive') return 0;
+  return Number(Etat.filtres.intensite);
+}
+
+function allocationCourante() {
+  const p = resultatProfil();
+  if (!p) return null;
+  const m = macroCourante();
+  const base = MoteurAllocation.tactique(p.profil.id, m.probas, m.overlays, intensiteEffective());
+
+  /* Un revenu régulier impose un coussin monétaire : il modifie l'allocation cible. */
+  const besoin = Number(Etat.revenus.besoin) * (MoteurRevenus.FREQUENCES[Etat.revenus.frequence] || { parAn: 12 }).parAn;
+  if (besoin > 0) {
+    const r = MoteurRevenus.contrainteCoussin(base, besoin, Number(Etat.revenus.coussinMois), capitalReference());
+    if (r.applique) { r.allocation.coussin = r; return r.allocation; }
+  }
+  return base;
+}
+
+function selectionCourante() {
+  const a = allocationCourante();
+  if (!a) return null;
+  return MoteurSelection.construire(a.poches, contexteSelection(), Etat.univers);
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+function afficher(vue) {
+  $$('.vue').forEach(v => v.classList.remove('actif'));
+  const cible = $('#vue-' + vue);
+  if (cible) cible.classList.add('actif');
+  $$('#nav button').forEach(b => b.classList.toggle('actif', b.dataset.vue === vue));
+  window.scrollTo(0, 0);
+  rendre(vue);
+}
+
+function rendre(vue) {
+  switch (vue) {
+    case 'client':        rendreIdentite(); break;
+    case 'questionnaire': rendreQuestionnaire(); break;
+    case 'profil':        rendreProfil(); break;
+    case 'macro':         rendreMacro(); break;
+    case 'allocation':    rendreAllocation(); break;
+    case 'portefeuille':  rendrePortefeuille(); break;
+    case 'arbitrages':    rendreArbitrages(); break;
+    case 'revenus':       rendreRevenus(); break;
+    case 'univers':       rendreUnivers(); break;
+    case 'journal':       rendreJournal(); break;
+    case 'rapport':       rendreRapport(); break;
+  }
+  majNav();
+}
+
+function majNav() {
+  const p = resultatProfil();
+  const complet = {
+    client: !!Etat.identite.montant,
+    questionnaire: MoteurProfil.questionsManquantes(Etat.reponses).length === 0,
+    profil: !!p,
+    macro: Object.keys(Etat.macroChoix).length > 0,
+    allocation: !!p, portefeuille: !!p,
+    arbitrages: Etat.detention.length > 0,
+    revenus: Number(Etat.revenus.besoin) > 0,
+    univers: true, journal: Etat.journal.length > 0, rapport: !!p
+  };
+  $$('#nav button').forEach(b => b.classList.toggle('complet', !!complet[b.dataset.vue]));
+}
+
+/* ============================================================
+   VUE 1 — IDENTITÉ
+   ============================================================ */
+
+function rendreIdentite() {
+  const c = $('#champs-identite');
+  c.innerHTML = IDENTITE.map(f => {
+    if (f.dependDe && Etat.identite[f.dependDe.champ] !== f.dependDe.valeur) return '';
+    const val = Etat.identite[f.id] !== undefined ? Etat.identite[f.id] : (f.defaut !== undefined ? f.defaut : '');
+    let saisie;
+    if (f.type === 'select') {
+      saisie = '<select data-identite="' + f.id + '">' + f.options.map(o =>
+        '<option value="' + o.valeur + '"' + (String(val) === o.valeur ? ' selected' : '') + '>' + echapper(o.label) + '</option>'
+      ).join('') + '</select>';
+    } else {
+      saisie = '<input type="' + f.type + '" data-identite="' + f.id + '" value="' + echapper(val) + '"' +
+        (f.min !== undefined ? ' min="' + f.min + '"' : '') +
+        (f.max !== undefined ? ' max="' + f.max + '"' : '') +
+        (f.placeholder ? ' placeholder="' + echapper(f.placeholder) + '"' : '') + '>';
+    }
+    return '<div class="champ"><label>' + echapper(f.label) + '</label>' + saisie +
+      (f.suffixe ? '<span class="suffixe">' + echapper(f.suffixe) + '</span>' : '') + '</div>';
+  }).join('');
+
+  $('#f-etoiles').value = Etat.filtres.etoilesMin;
+  $('#f-encours').value = Etat.filtres.encoursMin;
+  $('#f-ter').value = Etat.filtres.terMax;
+  $('#f-synthetique').value = Etat.filtres.exclureSynthetique ? '1' : '0';
+  $('#f-intensite').value = Math.round(Etat.filtres.intensite * 100);
+  majLibelleIntensite();
+}
+
+function majLibelleIntensite() {
+  const v = Number($('#f-intensite').value);
+  const libelles = [
+    [0, 'purement stratégique, aucun arbitrage tactique'],
+    [30, 'déviations légères'],
+    [60, 'déviations modérées'],
+    [80, 'déviations affirmées'],
+    [100, 'déviations maximales autorisées']
+  ];
+  let txt = libelles[0][1];
+  libelles.forEach(l => { if (v >= l[0]) txt = l[1]; });
+  const p = resultatProfil();
+  const forcee = p && p.preferences.gestion === 'passive'
+    ? ' — neutralisée : le client a demandé une allocation figée' : '';
+  $('#f-intensite-val').textContent = v + ' % — ' + txt + forcee;
+}
+
+/* ============================================================
+   VUE 2 — QUESTIONNAIRE
+   ============================================================ */
+
+function rendreQuestionnaire() {
+  const sections = [];
+  QUESTIONS.forEach(q => { if (sections.indexOf(q.section) < 0) sections.push(q.section); });
+
+  $('#questions').innerHTML = sections.map(sec => {
+    const qs = QUESTIONS.filter(q => q.section === sec);
+    return '<div class="carte section-q"><h3>' + echapper(sec) + '</h3>' + qs.map(q => {
+      const rep = Etat.reponses[q.id];
+      return '<div class="question"><div class="enonce">' + echapper(q.texte) + '</div>' +
+        (q.aide ? '<div class="aide">' + echapper(q.aide) + '</div>' : '') +
+        '<div class="options">' + q.options.map((o, i) =>
+          '<label class="' + (rep === i ? 'choisi' : '') + '">' +
+          '<input type="radio" name="' + q.id + '" value="' + i + '" data-question="' + q.id + '"' +
+          (rep === i ? ' checked' : '') + '> ' + echapper(o.label) + '</label>').join('') +
+        '</div></div>';
+    }).join('') + '</div>';
+  }).join('');
+
+  majProgression();
+}
+
+function majProgression() {
+  const total = QUESTIONS.filter(q => q.poids > 0).length + 1;   // + question ESG
+  const repondues = QUESTIONS.filter(q => Etat.reponses[q.id] !== undefined).length;
+  const p = Math.round(100 * repondues / total);
+  $('#barre-progression').style.width = p + '%';
+  $('#txt-progression').textContent = repondues + ' / ' + total + ' questions renseignées';
+}
+
+/* ============================================================
+   VUE 3 — PROFIL
+   ============================================================ */
+
+function rendreProfil() {
+  const r = resultatProfil();
+  const c = $('#profil-contenu');
+
+  if (!r) {
+    const manquantes = MoteurProfil.questionsManquantes(Etat.reponses);
+    c.innerHTML = '<div class="message alerte"><strong>Questionnaire incomplet.</strong> ' +
+      manquantes.length + ' question(s) restent sans réponse :<ul>' +
+      manquantes.map(q => '<li>' + echapper(q.texte) + '</li>').join('') + '</ul></div>';
+    return;
+  }
+
+  const alloc = allocationCourante();
+  const metriques = MoteurAllocation.metriques(alloc.classes);
+  const stress = MoteurProfil.stressTest(alloc.classes);
+
+  c.innerHTML =
+    '<div class="bandeau-profil" style="background:' + r.profil.couleur + '">' +
+      '<div><div class="meta">PROFIL RETENU</div><div class="nom">' + r.profil.nom + '</div>' +
+      '<div class="meta">Indicateur de risque SRI ' + r.profil.sri + ' · horizon minimum recommandé ' + r.profil.horizonMin + ' ans</div></div>' +
+      '<div style="margin-left:auto;text-align:right">' +
+        '<div class="meta">Score retenu</div><div class="nom">' + r.scores.retenu + '<span style="font-size:16px">/100</span></div>' +
+      '</div>' +
+    '</div>' +
+
+    (r.declasse ? '<div class="message alerte"><strong>Profil plafonné.</strong> Le score brut situait le client en ' +
+      r.profilTheorique.nom + '. Les contraintes suivantes ont abaissé le profil :<ul>' +
+      r.plafondsAppliques.map(p => '<li>' + echapper(p) + '</li>').join('') + '</ul></div>' : '') +
+
+    (r.alertes.length ? '<div class="message info"><strong>Points de vigilance à documenter.</strong><ul>' +
+      r.alertes.map(a => '<li>' + echapper(a) + '</li>').join('') + '</ul></div>' : '') +
+
+    '<div class="grille deux">' +
+      '<div class="carte"><h3>Décomposition du score</h3>' +
+        jauge('Capacité de perte', r.scores.capacite, '#4b7f9e') +
+        jauge('Tolérance au risque', r.scores.tolerance, '#c0504d') +
+        jauge('Connaissance &amp; expérience', r.scores.connaissance, '#6fa96a') +
+        '<p class="intro" style="font-size:12px;margin-top:12px">Le score retenu est le <strong>minimum</strong> ' +
+        'entre capacité et tolérance : on ne peut exposer un client ni au-delà de ce qu\'il peut perdre, ni ' +
+        'au-delà de ce qu\'il accepte de perdre. La connaissance agit ensuite comme plafond.</p>' +
+      '</div>' +
+      '<div class="carte"><h3>Caractéristiques du profil</h3>' +
+        '<p>' + echapper(r.profil.description) + '</p>' +
+        '<table><tbody>' +
+        ligne('Volatilité cible', r.profil.volatiliteCible) +
+        ligne('Volatilité estimée du portefeuille', pct(metriques.volatilite)) +
+        ligne('Rendement annuel espéré (hypothèses LT)', pct(metriques.rendement)) +
+        ligne('Perte annuelle à 95 % de confiance', pct(metriques.perteAnnuelle95)) +
+        ligne('Perte maximale de référence', r.profil.perteMax) +
+        ligne('Horizon minimum', r.profil.horizonMin + ' ans') +
+        ligne('Préférences ESG', { aucune: 'Aucune', souhaitee: 'Souhaitées', prioritaire: 'Prioritaires' }[r.preferences.esg]) +
+        ligne('Mode de gestion accepté', { passive: 'Allocation figée', conseillee: 'Arbitrages sur conseil', active: 'Gestion active' }[r.preferences.gestion]) +
+        '</tbody></table>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="carte"><h3>Résistance du portefeuille cible aux chocs historiques</h3>' +
+      '<p class="intro" style="font-size:12px">Impact instantané estimé sur la valeur du portefeuille, chocs appliqués par classe d\'actifs.</p>' +
+      '<table><thead><tr><th>Scénario de stress</th><th class="num">Impact estimé</th><th class="num">Valeur résiduelle</th></tr></thead><tbody>' +
+      stress.map(s => '<tr><td>' + echapper(s.nom) + '</td>' +
+        '<td class="num negatif">' + pct(s.impact) + '</td>' +
+        '<td class="num">' + euro((Number(Etat.identite.montant) || 0) * (1 + s.impact / 100)) + '</td></tr>').join('') +
+      '</tbody></table>' +
+      '<p class="intro" style="font-size:11px;margin-top:10px">Chocs calibrés sur des épisodes de marché passés. ' +
+      'Les performances passées ne préjugent pas des performances futures.</p>' +
+    '</div>';
+}
+
+function jauge(titre, valeur, couleur) {
+  return '<div class="jauge"><div class="tete"><span>' + titre + '</span><strong>' + valeur + ' / 100</strong></div>' +
+    '<div class="piste"><div style="width:' + valeur + '%;background:' + couleur + '"></div></div></div>';
+}
+function ligne(cle, valeur) {
+  return '<tr><td style="color:var(--gris-doux)">' + cle + '</td><td class="num"><strong>' + echapper(valeur) + '</strong></td></tr>';
+}
+
+/* ============================================================
+   VUE 4 — MACRO
+   ============================================================ */
+
+function rendreMacro() {
+  const groupes = [];
+  INDICATEURS.forEach(i => { if (groupes.indexOf(i.groupe) < 0) groupes.push(i.groupe); });
+
+  $('#indicateurs').innerHTML = '<h3>Lecture du contexte</h3>' + groupes.map(g =>
+    '<div class="groupe-macro"><h4>' + echapper(g) + '</h4>' +
+    INDICATEURS.filter(i => i.groupe === g).map(ind => {
+      const val = Etat.macroChoix[ind.id] !== undefined ? Etat.macroChoix[ind.id] : MoteurAllocation.valeurDefaut(ind);
+      return '<div class="indicateur"><label>' + echapper(ind.label) + '</label>' +
+        (ind.aide ? '<div class="aide">' + echapper(ind.aide) + '</div>' : '') +
+        '<select data-macro="' + ind.id + '">' + ind.options.map(o =>
+          '<option value="' + o.valeur + '"' + (o.valeur === val ? ' selected' : '') + '>' + echapper(o.label) + '</option>'
+        ).join('') + '</select></div>';
+    }).join('') + '</div>').join('');
+
+  const m = macroCourante();
+  $('#scenarios').innerHTML = SCENARIOS.map(s =>
+    '<div class="scenario" style="border-left:4px solid ' + s.couleur + '">' +
+      '<div class="tete"><span class="nom">' + echapper(s.nom) + '</span>' +
+      '<span class="proba" style="color:' + s.couleur + '">' + Math.round(m.probas[s.id]) + ' %</span></div>' +
+      '<div class="desc">' + echapper(s.description) + '</div>' +
+      '<input type="range" min="0" max="100" step="5" value="' + Math.round(m.probas[s.id]) + '" data-scenario="' + s.id + '">' +
+      '<div class="desc" style="margin-top:4px">Inflexions : ' +
+        Object.keys(s.tilts).filter(k => s.tilts[k] !== 0)
+          .map(k => LIBELLES_CLASSES[k] + ' ' + signe(s.tilts[k], 0)).join(' · ') +
+      '</div>' +
+    '</div>').join('') +
+    (Etat.scenariosManuels ? '<div class="message info" style="margin-top:10px">Probabilités ajustées manuellement.</div>' : '');
+
+  const alloc = allocationCourante();
+  $('#overlays-macro').innerHTML = '<h3>Effets tactiques retenus</h3>' +
+    (!alloc ? '<div class="message alerte">Complétez le questionnaire pour visualiser les déviations appliquées.</div>' :
+      (intensiteEffective() === 0
+        ? '<div class="message info">Gestion tactique neutralisée : l\'allocation cible reste strictement stratégique.</div>'
+        : '') +
+      (alloc.explications.length === 0
+        ? '<p class="intro">Le contexte renseigné ne justifie aucune déviation significative.</p>'
+        : '<table><thead><tr><th>Poche</th><th class="num">Déviation</th></tr></thead><tbody>' +
+          alloc.explications.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation)).map(e =>
+            '<tr><td><span class="pastille" style="background:' + COULEURS_CLASSES[e.classe] + '"></span>' +
+            echapper(LIBELLES_POCHES[e.poche] || e.poche) + '</td>' +
+            '<td class="num ' + (e.deviation > 0 ? 'positif' : 'negatif') + '">' + signe(e.deviation) + '</td></tr>').join('') +
+          '</tbody></table>') +
+      (m.journal.length ? '<h4 style="margin-top:16px">Origine des surcouches</h4><ul style="font-size:12px;color:var(--gris-doux);padding-left:18px">' +
+        m.journal.map(j => '<li><strong>' + echapper(j.indicateur) + '</strong> — ' + echapper(j.choix) + '</li>').join('') + '</ul>' : '')
+    );
+}
+
+/* ============================================================
+   VUE 5 — ALLOCATION
+   ============================================================ */
+
+function rendreAllocation() {
+  const r = resultatProfil();
+  const c = $('#allocation-contenu');
+  if (!r) { c.innerHTML = messageIncomplet(); return; }
+
+  const alloc = allocationCourante();
+  const m = macroCourante();
+  const scenarioDominant = SCENARIOS.find(s => s.id === m.dominant);
+  const metriquesStrat = MoteurAllocation.metriques(alloc.strategique.classes);
+  const metriquesTact  = MoteurAllocation.metriques(alloc.classes);
+
+  const segments = Object.keys(alloc.classes).map(cl => ({
+    label: LIBELLES_CLASSES[cl], valeur: alloc.classes[cl], couleur: COULEURS_CLASSES[cl]
+  }));
+
+  const poches = Object.keys(alloc.poches).filter(p => alloc.poches[p] > 0)
+    .sort((a, b) => alloc.poches[b] - alloc.poches[a]);
+
+  c.innerHTML =
+    '<div class="grille quatre">' +
+      kpi(r.profil.nom, 'Profil', r.profil.sri ? 'SRI ' + r.profil.sri : '') +
+      kpi(pct(metriquesTact.rendement), 'Rendement espéré', 'hypothèses long terme') +
+      kpi(pct(metriquesTact.volatilite), 'Volatilité estimée', 'contre ' + pct(metriquesStrat.volatilite) + ' en stratégique') +
+      kpi(scenarioDominant ? Math.round(m.probas[m.dominant]) + ' %' : '—', 'Scénario dominant', scenarioDominant ? scenarioDominant.nom : '') +
+    '</div>' +
+
+    (alloc.coussin ? '<div class="message info"><strong>Allocation ajustée pour servir un revenu.</strong> ' +
+      'La poche monétaire est portée à ' + pct(alloc.coussin.coussinPct) + ' (' + euro(alloc.coussin.coussinEuros) +
+      ', soit ' + Etat.revenus.coussinMois + ' mois de retraits) contre ' + pct(alloc.coussin.monetaireAvant) +
+      ' pour le profil seul. Ce coussin évite d\'avoir à vendre des actions pendant une baisse de marché.</div>' : '') +
+
+    '<div class="grille deux">' +
+      '<div class="carte"><h3>Répartition par classe d\'actifs</h3>' +
+        '<div class="graphique">' + donut(segments) + '<div style="flex:1;min-width:200px">' + legende(segments) + '</div></div>' +
+      '</div>' +
+      '<div class="carte"><h3>Stratégique vs tactique</h3>' +
+        '<div class="barres">' + Object.keys(alloc.classes).map(cl => {
+          const t = alloc.classes[cl], s = alloc.strategique.classes[cl], d = t - s;
+          return '<div class="barre"><div class="tete"><span>' + LIBELLES_CLASSES[cl] + '</span>' +
+            '<span>' + pct(t) + ' <span style="color:var(--gris-doux)">(cible stratégique ' + pct(s) + ')</span> ' +
+            (Math.abs(d) >= 0.1 ? '<strong class="' + (d > 0 ? 'positif' : 'negatif') + '">' + signe(d) + '</strong>' : '') +
+            '</span></div>' +
+            '<div class="piste"><div class="part" style="width:' + t + '%;background:' + COULEURS_CLASSES[cl] + '"></div>' +
+            '<div class="cible" style="left:calc(' + s + '% - 1px)" title="Cible stratégique"></div></div></div>';
+        }).join('') + '</div>' +
+        '<p class="intro" style="font-size:11px;margin-top:10px">Le repère vertical marque l\'allocation stratégique du profil. ' +
+        'Les déviations tactiques sont bornées à ±' + BORNES_TACTIQUES.actions + ' points sur les actions.</p>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="carte"><h3>Détail par poche</h3>' +
+      '<div class="tableau-defilant"><table><thead><tr>' +
+      '<th>Poche</th><th>Classe</th><th class="num">Stratégique</th><th class="num">Tactique</th><th class="num">Écart</th><th class="num">Montant</th>' +
+      '</tr></thead><tbody>' +
+      poches.map(p => {
+        const t = alloc.poches[p], s = alloc.strategique.poches[p] || 0, d = t - s;
+        const cl = MoteurSelection.classeDePoche(p);
+        return '<tr><td><span class="pastille" style="background:' + COULEURS_CLASSES[cl] + '"></span>' +
+          echapper(LIBELLES_POCHES[p] || p) + '</td>' +
+          '<td>' + LIBELLES_CLASSES[cl] + '</td>' +
+          '<td class="num">' + pct(s) + '</td><td class="num"><strong>' + pct(t) + '</strong></td>' +
+          '<td class="num ' + (Math.abs(d) < 0.1 ? '' : d > 0 ? 'positif' : 'negatif') + '">' + (Math.abs(d) < 0.1 ? '—' : signe(d)) + '</td>' +
+          '<td class="num">' + euro((Number(Etat.identite.montant) || 0) * t / 100) + '</td></tr>';
+      }).join('') +
+      '</tbody><tfoot><tr><td colspan="3">Total</td><td class="num">' +
+      pct(poches.reduce((a, p) => a + alloc.poches[p], 0)) + '</td><td></td><td class="num">' +
+      euro(Number(Etat.identite.montant) || 0) + '</td></tr></tfoot></table></div>' +
+    '</div>';
+}
+
+function kpi(valeur, libelle, detail) {
+  return '<div class="carte kpi"><div class="valeur">' + echapper(valeur) + '</div>' +
+    '<div class="libelle">' + echapper(libelle) + '</div>' +
+    (detail ? '<div class="detail">' + echapper(detail) + '</div>' : '') + '</div>';
+}
+
+function messageIncomplet() {
+  return '<div class="message alerte"><strong>Profil non déterminé.</strong> Complétez le questionnaire ' +
+    '(onglet 2) pour générer l\'allocation.</div>';
+}
+
+/* ============================================================
+   VUE 6 — SÉLECTION ETF
+   ============================================================ */
+
+function rendrePortefeuille() {
+  const r = resultatProfil();
+  const c = $('#portefeuille-contenu');
+  if (!r) { c.innerHTML = messageIncomplet(); return; }
+
+  const sel = selectionCourante();
+  const ctx = contexteSelection();
+  const alloc = allocationCourante();
+  const nonVerifies = sel.lignes.filter(l => !l.etf.verifie).length;
+
+  /* Écart entre l'allocation visée et celle réellement implémentable */
+  const derives = Object.keys(alloc.classes)
+    .map(cl => ({ cl, ecart: (sel.classesObtenues[cl] || 0) - alloc.classes[cl] }))
+    .filter(d => Math.abs(d.ecart) >= 2);
+
+  c.innerHTML =
+    '<div class="grille quatre">' +
+      kpi(String(sel.nbSupports), 'Supports retenus', 'sur ' + sel.universEligible + ' éligibles') +
+      kpi(pct(sel.terMoyen, 2), 'Frais courants moyens', 'pondérés par les encours cibles') +
+      kpi(euro(Number(Etat.identite.montant) || 0), 'Montant investi', libelleEnveloppe()) +
+      kpi(euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100), 'Coût annuel des supports', 'hors frais de contrat') +
+    '</div>' +
+
+    (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non vérifié(s).</strong> ' +
+      'Contrôlez leur disponibilité réelle dans le contrat et leurs caractéristiques dans l\'onglet « Univers ETF » ' +
+      'avant remise au client.</div>' : '') +
+
+    (derives.length ? '<div class="message ' + (derives.some(d => d.cl === 'actions' && d.ecart > 0) ? 'erreur' : 'alerte') + '">' +
+      '<strong>Le portefeuille réalisable s\'écarte de l\'allocation cible.</strong> ' +
+      derives.map(d => LIBELLES_CLASSES[d.cl] + ' ' + signe(d.ecart)).join(' · ') +
+      '. Cet écart provient des contraintes de l\'univers disponible' +
+      (Object.keys(sel.classesNonImplementables).length ? ' (classes non représentées dans l\'enveloppe)' : '') +
+      '. Vérifiez que le portefeuille obtenu reste compatible avec le profil ' + r.profil.nom.toLowerCase() + '.</div>' : '') +
+
+    (sel.residuel > 0 ? '<div class="message erreur"><strong>' + pct(sel.residuel) + ' non investis.</strong> ' +
+      'Aucun support de l\'univers ne couvre ces poches. Élargissez les filtres ou complétez l\'univers ETF.</div>' : '') +
+
+    (sel.avertissements.length ? '<div class="message info"><strong>Adaptations à l\'univers disponible.</strong><ul>' +
+      sel.avertissements.map(a => '<li>' + echapper(a) + '</li>').join('') + '</ul></div>' : '') +
+
+    '<div class="carte"><h3>Portefeuille proposé</h3>' +
+      '<div class="tableau-defilant"><table><thead><tr>' +
+      '<th>Support</th><th>ISIN</th><th>Poche</th><th class="num">Note</th><th class="num">Frais</th>' +
+      '<th class="num">Encours</th><th class="num">Poids</th><th class="num">Montant</th><th class="num">Score</th>' +
+      '</tr></thead><tbody>' +
+      sel.lignes.map(l =>
+        '<tr><td><span class="pastille" style="background:' + COULEURS_CLASSES[l.classe] + '"></span>' +
+          echapper(l.etf.nom) + (l.etf.isr ? ' <span class="badge vert">ISR</span>' : '') +
+          (l.etf.hedge ? ' <span class="badge gris">couvert €</span>' : '') +
+          (!l.etf.verifie ? ' <span class="badge orange">à vérifier</span>' : '') + '</td>' +
+        '<td style="font-family:monospace;font-size:12px">' + echapper(l.etf.isin) + '</td>' +
+        '<td>' + echapper(LIBELLES_POCHES[l.poche] || l.poche) + '</td>' +
+        '<td class="num">' + etoiles(l.etf.morningstar) + '</td>' +
+        '<td class="num">' + pct(l.etf.ter, 2) + '</td>' +
+        '<td class="num">' + (l.etf.encours >= 1000 ? (l.etf.encours / 1000).toFixed(1).replace('.', ',') + ' Md€' : l.etf.encours + ' M€') + '</td>' +
+        '<td class="num"><strong>' + pct(l.poids) + '</strong></td>' +
+        '<td class="num">' + euro(l.montant) + '</td>' +
+        '<td class="num">' + l.score.total.toFixed(0) + '</td></tr>' +
+        (l.alternatives.length ? '<tr style="font-size:11px;color:var(--gris-doux)"><td colspan="9" style="padding-top:0;border-top:0">' +
+          'Alternatives : ' + l.alternatives.map(a => echapper(a.etf.nom) + ' (' + a.score.toFixed(0) + ')').join(' · ') + '</td></tr>' : '')
+      ).join('') +
+      '</tbody><tfoot><tr><td colspan="6">Total</td>' +
+      '<td class="num">' + pct(sel.lignes.reduce((a, l) => a + l.poids, 0)) + '</td>' +
+      '<td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td><td></td></tr></tfoot></table></div>' +
+      '<p class="intro" style="font-size:11px;margin-top:10px">Score de sélection ramené sur 100 : notation Morningstar (40 pts), ' +
+      'frais courants relatifs à la poche (20), encours (15), mode de réplication (10)' +
+      (ctx.esg === 'aucune' ? '' : ', label ISR (' + (ctx.esg === 'prioritaire' ? 15 : 8) + ')') + '. ' +
+      'Filtres appliqués : ' + ctx.etoilesMin + ' étoiles minimum, encours ≥ ' + ctx.encoursMin + ' M€, frais ≤ ' + pct(ctx.terMax, 2) +
+      (ctx.exclureSynthetique ? ', réplication physique uniquement' : '') + '.</p>' +
+    '</div>';
+}
+
+function libelleEnveloppe() {
+  const e = Etat.identite.enveloppe || 'AV';
+  if (e !== 'AV') return e === 'PEA' ? 'PEA' : 'Compte-titres';
+  const c = (IDENTITE.find(f => f.id === 'contratAV').options.find(o => o.valeur === (Etat.identite.contratAV || 'av-large')) || {}).label;
+  return 'Assurance-vie — ' + (c || '');
+}
+
+/* ============================================================
+   VUE 7 — ARBITRAGES
+   ============================================================ */
+
+function rendreDetention() {
+  const corps = $('#corps-detention');
+  corps.innerHTML = Etat.detention.map((l, i) =>
+    '<tr>' +
+    '<td><input type="text" data-detention="libelle" data-index="' + i + '" value="' + echapper(l.libelle || '') + '" placeholder="Nom du support"></td>' +
+    '<td><input type="text" data-detention="isin" data-index="' + i + '" value="' + echapper(l.isin || '') + '" placeholder="ISIN" list="liste-isin"></td>' +
+    '<td class="num"><input type="number" data-detention="montant" data-index="' + i + '" value="' + (l.montant || 0) + '" min="0" step="100"></td>' +
+    '<td class="num"><input type="number" data-detention="pvLatente" data-index="' + i + '" value="' + (l.pvLatente || 0) + '" step="1"></td>' +
+    '<td><button class="bouton secondaire" data-supprimer-detention="' + i + '" title="Supprimer">✕</button></td>' +
+    '</tr>').join('') || '<tr><td colspan="5" style="color:var(--gris-doux)">Aucune ligne saisie.</td></tr>';
+
+  if (!$('#liste-isin')) {
+    const dl = document.createElement('datalist');
+    dl.id = 'liste-isin';
+    document.body.appendChild(dl);
+  }
+  $('#liste-isin').innerHTML = Etat.univers.map(e =>
+    '<option value="' + echapper(e.isin) + '">' + echapper(e.nom) + '</option>').join('');
+
+  $('#total-detention').textContent = euro(Etat.detention.reduce((a, l) => a + (Number(l.montant) || 0), 0));
+  $('#f-apport').value = Etat.apport || 0;
+}
+
+function rendreArbitrages() {
+  rendreDetention();
+  const r = resultatProfil();
+  const c = $('#arbitrages-contenu');
+  if (!r) { c.innerHTML = messageIncomplet(); return; }
+
+  const sel = selectionCourante();
+  const analyse = MoteurArbitrage.analyser(
+    Etat.detention, sel.lignes,
+    { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
+    Etat.univers
+  );
+
+  if (!analyse) {
+    c.innerHTML = '<div class="message info">Saisissez au moins une ligne détenue ou un apport pour générer ' +
+      'des propositions d\'arbitrage. Le plan d\'investissement initial figure dans l\'onglet « Sélection ETF ».</div>';
+    return;
+  }
+
+  const m = macroCourante();
+  const scenarioDominant = SCENARIOS.find(s => s.id === m.dominant);
+
+  c.innerHTML =
+    '<div class="grille quatre">' +
+      kpi(String(analyse.ordres.length), 'Mouvements proposés', 'seuil de déclenchement ' + euro(analyse.seuilMontant)) +
+      kpi(pct(analyse.rotation), 'Rotation du portefeuille', 'part de l\'encours arbitrée') +
+      kpi(euro(analyse.fiscalite.impotEstime), 'Fiscalité estimée', analyse.fiscalite.taux ? 'PFU 30 %' : 'enveloppe non imposable') +
+      kpi(euro(analyse.total), 'Encours après opération', 'dont apport ' + euro(analyse.apport)) +
+    '</div>' +
+
+    (function () {
+      const hors = analyse.ecarts.filter(e => e.declenche);
+      return hors.length
+        ? '<div class="message alerte"><strong>' + hors.length + ' ligne(s) hors bande de tolérance.</strong> ' +
+          hors.slice(0, 5).map(e => echapper(e.libelle) + ' ' + signe(e.pctCible - e.pctActuel)).join(' · ') +
+          (hors.length > 5 ? ' …' : '') + '. Bande retenue : ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) +
+          ' de l\'encours, soit ' + euro(analyse.seuilMontant) + '.</div>'
+        : '<div class="message succes"><strong>Portefeuille dans ses bandes de tolérance.</strong> ' +
+          'Aucune ligne ne s\'écarte de plus de ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) + ' de sa cible.</div>';
+    })() +
+
+    '<div class="message info"><strong>Justification du contexte.</strong> Scénario dominant retenu : ' +
+      (scenarioDominant ? echapper(scenarioDominant.nom) + ' (' + Math.round(m.probas[m.dominant]) + ' %)' : 'non déterminé') +
+      '. ' + (scenarioDominant ? echapper(scenarioDominant.description) : '') + '</div>' +
+
+    (analyse.inconnus.length ? '<div class="message alerte"><strong>Supports non reconnus.</strong> ' +
+      analyse.inconnus.map(l => echapper(l.libelle)).join(', ') +
+      ' — ISIN absent de l\'univers référencé. Ces lignes sont traitées comme intégralement à céder. ' +
+      'Ajoutez-les dans l\'onglet « Univers ETF » si elles doivent être conservées.</div>' : '') +
+
+    '<div class="carte"><h3>Écart d\'allocation par classe d\'actifs</h3>' +
+      '<div class="barres">' + Object.keys(analyse.parClasse).map(cl => {
+        const p = analyse.parClasse[cl];
+        return '<div class="barre"><div class="tete"><span>' + LIBELLES_CLASSES[cl] + '</span>' +
+          '<span>actuel ' + pct(p.actuelPct) + ' → cible ' + pct(p.ciblePct) + ' ' +
+          (Math.abs(p.ciblePct - p.actuelPct) >= 0.1 ? '<strong class="' + (p.ciblePct > p.actuelPct ? 'positif' : 'negatif') + '">' +
+            signe(p.ciblePct - p.actuelPct) + '</strong>' : '') + '</span></div>' +
+          '<div class="piste"><div class="part" style="width:' + p.actuelPct + '%;background:' + COULEURS_CLASSES[cl] + ';opacity:.55"></div>' +
+          '<div class="cible" style="left:calc(' + p.ciblePct + '% - 1px)"></div></div></div>';
+      }).join('') + '</div>' +
+      '<p class="intro" style="font-size:11px">Barre pleine : allocation actuelle. Repère vertical : allocation cible.</p>' +
+    '</div>' +
+
+    (analyse.aucunMouvement
+      ? '<div class="message succes"><strong>Aucun arbitrage nécessaire.</strong> Tous les écarts constatés sont ' +
+        'inférieurs au seuil de déclenchement (' + euro(analyse.seuilMontant) + ' ou ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) +
+        ' de l\'encours). Arbitrer coûterait plus qu\'il ne rapporterait.</div>'
+      : '<div class="carte"><h3>Ordres à passer</h3>' +
+        '<div class="tableau-defilant"><table><thead><tr>' +
+        '<th>Sens</th><th>Support</th><th>ISIN</th><th class="num">Montant</th><th class="num">% encours</th>' +
+        (analyse.fiscalite.taux ? '<th class="num">PV réalisée</th><th class="num">Impôt estimé</th>' : '') +
+        '<th>Motif</th></tr></thead><tbody>' +
+        analyse.ordres.map(o =>
+          '<tr><td><span class="badge ' + (o.sens === 'Achat' ? 'vert' : 'rouge') + '">' + o.sens + '</span></td>' +
+          '<td>' + echapper(o.libelle) + '</td>' +
+          '<td style="font-family:monospace;font-size:12px">' + echapper(o.isin) + '</td>' +
+          '<td class="num"><strong>' + euro(o.montant) + '</strong></td>' +
+          '<td class="num">' + pct(o.pct) + '</td>' +
+          (analyse.fiscalite.taux ? '<td class="num">' + (o.plusValue ? euro(o.plusValue) : '—') + '</td>' +
+            '<td class="num">' + (o.impot ? euro(o.impot) : '—') + '</td>' : '') +
+          '<td style="font-size:12px;color:var(--gris-doux)">' + echapper(o.motif) + '</td></tr>').join('') +
+        '</tbody><tfoot><tr><td colspan="3">Total ventes / achats</td><td class="num">' +
+        euro(analyse.ordres.filter(o => o.sens === 'Vente').reduce((a, o) => a + o.montant, 0)) + ' / ' +
+        euro(analyse.ordres.filter(o => o.sens === 'Achat').reduce((a, o) => a + o.montant, 0)) +
+        '</td><td colspan="' + (analyse.fiscalite.taux ? 4 : 2) + '"></td></tr></tfoot></table></div>' +
+        '<div class="message ' + (analyse.fiscalite.taux ? 'alerte' : 'info') + '" style="margin-top:14px">' +
+          echapper(analyse.fiscalite.regime) +
+          (analyse.fiscalite.taux ? ' Impôt estimé sur cette revue : <strong>' + euro(analyse.fiscalite.impotEstime) +
+            '</strong>. Privilégier l\'affectation des versements aux poches sous-pondérées plutôt que des ventes.' : '') +
+        '</div>' +
+      '</div>') +
+
+    '<div class="barre-actions sans-impression">' +
+      '<button class="bouton" id="btn-journaliser">Valider la revue et l\'inscrire au journal</button>' +
+      '<button class="bouton secondaire" id="btn-appliquer">Appliquer les ordres à la détention saisie</button>' +
+    '</div>';
+
+  const bj = $('#btn-journaliser');
+  if (bj) bj.onclick = () => {
+    Etat.journal.unshift(MoteurArbitrage.entreeJournal(analyse, {
+      dateISO: new Date().toISOString(),
+      profilNom: r.profil.nom,
+      enveloppe: Etat.identite.enveloppe || 'AV'
+    }, m));
+    sauver(true);
+    notifier('Revue inscrite au journal.');
+    rendre('arbitrages');
+  };
+
+  const ba = $('#btn-appliquer');
+  if (ba) ba.onclick = () => {
+    analyse.ordres.forEach(o => {
+      let ligne = Etat.detention.find(l => l.isin === o.isin);
+      if (!ligne) { ligne = { isin: o.isin, libelle: o.libelle, montant: 0, pvLatente: 0 }; Etat.detention.push(ligne); }
+      ligne.montant = Math.max(0, (Number(ligne.montant) || 0) + (o.sens === 'Achat' ? o.montant : -o.montant));
+    });
+    Etat.detention = Etat.detention.filter(l => Number(l.montant) > 0);
+    Etat.apport = 0;
+    sauver(true);
+    notifier('Ordres appliqués à la détention.');
+    rendre('arbitrages');
+  };
+}
+
+/* ============================================================
+   VUE 8 — REVENUS
+   ============================================================ */
+
+const CHAMPS_REVENUS = [
+  { id: 'besoin',        label: 'Revenu net souhaité', type: 'number', min: 0, pas: 50, suffixe: '€ par échéance' },
+  { id: 'frequence',     label: 'Périodicité', type: 'select',
+    options: Object.keys(MoteurRevenus.FREQUENCES).map(k => ({ valeur: k, label: MoteurRevenus.FREQUENCES[k].libelle })) },
+  { id: 'coussinMois',   label: 'Coussin de sécurité en monétaire', type: 'number', min: 0, max: 60, pas: 6, suffixe: 'mois de revenus' },
+  { id: 'anciennete',    label: 'Ancienneté de l\'enveloppe', type: 'number', min: 0, max: 40, pas: 1, suffixe: 'années' },
+  { id: 'primesVersees', label: 'Total des versements effectués', type: 'number', min: 0, pas: 1000, suffixe: '€ — base de calcul de la part taxable' },
+  { id: 'couple',        label: 'Situation fiscale', type: 'select',
+    options: [{ valeur: '0', label: 'Personne seule' }, { valeur: '1', label: 'Couple soumis à imposition commune' }] }
+];
+
+function rendreRevenus() {
+  rendreChampsRevenus();
+  rendreRevenusContenuSeul();
+}
+
+function rendreChampsRevenus() {
+  $('#champs-revenus').innerHTML = CHAMPS_REVENUS.map(f => {
+    const val = Etat.revenus[f.id];
+    let saisie;
+    if (f.type === 'select') {
+      saisie = '<select data-revenu="' + f.id + '">' + f.options.map(o =>
+        '<option value="' + o.valeur + '"' + (String(val === true ? '1' : val === false ? '0' : val) === o.valeur ? ' selected' : '') +
+        '>' + echapper(o.label) + '</option>').join('') + '</select>';
+    } else {
+      saisie = '<input type="number" data-revenu="' + f.id + '" value="' + (val || 0) + '"' +
+        (f.min !== undefined ? ' min="' + f.min + '"' : '') + (f.max !== undefined ? ' max="' + f.max + '"' : '') +
+        ' step="' + (f.pas || 1) + '">';
+    }
+    return '<div class="champ"><label>' + echapper(f.label) + '</label>' + saisie +
+      (f.suffixe ? '<span class="suffixe">' + echapper(f.suffixe) + '</span>' : '') + '</div>';
+  }).join('');
+}
+
+function rendreRevenusContenuSeul() {
+  const c = $('#revenus-contenu');
+  if (!c) return;
+  const r = resultatProfil();
+  if (!r) { c.innerHTML = messageIncomplet(); return; }
+
+  const parAn = MoteurRevenus.FREQUENCES[Etat.revenus.frequence].parAn;
+  const besoinAnnuel = Number(Etat.revenus.besoin) * parAn;
+
+  if (!besoinAnnuel) {
+    c.innerHTML = '<div class="message info">Renseignez un revenu souhaité pour obtenir le plan de prélèvement, ' +
+      'le coût fiscal et la projection de capital.</div>';
+    return;
+  }
+
+  if (!Etat.detention.length) {
+    c.innerHTML = '<div class="message alerte"><strong>Aucune détention saisie.</strong> ' +
+      'Le plan de prélèvement s\'appuie sur le portefeuille réellement détenu. Rendez-vous dans l\'onglet ' +
+      '« Arbitrages » : saisissez les lignes, ou cliquez sur « Partir de l\'allocation cible ».</div>';
+    return;
+  }
+
+  const sel = selectionCourante();
+  const metriques = MoteurAllocation.metriques(allocationCourante().classes);
+  const plan = MoteurRevenus.planifier(Etat.detention, sel.lignes, {
+    enveloppe: Etat.identite.enveloppe || 'AV',
+    besoinAnnuel,
+    frequence: Etat.revenus.frequence,
+    coussinMois: Number(Etat.revenus.coussinMois),
+    anciennete: Number(Etat.revenus.anciennete),
+    couple: Etat.revenus.couple === true || Etat.revenus.couple === '1',
+    primesVersees: Number(Etat.revenus.primesVersees) || 0,
+    rendementEspere: metriques.rendement
+  }, Etat.univers);
+
+  if (!plan) { c.innerHTML = '<div class="message alerte">Détention insuffisante pour établir un plan.</div>'; return; }
+
+  const etapes = {};
+  CASCADE_REVENUS.forEach(e => { etapes[e.id] = e; });
+
+  c.innerHTML =
+    '<div class="grille quatre">' +
+      kpi(euro(plan.besoinParEcheance), 'Revenu par échéance', plan.frequence.libelle.toLowerCase() + ' · ' + euro(plan.besoinAnnuel) + ' / an') +
+      kpi(pct(plan.tauxRetrait, 2), 'Taux de retrait brut', 'soutenable jusqu\'à ' + pct(plan.projection.tauxSoutenable, 2)) +
+      kpi(euro(plan.fiscalite.total), 'Fiscalité annuelle', 'soit ' + pct(plan.fiscalite.tauxEffectif) + ' du montant retiré') +
+      kpi(plan.projection.epuisement ? 'An ' + plan.projection.epuisement : euro(plan.projection.capital30ans),
+          plan.projection.epuisement ? 'Épuisement du capital' : 'Capital à 30 ans', 'hypothèses de rendement long terme') +
+    '</div>' +
+
+    plan.alertes.map(a => '<div class="message ' + a.niveau + '">' + echapper(a.texte) + '</div>').join('') +
+
+    '<div class="carte"><h3>Sur quels supports prélever</h3>' +
+      '<p class="intro" style="font-size:12px">Ordre appliqué : ' +
+      CASCADE_REVENUS.map((e, i) => (i + 1) + '. ' + e.libelle).join(' → ') + '.</p>' +
+
+      (plan.dividendesDisponibles > 0
+        ? '<div class="message succes">' + euro(plan.dividendesDisponibles) + ' de coupons et dividendes sont encaissés ' +
+          'chaque année sur le compte espèces, soit ' + plan.partCouverteParDividendes + ' % du besoin. ' +
+          'Cette part est servie <strong>sans vendre aucune part</strong>. Le solde de ' + euro(plan.aPrelever) +
+          ' est prélevé sur les supports ci-dessous.</div>'
+        : (Etat.identite.enveloppe === 'AV'
+          ? '<div class="message info">En assurance-vie, les coupons des unités de compte sont réinvestis dans le contrat : ' +
+            'ils ne constituent pas un revenu disponible. Le revenu est servi par <strong>rachats partiels programmés</strong>, ' +
+            'répartis ci-dessous. Le portefeuille génère par ailleurs ' + euro(plan.dividendesBruts) +
+            ' de revenus internes par an, qui alimentent la valorisation du contrat.</div>'
+          : '<div class="message info">Les supports retenus sont capitalisants : aucun revenu n\'est distribué en numéraire. ' +
+            'Le revenu est servi par ventes partielles.</div>')) +
+
+      '<div class="tableau-defilant"><table><thead><tr>' +
+      '<th>Support à prélever</th><th>Poche</th><th class="num">Par échéance</th><th class="num">Par an</th>' +
+      '<th class="num">% du capital</th>' + (Etat.identite.enveloppe === 'CTO' ? '<th class="num">PV réalisée</th>' : '') +
+      '<th>Pourquoi celui-ci</th></tr></thead><tbody>' +
+      plan.supports.map(s =>
+        '<tr><td><span class="pastille" style="background:' + (COULEURS_CLASSES[s.classe] || '#999') + '"></span>' +
+        echapper(s.libelle) + '</td>' +
+        '<td>' + echapper(LIBELLES_POCHES[s.poche] || '—') + '</td>' +
+        '<td class="num"><strong>' + euro(s.parEcheance) + '</strong></td>' +
+        '<td class="num">' + euro(s.montant) + '</td>' +
+        '<td class="num">' + pct(s.pct) + '</td>' +
+        (Etat.identite.enveloppe === 'CTO' ? '<td class="num">' + (s.plusValue ? euro(s.plusValue) : '—') + '</td>' : '') +
+        '<td style="font-size:12px;color:var(--gris-doux)">' +
+          s.etapes.map(e => echapper((etapes[e] || {}).libelle || e)).join(' puis ') + '</td></tr>').join('') +
+      '</tbody><tfoot><tr><td colspan="2">Total prélevé</td>' +
+      '<td class="num">' + euro(plan.supports.reduce((a, s) => a + s.parEcheance, 0)) + '</td>' +
+      '<td class="num">' + euro(plan.supports.reduce((a, s) => a + s.montant, 0)) + '</td>' +
+      '<td colspan="' + (Etat.identite.enveloppe === 'CTO' ? 3 : 2) + '"></td></tr></tfoot></table></div>' +
+
+      '<div style="margin-top:14px">' + CASCADE_REVENUS.filter(e => plan.supports.some(s => s.etapes.indexOf(e.id) >= 0))
+        .map(e => '<p style="font-size:12px;color:var(--gris-doux);margin:4px 0"><strong>' + echapper(e.libelle) +
+          '</strong> — ' + echapper(e.explication) + '</p>').join('') + '</div>' +
+    '</div>' +
+
+    '<div class="grille deux">' +
+      '<div class="carte"><h3>Coussin de sécurité</h3>' +
+        '<div class="jauge"><div class="tete"><span>Monétaire détenu</span><strong>' + euro(plan.monetaireTotal) + '</strong></div>' +
+        '<div class="piste"><div style="width:' + Math.min(100, 100 * plan.monetaireTotal / Math.max(1, plan.coussinCible)) +
+        '%;background:' + (plan.coussinSuffisant ? 'var(--vert)' : 'var(--orange)') + '"></div></div></div>' +
+        '<p class="intro" style="font-size:12px">Cible : ' + euro(plan.coussinCible) + ', soit ' + Etat.revenus.coussinMois +
+        ' mois de revenus. Ce matelas évite de vendre des actions pendant une baisse : c\'est le principal facteur de survie ' +
+        'd\'un portefeuille servant une rente. Il est automatiquement intégré à l\'allocation cible.</p>' +
+      '</div>' +
+      '<div class="carte"><h3>Fiscalité du retrait</h3>' +
+        '<table><tbody>' + plan.fiscalite.detail.map(d =>
+          '<tr><td style="color:var(--gris-doux)">' + echapper(d.libelle) + '</td>' +
+          '<td class="num"><strong>' + euro(d.valeur) + '</strong></td></tr>').join('') +
+        '<tr><td><strong>Coût fiscal annuel</strong></td><td class="num"><strong>' + euro(plan.fiscalite.total) +
+        '</strong></td></tr></tbody></table>' +
+        '<p class="intro" style="font-size:11px;margin-top:10px">' + echapper(plan.fiscalite.regime) + '</p>' +
+        '<p class="intro" style="font-size:11px">Pour servir ' + euro(plan.besoinAnnuel) + ' net, il faut retirer environ ' +
+        euro(plan.besoinAnnuel + plan.fiscalite.total) + ' brut (taux de retrait réel ' + pct(plan.tauxRetraitNet, 2) + ').</p>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="carte"><h3>Projection du capital</h3>' +
+      '<p class="intro" style="font-size:12px">Retrait indexé sur une inflation de ' + pct(FISCALITE_PARAMS.inflation * 100) +
+      ', rendement annuel de ' + pct(metriques.rendement) + ' conforme au profil ' + r.profil.nom.toLowerCase() +
+      '. Projection déterministe : elle ignore la séquence des rendements, qui est le principal risque d\'une phase de retrait.</p>' +
+      '<table><thead><tr><th>Échéance</th><th class="num">Capital nominal</th><th class="num">Capital en pouvoir d\'achat</th></tr></thead><tbody>' +
+      plan.projection.points.map(pt => '<tr><td>Dans ' + pt.an + ' ans</td>' +
+        '<td class="num">' + euro(pt.capital) + '</td><td class="num">' + euro(pt.pouvoirAchat) + '</td></tr>').join('') +
+      '</tbody></table>' +
+    '</div>';
+}
+
+/* ============================================================
+   VUE 9 — UNIVERS
+   ============================================================ */
+
+function rendreUnivers() {
+  const f = Etat.filtreUnivers;
+
+  $('#filtres-univers').innerHTML =
+    '<div class="champ"><label>Classe d\'actifs</label><select data-filtre-univers="classe">' +
+      '<option value="">Toutes</option>' + Object.keys(LIBELLES_CLASSES).map(c =>
+        '<option value="' + c + '"' + (f.classe === c ? ' selected' : '') + '>' + LIBELLES_CLASSES[c] + '</option>').join('') +
+    '</select></div>' +
+    '<div class="champ"><label>Enveloppe</label><select data-filtre-univers="enveloppe">' +
+      '<option value="">Toutes</option><option value="AV"' + (f.enveloppe === 'AV' ? ' selected' : '') + '>Assurance-vie</option>' +
+      '<option value="PEA"' + (f.enveloppe === 'PEA' ? ' selected' : '') + '>PEA</option>' +
+      '<option value="CTO"' + (f.enveloppe === 'CTO' ? ' selected' : '') + '>Compte-titres</option>' +
+    '</select></div>' +
+    '<div class="champ" style="flex:1"><label>Recherche (nom, ISIN, émetteur)</label>' +
+      '<input type="text" data-filtre-univers="texte" value="' + echapper(f.texte) + '" placeholder="iShares, IE00B..."></div>' +
+    '<div style="font-size:12px;color:var(--gris-doux);padding-bottom:10px" id="compteur-univers"></div>';
+
+  const liste = Etat.univers.filter(e => {
+    if (f.classe && e.classe !== f.classe) return false;
+    if (f.enveloppe && e.enveloppes.indexOf(f.enveloppe) < 0) return false;
+    if (f.texte) {
+      const t = f.texte.toLowerCase();
+      if ((e.nom + ' ' + e.isin + ' ' + e.emetteur + ' ' + (e.ticker || '')).toLowerCase().indexOf(t) < 0) return false;
+    }
+    return true;
+  });
+
+  $('#compteur-univers').textContent = liste.length + ' / ' + Etat.univers.length + ' supports · ' +
+    Etat.univers.filter(e => e.verifie).length + ' vérifiés';
+
+  const options = Object.keys(LIBELLES_POCHES);
+
+  $('#corps-univers').innerHTML = liste.map(e => {
+    const i = Etat.univers.indexOf(e);
+    return '<tr>' +
+      '<td><input type="text" data-etf="nom" data-index="' + i + '" value="' + echapper(e.nom) + '" style="min-width:230px"></td>' +
+      '<td><input type="text" data-etf="isin" data-index="' + i + '" value="' + echapper(e.isin) + '" style="font-family:monospace;min-width:120px"></td>' +
+      '<td><select data-etf="poche" data-index="' + i + '">' + options.map(p =>
+          '<option value="' + p + '"' + (e.poche === p ? ' selected' : '') + '>' + LIBELLES_POCHES[p] + '</option>').join('') + '</select></td>' +
+      '<td class="num"><input type="number" data-etf="ter" data-index="' + i + '" value="' + e.ter + '" step="0.01" style="width:70px"></td>' +
+      '<td class="num"><input type="number" data-etf="encours" data-index="' + i + '" value="' + e.encours + '" step="100" style="width:90px"></td>' +
+      '<td class="num"><select data-etf="morningstar" data-index="' + i + '" style="width:60px">' +
+          [1, 2, 3, 4, 5].map(n => '<option value="' + n + '"' + (e.morningstar === n ? ' selected' : '') + '>' + n + '</option>').join('') + '</select></td>' +
+      '<td><select data-etf="replication" data-index="' + i + '">' +
+          ['Physique', 'Synthétique', 'Physique (ETC)'].map(x =>
+            '<option value="' + x + '"' + (e.replication === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></td>' +
+      '<td style="text-align:center"><input type="checkbox" data-etf="pea" data-index="' + i + '"' + (e.pea ? ' checked' : '') + '></td>' +
+      '<td><select data-etf="contratAV" data-index="' + i + '">' +
+          '<option value="">Hors assurance-vie</option>' +
+          '<option value="av-restreint"' + ((e.contratsAV || []).indexOf('av-restreint') >= 0 ? ' selected' : '') + '>Restreint</option>' +
+          '<option value="av-standard"' + ((e.contratsAV || []).indexOf('av-standard') >= 0 ? ' selected' : '') + '>Standard</option>' +
+          '<option value="av-large"' + ((e.contratsAV || []).indexOf('av-large') >= 0 ? ' selected' : '') + '>Large</option>' +
+        '</select></td>' +
+      '<td style="text-align:center"><input type="checkbox" data-etf="isr" data-index="' + i + '"' + (e.isr ? ' checked' : '') + '></td>' +
+      '<td style="text-align:center"><input type="checkbox" data-etf="verifie" data-index="' + i + '"' + (e.verifie ? ' checked' : '') + '></td>' +
+      '<td><button class="bouton secondaire" data-supprimer-etf="' + i + '">✕</button></td>' +
+    '</tr>';
+  }).join('');
+
+  $('#liste-sources').innerHTML = SOURCES_DONNEES.map(s =>
+    '<li><a href="' + s.url + '" target="_blank" rel="noopener">' + echapper(s.nom) + '</a> — ' + echapper(s.usage) + '</li>').join('');
+}
+
+/* ============================================================
+   VUE 9 — JOURNAL
+   ============================================================ */
+
+function rendreJournal() {
+  const c = $('#journal-contenu');
+  if (!Etat.journal.length) {
+    c.innerHTML = '<div class="message info">Aucune revue enregistrée. Validez une revue depuis l\'onglet ' +
+      '« Arbitrages » pour alimenter le journal.</div>';
+    return;
+  }
+  c.innerHTML = Etat.journal.map((j, i) =>
+    '<div class="carte"><div style="display:flex;justify-content:space-between;align-items:center">' +
+      '<h3 style="margin:0">Revue du ' + dateFr(j.date) + '</h3>' +
+      '<div><span class="badge">' + echapper(j.profil) + '</span> <span class="badge gris">' + echapper(j.enveloppe) + '</span>' +
+      ' <button class="bouton secondaire" data-supprimer-journal="' + i + '">Supprimer</button></div></div>' +
+      '<p class="intro" style="font-size:12px;margin:8px 0">Scénario dominant : <strong>' +
+        echapper((SCENARIOS.find(s => s.id === j.scenarioDominant) || {}).nom || '—') + '</strong> · ' +
+        j.nbOrdres + ' mouvement(s) · rotation ' + pct(j.rotation) +
+        (j.impot ? ' · fiscalité estimée ' + euro(j.impot) : '') + '</p>' +
+      (j.ordres.length ? '<table><thead><tr><th>Sens</th><th>Support</th><th class="num">Montant</th></tr></thead><tbody>' +
+        j.ordres.map(o => '<tr><td><span class="badge ' + (o.sens === 'Achat' ? 'vert' : 'rouge') + '">' + o.sens + '</span></td>' +
+          '<td>' + echapper(o.libelle) + '</td><td class="num">' + euro(o.montant) + '</td></tr>').join('') +
+        '</tbody></table>' : '<p class="intro">Aucun mouvement : portefeuille dans ses bandes de tolérance.</p>') +
+    '</div>').join('');
+}
+
+/* ============================================================
+   VUE 10 — RAPPORT
+   ============================================================ */
+
+function rendreRapport() {
+  const r = resultatProfil();
+  const c = $('#rapport-contenu');
+  if (!r) { c.innerHTML = messageIncomplet(); return; }
+
+  const alloc = allocationCourante();
+  const sel = selectionCourante();
+  const m = macroCourante();
+  const metriques = MoteurAllocation.metriques(alloc.classes);
+  const stress = MoteurProfil.stressTest(alloc.classes);
+  const segments = Object.keys(alloc.classes).map(cl => ({
+    label: LIBELLES_CLASSES[cl], valeur: alloc.classes[cl], couleur: COULEURS_CLASSES[cl]
+  }));
+
+  c.innerHTML =
+    '<div class="carte">' +
+      '<h3>Proposition d\'allocation d\'actifs</h3>' +
+      '<table><tbody>' +
+      ligne('Client', Etat.identite.nom || '—') +
+      ligne('Date', dateFr()) +
+      ligne('Enveloppe', libelleEnveloppe()) +
+      ligne('Montant', euro(Number(Etat.identite.montant) || 0)) +
+      ligne('Versement programmé', euro(Number(Etat.identite.versement) || 0) + ' / mois') +
+      ligne('Profil retenu', r.profil.nom + ' (SRI ' + r.profil.sri + ')') +
+      ligne('Horizon déclaré', r.preferences.horizon + ' ans') +
+      '</tbody></table>' +
+    '</div>' +
+
+    '<div class="carte"><h3>1. Détermination du profil</h3>' +
+      '<p>Le questionnaire évalue trois axes indépendants. Le profil retenu correspond au minimum entre la ' +
+      '<strong>capacité de perte</strong> (' + r.scores.capacite + '/100) et la <strong>tolérance au risque</strong> (' +
+      r.scores.tolerance + '/100), plafonné le cas échéant par la connaissance des marchés (' + r.scores.connaissance + '/100).</p>' +
+      (r.declasse ? '<p><strong>Plafonnement appliqué :</strong> ' + r.plafondsAppliques.map(echapper).join(' ; ') + '.</p>' : '') +
+      (r.alertes.length ? '<p><strong>Points de vigilance :</strong></p><ul>' +
+        r.alertes.map(a => '<li>' + echapper(a) + '</li>').join('') + '</ul>' : '') +
+      '<p>' + echapper(r.profil.description) + ' Volatilité attendue : ' + pct(metriques.volatilite) +
+      '. Rendement annuel espéré sur la durée de placement : ' + pct(metriques.rendement) + '.</p>' +
+    '</div>' +
+
+    '<div class="carte"><h3>2. Lecture du contexte de marché</h3>' +
+      '<p>Distribution de scénarios retenue à la date du ' + dateFr() + ' :</p>' +
+      '<table><thead><tr><th>Scénario</th><th class="num">Probabilité</th><th>Implications</th></tr></thead><tbody>' +
+      SCENARIOS.slice().sort((a, b) => m.probas[b.id] - m.probas[a.id]).map(s =>
+        '<tr><td><span class="pastille" style="background:' + s.couleur + '"></span><strong>' + s.nom + '</strong></td>' +
+        '<td class="num"><strong>' + Math.round(m.probas[s.id]) + ' %</strong></td>' +
+        '<td style="font-size:12px">' + echapper(s.description) + '</td></tr>').join('') +
+      '</tbody></table>' +
+      (alloc.explications.length && intensiteEffective() > 0
+        ? '<p style="margin-top:12px">Déviations tactiques retenues : ' +
+          alloc.explications.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation)).slice(0, 8)
+            .map(e => (LIBELLES_POCHES[e.poche] || e.poche) + ' ' + signe(e.deviation)).join(' · ') + '.</p>'
+        : '<p style="margin-top:12px">Aucune déviation tactique significative n\'est retenue à ce stade.</p>') +
+    '</div>' +
+
+    '<div class="carte saut-page"><h3>3. Allocation cible</h3>' +
+      '<div class="graphique">' + donut(segments, 170, 32) + '<div style="flex:1;min-width:220px">' + legende(segments) + '</div></div>' +
+      '<table style="margin-top:14px"><thead><tr><th>Poche</th><th class="num">Poids</th><th class="num">Montant</th></tr></thead><tbody>' +
+      Object.keys(alloc.poches).filter(p => alloc.poches[p] > 0).sort((a, b) => alloc.poches[b] - alloc.poches[a]).map(p =>
+        '<tr><td>' + echapper(LIBELLES_POCHES[p] || p) + '</td><td class="num">' + pct(alloc.poches[p]) + '</td>' +
+        '<td class="num">' + euro((Number(Etat.identite.montant) || 0) * alloc.poches[p] / 100) + '</td></tr>').join('') +
+      '</tbody></table>' +
+    '</div>' +
+
+    '<div class="carte"><h3>4. Supports retenus</h3>' +
+      '<table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Note</th><th class="num">Frais</th>' +
+      '<th class="num">Poids</th><th class="num">Montant</th></tr></thead><tbody>' +
+      sel.lignes.map(l => '<tr><td>' + echapper(l.etf.nom) + '</td>' +
+        '<td style="font-family:monospace;font-size:11px">' + echapper(l.etf.isin) + '</td>' +
+        '<td class="num">' + l.etf.morningstar + '★</td><td class="num">' + pct(l.etf.ter, 2) + '</td>' +
+        '<td class="num">' + pct(l.poids) + '</td><td class="num">' + euro(l.montant) + '</td></tr>').join('') +
+      '</tbody><tfoot><tr><td colspan="3">Frais courants moyens pondérés</td><td class="num">' + pct(sel.terMoyen, 2) + '</td>' +
+      '<td class="num">100,0 %</td><td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td></tr></tfoot></table>' +
+      '<p style="font-size:11px;color:var(--gris-doux);margin-top:8px">Ces frais s\'ajoutent aux frais de gestion du contrat ' +
+      'et, le cas échéant, aux frais d\'arbitrage.</p>' +
+    '</div>' +
+
+    '<div class="carte"><h3>5. Simulation de perte</h3>' +
+      '<table><thead><tr><th>Scénario de stress</th><th class="num">Impact</th><th class="num">Valeur du portefeuille</th></tr></thead><tbody>' +
+      stress.map(s => '<tr><td>' + echapper(s.nom) + '</td><td class="num negatif">' + pct(s.impact) + '</td>' +
+        '<td class="num">' + euro((Number(Etat.identite.montant) || 0) * (1 + s.impact / 100)) + '</td></tr>').join('') +
+      '</tbody></table>' +
+    '</div>' +
+
+    (function () {
+      const parAn = MoteurRevenus.FREQUENCES[Etat.revenus.frequence].parAn;
+      const besoinAnnuel = Number(Etat.revenus.besoin) * parAn;
+      if (!besoinAnnuel || !Etat.detention.length) return '';
+      const plan = MoteurRevenus.planifier(Etat.detention, sel.lignes, {
+        enveloppe: Etat.identite.enveloppe || 'AV', besoinAnnuel, frequence: Etat.revenus.frequence,
+        coussinMois: Number(Etat.revenus.coussinMois), anciennete: Number(Etat.revenus.anciennete),
+        couple: Etat.revenus.couple === true || Etat.revenus.couple === '1',
+        primesVersees: Number(Etat.revenus.primesVersees) || 0, rendementEspere: metriques.rendement
+      }, Etat.univers);
+      if (!plan) return '';
+      return '<div class="carte saut-page"><h3>6. Revenus programmés</h3>' +
+        '<p>Revenu net souhaité : <strong>' + euro(plan.besoinParEcheance) + '</strong> par échéance ' +
+        plan.frequence.libelle.toLowerCase() + ', soit ' + euro(plan.besoinAnnuel) + ' par an — taux de retrait de ' +
+        pct(plan.tauxRetrait, 2) + ' pour un rendement réel espéré de ' + pct(plan.projection.tauxSoutenable, 2) + '. ' +
+        'Coût fiscal annuel estimé : ' + euro(plan.fiscalite.total) + '.</p>' +
+        '<table><thead><tr><th>Support prélevé</th><th class="num">Par échéance</th><th class="num">Par an</th><th>Motif</th></tr></thead><tbody>' +
+        plan.supports.map(s => '<tr><td>' + echapper(s.libelle) + '</td>' +
+          '<td class="num">' + euro(s.parEcheance) + '</td><td class="num">' + euro(s.montant) + '</td>' +
+          '<td style="font-size:11px">' + s.etapes.map(e => echapper((CASCADE_REVENUS.find(x => x.id === e) || {}).libelle || e)).join(', ') +
+          '</td></tr>').join('') + '</tbody></table>' +
+        '<p style="font-size:11px;color:var(--gris-doux);margin-top:8px">' + echapper(plan.fiscalite.regime) + '</p>' +
+        (plan.alertes.filter(a => a.niveau !== 'succes').length
+          ? '<p><strong>Points d\'attention :</strong></p><ul>' +
+            plan.alertes.filter(a => a.niveau !== 'succes').map(a => '<li>' + echapper(a.texte) + '</li>').join('') + '</ul>'
+          : '') +
+      '</div>';
+    })() +
+
+    '<div class="carte"><h3>7. Suivi et arbitrages</h3>' +
+      '<p>Le portefeuille fait l\'objet d\'une revue au moins semestrielle et à chaque évolution significative du ' +
+      'contexte économique, géopolitique ou fiscal. Un arbitrage n\'est proposé que si l\'écart à l\'allocation cible ' +
+      'dépasse ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) + ' de l\'encours, afin d\'éviter une rotation inutile. ' +
+      echapper((MoteurArbitrage.FISCALITE[Etat.identite.enveloppe || 'AV'] || {}).libelle || '') + '</p>' +
+      (Etat.journal.length ? '<p>Revues déjà réalisées : ' + Etat.journal.length +
+        ', dernière le ' + dateFr(Etat.journal[0].date) + '.</p>' : '') +
+    '</div>' +
+
+    '<div class="carte mentions"><h3>Mentions</h3>' +
+      '<h4>Nature du document</h4>' +
+      '<p>Ce document est un support d\'aide à la décision produit par un outil interne. Il ne constitue ni un ' +
+      'conseil en investissement personnalisé au sens de l\'article D. 321-1 du code monétaire et financier, ni une ' +
+      'recommandation d\'achat ou de vente, tant qu\'il n\'a pas été validé, complété et signé par le conseiller dans ' +
+      'le cadre du rapport d\'adéquation remis au client.</p>' +
+      '<h4>Risques</h4>' +
+      '<p>Les investissements en unités de compte présentent un risque de perte en capital. L\'assureur ne s\'engage ' +
+      'que sur le nombre d\'unités de compte et non sur leur valeur. Les performances passées ne préjugent pas des ' +
+      'performances futures. Les rendements et volatilités indiqués sont des estimations fondées sur des hypothèses ' +
+      'de long terme et ne constituent pas une garantie.</p>' +
+      '<h4>Données</h4>' +
+      '<p>Les caractéristiques des supports (ISIN, frais courants, encours, notations, éligibilité) doivent être ' +
+      'vérifiées dans le document d\'informations clés (DIC) de chaque produit et dans la liste des supports du ' +
+      'contrat à la date de souscription. Les notations Morningstar sont des indicateurs quantitatifs rétrospectifs ' +
+      'et ne constituent pas une prévision de performance.</p>' +
+      '<h4>Scénarios</h4>' +
+      '<p>Les probabilités de scénarios macroéconomiques reflètent l\'appréciation du conseiller à la date du ' +
+      'document. Elles sont susceptibles d\'évoluer et ne constituent pas une prévision.</p>' +
+      '<p style="margin-top:14px">Document établi le ' + dateFr() + '. Conseiller : _______________________  ' +
+      'Signature du client : _______________________</p>' +
+    '</div>';
+}
+
+/* ============================================================
+   ÉVÉNEMENTS
+   ============================================================ */
+
+function brancher() {
+
+  $('#nav').addEventListener('click', e => {
+    const b = e.target.closest('button[data-vue]');
+    if (b) afficher(b.dataset.vue);
+  });
+
+  document.addEventListener('click', e => {
+    const aller = e.target.closest('[data-aller]');
+    if (aller) { afficher(aller.dataset.aller); return; }
+
+    const supprD = e.target.closest('[data-supprimer-detention]');
+    if (supprD) {
+      Etat.detention.splice(Number(supprD.dataset.supprimerDetention), 1);
+      sauver(true); rendre('arbitrages'); return;
+    }
+    const supprE = e.target.closest('[data-supprimer-etf]');
+    if (supprE) {
+      if (confirm('Supprimer ce support de l\'univers ?')) {
+        Etat.univers.splice(Number(supprE.dataset.supprimerEtf), 1);
+        sauver(true); rendre('univers');
+      }
+      return;
+    }
+    const supprJ = e.target.closest('[data-supprimer-journal]');
+    if (supprJ) {
+      Etat.journal.splice(Number(supprJ.dataset.supprimerJournal), 1);
+      sauver(true); rendre('journal'); return;
+    }
+  });
+
+  /* --- Saisies --- */
+  document.addEventListener('input', e => {
+    const t = e.target;
+
+    if (t.dataset.identite) {
+      const champ = IDENTITE.find(f => f.id === t.dataset.identite);
+      Etat.identite[t.dataset.identite] = champ && champ.type === 'number' ? Number(t.value) : t.value;
+      if (t.dataset.identite === 'enveloppe') rendreIdentite();
+      sauver(true); return;
+    }
+
+    if (t.dataset.question !== undefined) {
+      Etat.reponses[t.dataset.question] = Number(t.value);
+      $$('label', t.closest('.options')).forEach(l => l.classList.toggle('choisi', l.contains(t) && t.checked));
+      majProgression(); majNav(); sauver(true); return;
+    }
+
+    if (t.dataset.macro) {
+      Etat.macroChoix[t.dataset.macro] = t.value;
+      Etat.scenariosManuels = null;
+      sauver(true); rendreMacro(); return;
+    }
+
+    if (t.dataset.scenario) {
+      const m = macroCourante();
+      const courant = Etat.scenariosManuels || Object.assign({}, m.probas);
+      courant[t.dataset.scenario] = Number(t.value);
+      Etat.scenariosManuels = courant;
+      sauver(true); rendreMacro(); return;
+    }
+
+    if (t.dataset.detention !== undefined) {
+      const i = Number(t.dataset.index);
+      const champ = t.dataset.detention;
+      Etat.detention[i][champ] = (champ === 'montant' || champ === 'pvLatente') ? Number(t.value) : t.value;
+      if (champ === 'isin') {
+        const ref = Etat.univers.find(x => x.isin === t.value);
+        if (ref && !Etat.detention[i].libelle) Etat.detention[i].libelle = ref.nom;
+      }
+      $('#total-detention').textContent = euro(Etat.detention.reduce((a, l) => a + (Number(l.montant) || 0), 0));
+      sauver(true); return;
+    }
+
+    if (t.dataset.etf !== undefined) {
+      const e2 = Etat.univers[Number(t.dataset.index)];
+      const champ = t.dataset.etf;
+      if (champ === 'contratAV') {
+        e2.contratsAV = t.value ? [t.value] : [];
+        e2.enveloppes = t.value
+          ? Array.from(new Set(e2.enveloppes.concat(['AV'])))
+          : e2.enveloppes.filter(x => x !== 'AV');
+      } else if (t.type === 'checkbox') {
+        e2[champ] = t.checked;
+        if (champ === 'pea') {
+          e2.enveloppes = t.checked
+            ? Array.from(new Set(e2.enveloppes.concat(['PEA'])))
+            : e2.enveloppes.filter(x => x !== 'PEA');
+        }
+      } else if (champ === 'ter' || champ === 'encours' || champ === 'morningstar') {
+        e2[champ] = Number(t.value);
+      } else {
+        e2[champ] = t.value;
+      }
+      if (champ === 'poche') e2.classe = MoteurSelection.classeDePoche(t.value);
+      sauver(true); return;
+    }
+
+    if (t.dataset.revenu) {
+      const champ = t.dataset.revenu;
+      Etat.revenus[champ] = (champ === 'frequence') ? t.value
+        : (champ === 'couple') ? (t.value === '1')
+        : Number(t.value);
+      sauver(true);
+      rendreRevenusContenuSeul();
+      majNav();
+      return;
+    }
+
+    if (t.dataset.filtreUnivers) {
+      Etat.filtreUnivers[t.dataset.filtreUnivers] = t.value;
+      rendreUnivers(); return;
+    }
+
+    if (t.id === 'f-apport') { Etat.apport = Number(t.value); sauver(true); rendreArbitrages(); return; }
+    if (t.id === 'f-intensite') {
+      Etat.filtres.intensite = Number(t.value) / 100; majLibelleIntensite(); sauver(true); return;
+    }
+    if (t.id === 'f-encours') { Etat.filtres.encoursMin = Number(t.value); sauver(true); return; }
+    if (t.id === 'f-ter') { Etat.filtres.terMax = Number(t.value); sauver(true); return; }
+  });
+
+  document.addEventListener('change', e => {
+    const t = e.target;
+    if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }
+    if (t.id === 'f-synthetique') { Etat.filtres.exclureSynthetique = t.value === '1'; sauver(true); }
+    if (t.dataset.identite === 'enveloppe' || t.dataset.identite === 'contratAV') { rendreIdentite(); }
+  });
+
+  /* --- Boutons globaux --- */
+  $('#btn-sauver').onclick = () => sauver();
+  $('#btn-reinit').onclick = () => {
+    if (!confirm('Effacer le dossier en cours ? L\'univers ETF et le journal seront également réinitialisés.')) return;
+    localStorage.removeItem(CLE_STOCKAGE);
+    location.reload();
+  };
+  $('#btn-exporter').onclick = () => telecharger(
+    'dossier-' + (Etat.identite.nom || 'client').replace(/\W+/g, '-').toLowerCase() + '.json',
+    JSON.stringify(Etat, null, 2));
+  $('#btn-importer').onclick = () => $('#fichier-import').click();
+  $('#fichier-import').onchange = e => lireFichier(e.target.files[0], d => {
+    Object.keys(d).forEach(k => { if (Etat[k] !== undefined) Etat[k] = d[k]; });
+    sauver(true); afficher('client'); notifier('Dossier importé.');
+  });
+
+  $('#btn-imprimer').onclick = () => {
+    $('#vue-rapport').classList.add('impression');
+    window.print();
+    setTimeout(() => $('#vue-rapport').classList.remove('impression'), 500);
+  };
+
+  $('#btn-ajouter-ligne').onclick = () => {
+    Etat.detention.push({ isin: '', libelle: '', montant: 0, pvLatente: 0 });
+    sauver(true); rendreDetention();
+  };
+
+  $('#btn-coller-valos').onclick = () => {
+    const b = $('#bloc-valos');
+    b.hidden = !b.hidden;
+    if (!b.hidden) $('#zone-valos').focus();
+  };
+  $('#btn-annuler-valos').onclick = () => { $('#bloc-valos').hidden = true; $('#zone-valos').value = ''; };
+  $('#btn-appliquer-valos').onclick = () => {
+    const res = importerValorisations($('#zone-valos').value);
+    if (!res.lignes.length) { notifier('Aucune ligne exploitable : vérifiez le format ISIN ; montant.', 'erreur'); return; }
+    Etat.detention = res.lignes;
+    sauver(true);
+    $('#bloc-valos').hidden = true; $('#zone-valos').value = '';
+    rendre('arbitrages');
+    notifier(res.lignes.length + ' ligne(s) mises à jour' +
+      (res.ignorees.length ? ', ' + res.ignorees.length + ' ligne(s) ignorée(s)' : '') + '.');
+  };
+
+  $('#btn-charger-cible').onclick = () => {
+    const sel = selectionCourante();
+    if (!sel) { notifier('Complétez d\'abord le questionnaire.', 'alerte'); return; }
+    Etat.detention = sel.lignes.map(l => ({ isin: l.etf.isin, libelle: l.etf.nom, montant: l.montant, pvLatente: 0 }));
+    sauver(true); rendre('arbitrages'); notifier('Détention initialisée sur l\'allocation cible.');
+  };
+
+  $('#btn-ajouter-etf').onclick = () => {
+    Etat.univers.unshift({
+      isin: '', ticker: '', nom: 'Nouveau support', emetteur: '',
+      classe: 'actions', poche: 'act-monde', ter: 0.20, encours: 500, morningstar: 4, sri: 4,
+      replication: 'Physique', devise: 'EUR', hedge: false, capitalisation: true, isr: false,
+      pea: false, enveloppes: ['AV', 'CTO'], contratsAV: ['av-large'], verifie: false
+    });
+    sauver(true); rendreUnivers();
+  };
+  $('#btn-exporter-univers').onclick = () => telecharger('univers-etf.json', JSON.stringify(Etat.univers, null, 2));
+  $('#btn-importer-univers').onclick = () => $('#fichier-univers').click();
+  $('#fichier-univers').onchange = e => lireFichier(e.target.files[0], d => {
+    if (!Array.isArray(d)) { notifier('Le fichier doit contenir un tableau d\'ETF.', 'erreur'); return; }
+    Etat.univers = d; sauver(true); rendreUnivers(); notifier(d.length + ' supports importés.');
+  });
+  $('#btn-restaurer-univers').onclick = () => {
+    if (!confirm('Remplacer l\'univers actuel par l\'univers livré avec l\'application ?')) return;
+    Etat.univers = JSON.parse(JSON.stringify(ETF_UNIVERS));
+    sauver(true); rendreUnivers();
+  };
+
+  $('#btn-reset-scenarios').onclick = () => { Etat.scenariosManuels = null; sauver(true); rendreMacro(); };
+
+  $('#lien-remplir-demo').onclick = e => {
+    e.preventDefault();
+    QUESTIONS.forEach(q => { Etat.reponses[q.id] = Math.min(2, q.options.length - 1); });
+    Etat.reponses.q_horizon = 3; Etat.reponses.q_perteMax = 3; Etat.reponses.q_reaction = 2;
+    Etat.reponses.q_esg = 1;
+    if (!Etat.identite.nom) Etat.identite.nom = 'Dossier exemple';
+    sauver(true); rendreQuestionnaire(); majNav();
+    notifier('Questionnaire pré-rempli à titre de démonstration.');
+  };
+}
+
+/**
+ * Analyse un collage de relevé : « ISIN ; montant » ou « ISIN ; quantité ; VL ».
+ * Accepte les séparateurs ; , tabulation, les espaces de milliers et la virgule décimale.
+ */
+function importerValorisations(texte) {
+  const lignes = [], ignorees = [];
+  const nombre = s => {
+    const n = parseFloat(String(s).replace(/[^\d.,-]/g, '').replace(/\s/g, '').replace(',', '.'));
+    return isNaN(n) ? null : n;
+  };
+
+  String(texte || '').split(/\r?\n/).forEach(brut => {
+    if (!brut.trim()) return;
+    const isin = (brut.match(/\b[A-Z]{2}[0-9A-Z]{9}[0-9]\b/) || [])[0];
+    if (!isin) { ignorees.push(brut); return; }
+
+    const champs = brut.split(/[;\t]|,(?=\s*\S*[A-Za-z])/).map(x => x.trim()).filter(Boolean);
+    const nombres = champs.filter(x => x !== isin && x.indexOf(isin) < 0).map(nombre).filter(n => n !== null && n > 0);
+
+    let montant = null;
+    if (nombres.length === 1) montant = nombres[0];
+    else if (nombres.length >= 2) montant = nombres[0] * nombres[1];   // quantité × VL
+    if (montant === null) { ignorees.push(brut); return; }
+
+    const ref = Etat.univers.find(e => e.isin === isin);
+    const existante = Etat.detention.find(l => l.isin === isin);
+    lignes.push({
+      isin,
+      libelle: (existante && existante.libelle) || (ref ? ref.nom : isin),
+      montant: Math.round(montant),
+      pvLatente: existante ? (Number(existante.pvLatente) || 0) : 0
+    });
+  });
+
+  return { lignes, ignorees };
+}
+
+function telecharger(nom, contenu) {
+  const blob = new Blob([contenu], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = nom;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+}
+
+function lireFichier(fichier, cb) {
+  if (!fichier) return;
+  const lecteur = new FileReader();
+  lecteur.onload = () => {
+    try { cb(JSON.parse(lecteur.result)); }
+    catch (err) { notifier('Fichier illisible : ' + err.message, 'erreur'); }
+  };
+  lecteur.readAsText(fichier);
+}
+
+/* ============================================================
+   DÉMARRAGE
+   ============================================================ */
+
+(function init() {
+  const restaure = charger();
+  IDENTITE.forEach(f => {
+    if (Etat.identite[f.id] === undefined && f.defaut !== undefined) Etat.identite[f.id] = f.defaut;
+  });
+  brancher();
+  afficher('client');
+  if (restaure) notifier('Dossier précédent restauré.', 'info');
+})();
