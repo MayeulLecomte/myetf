@@ -151,6 +151,35 @@ function besoinDeRevenu() {
   return Number(Etat.revenus.besoin) > 0 || (p && p.preferences.objectif === 'revenus');
 }
 
+/** Dernier cours connu pour un ISIN, relevé par la tâche planifiée. */
+function cotation(isin) {
+  if (!isin || typeof DERNIERS_COURS === 'undefined') return null;
+  return DERNIERS_COURS[isin] || null;
+}
+
+/** Recalcule les montants des lignes saisies en quantités. */
+function revaloriser() {
+  let lignes = 0, sansCours = [];
+  Etat.detention.forEach(l => {
+    const q = Number(l.quantite) || 0;
+    if (q <= 0) return;
+    const c = cotation(l.isin);
+    if (!c) { sansCours.push(l.libelle || l.isin); return; }
+    l.montant = Math.round(q * c.cours);
+    lignes++;
+  });
+  return { lignes, sansCours };
+}
+
+/** Date de valorisation la plus récente utilisée par la détention. */
+function dateValorisation() {
+  const dates = Etat.detention
+    .filter(l => Number(l.quantite) > 0)
+    .map(l => (cotation(l.isin) || {}).date)
+    .filter(Boolean).sort();
+  return dates.length ? dates[dates.length - 1] : null;
+}
+
 /** Capital de référence : détention saisie si elle existe, sinon montant à investir. */
 function capitalReference() {
   const detenu = Etat.detention.reduce((a, l) => a + (Number(l.montant) || 0), 0);
@@ -202,6 +231,7 @@ function rendre(vue) {
     case 'client':        rendreIdentite(); break;
     case 'questionnaire': rendreQuestionnaire(); break;
     case 'profil':        rendreProfil(); break;
+    case 'note':          rendreNote(); break;
     case 'macro':         rendreMacro(); break;
     case 'allocation':    rendreAllocation(); break;
     case 'portefeuille':  rendrePortefeuille(); break;
@@ -221,6 +251,7 @@ function majNav() {
     client: !!Etat.identite.montant,
     questionnaire: MoteurProfil.questionsManquantes(Etat.reponses).length === 0,
     profil: !!p,
+    note: typeof NOTE_MARCHE !== 'undefined' && !!NOTE_MARCHE,
     macro: Object.keys(Etat.macroChoix).length > 0,
     allocation: !!p, portefeuille: !!p,
     arbitrages: Etat.detention.length > 0,
@@ -394,7 +425,77 @@ function ligne(cle, valeur) {
 }
 
 /* ============================================================
-   VUE 4 — MACRO
+   VUE 4 — NOTE DE MARCHÉ
+   ============================================================ */
+
+function rendreNote() {
+  const c = $('#note-contenu');
+  const dispo = typeof NOTE_MARCHE !== 'undefined' && NOTE_MARCHE;
+
+  if (!dispo) {
+    c.innerHTML =
+      '<div class="message alerte"><strong>Aucune note disponible.</strong> ' +
+      'La rédaction quotidienne n\'est pas encore activée.</div>' +
+      '<div class="carte"><h3>Activer la note</h3>' +
+      '<p class="intro">La note est rédigée par l\'API Claude à partir des cours relevés chaque matin, ' +
+      'puis publiée avec le site. Elle coûte environ <strong>1,30 $ par mois</strong> en appels d\'API.</p>' +
+      '<ol style="font-size:13px;line-height:1.8">' +
+      '<li>Créez une clé sur <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> ' +
+      'et créditez le compte (5 $ minimum, soit environ quatre mois).</li>' +
+      '<li>Dans le dépôt GitHub : <em>Settings → Secrets and variables → Actions → New repository secret</em>, ' +
+      'nommé <code>ANTHROPIC_API_KEY</code>.</li>' +
+      '<li>La tâche planifiée s\'en charge ensuite seule. Pour un essai immédiat, déclenchez ' +
+      '« Mise à jour des cours » depuis l\'onglet <em>Actions</em>.</li>' +
+      '</ol>' +
+      '<p class="intro" style="font-size:12px">La clé reste dans les secrets du dépôt, chiffrée. ' +
+      'Elle n\'apparaît jamais dans le code publié — une clé placée dans le JavaScript d\'un site public ' +
+      'serait lisible par tous et consommée en quelques jours.</p></div>';
+    return;
+  }
+
+  const n = NOTE_MARCHE.note;
+  c.innerHTML =
+    '<div class="message alerte"><strong>Document de travail interne.</strong> ' +
+    'Cette note décrit des mouvements de marché et des points à contrôler. Elle ne constitue pas une ' +
+    'recommandation d\'investissement et ne doit pas être remise à un client en l\'état. Rédigée ' +
+    'automatiquement à partir des cours : vérifiez ce qu\'elle avance avant de vous en servir.</div>' +
+
+    '<div class="carte">' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px">' +
+        '<h3 style="margin:0">' + echapper(n.titre) + '</h3>' +
+        '<span class="badge gris">Cours du ' + dateFr(NOTE_MARCHE.genere) + '</span>' +
+      '</div>' +
+      '<p style="margin-top:12px;font-size:15px;line-height:1.6">' + echapper(n.synthese) + '</p>' +
+    '</div>' +
+
+    (n.mouvements && n.mouvements.length ?
+      '<div class="carte"><h3>Ce qui a bougé</h3>' +
+        n.mouvements.map(m =>
+          '<div style="border-left:3px solid var(--gris-ligne);padding-left:14px;margin-bottom:16px">' +
+          '<div style="font-weight:600;margin-bottom:2px">' + echapper(m.poche) + '</div>' +
+          '<div style="font-size:13px">' + echapper(m.constat) + '</div>' +
+          '<div style="font-size:13px;color:var(--gris-doux);margin-top:2px">' + echapper(m.lecture) + '</div>' +
+          '</div>').join('') +
+      '</div>' : '') +
+
+    '<div class="grille deux">' +
+      (n.aVerifier && n.aVerifier.length ?
+        '<div class="carte"><h3>À vérifier dans les dossiers</h3><ul style="font-size:13px;line-height:1.7">' +
+        n.aVerifier.map(x => '<li>' + echapper(x) + '</li>').join('') + '</ul></div>' : '') +
+      (n.indicateursASurveiller && n.indicateursASurveiller.length ?
+        '<div class="carte"><h3>Lectures macro à réexaminer</h3><ul style="font-size:13px;line-height:1.7">' +
+        n.indicateursASurveiller.map(x => '<li>' + echapper(x) + '</li>').join('') + '</ul>' +
+        '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
+        'Ouvrir le contexte macro →</button></div></div>' : '') +
+    '</div>' +
+
+    '<p class="intro" style="font-size:11px">Rédigée par ' + echapper(NOTE_MARCHE.modele) +
+    ' à partir des seules variations de cours relevées — le modèle ne dispose d\'aucune information ' +
+    'd\'actualité et n\'a pas connaissance des dossiers clients.</p>';
+}
+
+/* ============================================================
+   VUE 5 — MACRO
    ============================================================ */
 
 function rendreMacro() {
@@ -619,14 +720,20 @@ function libelleEnveloppe() {
 
 function rendreDetention() {
   const corps = $('#corps-detention');
-  corps.innerHTML = Etat.detention.map((l, i) =>
-    '<tr>' +
+  corps.innerHTML = Etat.detention.map((l, i) => {
+    const cote = cotation(l.isin);
+    const valorise = cote && Number(l.quantite) > 0;
+    return '<tr>' +
     '<td><input type="text" data-detention="libelle" data-index="' + i + '" value="' + echapper(l.libelle || '') + '" placeholder="Nom du support"></td>' +
     '<td><input type="text" data-detention="isin" data-index="' + i + '" value="' + echapper(l.isin || '') + '" placeholder="ISIN" list="liste-isin"></td>' +
-    '<td class="num"><input type="number" data-detention="montant" data-index="' + i + '" value="' + (l.montant || 0) + '" min="0" step="100"></td>' +
+    '<td class="num"><input type="number" data-detention="quantite" data-index="' + i + '" value="' + (l.quantite || '') +
+      '" min="0" step="1" placeholder="—"' + (cote ? ' title="Dernier cours connu : ' + cote.cours + ' € au ' + dateFr(cote.date) + '"' : '') + '></td>' +
+    '<td class="num"><input type="number" data-detention="montant" data-index="' + i + '" value="' + (l.montant || 0) + '" min="0" step="100"' +
+      (valorise ? ' readonly style="background:#e4f1e7" title="Calculé automatiquement : ' + l.quantite + ' × ' + cote.cours + ' € (cours du ' + dateFr(cote.date) + ')"' : '') + '></td>' +
     '<td class="num"><input type="number" data-detention="pvLatente" data-index="' + i + '" value="' + (l.pvLatente || 0) + '" step="1"></td>' +
     '<td><button class="bouton secondaire" data-supprimer-detention="' + i + '" title="Supprimer">✕</button></td>' +
-    '</tr>').join('') || '<tr><td colspan="5" style="color:var(--gris-doux)">Aucune ligne saisie.</td></tr>';
+    '</tr>';
+  }).join('') || '<tr><td colspan="6" style="color:var(--gris-doux)">Aucune ligne saisie.</td></tr>';
 
   if (!$('#liste-isin')) {
     const dl = document.createElement('datalist');
@@ -669,6 +776,15 @@ function rendreArbitrages() {
       kpi(euro(analyse.fiscalite.impotEstime), 'Fiscalité estimée', analyse.fiscalite.taux ? 'PFU 30 %' : 'enveloppe non imposable') +
       kpi(euro(analyse.total), 'Encours après opération', 'dont apport ' + euro(analyse.apport)) +
     '</div>' +
+
+    (function () {
+      const d = dateValorisation();
+      const enQuantites = Etat.detention.filter(l => Number(l.quantite) > 0).length;
+      if (!d) return '';
+      return '<div class="message info"><strong>Portefeuille valorisé au ' + dateFr(d) + '.</strong> ' +
+        enQuantites + ' ligne(s) sur ' + Etat.detention.length + ' sont suivies en quantités et se revalorisent ' +
+        'automatiquement à chaque relevé de cours. Les autres restent saisies en euros.</div>';
+    })() +
 
     (function () {
       const hors = analyse.ecarts.filter(e => e.declenche);
@@ -1443,7 +1559,17 @@ function brancher() {
     if (t.dataset.detention !== undefined) {
       const i = Number(t.dataset.index);
       const champ = t.dataset.detention;
-      Etat.detention[i][champ] = (champ === 'montant' || champ === 'pvLatente') ? Number(t.value) : t.value;
+      Etat.detention[i][champ] = (champ === 'montant' || champ === 'pvLatente' || champ === 'quantite')
+        ? Number(t.value) : t.value;
+      if (champ === 'quantite' || champ === 'isin') {
+        const c = cotation(Etat.detention[i].isin);
+        const q = Number(Etat.detention[i].quantite) || 0;
+        if (c && q > 0) {
+          Etat.detention[i].montant = Math.round(q * c.cours);
+          clearTimeout(window.__detTimer);
+          window.__detTimer = setTimeout(() => rendre('arbitrages'), 500);
+        }
+      }
       if (champ === 'isin') {
         const ref = Etat.univers.find(x => x.isin === t.value);
         if (ref && !Etat.detention[i].libelle) Etat.detention[i].libelle = ref.nom;
@@ -1572,10 +1698,28 @@ function brancher() {
       (res.ignorees.length ? ', ' + res.ignorees.length + ' ligne(s) ignorée(s)' : '') + '.');
   };
 
+  $('#btn-revaloriser').onclick = () => {
+    const r = revaloriser();
+    if (!r.lignes && !r.sansCours.length) {
+      notifier('Renseignez une quantité sur au moins une ligne pour revaloriser automatiquement.', 'alerte');
+      return;
+    }
+    sauver(true); rendre('arbitrages');
+    notifier(r.lignes + ' ligne(s) revalorisée(s)' +
+      (r.sansCours.length ? ' · sans cours : ' + r.sansCours.join(', ') : '') + '.');
+  };
+
   $('#btn-charger-cible').onclick = () => {
     const sel = selectionCourante();
     if (!sel) { notifier('Complétez d\'abord le questionnaire.', 'alerte'); return; }
-    Etat.detention = sel.lignes.map(l => ({ isin: l.etf.isin, libelle: l.etf.nom, montant: l.montant, pvLatente: 0 }));
+    Etat.detention = sel.lignes.map(l => {
+      const c = cotation(l.etf.isin);
+      return {
+        isin: l.etf.isin, libelle: l.etf.nom, montant: l.montant, pvLatente: 0,
+        quantite: c ? Math.round(l.montant / c.cours) : undefined
+      };
+    });
+    revaloriser();
     sauver(true); rendre('arbitrages'); notifier('Détention initialisée sur l\'allocation cible.');
   };
 
@@ -1671,6 +1815,7 @@ function importerValorisations(texte) {
       isin,
       libelle: (existante && existante.libelle) || (ref ? ref.nom : isin),
       montant: Math.round(montant),
+      quantite: nombres.length >= 2 ? nombres[0] : (existante ? existante.quantite : undefined),
       pvLatente: existante ? (Number(existante.pvLatente) || 0) : 0
     });
   });

@@ -181,6 +181,47 @@ Dans l'onglet Backtest, chaque cellule est colorée selon sa provenance :
 **vert** relevé sur les cours, **bleu** source documentée, **orange**
 estimation non vérifiée. Le bandeau de fiabilité résume la proportion.
 
+## Note de marché interne (facultatif)
+
+`scripts/note-marche.mjs` fait rédiger par l'API Claude une **note de travail
+quotidienne** à partir des variations relevées la veille : ce qui a bougé, ce
+que cela peut signifier, ce qu'il faut vérifier dans les dossiers.
+
+**C'est un document interne, pas une publication.** La consigne donnée au modèle
+lui interdit explicitement toute recommandation d'achat ou de vente, toute
+citation d'ETF nommément, et toute cause inventée — il ne voit que des cours,
+pas l'actualité qui les explique. L'onglet affiche ces limites en tête.
+Publier des recommandations automatisées sous le nom d'un conseiller relève du
+conseil en investissement, activité réglementée : ne transformez pas cette note
+en page client sans avis juridique.
+
+**Coût : environ 1,30 $ par mois** (≈ 4 000 tokens en entrée et 900 en sortie
+par jour, sur `claude-opus-5` à 5 $ / 25 $ le million). Le rechargement minimum
+du compte est de 5 $, soit environ quatre mois d'avance.
+
+Pour l'activer : créez une clé sur [platform.claude.com](https://platform.claude.com),
+puis déposez-la dans le dépôt sous *Settings → Secrets and variables → Actions*,
+au nom `ANTHROPIC_API_KEY`. La tâche planifiée s'en charge ensuite seule.
+
+**La clé ne doit jamais figurer dans le JavaScript.** Le site est public : une
+clé côté navigateur serait lisible par tous et consommée en quelques jours.
+C'est pourquoi la note est rédigée dans l'Action, qui commite le résultat — la
+page ne fait que lire un fichier statique. Sans clé, le script s'arrête
+proprement et l'onglet affiche la marche à suivre.
+
+## Suivi des quantités et revalorisation
+
+Chaque ligne détenue accepte un **nombre de parts**. Quand la quantité est
+renseignée et que le support est coté sur Euronext, le montant est recalculé
+seul à partir du dernier cours relevé — la case passe en vert et devient non
+modifiable. Le bouton **« Revaloriser aux cours du jour »** rafraîchit toutes
+les lignes d'un coup, et l'onglet Arbitrages indique à quelle date le
+portefeuille est valorisé.
+
+C'est ce qui rend la surveillance quotidienne possible : votre père ouvre la
+page, elle se revalorise seule et lui dit s'il est dans ses bandes de tolérance
+ou non. Les supports non cotés sur Euronext restent saisis en euros.
+
 ## Mise à jour des valorisations
 
 Dans l'onglet Arbitrages, **« Coller les valorisations du contrat »** accepte un
@@ -235,14 +276,17 @@ js/data/macro.js              indicateurs, scénarios, bornes tactiques, seuils
 js/data/etf-univers.js        univers ETF de départ (à vérifier)
 js/data/fiscalite.js          taux, abattements, rendements courants, cascade de retrait
 js/data/historique.js         séries de performances annuelles par poche
-js/data/cours-marche.js       GÉNÉRÉ — performances relevées sur les cours
+js/data/cours-marche.js       GÉNÉRÉ — performances et derniers cours par ISIN
+js/data/note-marche.js        GÉNÉRÉ — note de marché du jour
 js/engine/profil.js           scoring, plafonnement, stress tests
 js/engine/allocation.js       stratégique, agrégation macro, tactique, métriques
 js/engine/selection.js        filtrage de l'univers, notation et choix des supports
 js/engine/arbitrage.js        écarts, ordres, fiscalité, journal
 js/engine/revenus.js          coussin, cascade de prélèvement, fiscalité, projection
 js/engine/backtest.js         simulation, rééquilibrage, contributions, risque de séquence
-scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif
+scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
+scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
+package.json                  dépendances des scripts uniquement (SDK Anthropic)
 .github/workflows/cours.yml   relevé automatique du mardi au samedi
 data/                         GÉNÉRÉ — archive des cours et rapports de couverture
 js/app.js                     état, rendu des onze vues, événements, persistance

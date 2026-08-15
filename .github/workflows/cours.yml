@@ -28,6 +28,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    # Déclarée au niveau du job : un `if: env.…` posé sur une étape ne voit
+    # pas le bloc `env` de cette étape, seulement celui du job.
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -39,9 +44,19 @@ jobs:
         id: releve
         run: node scripts/maj-cours.mjs | tee /tmp/rapport.txt
 
+      # La note est facultative : sans le secret ANTHROPIC_API_KEY le script
+      # s'arrête proprement et l'application affiche la marche à suivre.
+      - name: Installer les dépendances de rédaction
+        if: env.ANTHROPIC_API_KEY != ''
+        run: npm install --omit=dev --no-audit --no-fund
+
+      - name: Rédiger la note de marché
+        if: env.ANTHROPIC_API_KEY != ''
+        run: node scripts/note-marche.mjs | tee -a /tmp/rapport.txt
+
       - name: Versionner les ressources si les données ont changé
         run: |
-          if [ -n "$(git status --porcelain data js/data/cours-marche.js)" ]; then
+          if [ -n "$(git status --porcelain data js/data/cours-marche.js js/data/note-marche.js)" ]; then
             python3 - <<'PY'
           import re, datetime, pathlib
           p = pathlib.Path('index.html')

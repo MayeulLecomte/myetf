@@ -196,6 +196,40 @@ async function principal() {
   writeFileSync(join(RACINE, 'data', 'perfs-poches.json'),
     JSON.stringify({ genere: archive.genere, source: 'Euronext', poches: pochesTriees }, null, 2));
 
+  /* --- Derniers cours connus, par ISIN ---
+     Permet à l'application de revaloriser une détention saisie en
+     quantités sans aucun appel réseau. */
+  const derniers = {};
+  for (const [isin, s] of Object.entries(archive.series)) {
+    const dates = Object.keys(s.points).sort();
+    if (!dates.length) continue;
+    const fin = dates[dates.length - 1];
+    derniers[isin] = { date: fin, cours: s.points[fin], nom: s.nom, mic: s.mic };
+  }
+
+  /* --- Variations par poche, pour la note de marché --- */
+  const variations = {};
+  for (const [poche, ref] of Object.entries(parPoche)) {
+    const s = archive.series[ref.isin];
+    if (!s) continue;
+    const dates = Object.keys(s.points).sort();
+    const dernier = dates[dates.length - 1];
+    const valeur = d => s.points[d];
+    const reculer = n => dates[Math.max(0, dates.length - 1 - n)];
+    const debutAnnee = dates.filter(d => d < `${dernier.slice(0, 4)}-01-01`).pop();
+    const varPct = (de) => de && valeur(de)
+      ? Math.round(10000 * (valeur(dernier) / valeur(de) - 1)) / 100 : null;
+    variations[poche] = {
+      instrument: ref.nom, date: dernier,
+      jour: varPct(reculer(1)),
+      semaine: varPct(reculer(5)),
+      mois: varPct(reculer(21)),
+      annee: varPct(debutAnnee)
+    };
+  }
+  writeFileSync(join(RACINE, 'data', 'variations.json'),
+    JSON.stringify({ genere: archive.genere, variations }, null, 2));
+
   /* --- Fichier lu par l'application ---
      Émis en JavaScript et non en JSON pour rester lisible en
      ouverture directe du fichier (file://), où fetch est bloqué. */
@@ -212,7 +246,8 @@ async function principal() {
     'const PERFS_MARCHE = '
   ].join('\n');
   writeFileSync(join(RACINE, 'js', 'data', 'cours-marche.js'),
-    entete + JSON.stringify(pochesTriees, null, 2) + ';\n');
+    entete + JSON.stringify(pochesTriees, null, 2) + ';\n\n' +
+    'const DERNIERS_COURS = ' + JSON.stringify(derniers, null, 2) + ';\n');
 
   /* --- Rapport --- */
   const introuvables = couverture.filter(c => c.statut === 'introuvable');

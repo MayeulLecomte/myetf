@@ -1,0 +1,109 @@
+{
+  "genere": "2026-08-14",
+  "variations": {
+    "act-europe": {
+      "instrument": "Amundi CAC 40 UCITS ETF (Acc)",
+      "date": "2026-08-14",
+      "jour": -0.16,
+      "semaine": -1,
+      "mois": 3.1,
+      "annee": 8.39
+    },
+    "mon-euro": {
+      "instrument": "Amundi Euro Overnight Return UCITS ETF",
+      "date": "2026-08-14",
+      "jour": 0,
+      "semaine": 0.07,
+      "mois": 0.17,
+      "annee": 1.22
+    },
+    "act-tech": {
+      "instrument": "Amundi PEA Nasdaq-100 UCITS ETF",
+      "date": "2026-08-14",
+      "jour": -0.46,
+      "semaine": 0.15,
+      "mois": 1.6,
+      "annee": 15.1
+    },
+    "act-emergents": {
+      "instrument": "Amundi PEA MSCI Emerging Markets ESG Leaders",
+      "date": "2026-08-14",
+      "jour": -0.67,
+      "semaine": 1.37,
+      "mois": 2.01,
+      "annee": 23.94
+    },
+    "act-us": {
+      "instrument": "Amundi PEA S&P 500 UCITS ETF",
+      "date": "2026-08-14",
+      "jour": -0.25,
+      "semaine": 0.52,
+      "mois": 3.09,
+      "annee": 15.85
+    },
+    "div-or": {
+      "instrument": "Amundi Physical Gold ETC",
+      "date": "2026-08-14",
+      "jour": 0.16,
+      "semaine": 0.62,
+      "mois": 7.9,
+      "annee": 3.19
+    },
+    "act-monde": {
+      "instrument": "iShares Core MSCI World UCITS ETF (Acc)",
+      "date": "2026-08-14",
+      "jour": -0.43,
+      "semaine": 0.15,
+      "mois": 2.04,
+      "annee": 15.52
+    },
+    "act-japon": {
+      "instrument": "iShares Core MSCI Japan IMI UCITS ETF (Acc)",
+      "date": "2026-08-14",
+      "jour": -0.59,
+      "semaine": 1.33,
+      "mois": 4.78,
+      "annee": 24.32
+    },
+    "obl-globale-hedge": {
+      "instrument": "iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged)",
+      "date": "2026-08-14",
+      "jour": -0.24,
+      "semaine": -0.23,
+      "mois": -0.18,
+      "annee": -0.83
+    },
+    "obl-souv-euro-lt": {
+      "instrument": "Xtrackers Eurozone Government Bond UCITS ETF",
+      "date": "2026-08-14",
+      "jour": -0.46,
+      "semaine": -0.55,
+      "mois": -0.22,
+      "annee": -0.67
+    },
+    "div-immobilier": {
+      "instrument": "Amundi Index FTSE EPRA NAREIT Global UCITS ETF",
+      "date": "2026-08-14",
+      "jour": -0.1,
+      "semaine": -0.48,
+      "mois": -1.8,
+      "annee": 13.19
+    },
+    "obl-souv-euro-ct": {
+      "instrument": "Amundi Euro Government Bond 1-3Y UCITS ETF",
+      "date": "2026-08-14",
+      "jour": -0.09,
+      "semaine": -0.1,
+      "mois": 0.16,
+      "annee": 0.39
+    },
+    "act-small": {
+      "instrument": "Amundi Russell 2000 UCITS ETF (Acc)",
+      "date": "2026-08-14",
+      "jour": -0.27,
+      "semaine": 0.66,
+      "mois": 1.03,
+      "annee": 24.64
+    }
+  }
+}

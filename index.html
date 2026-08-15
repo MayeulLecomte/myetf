@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608151728">
+<link rel="stylesheet" href="css/app.css?v=202608151742">
 </head>
 <body>
 
@@ -29,16 +29,17 @@
     <button data-vue="questionnaire"><span class="num"><span>2</span></span> Questionnaire</button>
     <button data-vue="profil"><span class="num"><span>3</span></span> Profil de risque</button>
     <div class="separateur"></div>
-    <button data-vue="macro"><span class="num"><span>4</span></span> Contexte macro</button>
-    <button data-vue="allocation"><span class="num"><span>5</span></span> Allocation cible</button>
-    <button data-vue="portefeuille"><span class="num"><span>6</span></span> Sélection ETF</button>
-    <button data-vue="arbitrages"><span class="num"><span>7</span></span> Arbitrages</button>
-    <button data-vue="revenus"><span class="num"><span>8</span></span> Revenus &amp; rachats</button>
-    <button data-vue="backtest"><span class="num"><span>9</span></span> Backtest</button>
+    <button data-vue="note"><span class="num"><span>4</span></span> Note de marché</button>
+    <button data-vue="macro"><span class="num"><span>5</span></span> Contexte macro</button>
+    <button data-vue="allocation"><span class="num"><span>6</span></span> Allocation cible</button>
+    <button data-vue="portefeuille"><span class="num"><span>7</span></span> Sélection ETF</button>
+    <button data-vue="arbitrages"><span class="num"><span>8</span></span> Arbitrages</button>
+    <button data-vue="revenus"><span class="num"><span>9</span></span> Revenus &amp; rachats</button>
+    <button data-vue="backtest"><span class="num"><span>10</span></span> Backtest</button>
     <div class="separateur"></div>
-    <button data-vue="univers"><span class="num"><span>10</span></span> Univers ETF</button>
-    <button data-vue="journal"><span class="num"><span>11</span></span> Suivi &amp; journal</button>
-    <button data-vue="rapport"><span class="num"><span>12</span></span> Rapport</button>
+    <button data-vue="univers"><span class="num"><span>11</span></span> Univers ETF</button>
+    <button data-vue="journal"><span class="num"><span>12</span></span> Suivi &amp; journal</button>
+    <button data-vue="rapport"><span class="num"><span>13</span></span> Rapport</button>
   </nav>
 
   <main class="contenu">
@@ -124,7 +125,16 @@
       </div>
     </section>
 
-    <!-- ============ 4. MACRO ============ -->
+    <!-- ============ 4. NOTE DE MARCHÉ ============ -->
+    <section class="vue" id="vue-note">
+      <h2>Note de marché</h2>
+      <p class="intro">Note de travail rédigée chaque matin à partir des cours relevés la veille.
+      Elle signale ce qui a bougé et ce qu'il convient de vérifier — elle ne formule aucune
+      recommandation et n'est pas destinée à être remise à un client en l'état.</p>
+      <div id="note-contenu"></div>
+    </section>
+
+    <!-- ============ 5. MACRO ============ -->
     <section class="vue" id="vue-macro">
       <h2>Contexte économique, géopolitique et fiscal</h2>
       <p class="intro">Le conseiller renseigne sa lecture du contexte. Le moteur en déduit une distribution de
@@ -184,16 +194,17 @@
           <table id="table-detention">
             <thead>
               <tr>
-                <th style="width:38%">Support</th>
-                <th style="width:18%">ISIN</th>
+                <th style="width:30%">Support</th>
+                <th style="width:15%">ISIN</th>
+                <th class="num" style="width:13%">Quantité</th>
                 <th class="num" style="width:16%">Montant (€)</th>
-                <th class="num" style="width:16%">Plus-value latente (%)</th>
+                <th class="num" style="width:15%">Plus-value latente (%)</th>
                 <th style="width:6%"></th>
               </tr>
             </thead>
             <tbody id="corps-detention"></tbody>
             <tfoot>
-              <tr><td colspan="2">Total détenu</td><td class="num" id="total-detention">0 €</td><td colspan="2"></td></tr>
+              <tr><td colspan="3">Total détenu</td><td class="num" id="total-detention">0 €</td><td colspan="2"></td></tr>
             </tfoot>
           </table>
         </div>
@@ -201,6 +212,7 @@
           <button class="bouton secondaire" id="btn-ajouter-ligne">+ Ajouter une ligne</button>
           <button class="bouton secondaire" id="btn-charger-cible">Partir de l'allocation cible</button>
           <button class="bouton secondaire" id="btn-coller-valos">Coller les valorisations du contrat</button>
+          <button class="bouton secondaire" id="btn-revaloriser">Revaloriser aux cours du jour</button>
           <div class="champ" style="margin:0 0 0 auto;min-width:200px">
             <label for="f-apport">Apport / versement complémentaire (€)</label>
             <input type="number" id="f-apport" value="0" min="0" step="500">
@@ -344,19 +356,20 @@
   </main>
 </div>
 
-<script src="js/data/questionnaire.js?v=202608151728"></script>
-<script src="js/data/allocations.js?v=202608151728"></script>
-<script src="js/data/macro.js?v=202608151728"></script>
-<script src="js/data/etf-univers.js?v=202608151728"></script>
-<script src="js/data/fiscalite.js?v=202608151728"></script>
-<script src="js/data/historique.js?v=202608151728"></script>
-<script src="js/data/cours-marche.js?v=202608151728"></script>
-<script src="js/engine/profil.js?v=202608151728"></script>
-<script src="js/engine/allocation.js?v=202608151728"></script>
-<script src="js/engine/selection.js?v=202608151728"></script>
-<script src="js/engine/arbitrage.js?v=202608151728"></script>
-<script src="js/engine/revenus.js?v=202608151728"></script>
-<script src="js/engine/backtest.js?v=202608151728"></script>
-<script src="js/app.js?v=202608151728"></script>
+<script src="js/data/questionnaire.js?v=202608151742"></script>
+<script src="js/data/allocations.js?v=202608151742"></script>
+<script src="js/data/macro.js?v=202608151742"></script>
+<script src="js/data/etf-univers.js?v=202608151742"></script>
+<script src="js/data/fiscalite.js?v=202608151742"></script>
+<script src="js/data/historique.js?v=202608151742"></script>
+<script src="js/data/note-marche.js?v=202608151742"></script>
+<script src="js/data/cours-marche.js?v=202608151742"></script>
+<script src="js/engine/profil.js?v=202608151742"></script>
+<script src="js/engine/allocation.js?v=202608151742"></script>
+<script src="js/engine/selection.js?v=202608151742"></script>
+<script src="js/engine/arbitrage.js?v=202608151742"></script>
+<script src="js/engine/revenus.js?v=202608151742"></script>
+<script src="js/engine/backtest.js?v=202608151742"></script>
+<script src="js/app.js?v=202608151742"></script>
 </body>
 </html>
