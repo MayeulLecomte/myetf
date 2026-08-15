@@ -1,55 +1,22 @@
 {
-  "genere": "2026-08-15",
+  "genere": "2026-08-14",
   "couverture": [
     {
-      "isin": "IE00BFY0GT14",
-      "nom": "SPDR MSCI World UCITS ETF",
-      "poche": "act-monde",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "IE00B4L5Y983",
-      "nom": "iShares Core MSCI World UCITS ETF (Acc)",
-      "poche": "act-monde",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "IE00BYX2JD69",
-      "nom": "iShares MSCI World SRI UCITS ETF (Acc)",
-      "poche": "act-monde",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU1781541179",
-      "nom": "Amundi Core MSCI World UCITS ETF (Acc)",
-      "poche": "act-monde",
+      "isin": "FR0007052782",
+      "nom": "Amundi CAC 40 UCITS ETF (Acc)",
+      "poche": "act-europe",
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2025-02-21",
-      "points": 133,
+      "fin": "2026-08-14",
+      "points": 509,
       "capitalisation": true
     },
     {
-      "isin": "IE00B5BMR087",
-      "nom": "iShares Core S&P 500 UCITS ETF (Acc)",
-      "poche": "act-us",
-      "mic": "XAMS",
+      "isin": "FR0010510800",
+      "nom": "Amundi Euro Overnight Return UCITS ETF",
+      "poche": "mon-euro",
+      "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
       "fin": "2026-08-14",
@@ -63,98 +30,9 @@
       "statut": "introuvable"
     },
     {
-      "isin": "FR0013412285",
-      "nom": "Amundi PEA S&P 500 UCITS ETF",
-      "poche": "act-us",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "IE00B4K48X80",
-      "nom": "iShares Core MSCI Europe UCITS ETF",
-      "poche": "act-europe",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU0490618542",
-      "nom": "Xtrackers S&P 500 Swap UCITS ETF (Acc)",
-      "poche": "act-us",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "FR0007052782",
-      "nom": "Amundi CAC 40 UCITS ETF (Acc)",
-      "poche": "act-europe",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU0908500753",
-      "nom": "Amundi Stoxx Europe 600 UCITS ETF (Acc)",
-      "poche": "act-europe",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "IE00B4L5YX21",
-      "nom": "iShares Core MSCI Japan IMI UCITS ETF (Acc)",
-      "poche": "act-japon",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU1861138961",
-      "nom": "Amundi MSCI Europe ESG Leaders UCITS ETF",
-      "poche": "act-europe",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "IE00BKM4GZ66",
-      "nom": "iShares Core MSCI EM IMI UCITS ETF (Acc)",
-      "poche": "act-emergents",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU1781541252",
-      "nom": "Amundi Japan TOPIX UCITS ETF (EUR Hedged)",
-      "poche": "act-japon",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "LU1681038672",
-      "nom": "Amundi Russell 2000 UCITS ETF (Acc)",
-      "poche": "act-small",
+      "isin": "FR0011871128",
+      "nom": "Amundi PEA Nasdaq-100 UCITS ETF",
+      "poche": "act-tech",
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
@@ -174,26 +52,9 @@
       "capitalisation": true
     },
     {
-      "isin": "IE00BF4RFH31",
-      "nom": "iShares MSCI World Small Cap UCITS ETF (Acc)",
-      "poche": "act-small",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00B53SZB19",
-      "nom": "iShares NASDAQ 100 UCITS ETF (Acc)",
-      "poche": "act-tech",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "FR0011871128",
-      "nom": "Amundi PEA Nasdaq-100 UCITS ETF",
-      "poche": "act-tech",
+      "isin": "FR0013412285",
+      "nom": "Amundi PEA S&P 500 UCITS ETF",
+      "poche": "act-us",
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
@@ -202,71 +63,9 @@
       "capitalisation": true
     },
     {
-      "isin": "IE00B14X4Q57",
-      "nom": "iShares € Government Bond 1-3yr UCITS ETF",
-      "poche": "obl-souv-euro-ct",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": false
-    },
-    {
-      "isin": "IE00BM67HT60",
-      "nom": "Xtrackers MSCI World Information Technology UCITS ETF",
-      "poche": "act-tech",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00B8FHGS14",
-      "nom": "iShares Edge MSCI World Minimum Volatility UCITS ETF",
-      "poche": "act-min-vol",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00BP3QZ601",
-      "nom": "iShares Edge MSCI World Quality Factor UCITS ETF",
-      "poche": "act-min-vol",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00B4WXJJ64",
-      "nom": "iShares Core € Govt Bond UCITS ETF",
-      "poche": "obl-souv-euro-lt",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": false
-    },
-    {
-      "isin": "IE00B3F81R35",
-      "nom": "iShares Core € Corp Bond UCITS ETF",
-      "poche": "obl-ig-euro",
-      "mic": "XAMS",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": false
-    },
-    {
-      "isin": "LU1650487413",
-      "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF",
-      "poche": "obl-souv-euro-ct",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU1287023342",
-      "nom": "Xtrackers Eurozone Government Bond UCITS ETF",
-      "poche": "obl-souv-euro-lt",
+      "isin": "FR0013416716",
+      "nom": "Amundi Physical Gold ETC",
+      "poche": "div-or",
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
@@ -286,67 +85,15 @@
       "capitalisation": false
     },
     {
-      "isin": "IE00BDBRDM35",
-      "nom": "iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged)",
-      "poche": "obl-globale-hedge",
+      "isin": "IE00B14X4Q57",
+      "nom": "iShares € Government Bond 1-3yr UCITS ETF",
+      "poche": "obl-souv-euro-ct",
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
       "fin": "2026-08-14",
       "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU1681040900",
-      "nom": "Amundi Euro Corporate Bond UCITS ETF (Acc)",
-      "poche": "obl-ig-euro",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00B66F4759",
-      "nom": "iShares € High Yield Corp Bond UCITS ETF",
-      "poche": "obl-hy-euro",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00B2NPKV68",
-      "nom": "iShares J.P. Morgan $ EM Bond UCITS ETF",
-      "poche": "obl-emergente",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "FR0010510800",
-      "nom": "Amundi Euro Overnight Return UCITS ETF",
-      "poche": "mon-euro",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
-    },
-    {
-      "isin": "LU0290358497",
-      "nom": "Xtrackers II EUR Overnight Rate Swap UCITS ETF",
-      "poche": "mon-euro",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "IE00B4ND3602",
-      "nom": "iShares Physical Gold ETC",
-      "poche": "div-or",
-      "statut": "introuvable"
-    },
-    {
-      "isin": "FR0013416716",
-      "nom": "Amundi Physical Gold ETC",
-      "poche": "div-or",
-      "mic": "XPAR",
-      "statut": "ok",
-      "debut": "2024-08-16",
-      "fin": "2026-08-14",
-      "points": 509,
-      "capitalisation": true
+      "capitalisation": false
     },
     {
       "isin": "IE00B1FZS350",
@@ -360,10 +107,111 @@
       "capitalisation": false
     },
     {
-      "isin": "LU1437018838",
-      "nom": "Amundi Index FTSE EPRA NAREIT Global UCITS ETF",
-      "poche": "div-immobilier",
-      "mic": "XPAR",
+      "isin": "IE00B2NPKV68",
+      "nom": "iShares J.P. Morgan $ EM Bond UCITS ETF",
+      "poche": "obl-emergente",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00B3F81R35",
+      "nom": "iShares Core € Corp Bond UCITS ETF",
+      "poche": "obl-ig-euro",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": false
+    },
+    {
+      "isin": "IE00B4K48X80",
+      "nom": "iShares Core MSCI Europe UCITS ETF",
+      "poche": "act-europe",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00B4L5Y983",
+      "nom": "iShares Core MSCI World UCITS ETF (Acc)",
+      "poche": "act-monde",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00B4L5YX21",
+      "nom": "iShares Core MSCI Japan IMI UCITS ETF (Acc)",
+      "poche": "act-japon",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00B4ND3602",
+      "nom": "iShares Physical Gold ETC",
+      "poche": "div-or",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00B4WXJJ64",
+      "nom": "iShares Core € Govt Bond UCITS ETF",
+      "poche": "obl-souv-euro-lt",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": false
+    },
+    {
+      "isin": "IE00B53SZB19",
+      "nom": "iShares NASDAQ 100 UCITS ETF (Acc)",
+      "poche": "act-tech",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00B5BMR087",
+      "nom": "iShares Core S&P 500 UCITS ETF (Acc)",
+      "poche": "act-us",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00B66F4759",
+      "nom": "iShares € High Yield Corp Bond UCITS ETF",
+      "poche": "obl-hy-euro",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00B8FHGS14",
+      "nom": "iShares Edge MSCI World Minimum Volatility UCITS ETF",
+      "poche": "act-min-vol",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00BDBRDM35",
+      "nom": "iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged)",
+      "poche": "obl-globale-hedge",
+      "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
       "fin": "2026-08-14",
@@ -377,10 +225,162 @@
       "statut": "introuvable"
     },
     {
+      "isin": "IE00BF4RFH31",
+      "nom": "iShares MSCI World Small Cap UCITS ETF (Acc)",
+      "poche": "act-small",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00BFY0GT14",
+      "nom": "SPDR MSCI World UCITS ETF",
+      "poche": "act-monde",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00BKM4GZ66",
+      "nom": "iShares Core MSCI EM IMI UCITS ETF (Acc)",
+      "poche": "act-emergents",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE00BM67HT60",
+      "nom": "Xtrackers MSCI World Information Technology UCITS ETF",
+      "poche": "act-tech",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00BP3QZ601",
+      "nom": "iShares Edge MSCI World Quality Factor UCITS ETF",
+      "poche": "act-min-vol",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "IE00BYX2JD69",
+      "nom": "iShares MSCI World SRI UCITS ETF (Acc)",
+      "poche": "act-monde",
+      "mic": "XAMS",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU0290358497",
+      "nom": "Xtrackers II EUR Overnight Rate Swap UCITS ETF",
+      "poche": "mon-euro",
+      "statut": "introuvable"
+    },
+    {
       "isin": "LU0292106167",
       "nom": "Xtrackers Bloomberg Commodity Swap UCITS ETF",
       "poche": "div-matieres",
       "statut": "introuvable"
+    },
+    {
+      "isin": "LU0490618542",
+      "nom": "Xtrackers S&P 500 Swap UCITS ETF (Acc)",
+      "poche": "act-us",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "LU0908500753",
+      "nom": "Amundi Stoxx Europe 600 UCITS ETF (Acc)",
+      "poche": "act-europe",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU1287023342",
+      "nom": "Xtrackers Eurozone Government Bond UCITS ETF",
+      "poche": "obl-souv-euro-lt",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU1437018838",
+      "nom": "Amundi Index FTSE EPRA NAREIT Global UCITS ETF",
+      "poche": "div-immobilier",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU1650487413",
+      "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF",
+      "poche": "obl-souv-euro-ct",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU1681038672",
+      "nom": "Amundi Russell 2000 UCITS ETF (Acc)",
+      "poche": "act-small",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU1681040900",
+      "nom": "Amundi Euro Corporate Bond UCITS ETF (Acc)",
+      "poche": "obl-ig-euro",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "LU1781541179",
+      "nom": "Amundi Core MSCI World UCITS ETF (Acc)",
+      "poche": "act-monde",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2025-02-21",
+      "points": 133,
+      "capitalisation": true
+    },
+    {
+      "isin": "LU1781541252",
+      "nom": "Amundi Japan TOPIX UCITS ETF (EUR Hedged)",
+      "poche": "act-japon",
+      "statut": "introuvable"
+    },
+    {
+      "isin": "LU1861138961",
+      "nom": "Amundi MSCI Europe ESG Leaders UCITS ETF",
+      "poche": "act-europe",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-16",
+      "fin": "2026-08-14",
+      "points": 509,
+      "capitalisation": true
     }
   ]
 }

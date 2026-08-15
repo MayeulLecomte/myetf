@@ -160,7 +160,18 @@ async function principal() {
     });
   }
 
-  archive.genere = new Date().toISOString().slice(0, 10);
+  /* La sortie doit être déterministe : les requêtes s'achèvent dans un
+     ordre variable, or un fichier réordonné à chaque exécution
+     produirait un commit quotidien inutile et invaliderait sans raison
+     le cache de tous les visiteurs. On trie donc tout, et la date de
+     génération suit la dernière cotation connue, pas l'heure du relevé. */
+  const trier = obj => Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a < b ? -1 : 1));
+  archive.series = trier(archive.series);
+  Object.values(archive.series).forEach(s => { s.points = trier(s.points); });
+
+  const toutesDates = Object.values(archive.series).flatMap(s => Object.keys(s.points)).sort();
+  archive.genere = toutesDates[toutesDates.length - 1] || null;
+
   mkdirSync(join(RACINE, 'data'), { recursive: true });
   writeFileSync(cheminCours, JSON.stringify(archive));
 
@@ -181,8 +192,9 @@ async function principal() {
     }
   }
 
+  const pochesTriees = Object.fromEntries(Object.entries(parPoche).sort(([a], [b]) => a < b ? -1 : 1));
   writeFileSync(join(RACINE, 'data', 'perfs-poches.json'),
-    JSON.stringify({ genere: archive.genere, source: 'Euronext', poches: parPoche }, null, 2));
+    JSON.stringify({ genere: archive.genere, source: 'Euronext', poches: pochesTriees }, null, 2));
 
   /* --- Fichier lu par l'application ---
      Émis en JavaScript et non en JSON pour rester lisible en
@@ -200,7 +212,7 @@ async function principal() {
     'const PERFS_MARCHE = '
   ].join('\n');
   writeFileSync(join(RACINE, 'js', 'data', 'cours-marche.js'),
-    entete + JSON.stringify(parPoche, null, 2) + ';\n');
+    entete + JSON.stringify(pochesTriees, null, 2) + ';\n');
 
   /* --- Rapport --- */
   const introuvables = couverture.filter(c => c.statut === 'introuvable');
@@ -218,6 +230,7 @@ async function principal() {
     introuvables.forEach(c => console.log(`  ${c.isin}  ${c.nom.slice(0, 52)}`));
   }
 
+  couverture.sort((a, b) => a.isin < b.isin ? -1 : 1);
   writeFileSync(join(RACINE, 'data', 'couverture.json'),
     JSON.stringify({ genere: archive.genere, couverture }, null, 2));
 
