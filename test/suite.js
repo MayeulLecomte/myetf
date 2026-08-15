@@ -223,5 +223,54 @@ ok(cons.allocation.classes.monetaire>base.classes.monetaire,'coussin : monétair
 ok(cons.allocation.classes.actions<base.classes.actions,'coussin : ponction prise sur les actifs risqués');
 ok(!MoteurRevenus.contrainteCoussin(base,5000,24,900000).applique,'coussin : pas d\'ajustement si le monétaire suffit déjà');
 
+
+// --- 9. Backtest
+console.log('\n== Backtest ==');
+const btOpt={capital:100000};
+const eqPoches=MoteurAllocation.strategique('equilibre').poches;
+const bt=MoteurBacktest.simuler(eqPoches,btOpt);
+ok(bt.nbAnnees===ANNEES_HISTORIQUE.length,'toutes les années sont rejouées ('+bt.nbAnnees+')');
+// cohérence capital / rendements chaînés
+let chain=100000; bt.annees.forEach(a=>{chain=chain*(1+a.rendement/100)});
+ok(Math.abs(chain-bt.capitalFinal)<5,'capital final = chaînage des rendements annuels ('+Math.round(chain)+' vs '+bt.capitalFinal+' €)');
+ok(Math.abs(bt.perfCumulee-100*(bt.capitalFinal/100000-1))<0.05,'performance cumulée cohérente avec le capital');
+ok(Math.abs(Math.pow(1+bt.annualisee/100,bt.nbAnnees)*100000-bt.capitalFinal)<50,'performance annualisée cohérente');
+// monotonie du risque entre profils
+const parProfil=MoteurBacktest.comparerProfils(btOpt);
+ok(parProfil.length===6,'les six profils sont testés');
+const volsBt=parProfil.map(p=>p.volatilite);
+ok(volsBt.every((v,i)=>i===0||v>=volsBt[i-1]-0.01),'volatilité historique croissante avec le profil');
+const dds=parProfil.map(p=>p.maxDrawdown);
+ok(dds.every((v,i)=>i===0||v<=dds[i-1]+0.01),'baisse maximale croissante avec le profil');
+// contributions
+const contribs=MoteurBacktest.contributions(bt,eqPoches);
+const sommeGains=contribs.reduce((a,c)=>a+c.gain,0);
+ok(Math.abs(sommeGains-(bt.capitalFinal-100000))<50,'somme des contributions = gain total ('+Math.round(sommeGains)+' vs '+(bt.capitalFinal-100000)+' €)');
+ok(Math.abs(contribs.reduce((a,c)=>a+c.partDuGain,0)-100)<1.5,'parts du résultat ≈ 100 %');
+// pas de rééquilibrage : les poids dérivent, le résultat diffère
+const eff=MoteurBacktest.effetRebalancement(eqPoches,btOpt);
+ok(eff.avec.capitalFinal!==eff.sans.capitalFinal,'le rééquilibrage change le résultat');
+ok(eff.avec.volatilite<=eff.sans.volatilite+0.01,'le rééquilibrage ne dégrade pas la volatilité');
+// retraits
+const btR=MoteurBacktest.simuler(eqPoches,{capital:100000,retraitAnnuel:4000});
+ok(btR.retraitsCumules>19000&&btR.retraitsCumules<23000,'retraits indexés sur l\'inflation cumulés ('+btR.retraitsCumules+' €)');
+ok(btR.capitalFinal<bt.capitalFinal,'les retraits réduisent le capital final');
+ok(btR.annualisee===null&&btR.twrAnnualise!==null,'avec flux : annualisée neutralisée, TWR fourni');
+// risque de séquence
+const sq=MoteurBacktest.risqueSequence(eqPoches,{capital:100000,retraitAnnuel:4000});
+ok(Math.abs(sq.chrono.twrAnnualise-sq.inverse.twrAnnualise)<0.05,'ordre inversé : même rendement pondéré dans le temps');
+ok(sq.chrono.capitalFinal!==sq.inverse.capitalFinal,'ordre inversé : capital final différent (risque de séquence)');
+// frais
+const btF=MoteurBacktest.simuler(eqPoches,{capital:100000,fraisContrat:1});
+ok(btF.capitalFinal<bt.capitalFinal,'les frais de contrat réduisent le capital final');
+ok(Math.abs((bt.twrAnnualise-btF.twrAnnualise)-1)<0.15,'1 % de frais ≈ 1 point de rendement annuel en moins');
+// fiabilité
+const fi=MoteurBacktest.fiabilite(eqPoches);
+ok(Math.abs(fi.source+fi.estime+fi.absent-100)<0.5,'répartition sourcé/estimé/absent = 100 %');
+ok(fi.absent===0,'toutes les poches allouées ont une série');
+// poche sans série : renormalisation
+const btPartiel=MoteurBacktest.simuler({'act-monde':50,'poche-inexistante':50},btOpt);
+ok(btPartiel.manquantes.length===1&&Math.abs(btPartiel.couverture-50)<0.5,'poche sans série exclue et couverture signalée');
+
 console.log('\n'+(echecs?'❌ '+echecs+' échec(s)':'✅ tous les tests passent'));
 process.exit(echecs?1:0);

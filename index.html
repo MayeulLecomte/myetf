@@ -34,10 +34,11 @@
     <button data-vue="portefeuille"><span class="num"><span>6</span></span> Sélection ETF</button>
     <button data-vue="arbitrages"><span class="num"><span>7</span></span> Arbitrages</button>
     <button data-vue="revenus"><span class="num"><span>8</span></span> Revenus &amp; rachats</button>
+    <button data-vue="backtest"><span class="num"><span>9</span></span> Backtest</button>
     <div class="separateur"></div>
-    <button data-vue="univers"><span class="num"><span>9</span></span> Univers ETF</button>
-    <button data-vue="journal"><span class="num"><span>10</span></span> Suivi &amp; journal</button>
-    <button data-vue="rapport"><span class="num"><span>11</span></span> Rapport</button>
+    <button data-vue="univers"><span class="num"><span>10</span></span> Univers ETF</button>
+    <button data-vue="journal"><span class="num"><span>11</span></span> Suivi &amp; journal</button>
+    <button data-vue="rapport"><span class="num"><span>12</span></span> Rapport</button>
   </nav>
 
   <main class="contenu">
@@ -234,6 +235,52 @@
       <div id="revenus-contenu"></div>
     </section>
 
+    <!-- ============ 9. BACKTEST ============ -->
+    <section class="vue" id="vue-backtest">
+      <h2>Backtest de l'allocation</h2>
+      <p class="intro">Rejoue l'allocation sur des performances annuelles calendaires, en euros, dividendes
+      réinvestis. Le backtest mesure le comportement du modèle d'allocation — il ne prédit rien.</p>
+
+      <div id="backtest-fiabilite"></div>
+
+      <div class="carte">
+        <div class="filtres">
+          <div class="champ"><label for="bt-capital">Capital simulé (€)</label>
+            <input type="number" id="bt-capital" value="100000" min="1000" step="10000"></div>
+          <div class="champ"><label for="bt-frais">Frais annuels du contrat (%)</label>
+            <input type="number" id="bt-frais" value="0" min="0" max="3" step="0.1"></div>
+          <div class="champ"><label for="bt-retrait">Retrait annuel simulé (€)</label>
+            <input type="number" id="bt-retrait" value="0" min="0" step="1000"></div>
+          <div class="champ"><label for="bt-allocation">Allocation testée</label>
+            <select id="bt-allocation">
+              <option value="tactique">Allocation cible actuelle (tactique)</option>
+              <option value="strategique">Allocation stratégique du profil</option>
+            </select></div>
+        </div>
+      </div>
+
+      <div id="backtest-contenu"></div>
+
+      <div class="carte">
+        <h3>Séries de performances</h3>
+        <p class="intro" style="font-size:12px">Performances calendaires nettes, en euros, dividendes réinvestis.
+        Remplacez ces valeurs par celles extraites de Quantalys, Morningstar ou justETF pour obtenir un backtest
+        exploitable. Une série passe en « sourcé » dès que vous cochez la case.</p>
+        <div class="tableau-defilant">
+          <table id="table-historique">
+            <thead><tr id="entete-historique"></tr></thead>
+            <tbody id="corps-historique"></tbody>
+          </table>
+        </div>
+        <div class="barre-actions">
+          <button class="bouton secondaire" id="btn-exporter-historique">Exporter les séries (CSV)</button>
+          <button class="bouton secondaire" id="btn-importer-historique">Importer des séries (CSV)</button>
+          <button class="bouton secondaire" id="btn-restaurer-historique">Restaurer les séries livrées</button>
+          <input type="file" id="fichier-historique" accept=".csv,text/csv" hidden>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ 8. UNIVERS ============ -->
     <section class="vue" id="vue-univers">
       <h2>Univers ETF référencé</h2>
@@ -302,11 +349,13 @@
 <script src="js/data/macro.js"></script>
 <script src="js/data/etf-univers.js"></script>
 <script src="js/data/fiscalite.js"></script>
+<script src="js/data/historique.js"></script>
 <script src="js/engine/profil.js"></script>
 <script src="js/engine/allocation.js"></script>
 <script src="js/engine/selection.js"></script>
 <script src="js/engine/arbitrage.js"></script>
 <script src="js/engine/revenus.js"></script>
+<script src="js/engine/backtest.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -13,6 +13,8 @@ const Etat = {
   detention: [],
   apport: 0,
   revenus: { besoin: 0, frequence: 'mensuelle', coussinMois: 24, anciennete: 8, couple: false, primesVersees: 0 },
+  backtest: { capital: 100000, frais: 0, retrait: 0, allocation: 'tactique' },
+  historique: JSON.parse(JSON.stringify(HISTORIQUE_POCHES)),
   univers: JSON.parse(JSON.stringify(ETF_UNIVERS)),
   journal: [],
   filtreUnivers: { classe: '', enveloppe: '', texte: '' }
@@ -86,7 +88,8 @@ function sauver(silencieux) {
     localStorage.setItem(CLE_STOCKAGE, JSON.stringify({
       identite: Etat.identite, filtres: Etat.filtres, reponses: Etat.reponses,
       macroChoix: Etat.macroChoix, scenariosManuels: Etat.scenariosManuels,
-      detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal
+      detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal,
+      revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique
     }));
     if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
   } catch (e) { notifier('Enregistrement impossible : ' + e.message, 'erreur'); }
@@ -204,6 +207,7 @@ function rendre(vue) {
     case 'portefeuille':  rendrePortefeuille(); break;
     case 'arbitrages':    rendreArbitrages(); break;
     case 'revenus':       rendreRevenus(); break;
+    case 'backtest':      rendreBacktest(); break;
     case 'univers':       rendreUnivers(); break;
     case 'journal':       rendreJournal(); break;
     case 'rapport':       rendreRapport(); break;
@@ -221,6 +225,7 @@ function majNav() {
     allocation: !!p, portefeuille: !!p,
     arbitrages: Etat.detention.length > 0,
     revenus: Number(Etat.revenus.besoin) > 0,
+    backtest: Object.keys(Etat.historique).some(k => Etat.historique[k].source === 'source'),
     univers: true, journal: Etat.journal.length > 0, rapport: !!p
   };
   $$('#nav button').forEach(b => b.classList.toggle('complet', !!complet[b.dataset.vue]));
@@ -922,7 +927,204 @@ function rendreRevenusContenuSeul() {
 }
 
 /* ============================================================
-   VUE 9 — UNIVERS
+   VUE 9 — BACKTEST
+   ============================================================ */
+
+function optionsBacktest() {
+  return {
+    capital: Number(Etat.backtest.capital) || 100000,
+    fraisContrat: Number(Etat.backtest.frais) || 0,
+    retraitAnnuel: Number(Etat.backtest.retrait) || 0,
+    historique: Etat.historique
+  };
+}
+
+function poidsTestes() {
+  const alloc = allocationCourante();
+  if (!alloc) return null;
+  return Etat.backtest.allocation === 'strategique' ? alloc.strategique.poches : alloc.poches;
+}
+
+function rendreBacktest() {
+  $('#bt-capital').value = Etat.backtest.capital;
+  $('#bt-frais').value = Etat.backtest.frais;
+  $('#bt-retrait').value = Etat.backtest.retrait;
+  $('#bt-allocation').value = Etat.backtest.allocation;
+
+  rendreSeriesHistorique();
+
+  const poids = poidsTestes();
+  const c = $('#backtest-contenu');
+  const banniere = $('#backtest-fiabilite');
+
+  if (!poids) { banniere.innerHTML = ''; c.innerHTML = messageIncomplet(); return; }
+
+  const opt = optionsBacktest();
+  const fiab = MoteurBacktest.fiabilite(poids, Etat.historique);
+  const periode = ANNEES_HISTORIQUE[0] + ' – ' + ANNEES_HISTORIQUE[ANNEES_HISTORIQUE.length - 1];
+
+  banniere.innerHTML =
+    (fiab.estime > 0
+      ? '<div class="message erreur"><strong>Résultats non probants : ' + pct(fiab.estime) +
+        ' de l\'allocation testée repose sur des séries estimées, non vérifiées.</strong> ' +
+        'Seules ' + pct(fiab.source) + ' proviennent d\'une source identifiée. ' +
+        'Ce backtest éprouve le comportement du modèle d\'allocation ; il ne constitue pas une mesure de performance ' +
+        'et ne doit pas être présenté à un client. Remplacez les séries ci-dessous par vos extractions ' +
+        'Quantalys ou Morningstar pour obtenir un résultat exploitable.</div>'
+      : '<div class="message succes"><strong>Toutes les séries utilisées sont marquées comme sourcées.</strong> ' +
+        'Vérifiez qu\'elles correspondent bien aux supports effectivement retenus, nets de frais et en euros.</div>') +
+    (fiab.absent > 0 ? '<div class="message alerte">' + pct(fiab.absent) + ' de l\'allocation n\'a aucune série ' +
+      'historique : cette part est exclue du calcul, qui est renormalisé sur le reste.</div>' : '');
+
+  const r = MoteurBacktest.simuler(poids, opt);
+  if (!r) { c.innerHTML = '<div class="message alerte">Aucune série exploitable pour cette allocation.</div>'; return; }
+
+  const profil = resultatProfil().profil;
+  const contrib = MoteurBacktest.contributions(r, poids);
+  const reb = MoteurBacktest.effetRebalancement(poids, opt);
+  const refs = MoteurBacktest.references(opt);
+  const profils = MoteurBacktest.comparerProfils(opt);
+  const seq = opt.retraitAnnuel > 0 ? MoteurBacktest.risqueSequence(poids, opt) : null;
+
+  const maxAbs = Math.max.apply(null, r.annees.map(a => Math.abs(a.rendement)).concat([1]));
+
+  c.innerHTML =
+    '<div class="grille quatre">' +
+      kpi(signe(r.perfCumulee), 'Performance cumulée', periode + ' · ' + r.nbAnnees + ' ans') +
+      kpi(r.annualisee === null ? signe(r.twrAnnualise) : signe(r.annualisee), 'Par an',
+          r.annualisee === null ? 'pondérée dans le temps (retraits)' : 'annualisée') +
+      kpi(pct(r.volatilite), 'Volatilité annuelle', 'écart-type des ' + r.nbAnnees + ' rendements') +
+      kpi(pct(r.maxDrawdown), 'Plus forte baisse', 'de fin d\'année à fin d\'année') +
+    '</div>' +
+
+    '<div class="grille deux">' +
+      '<div class="carte"><h3>Année par année — profil ' + profil.nom + '</h3>' +
+        '<div class="barres">' + r.annees.map(a =>
+          '<div class="barre"><div class="tete"><span>' + a.annee +
+          (a.retrait ? ' <span style="color:var(--gris-doux)">(retrait ' + euro(a.retrait) + ')</span>' : '') + '</span>' +
+          '<span class="' + (a.rendement >= 0 ? 'positif' : 'negatif') + '">' + signe(a.rendement) +
+          ' <span style="color:var(--gris-doux);font-weight:400">' + euro(a.capital) + '</span></span></div>' +
+          '<div class="piste" style="display:flex;justify-content:center">' +
+          '<div style="width:50%;display:flex;justify-content:flex-end">' +
+          (a.rendement < 0 ? '<div style="height:100%;border-radius:3px;background:var(--rouge);width:' +
+            (100 * Math.abs(a.rendement) / maxAbs) + '%"></div>' : '') + '</div>' +
+          '<div style="width:50%">' +
+          (a.rendement >= 0 ? '<div style="height:100%;border-radius:3px;background:var(--vert);width:' +
+            (100 * a.rendement / maxAbs) + '%"></div>' : '') + '</div></div></div>').join('') + '</div>' +
+        '<table style="margin-top:12px"><tbody>' +
+        ligne('Capital initial', euro(r.capitalInitial)) +
+        (r.retraitsCumules ? ligne('Retraits cumulés', euro(r.retraitsCumules)) : '') +
+        ligne('Capital final', euro(r.capitalFinal)) +
+        ligne('Années négatives', r.anneesNegatives + ' sur ' + r.nbAnnees) +
+        ligne('Meilleure année', r.meilleureAnnee.annee + ' (' + signe(r.meilleureAnnee.rendement) + ')') +
+        ligne('Pire année', r.pireAnnee.annee + ' (' + signe(r.pireAnnee.rendement) + ')') +
+        (r.ratioRendementRisque !== null ? ligne('Rendement / volatilité', r.ratioRendementRisque.toFixed(2).replace('.', ',')) : '') +
+        '</tbody></table>' +
+      '</div>' +
+
+      '<div class="carte"><h3>Comparaison</h3>' +
+        '<table><thead><tr><th>Allocation</th><th class="num">Cumul</th><th class="num">Par an</th>' +
+        '<th class="num">Volat.</th><th class="num">Pire année</th></tr></thead><tbody>' +
+        profils.map(p => '<tr' + (p.profil.id === profil.id ? ' style="background:var(--bleu-pale);font-weight:600"' : '') + '>' +
+          '<td><span class="pastille" style="background:' + p.profil.couleur + '"></span>' + p.profil.nom + '</td>' +
+          '<td class="num">' + signe(p.perfCumulee) + '</td>' +
+          '<td class="num">' + signe(p.annualisee === null ? p.twrAnnualise : p.annualisee) + '</td>' +
+          '<td class="num">' + p.volatilite.toFixed(1).replace('.', ',') + '</td>' +
+          '<td class="num negatif">' + signe(p.pireAnnee.rendement) + '</td></tr>').join('') +
+        '<tr><td colspan="5" style="padding:4px 0"></td></tr>' +
+        refs.map(x => '<tr style="color:var(--gris-doux)"><td><em>' + echapper(x.nom) + '</em></td>' +
+          '<td class="num">' + signe(x.perfCumulee) + '</td>' +
+          '<td class="num">' + signe(x.annualisee === null ? x.twrAnnualise : x.annualisee) + '</td>' +
+          '<td class="num">' + x.volatilite.toFixed(1).replace('.', ',') + '</td>' +
+          '<td class="num">' + signe(x.pireAnnee.rendement) + '</td></tr>').join('') +
+        '</tbody></table>' +
+        '<p class="intro" style="font-size:11px;margin-top:10px">Sur une période où les actions dominent, un profil ' +
+        'prudent paraîtra toujours médiocre. Ce tableau mesure la cohérence du dispositif de risque, pas la qualité ' +
+        'd\'un profil : le bon profil est celui que le client peut tenir dans la pire année, ici ' +
+        r.pireAnnee.annee + '.</p>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="carte"><h3>D\'où vient la performance</h3>' +
+      '<div class="tableau-defilant"><table><thead><tr><th>Poche</th><th class="num">Poids</th>' +
+      '<th class="num">Gain / perte</th><th class="num">Points de performance</th><th class="num">Part du résultat</th>' +
+      '</tr></thead><tbody>' +
+      contrib.map(x => '<tr><td><span class="pastille" style="background:' +
+        COULEURS_CLASSES[MoteurSelection.classeDePoche(x.poche)] + '"></span>' +
+        echapper(LIBELLES_POCHES[x.poche] || x.poche) + '</td>' +
+        '<td class="num">' + pct(x.poids) + '</td>' +
+        '<td class="num ' + (x.gain >= 0 ? 'positif' : 'negatif') + '">' + euro(x.gain) + '</td>' +
+        '<td class="num">' + signe(x.pointsDePerf) + '</td>' +
+        '<td class="num">' + pct(x.partDuGain) + '</td></tr>').join('') +
+      '</tbody></table></div>' +
+    '</div>' +
+
+    (reb ? '<div class="carte"><h3>Le rééquilibrage annuel a-t-il servi ?</h3>' +
+      '<table><thead><tr><th>Gestion</th><th class="num">Cumul</th><th class="num">Volatilité</th>' +
+      '<th class="num">Pire année</th><th class="num">Capital final</th></tr></thead><tbody>' +
+      '<tr><td>Rééquilibrage annuel</td><td class="num">' + signe(reb.avec.perfCumulee) + '</td>' +
+      '<td class="num">' + pct(reb.avec.volatilite) + '</td><td class="num negatif">' + signe(reb.avec.pireAnnee.rendement) + '</td>' +
+      '<td class="num">' + euro(reb.avec.capitalFinal) + '</td></tr>' +
+      '<tr><td>Aucun arbitrage (buy &amp; hold)</td><td class="num">' + signe(reb.sans.perfCumulee) + '</td>' +
+      '<td class="num">' + pct(reb.sans.volatilite) + '</td><td class="num negatif">' + signe(reb.sans.pireAnnee.rendement) + '</td>' +
+      '<td class="num">' + euro(reb.sans.capitalFinal) + '</td></tr>' +
+      '</tbody></table>' +
+      '<p class="intro" style="font-size:12px;margin-top:10px">' +
+      (reb.gainPerf >= 0
+        ? 'Sur cette période, le rééquilibrage a ajouté ' + signe(reb.gainPerf) + ' de performance cumulée.'
+        : 'Sur cette période, le rééquilibrage a coûté ' + pct(Math.abs(reb.gainPerf)) + ' de performance cumulée : ' +
+          'il vend mécaniquement ce qui monte. C\'est le prix du contrôle du risque — la contrepartie est ' +
+          pct(reb.gainVol) + ' de volatilité en moins et une exposition actions qui ne dérive pas au-delà du profil.') +
+      '</p></div>' : '') +
+
+    (seq ? '<div class="carte"><h3>Risque de séquence</h3>' +
+      '<p class="intro" style="font-size:12px">Mêmes rendements, mêmes retraits, ordre des années inversé. ' +
+      'En phase de retrait, l\'ordre dans lequel les performances surviennent compte autant que leur moyenne.</p>' +
+      '<table><thead><tr><th>Ordre des années</th><th class="num">Retraits cumulés</th><th class="num">Capital final</th></tr></thead><tbody>' +
+      '<tr><td>Chronologique</td><td class="num">' + euro(seq.chrono.retraitsCumules) + '</td>' +
+      '<td class="num">' + euro(seq.chrono.capitalFinal) + '</td></tr>' +
+      '<tr><td>Inversé</td><td class="num">' + euro(seq.inverse.retraitsCumules) + '</td>' +
+      '<td class="num">' + euro(seq.inverse.capitalFinal) + '</td></tr>' +
+      '<tr><td><strong>Écart</strong></td><td class="num">—</td>' +
+      '<td class="num"><strong>' + euro(seq.ecart) + ' (' + signe(seq.ecartPct) + ')</strong></td></tr>' +
+      '</tbody></table></div>' : '') +
+
+    '<div class="message alerte"><strong>Limites de ce backtest.</strong><ul>' +
+      '<li>Le pas est <strong>annuel</strong> : la plus forte baisse est mesurée de fin d\'année à fin d\'année ' +
+      'et sous-estime nettement la baisse réellement vécue en cours d\'année.</li>' +
+      '<li>Cinq années ne constituent pas un échantillon statistique. Volatilité et ratios calculés sur ' +
+      r.nbAnnees + ' observations sont indicatifs.</li>' +
+      '<li>Le calcul porte sur des <strong>indices par poche</strong>, pas sur les ETF réellement retenus : ' +
+      'écarts de suivi, frais de transaction et frais d\'arbitrage ne sont pas reproduits. ' +
+      (opt.fraisContrat ? 'Les frais de contrat de ' + pct(opt.fraisContrat) + ' par an sont appliqués.'
+        : 'Aucun frais de contrat n\'est appliqué — renseignez-les ci-dessus.') + '</li>' +
+      '<li>L\'allocation testée est celle d\'aujourd\'hui, appliquée rétrospectivement. Le portefeuille réel ' +
+      'aurait connu des arbitrages tactiques différents à chaque revue.</li>' +
+      '<li>Les performances passées ne préjugent pas des performances futures.</li>' +
+    '</ul></div>';
+}
+
+function rendreSeriesHistorique() {
+  $('#entete-historique').innerHTML = '<th>Poche</th>' +
+    ANNEES_HISTORIQUE.map(a => '<th class="num">' + a + '</th>').join('') +
+    '<th class="num">Cumul</th><th>Référence</th><th>Sourcé</th>';
+
+  $('#corps-historique').innerHTML = Object.keys(Etat.historique).map(p => {
+    const s = Etat.historique[p];
+    const cumul = 100 * (s.valeurs.reduce((a, v) => a * (1 + v / 100), 1) - 1);
+    return '<tr><td>' + echapper(LIBELLES_POCHES[p] || p) + '</td>' +
+      s.valeurs.map((v, i) => '<td class="num"><input type="number" step="0.1" style="width:72px" ' +
+        'data-serie="' + p + '" data-annee="' + i + '" value="' + v + '"></td>').join('') +
+      '<td class="num ' + (cumul >= 0 ? 'positif' : 'negatif') + '">' + signe(cumul) + '</td>' +
+      '<td style="font-size:11px;color:var(--gris-doux)">' + echapper(s.reference || '') +
+        (s.url ? ' <a href="' + s.url + '" target="_blank" rel="noopener">source</a>' : '') + '</td>' +
+      '<td style="text-align:center"><input type="checkbox" data-serie-source="' + p + '"' +
+        (s.source === 'source' ? ' checked' : '') + '></td></tr>';
+  }).join('');
+}
+
+/* ============================================================
+   VUE 10 — UNIVERS
    ============================================================ */
 
 function rendreUnivers() {
@@ -1277,6 +1479,22 @@ function brancher() {
       return;
     }
 
+    if (t.dataset.serie) {
+      Etat.historique[t.dataset.serie].valeurs[Number(t.dataset.annee)] = Number(t.value);
+      sauver(true);
+      clearTimeout(window.__btTimer);
+      window.__btTimer = setTimeout(() => rendreBacktest(), 400);
+      return;
+    }
+
+    if (['bt-capital', 'bt-frais', 'bt-retrait'].indexOf(t.id) >= 0) {
+      Etat.backtest[t.id.slice(3)] = Number(t.value);
+      sauver(true);
+      clearTimeout(window.__btTimer);
+      window.__btTimer = setTimeout(() => rendreBacktest(), 300);
+      return;
+    }
+
     if (t.dataset.filtreUnivers) {
       Etat.filtreUnivers[t.dataset.filtreUnivers] = t.value;
       rendreUnivers(); return;
@@ -1292,6 +1510,11 @@ function brancher() {
 
   document.addEventListener('change', e => {
     const t = e.target;
+    if (t.dataset.serieSource) {
+      Etat.historique[t.dataset.serieSource].source = t.checked ? 'source' : 'estime';
+      sauver(true); rendreBacktest(); return;
+    }
+    if (t.id === 'bt-allocation') { Etat.backtest.allocation = t.value; sauver(true); rendreBacktest(); return; }
     if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }
     if (t.id === 'f-synthetique') { Etat.filtres.exclureSynthetique = t.value === '1'; sauver(true); }
     if (t.dataset.identite === 'enveloppe' || t.dataset.identite === 'contratAV') { rendreIdentite(); }
@@ -1371,6 +1594,34 @@ function brancher() {
 
   $('#btn-reset-scenarios').onclick = () => { Etat.scenariosManuels = null; sauver(true); rendreMacro(); };
 
+  $('#btn-exporter-historique').onclick = () => {
+    const lignes = ['poche;libelle;' + ANNEES_HISTORIQUE.join(';') + ';source;reference'];
+    Object.keys(Etat.historique).forEach(p => {
+      const s = Etat.historique[p];
+      lignes.push([p, LIBELLES_POCHES[p] || p].concat(s.valeurs)
+        .concat([s.source, (s.reference || '').replace(/;/g, ',')]).join(';'));
+    });
+    telecharger('series-historiques.csv', lignes.join('\n'));
+  };
+  $('#btn-importer-historique').onclick = () => $('#fichier-historique').click();
+  $('#fichier-historique').onchange = e => {
+    const fichier = e.target.files[0];
+    if (!fichier) return;
+    const lecteur = new FileReader();
+    lecteur.onload = () => {
+      const res = importerSeries(lecteur.result);
+      if (!res.reprises) { notifier('Aucune série reconnue. Attendu : poche;libelle;' + ANNEES_HISTORIQUE.join(';'), 'erreur'); return; }
+      sauver(true); rendreBacktest();
+      notifier(res.reprises + ' série(s) mises à jour' + (res.inconnues.length ? ', ' + res.inconnues.length + ' poche(s) inconnue(s)' : '') + '.');
+    };
+    lecteur.readAsText(fichier);
+  };
+  $('#btn-restaurer-historique').onclick = () => {
+    if (!confirm('Remplacer les séries actuelles par celles livrées avec l\'application ?')) return;
+    Etat.historique = JSON.parse(JSON.stringify(HISTORIQUE_POCHES));
+    sauver(true); rendreBacktest();
+  };
+
   $('#lien-remplir-demo').onclick = e => {
     e.preventDefault();
     QUESTIONS.forEach(q => { Etat.reponses[q.id] = Math.min(2, q.options.length - 1); });
@@ -1417,6 +1668,36 @@ function importerValorisations(texte) {
   });
 
   return { lignes, ignorees };
+}
+
+/** Import CSV de séries : poche;libellé;an1;an2;…  (le libellé est facultatif). */
+function importerSeries(texte) {
+  let reprises = 0; const inconnues = [];
+  const nombre = s => {
+    const n = parseFloat(String(s).replace(/[^\d.,-]/g, '').replace(/\s/g, '').replace(',', '.'));
+    return isNaN(n) ? null : n;
+  };
+
+  String(texte || '').split(/\r?\n/).forEach((brut, i) => {
+    if (!brut.trim()) return;
+    const champs = brut.split(/[;\t]/).map(x => x.trim());
+    const poche = champs[0];
+    if (!poche || poche === 'poche') return;
+    if (!Etat.historique[poche] && !LIBELLES_POCHES[poche]) { inconnues.push(poche); return; }
+
+    const valeurs = champs.slice(1).map(nombre).filter(n => n !== null).slice(0, ANNEES_HISTORIQUE.length);
+    if (valeurs.length !== ANNEES_HISTORIQUE.length) { inconnues.push(poche); return; }
+
+    const source = /source/i.test(brut) ? 'source' : (Etat.historique[poche] || {}).source || 'estime';
+    Etat.historique[poche] = {
+      valeurs, source,
+      reference: (Etat.historique[poche] || {}).reference || 'Série importée',
+      url: (Etat.historique[poche] || {}).url
+    };
+    reprises++;
+  });
+
+  return { reprises, inconnues };
 }
 
 function telecharger(nom, contenu) {
