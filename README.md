@@ -40,6 +40,19 @@ transmises à personne. Deux utilisateurs de la même adresse ne partagent donc
 pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
 « Importer ».
 
+## Publier une mise à jour
+
+Les fichiers `.js` et `.css` sont référencés avec un numéro de version
+(`?v=…`). **Incrémentez-le à chaque modification**, sinon les navigateurs
+peuvent servir pendant une dizaine de minutes un mélange de HTML neuf et de
+JavaScript en cache — ce qui casse l'application :
+
+```bash
+cd "/Users/Mayeul/APP ETF CGP" && python3 -c "import re,datetime,pathlib;p=pathlib.Path('index.html');v=datetime.datetime.now().strftime('%Y%m%d%H%M');p.write_text(re.sub(r'\?v=\d+',f'?v={v}',p.read_text()));print('version',v)" && git add -A && git commit -m "..." && git push
+```
+
+Le site se régénère en une à deux minutes.
+
 ## Lancer l'application en local
 
 Aucune installation, aucune dépendance, aucun accès réseau requis.
