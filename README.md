@@ -30,7 +30,17 @@ en assurance-vie, PEA ou compte-titres. Il enchaîne cinq étapes :
 4. **Sélection des supports** dans un univers ETF restreint, filtré par enveloppe et par contrat
 5. **Arbitrages** : comparaison au portefeuille détenu, ordres à passer, fiscalité, journal de suivi
 
-## Lancer l'application
+## Accéder à l'application
+
+En ligne : **https://mayeullecomte.github.io/myetf/**
+
+La page est publique. Elle ne comporte aucun serveur : les données saisies
+restent dans le navigateur de chaque utilisateur (`localStorage`) et ne sont
+transmises à personne. Deux utilisateurs de la même adresse ne partagent donc
+pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
+« Importer ».
+
+## Lancer l'application en local
 
 Aucune installation, aucune dépendance, aucun accès réseau requis.
 
