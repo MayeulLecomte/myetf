@@ -1,5 +1,26 @@
 # Allocation ETF — profilage, allocation d'actifs et arbitrages
 
+> ### ⚠️ Avertissement
+>
+> **Cette application ne constitue pas un conseil en investissement**, ni une
+> recommandation d'achat ou de vente, ni une sollicitation d'investir. C'est un
+> outil de travail interne destiné à un professionnel, qui doit valider,
+> compléter et signer toute préconisation dans le cadre d'un rapport
+> d'adéquation.
+>
+> **Les caractéristiques des ETF livrées avec l'application sont indicatives et
+> non vérifiées** (codes ISIN, frais, encours, notations, éligibilité). Elles ne
+> doivent pas être utilisées telles quelles.
+>
+> Les investissements en unités de compte présentent un **risque de perte en
+> capital**. Les performances passées ne préjugent pas des performances futures.
+> Les rendements, volatilités et projections affichés sont des estimations
+> fondées sur des hypothèses paramétrables, pas des garanties.
+>
+> Aucune donnée saisie n'est transmise : tout reste dans le navigateur de
+> l'utilisateur. Aucun droit d'utilisation ou de reproduction n'est concédé
+> (absence de licence = tous droits réservés).
+
 Outil d'aide à la décision pour la construction et le suivi d'un portefeuille d'ETF
 en assurance-vie, PEA ou compte-titres. Il enchaîne cinq étapes :
 
