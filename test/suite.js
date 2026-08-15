@@ -232,7 +232,7 @@ const bt=MoteurBacktest.simuler(eqPoches,btOpt);
 ok(bt.nbAnnees===ANNEES_HISTORIQUE.length,'toutes les années sont rejouées ('+bt.nbAnnees+')');
 // cohérence capital / rendements chaînés
 let chain=100000; bt.annees.forEach(a=>{chain=chain*(1+a.rendement/100)});
-ok(Math.abs(chain-bt.capitalFinal)<5,'capital final = chaînage des rendements annuels ('+Math.round(chain)+' vs '+bt.capitalFinal+' €)');
+ok(Math.abs(chain-bt.capitalFinal)<bt.capitalFinal*0.0002,'capital final = chaînage des rendements annuels, à l\'arrondi d\'affichage près ('+Math.round(chain)+' vs '+bt.capitalFinal+' €)');
 ok(Math.abs(bt.perfCumulee-100*(bt.capitalFinal/100000-1))<0.05,'performance cumulée cohérente avec le capital');
 ok(Math.abs(Math.pow(1+bt.annualisee/100,bt.nbAnnees)*100000-bt.capitalFinal)<50,'performance annualisée cohérente');
 // monotonie du risque entre profils
@@ -271,6 +271,40 @@ ok(fi.absent===0,'toutes les poches allouées ont une série');
 // poche sans série : renormalisation
 const btPartiel=MoteurBacktest.simuler({'act-monde':50,'poche-inexistante':50},btOpt);
 ok(btPartiel.manquantes.length===1&&Math.abs(btPartiel.couverture-50)<0.5,'poche sans série exclue et couverture signalée');
+
+
+// --- 10. Flux de marché
+console.log('\n== Flux de marché ==');
+ok(typeof PERFS_MARCHE==='object','fichier de cours généré et chargeable');
+const pochesMarche=Object.keys(PERFS_MARCHE);
+console.log('   '+pochesMarche.length+' poches alimentées par les cours de marché');
+ok(pochesMarche.length>0,'au moins une poche alimentée');
+ok(pochesMarche.every(p=>LIBELLES_POCHES[p]),'toutes les poches relevées sont connues du modèle');
+ok(pochesMarche.every(p=>{const e=ETF_UNIVERS.find(x=>x.isin===PERFS_MARCHE[p].isin);return e&&e.capitalisation!==false;}),
+   'seuls des ETF capitalisants servent de référence (le cours reflète le rendement total)');
+ok(pochesMarche.every(p=>Object.values(PERFS_MARCHE[p].perfs).every(v=>v>-60&&v<120)),'performances dans des bornes plausibles');
+// injection dans les séries : simulation de ce que fait l'application
+const histFusionne=JSON.parse(JSON.stringify(HISTORIQUE_POCHES));
+let injectees=0;
+Object.keys(histFusionne).forEach(p=>{
+  const s=histFusionne[p];
+  s.provenance=ANNEES_HISTORIQUE.map(()=>s.source==='source'?'source':'estime');
+  const m=PERFS_MARCHE[p]; if(!m) return;
+  ANNEES_HISTORIQUE.forEach((an,i)=>{const v=m.perfs[String(an)];if(v===undefined)return;s.valeurs[i]=v;s.provenance[i]='marche';injectees++;});
+});
+console.log('   '+injectees+' performances annuelles remplacées par des données de marché');
+ok(injectees>0,'injection effective dans les séries du backtest');
+const eqP=MoteurAllocation.strategique('equilibre').poches;
+const fAvant=MoteurBacktest.fiabilite(eqP,HISTORIQUE_POCHES);
+const fApres=MoteurBacktest.fiabilite(eqP,histFusionne);
+console.log('   part fiable : '+fAvant.fiable+' % → '+fApres.fiable+' %');
+ok(fApres.fiable>fAvant.fiable,'la part fiable progresse grâce au flux');
+ok(Math.abs(fApres.marche+fApres.source+fApres.estime+fApres.absent-100)<0.5,'répartition de provenance = 100 %');
+// le backtest reste cohérent après injection
+const btM=MoteurBacktest.simuler(eqP,{capital:100000,historique:histFusionne});
+ok(btM&&btM.nbAnnees===ANNEES_HISTORIQUE.length,'backtest exploitable sur les séries fusionnées');
+let chainM=100000; btM.annees.forEach(a=>{chainM=chainM*(1+a.rendement/100)});
+ok(Math.abs(chainM-btM.capitalFinal)<btM.capitalFinal*0.0002,'capital cohérent après injection des cours de marché (écart d\'arrondi '+Math.abs(chainM-btM.capitalFinal).toFixed(2)+' €)');
 
 console.log('\n'+(echecs?'❌ '+echecs+' échec(s)':'✅ tous les tests passent'));
 process.exit(echecs?1:0);

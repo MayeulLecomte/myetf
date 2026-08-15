@@ -1,0 +1,76 @@
+name: Mise à jour des cours
+
+# Relève les cours de clôture chez Euronext, les archive et régénère
+# les performances calendaires utilisées par le backtest.
+#
+# Gratuit : les dépôts publics ne consomment pas de minutes facturables.
+#
+# ⚠ GitHub désactive les tâches planifiées d'un dépôt public après
+# 60 jours sans activité. Ce workflow commite à chaque relevé, ce qui
+# entretient lui-même le compteur. Si le dépôt redevenait privé et
+# restait inactif, un courriel vous préviendrait de le réactiver.
+
+on:
+  schedule:
+    # 06h10 UTC du mardi au samedi : les clôtures de la veille sont publiées.
+    - cron: '10 6 * * 2-6'
+  workflow_dispatch:        # déclenchement manuel depuis l'onglet Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cours
+  cancel-in-progress: false
+
+jobs:
+  releve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Relever les cours
+        id: releve
+        run: node scripts/maj-cours.mjs | tee /tmp/rapport.txt
+
+      - name: Versionner les ressources si les données ont changé
+        run: |
+          if [ -n "$(git status --porcelain data js/data/cours-marche.js)" ]; then
+            python3 - <<'PY'
+          import re, datetime, pathlib
+          p = pathlib.Path('index.html')
+          v = datetime.datetime.now().strftime('%Y%m%d%H%M')
+          p.write_text(re.sub(r'\?v=\d+', f'?v={v}', p.read_text()))
+          print('version', v)
+          PY
+          fi
+
+      - name: Publier
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Aucune donnée nouvelle — rien à publier."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Relevé des cours du $(date -u +%Y-%m-%d)
+
+          $(grep -E 'Supports trouvés|Nouveaux points|Poches documentées|Années calendaires' /tmp/rapport.txt || true)"
+          git push
+
+      - name: Résumé
+        if: always()
+        run: |
+          {
+            echo '## Relevé des cours'
+            echo '```'
+            cat /tmp/rapport.txt || echo 'Aucun rapport produit.'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

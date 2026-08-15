@@ -965,13 +965,15 @@ function rendreBacktest() {
 
   banniere.innerHTML =
     (fiab.estime > 0
-      ? '<div class="message erreur"><strong>Résultats non probants : ' + pct(fiab.estime) +
-        ' de l\'allocation testée repose sur des séries estimées, non vérifiées.</strong> ' +
-        'Seules ' + pct(fiab.source) + ' proviennent d\'une source identifiée. ' +
+      ? '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '"><strong>' + pct(fiab.estime) +
+        ' de l\'allocation testée repose encore sur des séries estimées, non vérifiées.</strong> ' +
+        pct(fiab.marche) + ' proviennent des cours de marché relevés automatiquement et ' +
+        pct(fiab.source) + ' d\'une source documentée. ' +
         'Ce backtest éprouve le comportement du modèle d\'allocation ; il ne constitue pas une mesure de performance ' +
         'et ne doit pas être présenté à un client. Remplacez les séries ci-dessous par vos extractions ' +
         'Quantalys ou Morningstar pour obtenir un résultat exploitable.</div>'
-      : '<div class="message succes"><strong>Toutes les séries utilisées sont marquées comme sourcées.</strong> ' +
+      : '<div class="message succes"><strong>Toutes les séries utilisées sont sourcées</strong> (' +
+        pct(fiab.marche) + ' relevées sur les cours de marché). ' +
         'Vérifiez qu\'elles correspondent bien aux supports effectivement retenus, nets de frais et en euros.</div>') +
     (fiab.absent > 0 ? '<div class="message alerte">' + pct(fiab.absent) + ' de l\'allocation n\'a aucune série ' +
       'historique : cette part est exclue du calcul, qui est renormalisé sur le reste.</div>' : '');
@@ -1113,10 +1115,16 @@ function rendreSeriesHistorique() {
     const s = Etat.historique[p];
     const cumul = 100 * (s.valeurs.reduce((a, v) => a * (1 + v / 100), 1) - 1);
     return '<tr><td>' + echapper(LIBELLES_POCHES[p] || p) + '</td>' +
-      s.valeurs.map((v, i) => '<td class="num"><input type="number" step="0.1" style="width:72px" ' +
-        'data-serie="' + p + '" data-annee="' + i + '" value="' + v + '"></td>').join('') +
+      s.valeurs.map((v, i) => {
+        const prov = (s.provenance || [])[i] || (s.source === 'source' ? 'source' : 'estime');
+        const fond = prov === 'marche' ? '#e4f1e7' : prov === 'source' ? '#eef3f9' : '#fbeedd';
+        const titre = prov === 'marche' ? 'Relevé sur les cours de marché'
+          : prov === 'source' ? 'Source documentée' : 'Estimation non vérifiée';
+        return '<td class="num"><input type="number" step="0.1" style="width:72px;background:' + fond +
+          '" title="' + titre + '" data-serie="' + p + '" data-annee="' + i + '" value="' + v + '"></td>';
+      }).join('') +
       '<td class="num ' + (cumul >= 0 ? 'positif' : 'negatif') + '">' + signe(cumul) + '</td>' +
-      '<td style="font-size:11px;color:var(--gris-doux)">' + echapper(s.reference || '') +
+      '<td style="font-size:11px;color:var(--gris-doux)">' + echapper(s.instrument || s.reference || '') +
         (s.url ? ' <a href="' + s.url + '" target="_blank" rel="noopener">source</a>' : '') + '</td>' +
       '<td style="text-align:center"><input type="checkbox" data-serie-source="' + p + '"' +
         (s.source === 'source' ? ' checked' : '') + '></td></tr>';
@@ -1723,12 +1731,40 @@ function lireFichier(fichier, cb) {
    DÉMARRAGE
    ============================================================ */
 
+/**
+ * Injecte les performances issues des cours de marché dans les séries
+ * du backtest. Chaque année reçoit sa provenance, ce qui permet
+ * d'afficher honnêtement la part réellement sourcée.
+ */
+function injecterCoursMarche() {
+  if (typeof PERFS_MARCHE === 'undefined') return 0;
+  let remplacees = 0;
+  Object.keys(Etat.historique).forEach(poche => {
+    const s = Etat.historique[poche];
+    if (!s.provenance) s.provenance = ANNEES_HISTORIQUE.map(() => s.source === 'source' ? 'source' : 'estime');
+    const m = PERFS_MARCHE[poche];
+    if (!m) return;
+    ANNEES_HISTORIQUE.forEach((an, i) => {
+      const v = m.perfs[String(an)];
+      if (v === undefined) return;
+      s.valeurs[i] = v;
+      s.provenance[i] = 'marche';
+      remplacees++;
+    });
+    s.instrument = m.nom;
+    s.mic = m.mic;
+  });
+  return remplacees;
+}
+
 (function init() {
   const restaure = charger();
+  const remplacees = injecterCoursMarche();
   IDENTITE.forEach(f => {
     if (Etat.identite[f.id] === undefined && f.defaut !== undefined) Etat.identite[f.id] = f.defaut;
   });
   brancher();
   afficher('client');
   if (restaure) notifier('Dossier précédent restauré.', 'info');
+  if (remplacees) console.info(remplacees + ' performances annuelles alimentées par les cours de marché.');
 })();

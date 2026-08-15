@@ -186,13 +186,29 @@ const MoteurBacktest = (function () {
   /** Part des séries réellement sourcées dans l'allocation testée. */
   function fiabilite(poids, historique) {
     const hist = historique || HISTORIQUE_POCHES;
-    let source = 0, estime = 0, absent = 0;
+    let source = 0, estime = 0, absent = 0, marche = 0;
+    const n = ANNEES_HISTORIQUE.length;
     Object.keys(poids).forEach(p => {
       if (poids[p] <= 0) return;
-      if (!hist[p]) { absent += poids[p]; return; }
-      if (hist[p].source === 'source') source += poids[p]; else estime += poids[p];
+      const s = hist[p];
+      if (!s) { absent += poids[p]; return; }
+      /* La provenance est appréciée année par année : une série peut
+         être partiellement alimentée par les cours de marché. */
+      const prov = s.provenance || [];
+      let nbMarche = 0, nbSource = 0;
+      for (let i = 0; i < n; i++) {
+        if (prov[i] === 'marche') nbMarche++;
+        else if (prov[i] === 'source' || (!prov[i] && s.source === 'source')) nbSource++;
+      }
+      marche += poids[p] * nbMarche / n;
+      source += poids[p] * nbSource / n;
+      estime += poids[p] * (n - nbMarche - nbSource) / n;
     });
-    return { source: arrondi(source), estime: arrondi(estime), absent: arrondi(absent) };
+    return {
+      marche: arrondi(marche), source: arrondi(source),
+      estime: arrondi(estime), absent: arrondi(absent),
+      fiable: arrondi(marche + source)
+    };
   }
 
   function arrondi(x) { return Math.round(x * 100) / 100; }
