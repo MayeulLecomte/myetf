@@ -4,7 +4,7 @@
   "poches": {
     "act-emergents": {
       "isin": "FR0013412020",
-      "nom": "Amundi PEA MSCI Emerging Markets ESG Leaders",
+      "nom": "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc",
       "mic": "XPAR",
       "perfs": {
         "2025": 22.47
@@ -12,11 +12,11 @@
       "points": 509
     },
     "act-europe": {
-      "isin": "FR0007052782",
-      "nom": "Amundi CAC 40 UCITS ETF (Acc)",
-      "mic": "XPAR",
+      "isin": "IE00B4K48X80",
+      "nom": "iShares Core MSCI Europe UCITS ETF EUR (Acc)",
+      "mic": "XAMS",
       "perfs": {
-        "2025": 10.6
+        "2025": 19.74
       },
       "points": 509
     },
@@ -31,7 +31,7 @@
     },
     "act-monde": {
       "isin": "IE00B4L5Y983",
-      "nom": "iShares Core MSCI World UCITS ETF (Acc)",
+      "nom": "iShares Core MSCI World UCITS ETF USD (Acc)",
       "mic": "XAMS",
       "perfs": {
         "2025": 7.08
@@ -40,7 +40,7 @@
     },
     "act-small": {
       "isin": "LU1681038672",
-      "nom": "Amundi Russell 2000 UCITS ETF (Acc)",
+      "nom": "Amundi Russell 2000 UCITS ETF EUR (C)",
       "mic": "XPAR",
       "perfs": {
         "2025": -0.58
@@ -48,35 +48,44 @@
       "points": 509
     },
     "act-tech": {
+      "isin": "FR0011871110",
+      "nom": "Amundi PEA Nasdaq-100 UCITS ETF Acc",
+      "mic": "XPAR",
+      "perfs": {
+        "2025": 5.71
+      },
+      "points": 509
+    },
+    "act-us": {
       "isin": "FR0011871128",
-      "nom": "Amundi PEA Nasdaq-100 UCITS ETF",
+      "nom": "Amundi PEA S&P 500 UCITS ETF Acc",
       "mic": "XPAR",
       "perfs": {
         "2025": 3.67
       },
       "points": 509
     },
-    "act-us": {
-      "isin": "FR0013412285",
-      "nom": "Amundi PEA S&P 500 UCITS ETF",
-      "mic": "XPAR",
-      "perfs": {
-        "2025": 3.89
-      },
-      "points": 509
-    },
     "div-immobilier": {
       "isin": "LU1437018838",
-      "nom": "Amundi Index FTSE EPRA NAREIT Global UCITS ETF",
+      "nom": "Amundi FTSE EPRA NAREIT Global UCITS ETF Acc",
       "mic": "XPAR",
       "perfs": {
         "2025": -2.32
       },
       "points": 509
     },
+    "div-matieres": {
+      "isin": "LU1829218749",
+      "nom": "Amundi Bloomberg Equal-weight Commodity ex-Agriculture UCITS ETF Acc",
+      "mic": "XPAR",
+      "perfs": {
+        "2025": 15.19
+      },
+      "points": 509
+    },
     "div-or": {
       "isin": "FR0013416716",
-      "nom": "Amundi Physical Gold ETC",
+      "nom": "Amundi Physical Gold ETC (C)",
       "mic": "XPAR",
       "perfs": {
         "2025": 45.71
@@ -85,7 +94,7 @@
     },
     "mon-euro": {
       "isin": "FR0010510800",
-      "nom": "Amundi Euro Overnight Return UCITS ETF",
+      "nom": "Amundi EUR Overnight Return UCITS ETF Acc",
       "mic": "XPAR",
       "perfs": {
         "2025": 2.25
@@ -94,28 +103,28 @@
     },
     "obl-globale-hedge": {
       "isin": "IE00BDBRDM35",
-      "nom": "iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged)",
+      "nom": "iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)",
       "mic": "XAMS",
       "perfs": {
         "2025": 2.43
       },
       "points": 509
     },
-    "obl-souv-euro-ct": {
-      "isin": "LU1650487413",
-      "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF",
-      "mic": "XPAR",
+    "obl-inflation": {
+      "isin": "IE00B0M62X26",
+      "nom": "iShares € Inflation Linked Govt Bond UCITS ETF",
+      "mic": "XAMS",
       "perfs": {
-        "2025": 1.98
+        "2025": 0.67
       },
       "points": 509
     },
-    "obl-souv-euro-lt": {
-      "isin": "LU1287023342",
-      "nom": "Xtrackers Eurozone Government Bond UCITS ETF",
+    "obl-souv-euro-ct": {
+      "isin": "LU1650487413",
+      "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF Acc",
       "mic": "XPAR",
       "perfs": {
-        "2025": -1.08
+        "2025": 1.98
       },
       "points": 509
     }

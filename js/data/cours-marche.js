@@ -11,7 +11,7 @@
 const PERFS_MARCHE = {
   "act-emergents": {
     "isin": "FR0013412020",
-    "nom": "Amundi PEA MSCI Emerging Markets ESG Leaders",
+    "nom": "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc",
     "mic": "XPAR",
     "perfs": {
       "2025": 22.47
@@ -19,11 +19,11 @@ const PERFS_MARCHE = {
     "points": 509
   },
   "act-europe": {
-    "isin": "FR0007052782",
-    "nom": "Amundi CAC 40 UCITS ETF (Acc)",
-    "mic": "XPAR",
+    "isin": "IE00B4K48X80",
+    "nom": "iShares Core MSCI Europe UCITS ETF EUR (Acc)",
+    "mic": "XAMS",
     "perfs": {
-      "2025": 10.6
+      "2025": 19.74
     },
     "points": 509
   },
@@ -38,7 +38,7 @@ const PERFS_MARCHE = {
   },
   "act-monde": {
     "isin": "IE00B4L5Y983",
-    "nom": "iShares Core MSCI World UCITS ETF (Acc)",
+    "nom": "iShares Core MSCI World UCITS ETF USD (Acc)",
     "mic": "XAMS",
     "perfs": {
       "2025": 7.08
@@ -47,7 +47,7 @@ const PERFS_MARCHE = {
   },
   "act-small": {
     "isin": "LU1681038672",
-    "nom": "Amundi Russell 2000 UCITS ETF (Acc)",
+    "nom": "Amundi Russell 2000 UCITS ETF EUR (C)",
     "mic": "XPAR",
     "perfs": {
       "2025": -0.58
@@ -55,35 +55,44 @@ const PERFS_MARCHE = {
     "points": 509
   },
   "act-tech": {
+    "isin": "FR0011871110",
+    "nom": "Amundi PEA Nasdaq-100 UCITS ETF Acc",
+    "mic": "XPAR",
+    "perfs": {
+      "2025": 5.71
+    },
+    "points": 509
+  },
+  "act-us": {
     "isin": "FR0011871128",
-    "nom": "Amundi PEA Nasdaq-100 UCITS ETF",
+    "nom": "Amundi PEA S&P 500 UCITS ETF Acc",
     "mic": "XPAR",
     "perfs": {
       "2025": 3.67
     },
     "points": 509
   },
-  "act-us": {
-    "isin": "FR0013412285",
-    "nom": "Amundi PEA S&P 500 UCITS ETF",
-    "mic": "XPAR",
-    "perfs": {
-      "2025": 3.89
-    },
-    "points": 509
-  },
   "div-immobilier": {
     "isin": "LU1437018838",
-    "nom": "Amundi Index FTSE EPRA NAREIT Global UCITS ETF",
+    "nom": "Amundi FTSE EPRA NAREIT Global UCITS ETF Acc",
     "mic": "XPAR",
     "perfs": {
       "2025": -2.32
     },
     "points": 509
   },
+  "div-matieres": {
+    "isin": "LU1829218749",
+    "nom": "Amundi Bloomberg Equal-weight Commodity ex-Agriculture UCITS ETF Acc",
+    "mic": "XPAR",
+    "perfs": {
+      "2025": 15.19
+    },
+    "points": 509
+  },
   "div-or": {
     "isin": "FR0013416716",
-    "nom": "Amundi Physical Gold ETC",
+    "nom": "Amundi Physical Gold ETC (C)",
     "mic": "XPAR",
     "perfs": {
       "2025": 45.71
@@ -92,7 +101,7 @@ const PERFS_MARCHE = {
   },
   "mon-euro": {
     "isin": "FR0010510800",
-    "nom": "Amundi Euro Overnight Return UCITS ETF",
+    "nom": "Amundi EUR Overnight Return UCITS ETF Acc",
     "mic": "XPAR",
     "perfs": {
       "2025": 2.25
@@ -101,28 +110,28 @@ const PERFS_MARCHE = {
   },
   "obl-globale-hedge": {
     "isin": "IE00BDBRDM35",
-    "nom": "iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged)",
+    "nom": "iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)",
     "mic": "XAMS",
     "perfs": {
       "2025": 2.43
     },
     "points": 509
   },
-  "obl-souv-euro-ct": {
-    "isin": "LU1650487413",
-    "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF",
-    "mic": "XPAR",
+  "obl-inflation": {
+    "isin": "IE00B0M62X26",
+    "nom": "iShares € Inflation Linked Govt Bond UCITS ETF",
+    "mic": "XAMS",
     "perfs": {
-      "2025": 1.98
+      "2025": 0.67
     },
     "points": 509
   },
-  "obl-souv-euro-lt": {
-    "isin": "LU1287023342",
-    "nom": "Xtrackers Eurozone Government Bond UCITS ETF",
+  "obl-souv-euro-ct": {
+    "isin": "LU1650487413",
+    "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF Acc",
     "mic": "XPAR",
     "perfs": {
-      "2025": -1.08
+      "2025": 1.98
     },
     "points": 509
   }
@@ -132,25 +141,37 @@ const DERNIERS_COURS = {
   "FR0007052782": {
     "date": "2026-08-14",
     "cours": 87.11,
-    "nom": "Amundi CAC 40 UCITS ETF (Acc)",
+    "nom": "Amundi CAC 40 UCITS ETF Dist",
     "mic": "XPAR"
   },
   "FR0010510800": {
     "date": "2026-08-14",
     "cours": 114.27,
-    "nom": "Amundi Euro Overnight Return UCITS ETF",
+    "nom": "Amundi EUR Overnight Return UCITS ETF Acc",
+    "mic": "XPAR"
+  },
+  "FR0011871110": {
+    "date": "2026-08-14",
+    "cours": 103.76,
+    "nom": "Amundi PEA Nasdaq-100 UCITS ETF Acc",
     "mic": "XPAR"
   },
   "FR0011871128": {
     "date": "2026-08-14",
     "cours": 59,
-    "nom": "Amundi PEA Nasdaq-100 UCITS ETF",
+    "nom": "Amundi PEA S&P 500 UCITS ETF Acc",
+    "mic": "XPAR"
+  },
+  "FR0013346681": {
+    "date": "2026-08-14",
+    "cours": 9.782,
+    "nom": "Amundi PEA Euro Court Terme UCITS ETF Acc",
     "mic": "XPAR"
   },
   "FR0013412020": {
     "date": "2026-08-14",
     "cours": 35.535,
-    "nom": "Amundi PEA MSCI Emerging Markets ESG Leaders",
+    "nom": "Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc",
     "mic": "XPAR"
   },
   "FR0013412285": {
@@ -162,7 +183,13 @@ const DERNIERS_COURS = {
   "FR0013416716": {
     "date": "2026-08-14",
     "cours": 150.09,
-    "nom": "Amundi Physical Gold ETC",
+    "nom": "Amundi Physical Gold ETC (C)",
+    "mic": "XPAR"
+  },
+  "FR001400U5Q4": {
+    "date": "2026-08-14",
+    "cours": 6.255,
+    "nom": "Amundi PEA Monde (MSCI World) UCITS ETF Acc",
     "mic": "XPAR"
   },
   "IE00B0M62X26": {
@@ -174,7 +201,7 @@ const DERNIERS_COURS = {
   "IE00B14X4Q57": {
     "date": "2026-08-14",
     "cours": 141.22,
-    "nom": "iShares € Government Bond 1-3yr UCITS ETF",
+    "nom": "iShares € Government Bond 1-3yr UCITS ETF (Dist)",
     "mic": "XAMS"
   },
   "IE00B1FZS350": {
@@ -186,19 +213,19 @@ const DERNIERS_COURS = {
   "IE00B3F81R35": {
     "date": "2026-08-14",
     "cours": 117.82,
-    "nom": "iShares Core € Corp Bond UCITS ETF",
+    "nom": "iShares Core € Corp Bond UCITS ETF (Dist)",
     "mic": "XAMS"
   },
   "IE00B4K48X80": {
     "date": "2026-08-14",
     "cours": 106.865,
-    "nom": "iShares Core MSCI Europe UCITS ETF",
+    "nom": "iShares Core MSCI Europe UCITS ETF EUR (Acc)",
     "mic": "XAMS"
   },
   "IE00B4L5Y983": {
     "date": "2026-08-14",
     "cours": 128.84,
-    "nom": "iShares Core MSCI World UCITS ETF (Acc)",
+    "nom": "iShares Core MSCI World UCITS ETF USD (Acc)",
     "mic": "XAMS"
   },
   "IE00B4L5YX21": {
@@ -210,31 +237,31 @@ const DERNIERS_COURS = {
   "IE00B4WXJJ64": {
     "date": "2026-08-14",
     "cours": 107.22,
-    "nom": "iShares Core € Govt Bond UCITS ETF",
+    "nom": "iShares Core € Govt Bond UCITS ETF (Dist)",
     "mic": "XAMS"
   },
   "IE00B53SZB19": {
     "date": "2026-08-14",
     "cours": 1485.8,
-    "nom": "iShares NASDAQ 100 UCITS ETF (Acc)",
+    "nom": "iShares Nasdaq 100 UCITS ETF (Acc)",
     "mic": "XAMS"
   },
   "IE00B5BMR087": {
     "date": "2026-08-14",
     "cours": 724.15,
-    "nom": "iShares Core S&P 500 UCITS ETF (Acc)",
+    "nom": "iShares Core S&P 500 UCITS ETF USD (Acc)",
     "mic": "XAMS"
   },
   "IE00BDBRDM35": {
     "date": "2026-08-14",
     "cours": 4.896,
-    "nom": "iShares Core Global Aggregate Bond UCITS ETF (EUR Hedged)",
+    "nom": "iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)",
     "mic": "XAMS"
   },
   "IE00BFY0GT14": {
     "date": "2026-08-14",
     "cours": 47.1,
-    "nom": "SPDR MSCI World UCITS ETF",
+    "nom": "SPDR MSCI World UCITS ETF USD Unhedged (Acc)",
     "mic": "XAMS"
   },
   "IE00BKM4GZ66": {
@@ -246,13 +273,13 @@ const DERNIERS_COURS = {
   "IE00BYX2JD69": {
     "date": "2026-08-14",
     "cours": 14.154,
-    "nom": "iShares MSCI World SRI UCITS ETF (Acc)",
+    "nom": "iShares MSCI World SRI UCITS ETF EUR (Acc)",
     "mic": "XAMS"
   },
   "LU0908500753": {
     "date": "2026-08-14",
     "cours": 324.3,
-    "nom": "Amundi Stoxx Europe 600 UCITS ETF (Acc)",
+    "nom": "Amundi Core Stoxx Europe 600 UCITS ETF Acc",
     "mic": "XPAR"
   },
   "LU1287023342": {
@@ -264,19 +291,25 @@ const DERNIERS_COURS = {
   "LU1437018838": {
     "date": "2026-08-14",
     "cours": 72.12,
-    "nom": "Amundi Index FTSE EPRA NAREIT Global UCITS ETF",
+    "nom": "Amundi FTSE EPRA NAREIT Global UCITS ETF Acc",
     "mic": "XPAR"
   },
   "LU1650487413": {
     "date": "2026-08-14",
     "cours": 128,
-    "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF",
+    "nom": "Amundi Euro Government Bond 1-3Y UCITS ETF Acc",
     "mic": "XPAR"
   },
   "LU1681038672": {
     "date": "2026-08-14",
     "cours": 396.57,
-    "nom": "Amundi Russell 2000 UCITS ETF (Acc)",
+    "nom": "Amundi Russell 2000 UCITS ETF EUR (C)",
+    "mic": "XPAR"
+  },
+  "LU1681043599": {
+    "date": "2026-08-14",
+    "cours": 700.98,
+    "nom": "Amundi MSCI World Swap UCITS ETF EUR (Acc)",
     "mic": "XPAR"
   },
   "LU1781541179": {
@@ -285,10 +318,28 @@ const DERNIERS_COURS = {
     "nom": "Amundi Core MSCI World UCITS ETF (Acc)",
     "mic": "XPAR"
   },
+  "LU1829218749": {
+    "date": "2026-08-14",
+    "cours": 35.86,
+    "nom": "Amundi Bloomberg Equal-weight Commodity ex-Agriculture UCITS ETF Acc",
+    "mic": "XPAR"
+  },
+  "LU1861137484": {
+    "date": "2026-08-14",
+    "cours": 93.15,
+    "nom": "Amundi MSCI Europe SRI Climate Paris Aligned UCITS ETF Acc",
+    "mic": "XPAR"
+  },
   "LU1861138961": {
     "date": "2026-08-14",
     "cours": 70.52,
     "nom": "Amundi MSCI Europe ESG Leaders UCITS ETF",
+    "mic": "XPAR"
+  },
+  "LU2089238625": {
+    "date": "2026-08-14",
+    "cours": 20.26,
+    "nom": "Amundi Core EUR Corporate Bond UCITS ETF Acc",
     "mic": "XPAR"
   }
 };

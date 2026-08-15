@@ -28,7 +28,10 @@ const MoteurSelection = (function () {
         const dispo = (e.contratsAV || []).some(c => contratsOk.includes(c));
         if (!dispo) return false;
       }
-      if ((e.morningstar || 0) < (contexte.etoilesMin || 4)) return false;
+      /* La notation Morningstar n'est pas opposable tant qu'elle n'a pas été
+         saisie : le filtre ne s'applique qu'aux supports effectivement notés,
+         faute de quoi un univers non renseigné serait entièrement écarté. */
+      if (e.morningstar != null && e.morningstar < (contexte.etoilesMin || 4)) return false;
       if (contexte.encoursMin && (e.encours || 0) < contexte.encoursMin) return false;
       if (contexte.terMax && (e.ter || 0) > contexte.terMax) return false;
       if (contexte.exclureSynthetique && /Synth/i.test(e.replication)) return false;
@@ -40,7 +43,13 @@ const MoteurSelection = (function () {
   function scorer(etf, concurrents, contexte) {
     const detail = {};
 
-    detail.notation = (etf.morningstar / 5) * 40;
+    /* La notation ne pèse que si elle a été saisie ; sinon elle sort du
+       barème, qui est ramené à 100 sur les seuls critères renseignés.
+       Un support noté et un support sans note ne sont donc pas comparés
+       sur le même barème : dans une poche mixte, saisissez les notations
+       manquantes avant d'arbitrer sur le score. */
+    const poidsNotation = etf.morningstar != null ? 40 : 0;
+    if (poidsNotation) detail.notation = (etf.morningstar / 5) * poidsNotation;
 
     const ters = concurrents.map(c => c.ter);
     const terMin = Math.min.apply(null, ters), terMax = Math.max.apply(null, ters);
@@ -68,7 +77,7 @@ const MoteurSelection = (function () {
       detail.distribution = (etf.capitalisation === recherche) ? poidsRevenu : 0;
     }
 
-    const maximum = 40 + 20 + 15 + 10 + poidsEsg + poidsRevenu;
+    const maximum = poidsNotation + 20 + 15 + 10 + poidsEsg + poidsRevenu;
     const total = Object.values(detail).reduce((a, b) => a + b, 0) * 100 / maximum;
     return { total: Math.round(total * 10) / 10, detail };
   }

@@ -37,6 +37,9 @@ function pct(n, d) {
 }
 function signe(n, d) { return (n > 0 ? '+' : '') + pct(n, d); }
 function etoiles(n) {
+  if (n === null || n === undefined || n === '') {
+    return '<span style="color:var(--gris-doux)" title="Notation Morningstar non renseignée">—</span>';
+  }
   return '<span class="etoiles" title="' + n + ' étoiles Morningstar">' +
     '★★★★★'.slice(0, n) + '<span style="color:var(--gris-ligne)">' + '★★★★★'.slice(0, 5 - n) + '</span></span>';
 }
@@ -236,6 +239,7 @@ function afficher(vue) {
 
 function rendre(vue) {
   switch (vue) {
+    case 'accueil':       rendreAccueil(); break;
     case 'client':        rendreIdentite(); break;
     case 'questionnaire': rendreQuestionnaire(); break;
     case 'profil':        rendreProfil(); break;
@@ -268,6 +272,137 @@ function majNav() {
     univers: true, journal: Etat.journal.length > 0, rapport: !!p
   };
   $$('#nav button').forEach(b => b.classList.toggle('complet', !!complet[b.dataset.vue]));
+}
+
+/* ============================================================
+   ACCUEIL — « Aujourd'hui »
+   -------------------------------------------------------------
+   L'écran d'ouverture répond à une seule question : y a-t-il
+   quelque chose à faire aujourd'hui ? La réponse est le plus
+   souvent non, et c'est cette réponse-là qui doit s'afficher en
+   premier. Un écran d'accueil qui présente d'emblée une liste
+   d'ordres pousse à la rotation, alors que les bandes de
+   tolérance servent précisément à l'éviter : le verdict passe
+   donc avant le détail, qui reste juste en dessous.
+   ============================================================ */
+
+/* Les trois étapes sans lesquelles rien ne peut être proposé. */
+function etapesDossier() {
+  const manquantes = MoteurProfil.questionsManquantes(Etat.reponses).length;
+  const notees = QUESTIONS.filter(q => q.poids > 0).length;
+  return [
+    {
+      vue: 'client', numero: 1, titre: 'Montant et enveloppe',
+      fait: !!Etat.identite.montant,
+      reste: "Le montant et l'enveloppe déterminent l'univers de supports réellement accessible."
+    },
+    {
+      vue: 'questionnaire', numero: 2, titre: 'Questionnaire de profilage',
+      fait: manquantes === 0,
+      reste: manquantes + (manquantes > 1 ? ' réponses manquantes' : ' réponse manquante') +
+             ' sur les ' + notees + ' qui comptent dans le score de risque.'
+    },
+    {
+      vue: 'arbitrages', numero: 8, titre: 'Portefeuille détenu',
+      fait: Etat.detention.length > 0,
+      reste: "Sans les lignes détenues, le portefeuille réel ne peut pas être comparé à l'allocation cible."
+    }
+  ];
+}
+
+function blocNoteAccueil() {
+  const n = (typeof NOTE_MARCHE !== 'undefined' && NOTE_MARCHE) ? NOTE_MARCHE : null;
+  if (!n || !n.note) return '';
+  return '<div class="carte"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">' +
+      '<h3 style="margin:0">' + echapper(n.note.titre) + '</h3>' +
+      '<span class="badge gris">note du ' + dateFr(n.genere) + '</span></div>' +
+    '<p class="intro" style="margin:8px 0 0">' + echapper(n.note.synthese) + '</p>' +
+    '<div class="barre-actions"><button class="bouton secondaire" data-aller="note">Lire la note de marché</button></div>' +
+    '</div>';
+}
+
+function rendreAccueil() {
+  const c = $('#accueil-contenu');
+  const etapes = etapesDossier();
+  const aFaire = etapes.filter(e => !e.fait);
+
+  /* --- Dossier incomplet : dire ce qui manque, pas « complétez le dossier » --- */
+  if (aFaire.length) {
+    c.innerHTML =
+      '<h2>Remplissez le dossier</h2>' +
+      '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont pas ' +
+        'renseignées. Tout reste dans ce navigateur : rien n\'est transmis.</p>' +
+
+      '<div class="carte"><h3>' + aFaire.length + ' étape' + (aFaire.length > 1 ? 's' : '') + ' à compléter</h3>' +
+        '<div class="etapes-dossier">' +
+        etapes.map(e =>
+          '<div class="etape' + (e.fait ? ' faite' : '') + '">' +
+            '<span class="etape-marque">' + (e.fait ? '✓' : e.numero) + '</span>' +
+            '<div class="etape-corps"><strong>' + echapper(e.titre) + '</strong>' +
+              '<div class="etape-detail">' + (e.fait ? 'Renseigné.' : echapper(e.reste)) + '</div></div>' +
+            (e.fait ? '' : '<button class="bouton' + (e === aFaire[0] ? '' : ' secondaire') +
+              '" data-aller="' + e.vue + '">Ouvrir</button>') +
+          '</div>').join('') +
+        '</div></div>' +
+
+      blocNoteAccueil();
+    return;
+  }
+
+  /* --- Dossier complet : verdict d'abord, détail ensuite --- */
+  const r = resultatProfil();
+  const sel = selectionCourante();
+  const analyse = MoteurArbitrage.analyser(
+    Etat.detention, sel.lignes,
+    { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
+    Etat.univers
+  );
+
+  const derive = analyse.ecarts.reduce((m, e) => Math.max(m, Math.abs(e.pctCible - e.pctActuel)), 0);
+  const derniere = Etat.journal.length
+    ? Etat.journal.map(j => j.date).sort().slice(-1)[0] : null;
+  const nonValides = sel.lignes.filter(l => !l.etf.verifie).length;
+  const rien = analyse.aucunMouvement;
+
+  c.innerHTML =
+    '<h2>Aujourd\'hui</h2>' +
+
+    '<div class="verdict ' + (rien ? 'calme' : 'action') + '">' +
+      '<div class="verdict-titre">' + (rien ? 'Rien à faire' : analyse.ordres.length + ' mouvement' +
+        (analyse.ordres.length > 1 ? 's' : '') + ' à passer') + '</div>' +
+      '<p class="verdict-texte">' + (rien
+        ? 'Chaque ligne reste dans sa bande de tolérance : aucun écart n\'atteint le seuil de déclenchement de ' +
+          euro(analyse.seuilMontant) + '. Laisser le portefeuille en l\'état est la décision par défaut.'
+        : 'Écart le plus fort : ' + pct(derive) + ' de l\'encours. Rotation ' + pct(analyse.rotation) +
+          ', fiscalité estimée ' + euro(analyse.fiscalite.impotEstime) + '.') + '</p>' +
+    '</div>' +
+
+    '<div class="grille quatre">' +
+      kpi(euro(analyse.total), 'Encours', r.profil.nom) +
+      kpi(pct(derive), 'Dérive maximale', 'seuil ' + euro(analyse.seuilMontant)) +
+      kpi(String(sel.nbSupports), 'Supports cibles', pct(sel.terMoyen, 2) + ' de frais moyens') +
+      kpi(derniere ? dateFr(derniere) : '—', 'Dernière revue',
+        derniere ? Etat.journal.length + ' revue(s) au journal' : 'aucune revue enregistrée') +
+    '</div>' +
+
+    (rien ? '' :
+      '<div class="carte"><h3>Mouvements proposés</h3>' +
+        '<div class="tableau-defilant"><table><thead><tr><th>Sens</th><th>Support</th>' +
+        '<th class="num">Montant</th><th>Motif</th></tr></thead><tbody>' +
+        analyse.ordres.map(o =>
+          '<tr><td><span class="badge ' + (o.sens === 'Achat' ? 'vert' : 'rouge') + '">' + echapper(o.sens) + '</span></td>' +
+          '<td>' + echapper(o.libelle) + '</td>' +
+          '<td class="num">' + euro(o.montant) + '</td>' +
+          '<td style="font-size:12px;color:var(--gris-doux)">' + echapper(o.motif || '') + '</td></tr>').join('') +
+        '</tbody></table></div>' +
+        '<div class="barre-actions"><button class="bouton" data-aller="arbitrages">Ouvrir les arbitrages</button>' +
+        '<button class="bouton secondaire" data-aller="rapport">Voir le rapport</button></div></div>') +
+
+    (nonValides ? '<div class="message alerte"><strong>' + nonValides + ' support(s) non validé(s) au contrat.</strong> ' +
+      'Contrôlez leur référencement dans la liste des supports avant de passer un ordre.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">Ouvrir l\'univers ETF</button></div></div>' : '') +
+
+    blocNoteAccueil();
 }
 
 /* ============================================================
@@ -652,6 +787,7 @@ function rendrePortefeuille() {
   const ctx = contexteSelection();
   const alloc = allocationCourante();
   const nonVerifies = sel.lignes.filter(l => !l.etf.verifie).length;
+  const sansNotation = sel.lignes.filter(l => l.etf.morningstar == null).length;
 
   /* Écart entre l'allocation visée et celle réellement implémentable */
   const derives = Object.keys(alloc.classes)
@@ -666,9 +802,14 @@ function rendrePortefeuille() {
       kpi(euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100), 'Coût annuel des supports', 'hors frais de contrat') +
     '</div>' +
 
-    (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non vérifié(s).</strong> ' +
-      'Contrôlez leur disponibilité réelle dans le contrat et leurs caractéristiques dans l\'onglet « Univers ETF » ' +
+    (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non validé(s) au contrat.</strong> ' +
+      'Leurs caractéristiques de marché ont été relevées sur source publique, mais leur référencement effectif ' +
+      'dans le contrat reste à contrôler sur la liste des supports, dans l\'onglet « Univers ETF », ' +
       'avant remise au client.</div>' : '') +
+
+    (sansNotation ? '<div class="message info"><strong>' + sansNotation + ' support(s) sans notation Morningstar.</strong> ' +
+      'La notation n\'est pas accessible sans abonnement : elle est retirée du score et le filtre « étoiles minimum » ' +
+      'ne s\'applique pas à ces supports. Saisissez-la dans l\'onglet « Univers ETF » pour la réintégrer.</div>' : '') +
 
     (derives.length ? '<div class="message ' + (derives.some(d => d.cl === 'actions' && d.ecart > 0) ? 'erreur' : 'alerte') + '">' +
       '<strong>Le portefeuille réalisable s\'écarte de l\'allocation cible.</strong> ' +
@@ -692,7 +833,7 @@ function rendrePortefeuille() {
         '<tr><td><span class="pastille" style="background:' + COULEURS_CLASSES[l.classe] + '"></span>' +
           echapper(l.etf.nom) + (l.etf.isr ? ' <span class="badge vert">ISR</span>' : '') +
           (l.etf.hedge ? ' <span class="badge gris">couvert €</span>' : '') +
-          (!l.etf.verifie ? ' <span class="badge orange">à vérifier</span>' : '') + '</td>' +
+          (!l.etf.verifie ? ' <span class="badge orange">contrat à vérifier</span>' : '') + '</td>' +
         '<td style="font-family:monospace;font-size:12px">' + echapper(l.etf.isin) + '</td>' +
         '<td>' + echapper(LIBELLES_POCHES[l.poche] || l.poche) + '</td>' +
         '<td class="num">' + etoiles(l.etf.morningstar) + '</td>' +
@@ -707,7 +848,8 @@ function rendrePortefeuille() {
       '</tbody><tfoot><tr><td colspan="6">Total</td>' +
       '<td class="num">' + pct(sel.lignes.reduce((a, l) => a + l.poids, 0)) + '</td>' +
       '<td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td><td></td></tr></tfoot></table></div>' +
-      '<p class="intro" style="font-size:11px;margin-top:10px">Score de sélection ramené sur 100 : notation Morningstar (40 pts), ' +
+      '<p class="intro" style="font-size:11px;margin-top:10px">Score de sélection ramené sur 100 : notation Morningstar (40 pts, ' +
+      'écartée du barème lorsqu\'elle n\'est pas renseignée), ' +
       'frais courants relatifs à la poche (20), encours (15), mode de réplication (10)' +
       (ctx.esg === 'aucune' ? '' : ', label ISR (' + (ctx.esg === 'prioritaire' ? 15 : 8) + ')') + '. ' +
       'Filtres appliqués : ' + ctx.etoilesMin + ' étoiles minimum, encours ≥ ' + ctx.encoursMin + ' M€, frais ≤ ' + pct(ctx.terMax, 2) +
@@ -1288,7 +1430,9 @@ function rendreUnivers() {
   });
 
   $('#compteur-univers').textContent = liste.length + ' / ' + Etat.univers.length + ' supports · ' +
-    Etat.univers.filter(e => e.verifie).length + ' vérifiés';
+    Etat.univers.filter(e => e.donneesLe).length + ' aux données contrôlées · ' +
+    Etat.univers.filter(e => e.verifie).length + ' validés au contrat · ' +
+    Etat.univers.filter(e => e.morningstar == null).length + ' sans notation';
 
   const options = Object.keys(LIBELLES_POCHES);
 
@@ -1302,6 +1446,7 @@ function rendreUnivers() {
       '<td class="num"><input type="number" data-etf="ter" data-index="' + i + '" value="' + e.ter + '" step="0.01" style="width:70px"></td>' +
       '<td class="num"><input type="number" data-etf="encours" data-index="' + i + '" value="' + e.encours + '" step="100" style="width:90px"></td>' +
       '<td class="num"><select data-etf="morningstar" data-index="' + i + '" style="width:60px">' +
+          '<option value=""' + (e.morningstar == null ? ' selected' : '') + '>—</option>' +
           [1, 2, 3, 4, 5].map(n => '<option value="' + n + '"' + (e.morningstar === n ? ' selected' : '') + '>' + n + '</option>').join('') + '</select></td>' +
       '<td><select data-etf="replication" data-index="' + i + '">' +
           ['Physique', 'Synthétique', 'Physique (ETC)'].map(x =>
@@ -1313,6 +1458,10 @@ function rendreUnivers() {
           '<option value="av-standard"' + ((e.contratsAV || []).indexOf('av-standard') >= 0 ? ' selected' : '') + '>Standard</option>' +
           '<option value="av-large"' + ((e.contratsAV || []).indexOf('av-large') >= 0 ? ' selected' : '') + '>Large</option>' +
         '</select></td>' +
+      '<td style="text-align:center;font-size:11px;color:var(--gris-doux);white-space:nowrap"' +
+        (e.donneesLe ? ' title="Caractéristiques de marché relevées le ' + dateFr(e.donneesLe) +
+          (e.donneesSource ? ' sur ' + echapper(e.donneesSource) : '') + '"' : '') + '>' +
+        (e.donneesLe ? e.donneesLe.slice(8, 10) + '/' + e.donneesLe.slice(5, 7) + '/' + e.donneesLe.slice(2, 4) : '—') + '</td>' +
       '<td style="text-align:center"><input type="checkbox" data-etf="isr" data-index="' + i + '"' + (e.isr ? ' checked' : '') + '></td>' +
       '<td style="text-align:center"><input type="checkbox" data-etf="verifie" data-index="' + i + '"' + (e.verifie ? ' checked' : '') + '></td>' +
       '<td><button class="bouton secondaire" data-supprimer-etf="' + i + '">✕</button></td>' +
@@ -1422,7 +1571,8 @@ function rendreRapport() {
       '<th class="num">Poids</th><th class="num">Montant</th></tr></thead><tbody>' +
       sel.lignes.map(l => '<tr><td>' + echapper(l.etf.nom) + '</td>' +
         '<td style="font-family:monospace;font-size:11px">' + echapper(l.etf.isin) + '</td>' +
-        '<td class="num">' + l.etf.morningstar + '★</td><td class="num">' + pct(l.etf.ter, 2) + '</td>' +
+        '<td class="num">' + (l.etf.morningstar == null ? '—' : l.etf.morningstar + '★') + '</td>' +
+        '<td class="num">' + pct(l.etf.ter, 2) + '</td>' +
         '<td class="num">' + pct(l.poids) + '</td><td class="num">' + euro(l.montant) + '</td></tr>').join('') +
       '</tbody><tfoot><tr><td colspan="3">Frais courants moyens pondérés</td><td class="num">' + pct(sel.terMoyen, 2) + '</td>' +
       '<td class="num">100,0 %</td><td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td></tr></tfoot></table>' +
@@ -1602,7 +1752,9 @@ function brancher() {
             ? Array.from(new Set(e2.enveloppes.concat(['PEA'])))
             : e2.enveloppes.filter(x => x !== 'PEA');
         }
-      } else if (champ === 'ter' || champ === 'encours' || champ === 'morningstar') {
+      } else if (champ === 'morningstar') {
+        e2.morningstar = t.value === '' ? null : Number(t.value);
+      } else if (champ === 'ter' || champ === 'encours') {
         e2[champ] = Number(t.value);
       } else {
         e2[champ] = t.value;
@@ -1735,9 +1887,10 @@ function brancher() {
   $('#btn-ajouter-etf').onclick = () => {
     Etat.univers.unshift({
       isin: '', ticker: '', nom: 'Nouveau support', emetteur: '',
-      classe: 'actions', poche: 'act-monde', ter: 0.20, encours: 500, morningstar: 4, sri: 4,
+      classe: 'actions', poche: 'act-monde', ter: 0.20, encours: 500, morningstar: null, sri: 4,
       replication: 'Physique', devise: 'EUR', hedge: false, capitalisation: true, isr: false,
-      pea: false, enveloppes: ['AV', 'CTO'], contratsAV: ['av-large'], verifie: false
+      pea: false, enveloppes: ['AV', 'CTO'], contratsAV: ['av-large'], verifie: false,
+      donneesLe: null, donneesSource: ''
     });
     sauver(true); rendreUnivers();
   };
@@ -1918,7 +2071,14 @@ function injecterCoursMarche() {
     if (Etat.identite[f.id] === undefined && f.defaut !== undefined) Etat.identite[f.id] = f.defaut;
   });
   brancher();
-  afficher('client');
+
+  /* Le widget iOS ouvre une section précise par une ancre (…/#note).
+     On la consomme puis on l'efface : hors ce cas, et à chaque
+     rechargement, l'application s'ouvre sur « Aujourd'hui ». */
+  const demandee = (location.hash || '').replace(/^#/, '');
+  const existe = demandee && document.getElementById('vue-' + demandee);
+  if (existe) history.replaceState(null, '', location.pathname + location.search);
+  afficher(existe ? demandee : 'accueil');
   if (restaure) notifier('Dossier précédent restauré.', 'info');
   if (remplacees) console.info(remplacees + ' performances annuelles alimentées par les cours de marché.');
 })();

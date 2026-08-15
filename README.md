@@ -8,9 +8,12 @@
 > compléter et signer toute préconisation dans le cadre d'un rapport
 > d'adéquation.
 >
-> **Les caractéristiques des ETF livrées avec l'application sont indicatives et
-> non vérifiées** (codes ISIN, frais, encours, notations, éligibilité). Elles ne
-> doivent pas être utilisées telles quelles.
+> **Les caractéristiques de marché des ETF ont été relevées sur justETF le
+> 15 août 2026** — nom, ISIN, frais, encours, réplication, devise, éligibilité
+> PEA. Elles vieillissent et restent à recouper. **Deux contrôles n'ont pas été
+> faits** : le référencement effectif de chaque support dans le contrat du
+> client, et la notation Morningstar, inaccessible sans abonnement — laissée
+> vide, elle est retirée du score de sélection.
 >
 > Les investissements en unités de compte présentent un **risque de perte en
 > capital**. Les performances passées ne préjugent pas des performances futures.
@@ -29,6 +32,23 @@ en assurance-vie, PEA ou compte-titres. Il enchaîne cinq étapes :
 3. **Lecture du contexte** économique, géopolitique et fiscal → probabilités de scénarios → **déviations tactiques bornées**
 4. **Sélection des supports** dans un univers ETF restreint, filtré par enveloppe et par contrat
 5. **Arbitrages** : comparaison au portefeuille détenu, ordres à passer, fiscalité, journal de suivi
+
+## L'écran d'ouverture : « Aujourd'hui »
+
+L'application s'ouvre sur un écran qui répond à une seule question : y a-t-il
+quelque chose à faire aujourd'hui ?
+
+- **Dossier incomplet** — les étapes manquantes sont listées une à une, avec ce
+  qui reste à renseigner et le bouton qui y mène. Il en faut trois : le montant
+  et l'enveloppe, le questionnaire, et les lignes détenues.
+- **Dossier complet** — le verdict d'arbitrage s'affiche en grand, puis le
+  détail des ordres, l'encours, la dérive maximale et la date de la dernière
+  revue.
+
+Le verdict passe volontairement avant le détail. La réponse est le plus souvent
+« rien à faire », et un écran d'accueil qui présenterait d'emblée une liste
+d'ordres pousserait à la rotation — ce que les bandes de tolérance servent
+précisément à éviter.
 
 ## Accéder à l'application
 
@@ -84,12 +104,23 @@ standard seule) — aucune dépendance graphique dans le projet.
 
 ## Widget iOS (Scriptable)
 
-`scriptable/allocation-etf.js` affiche les mouvements du jour sur l'écran
-d'accueil. Trois tailles :
+`scriptable/allocation-etf.js` répond sur l'écran d'accueil à la question
+« qu'est-ce qui bouge aujourd'hui ? ». Le mouvement du jour le plus marquant,
+à la hausse comme à la baisse, occupe le haut du widget — le monétaire en est
+écarté, il ne bouge pas par construction. Trois tailles :
 
-- **Petit** — la variation du jour des actions monde, semaine et année en dessous
-- **Moyen** — le titre de la note du jour et quatre repères d'allocation sur la semaine
-- **Grand** — la note, puis les trois plus fortes hausses et baisses de la semaine
+- **Petit** — le mouvement du jour le plus marquant, avec les actions monde en repère
+- **Moyen** — ce mouvement, puis le titre de la note du matin
+- **Grand** — le mouvement, la note, puis les hausses et baisses de la semaine
+
+Le widget suit l'apparence du système et reprend les jetons de couleur de
+l'interface, réétagés pour la surface sombre comme dans la feuille de style.
+
+Chaque bloc ouvre la section correspondante de l'application : la note ouvre
+l'onglet « Note de marché », les mouvements « Contexte macro », le pied de
+widget le dossier. L'ancre (`…/#note`) est lue au chargement puis effacée de
+l'URL : hors ce cas, et à chaque rechargement, l'application s'ouvre sur
+« Aujourd'hui ».
 
 Installation : installer [Scriptable](https://apps.apple.com/app/scriptable/id1405459188),
 y coller le fichier sous le nom « Allocation ETF », puis appui long sur l'écran
@@ -235,10 +266,15 @@ script :
   dans les deux cas. C'est ce qui permet à la version ZIP de bénéficier elle
   aussi des données.
 
-**Couverture actuelle : 27 supports sur 41.** Les autres sont cotés sur Xetra,
-Milan ou Londres, hors périmètre d'Euronext. `data/couverture.json` liste les
-absents — c'est aussi un moyen commode de repérer un ISIN erroné : un ETF
-français introuvable à Paris a probablement un mauvais code.
+**Couverture actuelle : 30 supports sur 42**, pour 14 poches sur 19. Les autres
+sont cotés sur Xetra, Milan ou Londres, hors périmètre d'Euronext.
+`data/couverture.json` liste les absents — c'est aussi un moyen commode de
+repérer un ISIN erroné : un ETF français introuvable à Paris a probablement un
+mauvais code. C'est ainsi qu'un des deux fonds liquidés s'était signalé.
+
+Seuls les supports **encore présents dans l'univers** servent de référence à une
+poche : l'archive des cours est cumulative et conserve les séries des supports
+retirés, mais un support écarté ne doit plus alimenter le modèle.
 
 Dans l'onglet Backtest, chaque cellule est colorée selon sa provenance :
 **vert** relevé sur les cours, **bleu** source documentée, **orange**
@@ -307,16 +343,35 @@ arbitrages internes ne déclenchent aucune imposition.
 
 ## Univers ETF — à vérifier avant toute utilisation en clientèle
 
-**Les données livrées sont indicatives.** Quantalys et Morningstar sont des
-services sur abonnement sans interface publique : aucune donnée n'est récupérée
-automatiquement. Les ISIN, frais courants, encours, notations et référencements
-en assurance-vie du fichier `js/data/etf-univers.js` constituent un point de
-départ qui **doit être contrôlé** ligne à ligne.
+L'univers compte **42 supports**, contrôlés à deux niveaux distincts.
 
-Le rafraîchissement se fait dans l'onglet **Univers ETF** : toutes les cellules
-sont modifiables, une case « Vérifié » trace le contrôle, et l'univers complet
-s'exporte et se réimporte en JSON. Les supports non vérifiés sont signalés par un
-badge orange dans la sélection.
+**Niveau 1 — caractéristiques de marché : fait le 15 août 2026, sur justETF.**
+Les 42 lignes portent une date et une source (`donneesLe`, `donneesSource`,
+colonne « Données »). Ce contrôle a corrigé beaucoup : **neuf ISIN désignaient un
+autre fonds que celui annoncé** — deux fonds liquidés, un ETF classé en actions
+Europe qui était un émergents, un « Japon couvert en euro » qui ne l'était pas,
+un « PEA Nasdaq-100 » qui était un PEA S&P 500 (ISIN faux d'un chiffre), une
+obligataire euro qui était une *floating rate* en dollars. S'y ajoutaient
+quatorze frais courants erronés, la quasi-totalité des encours, et plusieurs
+erreurs de devise, de capitalisation et d'éligibilité PEA. Ces données
+vieillissent : refaites le relevé périodiquement.
+
+**Niveau 2 — référencement au contrat : à votre charge.** Quantalys et
+Morningstar sont des services sur abonnement sans interface publique, et aucune
+source ne connaît la liste des supports de *votre* contrat. La case « Contrat »
+(champ `verifie`) trace ce contrôle ; seule elle retire le badge orange dans la
+sélection. Elle est à `false` sur les 42 lignes.
+
+**La notation Morningstar est laissée vide** (`morningstar: null`) : la remplir
+d'estimations reviendrait à faire piloter la sélection par des étoiles inventées.
+Tant qu'elle vaut `null`, la notation est retirée du barème du score — ramené à
+100 sur les seuls critères renseignés — et le filtre « étoiles minimum » ne
+s'applique pas au support. Saisissez-la dans l'onglet **Univers ETF** pour la
+réintégrer ; dans une poche où certains supports sont notés et d'autres non, les
+scores ne sont pas comparables tant que la saisie n'est pas complète.
+
+Toutes les cellules de l'onglet **Univers ETF** sont modifiables, et l'univers
+complet s'exporte et se réimporte en JSON.
 
 Trois univers de contrat sont modélisés (`av-restreint`, `av-standard`,
 `av-large`) ; un support référencé dans un univers restreint est disponible dans
@@ -336,7 +391,7 @@ css/app.css                   feuille de style, y compris règles d'impression
 js/data/questionnaire.js      questions, pondérations, plafonds de profil
 js/data/allocations.js        6 profils, allocations stratégiques, sous-allocations
 js/data/macro.js              indicateurs, scénarios, bornes tactiques, seuils
-js/data/etf-univers.js        univers ETF de départ (à vérifier)
+js/data/etf-univers.js        42 supports ; données de marché relevées, contrat à valider
 js/data/fiscalite.js          taux, abattements, rendements courants, cascade de retrait
 js/data/historique.js         séries de performances annuelles par poche
 js/data/cours-marche.js       GÉNÉRÉ — performances et derniers cours par ISIN

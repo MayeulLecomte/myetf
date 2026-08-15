@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608151816">
+<link rel="stylesheet" href="css/app.css?v=202608151856">
 </head>
 <body>
 
@@ -36,7 +36,9 @@
 <div class="corps">
 
   <nav class="nav" id="nav">
-    <button data-vue="client"        class="actif"><span class="num"><span>1</span></span> Client &amp; enveloppe</button>
+    <button data-vue="accueil" class="actif accueil"><span class="num"><span>·</span></span> Aujourd'hui</button>
+    <div class="separateur"></div>
+    <button data-vue="client"><span class="num"><span>1</span></span> Client &amp; enveloppe</button>
     <button data-vue="questionnaire"><span class="num"><span>2</span></span> Questionnaire</button>
     <button data-vue="profil"><span class="num"><span>3</span></span> Profil de risque</button>
     <div class="separateur"></div>
@@ -55,8 +57,13 @@
 
   <main class="contenu">
 
+    <!-- ============ ACCUEIL ============ -->
+    <section class="vue actif" id="vue-accueil">
+      <div id="accueil-contenu"></div>
+    </section>
+
     <!-- ============ 1. CLIENT ============ -->
-    <section class="vue actif" id="vue-client">
+    <section class="vue" id="vue-client">
       <h2>Client &amp; enveloppe</h2>
       <p class="intro">Ces informations déterminent l'univers de supports réellement accessible et les montants
       utilisés dans les propositions d'arbitrage. Elles ne sont pas notées dans le score de risque, à l'exception
@@ -308,10 +315,13 @@
     <section class="vue" id="vue-univers">
       <h2>Univers ETF référencé</h2>
       <div class="message alerte">
-        <strong>Données à contrôler avant utilisation en clientèle.</strong>
-        Les ISIN, frais courants, encours, notations Morningstar et référencements en assurance-vie livrés
-        avec l'application sont indicatifs. Vérifiez chaque ligne sur Quantalys / Morningstar et dans la liste
-        des supports du contrat, puis cochez la colonne « Vérifié ». Toutes les cellules sont modifiables.
+        <strong>Deux contrôles, dont un seul est fait.</strong>
+        Les caractéristiques de marché — nom, ISIN, frais, encours, réplication, devise, capitalisation —
+        ont été relevées sur justETF le 15 août 2026 : c'est la colonne « Données ». Restent à votre charge
+        le <strong>référencement de chaque support dans le contrat</strong>, à contrôler sur la liste des
+        supports puis à cocher dans la colonne « Contrat », et la <strong>notation Morningstar</strong>,
+        inaccessible sans abonnement, laissée vide et donc retirée du score de sélection.
+        Toutes les cellules sont modifiables.
       </div>
 
       <div class="carte">
@@ -323,7 +333,7 @@
                 <th>Nom</th><th>ISIN</th><th>Poche</th>
                 <th class="num">Frais</th><th class="num">Encours</th>
                 <th class="num">Morningstar</th><th>Réplication</th>
-                <th>PEA</th><th>Univers AV</th><th>ISR</th><th>Vérifié</th><th></th>
+                <th>PEA</th><th>Univers AV</th><th>Données</th><th>ISR</th><th>Contrat</th><th></th>
               </tr>
             </thead>
             <tbody id="corps-univers"></tbody>
@@ -367,20 +377,20 @@
   </main>
 </div>
 
-<script src="js/data/questionnaire.js?v=202608151816"></script>
-<script src="js/data/allocations.js?v=202608151816"></script>
-<script src="js/data/macro.js?v=202608151816"></script>
-<script src="js/data/etf-univers.js?v=202608151816"></script>
-<script src="js/data/fiscalite.js?v=202608151816"></script>
-<script src="js/data/historique.js?v=202608151816"></script>
-<script src="js/data/note-marche.js?v=202608151816"></script>
-<script src="js/data/cours-marche.js?v=202608151816"></script>
-<script src="js/engine/profil.js?v=202608151816"></script>
-<script src="js/engine/allocation.js?v=202608151816"></script>
-<script src="js/engine/selection.js?v=202608151816"></script>
-<script src="js/engine/arbitrage.js?v=202608151816"></script>
-<script src="js/engine/revenus.js?v=202608151816"></script>
-<script src="js/engine/backtest.js?v=202608151816"></script>
-<script src="js/app.js?v=202608151816"></script>
+<script src="js/data/questionnaire.js?v=202608151856"></script>
+<script src="js/data/allocations.js?v=202608151856"></script>
+<script src="js/data/macro.js?v=202608151856"></script>
+<script src="js/data/etf-univers.js?v=202608151856"></script>
+<script src="js/data/fiscalite.js?v=202608151856"></script>
+<script src="js/data/historique.js?v=202608151856"></script>
+<script src="js/data/note-marche.js?v=202608151856"></script>
+<script src="js/data/cours-marche.js?v=202608151856"></script>
+<script src="js/engine/profil.js?v=202608151856"></script>
+<script src="js/engine/allocation.js?v=202608151856"></script>
+<script src="js/engine/selection.js?v=202608151856"></script>
+<script src="js/engine/arbitrage.js?v=202608151856"></script>
+<script src="js/engine/revenus.js?v=202608151856"></script>
+<script src="js/engine/backtest.js?v=202608151856"></script>
+<script src="js/app.js?v=202608151856"></script>
 </body>
 </html>

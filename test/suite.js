@@ -81,10 +81,17 @@ const alloc=MoteurAllocation.tactique('dynamique',m1.probas,m1.overlays,0.6);
   const somme=sel.lignes.reduce((a,l)=>a+l.poids,0);
   const mt=sel.lignes.reduce((a,l)=>a+l.montant,0);
   console.log('   '+env+(ct?'/'+ct:'')+' : '+sel.nbSupports+' lignes, '+sel.universEligible+' éligibles, TER '+sel.terMoyen+' %, somme '+somme.toFixed(1)+' %, '+mt+' €');
-  ok(Math.abs(somme-100)<0.6,'  poids ≈ 100 % ('+env+(ct?'/'+ct:'')+')');
+  /* Le portefeuille investi plus le résiduel non plaçable doit toujours
+     reconstituer l'allocation cible : un univers trop pauvre — le PEA, qui
+     ne référence ni obligations ni or, et dont le seul monétaire est trop
+     petit pour le filtre d'encours — se traduit par un résiduel signalé,
+     jamais par des points d'allocation perdus en silence. */
+  ok(Math.abs(somme+sel.residuel-100)<0.6,'  poids + résiduel ≈ 100 % ('+env+(ct?'/'+ct:'')+')');
+  ok(sel.residuel===0||sel.avertissements.length>0,'  résiduel non investi signalé ('+env+(ct?'/'+ct:'')+')');
   ok(sel.lignes.every(l=>l.etf.enveloppes.includes(env)),'  tous les supports éligibles à l\'enveloppe '+env);
   if(env==='PEA') ok(sel.lignes.every(l=>l.etf.pea),'  tous les supports PEA-éligibles');
-  ok(sel.lignes.every(l=>l.etf.morningstar>=4),'  filtre 4 étoiles respecté ('+env+')');
+  /* La notation Morningstar n'est opposable que lorsqu'elle est renseignée. */
+  ok(sel.lignes.every(l=>l.etf.morningstar==null||l.etf.morningstar>=4),'  filtre 4 étoiles respecté sur les supports notés ('+env+')');
 });
 const selEsg=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:0,terMax:1,esg:'prioritaire',montant:100000},ETF_UNIVERS);
 ok(Math.abs(selEsg.lignes.reduce((a,l)=>a+l.poids,0)-100)<0.6,'ESG prioritaire → portefeuille toujours investi à 100 % ('+selEsg.nbSupports+' lignes)');
@@ -92,6 +99,28 @@ ok(selEsg.lignes.filter(l=>l.etf.isr).length>0,'ESG prioritaire → supports ISR
 ok(selEsg.avertissements.some(a=>a.indexOf('durabilit')>=0),'ESG prioritaire → dérogation signalée pour les poches sans support labellisé');
 const pochesIsr=new Set(ETF_UNIVERS.filter(e=>e.isr).map(e=>e.poche));
 ok(selEsg.lignes.every(l=>!pochesIsr.has(l.poche)||l.etf.isr),'ESG prioritaire → ISR systématiquement préféré là où il existe');
+
+// --- 4 bis. Intégrité de l'univers
+console.log('\n== Univers ETF ==');
+ok(new Set(ETF_UNIVERS.map(e=>e.isin)).size===ETF_UNIVERS.length,'aucun ISIN en double');
+ok(ETF_UNIVERS.every(e=>/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(e.isin)),'tous les ISIN sont bien formés');
+ok(ETF_UNIVERS.every(e=>LIBELLES_POCHES[e.poche]),'toutes les poches référencées existent');
+ok(ETF_UNIVERS.every(e=>e.morningstar===null||(e.morningstar>=1&&e.morningstar<=5)),
+   'notation Morningstar : null ou 1 à 5');
+ok(ETF_UNIVERS.every(e=>!e.pea||e.enveloppes.includes('PEA')),'tout support PEA est déclaré dans l\'enveloppe PEA');
+ok(ETF_UNIVERS.every(e=>e.ter>0&&e.ter<2),'frais courants dans des bornes plausibles');
+const controles=ETF_UNIVERS.filter(e=>e.donneesLe);
+console.log('   '+controles.length+' / '+ETF_UNIVERS.length+' supports aux données contrôlées · '+
+  ETF_UNIVERS.filter(e=>e.verifie).length+' validés au contrat');
+ok(controles.every(e=>/^\d{4}-\d{2}-\d{2}$/.test(e.donneesLe)&&e.donneesSource),
+   'chaque contrôle de données porte une date et une source');
+/* Le score doit rester exploitable quand la notation manque : le barème
+   se réduit aux critères renseignés au lieu de produire un NaN. */
+const sansNote=ETF_UNIVERS.filter(e=>e.morningstar===null&&e.poche==='act-monde');
+const scoreSansNote=MoteurSelection.scorer(sansNote[0],sansNote,{esg:'aucune'});
+ok(isFinite(scoreSansNote.total)&&scoreSansNote.total>0&&scoreSansNote.total<=100,
+   'support non noté : score calculé sur le barème réduit ('+scoreSansNote.total+')');
+ok(scoreSansNote.detail.notation===undefined,'support non noté : la notation ne pèse pas dans le détail');
 
 // --- 5. Arbitrage
 console.log('\n== Arbitrage ==');

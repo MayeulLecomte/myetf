@@ -177,7 +177,13 @@ async function principal() {
 
   /* --- Séries de performances par poche --- */
   const parPoche = {};
+  const isinsUnivers = new Set(univers.map(e => e.isin));
   for (const [isin, s] of Object.entries(archive.series)) {
+    /* L'archive des cours est cumulative et conserve les supports sortis
+       de l'univers : leurs séries restent utiles, mais un support écarté
+       — liquidé, mal identifié ou remplacé — ne doit plus servir de
+       référence à une poche du modèle. */
+    if (!isinsUnivers.has(isin)) continue;
     /* Un ETF distribuant ne reflète pas le rendement total : son cours
        décroche à chaque détachement de coupon. On ne s'en sert pas
        pour reconstituer une performance. */
@@ -276,13 +282,34 @@ async function principal() {
     poche: (libelles[poche] || poche).replace(/ \(.*\)$/, ''),
     jour: v.jour, semaine: v.semaine, annee: v.annee
   });
-  writeFileSync(join(RACINE, 'data', 'widget.json'), JSON.stringify({
+  /* La note du jour est ajoutée ensuite par note-marche.mjs. On la
+     reprend telle quelle plutôt que de l'écraser : sans cela, relancer
+     ce script seul ferait disparaître la note du widget sans rien dire. */
+  const cheminWidget = join(RACINE, 'data', 'widget.json');
+  let noteWidget = null;
+  if (existsSync(cheminWidget)) {
+    try { noteWidget = JSON.parse(readFileSync(cheminWidget, 'utf8')).note || null; } catch { /* fichier illisible : on repart à zéro */ }
+  }
+  if (!noteWidget) {
+    /* Repli sur la note publiée dans l'application, si elle existe. */
+    const cheminNote = join(RACINE, 'js', 'data', 'note-marche.js');
+    if (existsSync(cheminNote)) {
+      try {
+        const ctx = vm.createContext({});
+        vm.runInContext(readFileSync(cheminNote, 'utf8'), ctx, { filename: 'note-marche.js' });
+        const n = vm.runInContext('NOTE_MARCHE', ctx);
+        if (n && n.note) noteWidget = { titre: n.note.titre, synthese: n.note.synthese };
+      } catch { /* note absente ou illisible : le widget s'en passe */ }
+    }
+  }
+
+  writeFileSync(cheminWidget, JSON.stringify(Object.assign({
     genere: archive.genere,
     hausses: classement.slice(0, 3).map(abrege),
     baisses: classement.slice(-3).reverse().map(abrege),
     reperes: ['act-monde', 'obl-ig-euro', 'div-or', 'mon-euro']
       .filter(p => variations[p]).map(p => abrege([p, variations[p]]))
-  }));
+  }, noteWidget ? { note: noteWidget } : {})));
 
   couverture.sort((a, b) => a.isin < b.isin ? -1 : 1);
   writeFileSync(join(RACINE, 'data', 'couverture.json'),
