@@ -140,6 +140,47 @@ pouvoir d'achat, et l'année d'épuisement si le taux de retrait est trop élev�
 **Les taux et abattements sont regroupés dans `js/data/fiscalite.js`** — à
 contrôler à chaque loi de finances.
 
+## Flux de cours — gratuit et automatique
+
+`scripts/maj-cours.mjs` relève les cours de clôture des ETF de l'univers chez
+**Euronext** (Amsterdam, Paris, Bruxelles, Lisbonne). Aucune clé d'API, aucune
+dépendance, aucun coût.
+
+```bash
+node scripts/maj-cours.mjs --verbeux
+```
+
+Une **GitHub Action** l'exécute du mardi au samedi et publie les résultats —
+gratuit sur un dépôt public. Elle ne commite que lorsque des cotations nouvelles
+sont arrivées : la sortie est triée de façon déterministe pour qu'un relevé sans
+nouveauté ne produise aucun diff, et n'invalide donc pas inutilement le cache
+des visiteurs.
+
+Trois principes de conception méritent d'être connus avant de modifier ce
+script :
+
+- **L'archive est cumulative.** Euronext ne sert que deux années glissantes,
+  mais `data/cours.json` conserve tout ce qu'il a déjà vu. L'historique
+  s'approfondit donc de lui-même, mois après mois, jusqu'à couvrir les cinq
+  années du backtest.
+- **Seuls les ETF capitalisants servent de référence.** Le cours d'un ETF
+  distribuant décroche à chaque détachement de coupon : l'utiliser
+  sous-estimerait la performance de plusieurs points par an. Le cours d'un ETF
+  capitalisant intègre au contraire les revenus réinvestis.
+- **Le fichier lu par l'application est du JavaScript, pas du JSON.** Une page
+  ouverte en `file://` ne peut pas faire de `fetch` ; un `<script>` fonctionne
+  dans les deux cas. C'est ce qui permet à la version ZIP de bénéficier elle
+  aussi des données.
+
+**Couverture actuelle : 27 supports sur 41.** Les autres sont cotés sur Xetra,
+Milan ou Londres, hors périmètre d'Euronext. `data/couverture.json` liste les
+absents — c'est aussi un moyen commode de repérer un ISIN erroné : un ETF
+français introuvable à Paris a probablement un mauvais code.
+
+Dans l'onglet Backtest, chaque cellule est colorée selon sa provenance :
+**vert** relevé sur les cours, **bleu** source documentée, **orange**
+estimation non vérifiée. Le bandeau de fiabilité résume la proportion.
+
 ## Mise à jour des valorisations
 
 Dans l'onglet Arbitrages, **« Coller les valorisations du contrat »** accepte un
@@ -193,11 +234,17 @@ js/data/allocations.js        6 profils, allocations stratégiques, sous-allocat
 js/data/macro.js              indicateurs, scénarios, bornes tactiques, seuils
 js/data/etf-univers.js        univers ETF de départ (à vérifier)
 js/data/fiscalite.js          taux, abattements, rendements courants, cascade de retrait
+js/data/historique.js         séries de performances annuelles par poche
+js/data/cours-marche.js       GÉNÉRÉ — performances relevées sur les cours
 js/engine/profil.js           scoring, plafonnement, stress tests
 js/engine/allocation.js       stratégique, agrégation macro, tactique, métriques
 js/engine/selection.js        filtrage de l'univers, notation et choix des supports
 js/engine/arbitrage.js        écarts, ordres, fiscalité, journal
 js/engine/revenus.js          coussin, cascade de prélèvement, fiscalité, projection
+js/engine/backtest.js         simulation, rééquilibrage, contributions, risque de séquence
+scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif
+.github/workflows/cours.yml   relevé automatique du mardi au samedi
+data/                         GÉNÉRÉ — archive des cours et rapports de couverture
 js/app.js                     état, rendu des onze vues, événements, persistance
 test/runner.js                harnais de tests des moteurs (Node, sans dépendance)
 test/suite.js                 assertions
