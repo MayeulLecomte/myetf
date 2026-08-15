@@ -47,6 +47,15 @@
 
   --ressort: cubic-bezier(.32, .72, 0, 1);   /* la courbe des transitions iOS */
 
+  /* ---- Signe ----
+     Le logo ne suit pas le thème : c'est un badge, et il doit être
+     identique dans l'en-tête, l'onglet, l'icône iOS et le widget —
+     or l'icône d'un écran d'accueil, elle, ne peut pas s'inverser.
+     Ces trois jetons ne sont donc jamais redéfinis en mode sombre. */
+  --logo-fond:   #1f5aa8;
+  --logo-barre:  #ffffff;
+  --logo-accent: #c08a2e;
+
   /* ---- Palette des graphiques ----
      Validée par le contrôleur de la méthode de visualisation :
      bande de clarté, plancher de chroma, séparation en vision
@@ -185,17 +194,31 @@ a:hover { text-decoration: underline; }
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   position: sticky; top: 0; z-index: 50;
 }
-.entete .marque { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.entete .marque { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.entete .marque .logo { width: 30px; height: 30px; flex: none; display: block; }
+/* Le lettrage reste en encre pleine : le signe porte déjà l'accent
+   coloré, et deux accents côte à côte se disputeraient l'attention. */
 .entete .marque strong {
-  font-size: 16px; font-weight: 700; letter-spacing: -.01em;
-  background: linear-gradient(135deg, var(--bleu), var(--violet));
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 17px; font-weight: 660; letter-spacing: -.015em;
+  color: var(--texte); flex: none;
 }
-.entete .marque span { font-size: 12px; color: var(--texte-doux); }
+.entete .marque span {
+  font-size: 12px; color: var(--texte-doux);
+  padding-left: 4px; border-left: 1px solid var(--ligne); margin-left: 2px;
+}
 .entete .actions-entete { display: flex; gap: 8px; flex-shrink: 0; }
 
 .corps { display: flex; min-height: calc(100vh - 56px); }
+
+.pied {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 22px 24px;
+  padding-bottom: max(22px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--ligne);
+  background: var(--surface);
+  font-size: 12.5px; color: var(--texte-doux);
+}
+.pied .logo-pied { width: 18px; height: 18px; flex: none; display: block; opacity: .9; }
 
 .nav {
   width: 236px; flex-shrink: 0;
@@ -549,6 +572,12 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
     --fond: #fff; --surface: #fff; --surface-2: #fff;
   }
   .entete, .nav, .barre-actions, .sans-impression { display: none !important; }
+  /* Le pied reste : sur un rapport remis au client, il indique qui l'a produit. */
+  .pied {
+    background: #fff; border-top: 1px solid #ccc; color: #444;
+    font-size: 9.5px; padding: 8px 0; justify-content: flex-start; gap: 7px;
+  }
+  .pied .logo-pied { width: 12px; height: 12px; }
   body { background: #fff; font-size: 11px; color: #000; }
   .contenu { padding: 0; max-width: none; }
   .vue { display: none !important; }
@@ -639,7 +668,7 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 }
 
 @media (max-width: 420px) {
-  .entete .marque strong { font-size: 15px; }
+  .entete .marque .logo { width: 26px; height: 26px; }
   .contenu { padding: 16px 10px 60px; }
   .carte { padding: 16px 14px; }
   h2 { font-size: 20px; }

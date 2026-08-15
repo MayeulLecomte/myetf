@@ -99,8 +99,33 @@ Partager, puis « Sur l'écran d'accueil ». L'application s'ouvre alors en plei
 métadonnées `apple-mobile-web-app-*` s'en chargent ; les marges d'encoche et
 de barre d'accueil sont gérées par `env(safe-area-inset-*)`.
 
-Les icônes sont générées par un encodeur PNG minimal en Python (bibliothèque
-standard seule) — aucune dépendance graphique dans le projet.
+## Le signe
+
+Trois barres croissantes sur fond bleu, la plus haute en or. Il ouvre l'en-tête
+à côté du lettrage **myetf**, et se retrouve à l'identique en favicon, en icône
+d'écran d'accueil et au pied de page. Le lettrage reste en encre pleine : le
+signe porte déjà l'accent coloré, et deux accents côte à côte se disputeraient
+l'attention.
+
+Le signe **ne suit pas le thème** : ses trois couleurs (`--logo-fond`,
+`--logo-barre`, `--logo-accent`) ne sont jamais redéfinies en mode sombre. Une
+icône d'écran d'accueil ne peut pas s'inverser selon les réglages du téléphone ;
+si l'en-tête s'inversait de son côté, le site et l'icône cesseraient d'être le
+même dessin. Le bleu foncé reste lisible sur les deux fonds.
+
+```bash
+python3 scripts/icones.py
+```
+
+regénère `icone-180/192/512.png` depuis la même géométrie que le SVG de
+l'en-tête — repère de 64 × 64, tracé en suréchantillonnage ×4. L'encodeur PNG
+est écrit sur la bibliothèque standard : aucune dépendance graphique dans le
+projet. Le fond est un carré plein, sans coins arrondis : iOS applique son
+propre masque, et un coin déjà arrondi laisserait une frange claire sur
+l'écran d'accueil.
+
+Après toute retouche du signe, mettre à jour les trois jetons CSS, les deux
+SVG d'`index.html`, `scripts/icones.py`, puis relancer le script.
 
 ## Widget iOS (Scriptable)
 
