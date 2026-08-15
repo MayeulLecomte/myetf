@@ -125,25 +125,25 @@ const INDICATEURS = [
 
 const SCENARIOS = [
   {
-    id: 'atterrissage', nom: 'Atterrissage en douceur', couleur: '#6fa96a',
+    id: 'atterrissage', nom: 'Atterrissage en douceur', couleur: 'var(--scenario-atterrissage)',
     description: "Croissance qui ralentit sans récession, inflation qui converge vers la cible, banques centrales qui assouplissent progressivement.",
     tilts: { actions: 4, obligations: 3, monetaire: -7, diversifiants: 0 },
     poches: { 'act-monde': 3, 'act-us': 2, 'obl-ig-euro': 4, 'obl-souv-euro-lt': 3, 'obl-souv-euro-ct': -4, 'act-min-vol': -3 }
   },
   {
-    id: 'recession', nom: 'Récession', couleur: '#c0504d',
+    id: 'recession', nom: 'Récession', couleur: 'var(--scenario-recession)',
     description: "Contraction de l'activité, hausse du chômage, baisse des bénéfices, détente forte des taux longs.",
     tilts: { actions: -12, obligations: 8, monetaire: 3, diversifiants: 1 },
     poches: { 'obl-souv-euro-lt': 10, 'obl-souv-euro-ct': 4, 'obl-hy-euro': -8, 'obl-emergente': -5, 'act-min-vol': 10, 'act-small': -6, 'act-emergents': -5, 'act-tech': -4, 'div-or': 5, 'div-matieres': -5 }
   },
   {
-    id: 'stagflation', nom: 'Stagflation', couleur: '#d97941',
+    id: 'stagflation', nom: 'Stagflation', couleur: 'var(--scenario-stagflation)',
     description: "Croissance faible et inflation durablement élevée : les taux longs restent hauts, les marges se compriment.",
     tilts: { actions: -6, obligations: -4, monetaire: 4, diversifiants: 6 },
     poches: { 'obl-inflation': 12, 'obl-souv-euro-lt': -10, 'obl-souv-euro-ct': 5, 'act-tech': -6, 'act-min-vol': 6, 'div-or': 8, 'div-matieres': 8, 'div-immobilier': -6 }
   },
   {
-    id: 'reflation', nom: 'Reflation / accélération', couleur: '#d9a441',
+    id: 'reflation', nom: 'Reflation / accélération', couleur: 'var(--scenario-reflation)',
     description: "Reprise synchronisée de la croissance, appétit pour le risque, hausse des bénéfices et des matières premières.",
     tilts: { actions: 8, obligations: -6, monetaire: -3, diversifiants: 1 },
     poches: { 'act-small': 6, 'act-emergents': 5, 'act-europe': 3, 'act-min-vol': -8, 'obl-hy-euro': 6, 'obl-souv-euro-lt': -6, 'div-matieres': 5, 'div-or': -4 }

@@ -54,19 +54,27 @@ function donut(segments, taille, epaisseur) {
   const r = (taille - epaisseur) / 2, cx = taille / 2, cy = taille / 2;
   const total = segments.reduce((a, s) => a + s.valeur, 0);
   if (total <= 0) return '<svg width="' + taille + '" height="' + taille + '"></svg>';
+  /* Un espace de 2 px sépare les segments : sans lui, deux teintes
+     voisines se touchent et la frontière devient une illusion
+     d'optique plutôt qu'une donnée. */
+  const jeu = 2 / r;
   let angle = -Math.PI / 2, contenu = '';
   segments.forEach(s => {
     if (s.valeur <= 0) return;
     const arc = 2 * Math.PI * s.valeur / total;
     const fin = angle + arc;
+    /* La couleur passe par `style` et non par l'attribut `stroke` :
+       un attribut de présentation SVG n'accepte pas var(--…). */
+    const trait = 'style="stroke:' + s.couleur + '" stroke-width="' + epaisseur + '" fill="none"';
     if (arc >= 2 * Math.PI - 0.0001) {
-      contenu += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + s.couleur + '" stroke-width="' + epaisseur + '"/>';
+      contenu += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + trait + '/>';
     } else {
-      const x1 = cx + r * Math.cos(angle), y1 = cy + r * Math.sin(angle);
-      const x2 = cx + r * Math.cos(fin),   y2 = cy + r * Math.sin(fin);
+      const a = angle + jeu / 2, b = Math.max(a, fin - jeu / 2);
+      const x1 = cx + r * Math.cos(a), y1 = cy + r * Math.sin(a);
+      const x2 = cx + r * Math.cos(b), y2 = cy + r * Math.sin(b);
       contenu += '<path d="M ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' A ' + r + ' ' + r + ' 0 ' +
-        (arc > Math.PI ? 1 : 0) + ' 1 ' + x2.toFixed(2) + ' ' + y2.toFixed(2) +
-        '" fill="none" stroke="' + s.couleur + '" stroke-width="' + epaisseur + '"/>';
+        ((b - a) > Math.PI ? 1 : 0) + ' 1 ' + x2.toFixed(2) + ' ' + y2.toFixed(2) +
+        '" ' + trait + '/>';
     }
     angle = fin;
   });
@@ -382,9 +390,9 @@ function rendreProfil() {
 
     '<div class="grille deux">' +
       '<div class="carte"><h3>Décomposition du score</h3>' +
-        jauge('Capacité de perte', r.scores.capacite, '#4b7f9e') +
-        jauge('Tolérance au risque', r.scores.tolerance, '#c0504d') +
-        jauge('Connaissance &amp; expérience', r.scores.connaissance, '#6fa96a') +
+        jauge('Capacité de perte', r.scores.capacite, 'var(--axe-capacite)') +
+        jauge('Tolérance au risque', r.scores.tolerance, 'var(--axe-tolerance)') +
+        jauge('Connaissance &amp; expérience', r.scores.connaissance, 'var(--axe-connaissance)') +
         '<p class="intro" style="font-size:12px;margin-top:12px">Le score retenu est le <strong>minimum</strong> ' +
         'entre capacité et tolérance : on ne peut exposer un client ni au-delà de ce qu\'il peut perdre, ni ' +
         'au-delà de ce qu\'il accepte de perdre. La connaissance agit ensuite comme plafond.</p>' +
@@ -729,7 +737,7 @@ function rendreDetention() {
     '<td class="num"><input type="number" data-detention="quantite" data-index="' + i + '" value="' + (l.quantite || '') +
       '" min="0" step="1" placeholder="—"' + (cote ? ' title="Dernier cours connu : ' + cote.cours + ' € au ' + dateFr(cote.date) + '"' : '') + '></td>' +
     '<td class="num"><input type="number" data-detention="montant" data-index="' + i + '" value="' + (l.montant || 0) + '" min="0" step="100"' +
-      (valorise ? ' readonly style="background:#e4f1e7" title="Calculé automatiquement : ' + l.quantite + ' × ' + cote.cours + ' € (cours du ' + dateFr(cote.date) + ')"' : '') + '></td>' +
+      (valorise ? ' readonly style="background:var(--fond-marche)" title="Calculé automatiquement : ' + l.quantite + ' × ' + cote.cours + ' € (cours du ' + dateFr(cote.date) + ')"' : '') + '></td>' +
     '<td class="num"><input type="number" data-detention="pvLatente" data-index="' + i + '" value="' + (l.pvLatente || 0) + '" step="1"></td>' +
     '<td><button class="bouton secondaire" data-supprimer-detention="' + i + '" title="Supprimer">✕</button></td>' +
     '</tr>';
@@ -1233,7 +1241,8 @@ function rendreSeriesHistorique() {
     return '<tr><td>' + echapper(LIBELLES_POCHES[p] || p) + '</td>' +
       s.valeurs.map((v, i) => {
         const prov = (s.provenance || [])[i] || (s.source === 'source' ? 'source' : 'estime');
-        const fond = prov === 'marche' ? '#e4f1e7' : prov === 'source' ? '#eef3f9' : '#fbeedd';
+        const fond = prov === 'marche' ? 'var(--fond-marche)'
+          : prov === 'source' ? 'var(--fond-source)' : 'var(--fond-estime)';
         const titre = prov === 'marche' ? 'Relevé sur les cours de marché'
           : prov === 'source' ? 'Source documentée' : 'Estimation non vérifiée';
         return '<td class="num"><input type="number" step="0.1" style="width:72px;background:' + fond +

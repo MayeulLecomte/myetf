@@ -6,7 +6,7 @@
 const PROFILS = [
   {
     id: 'securitaire', nom: 'Sécuritaire', ordre: 0, scoreMin: 0,  scoreMax: 16, sri: '1 à 2',
-    couleur: '#4b7f9e',
+    couleur: 'var(--profil-securitaire)',
     volatiliteCible: '0 – 3 %', perteMax: '-3 %', rendementCible: '2,0 – 2,5 %',
     horizonMin: 1,
     description: "Préservation du capital. Le portefeuille ne supporte pas de perte durable en capital.",
@@ -14,7 +14,7 @@ const PROFILS = [
   },
   {
     id: 'prudent', nom: 'Prudent', ordre: 1, scoreMin: 17, scoreMax: 33, sri: '2 à 3',
-    couleur: '#5b9bb5',
+    couleur: 'var(--profil-prudent)',
     volatiliteCible: '3 – 6 %', perteMax: '-8 %', rendementCible: '2,5 – 3,5 %',
     horizonMin: 3,
     description: "Recherche d'un rendement légèrement supérieur au monétaire, avec une exposition actions minoritaire.",
@@ -22,7 +22,7 @@ const PROFILS = [
   },
   {
     id: 'equilibre', nom: 'Équilibré', ordre: 2, scoreMin: 34, scoreMax: 50, sri: '3 à 4',
-    couleur: '#6fa96a',
+    couleur: 'var(--profil-equilibre)',
     volatiliteCible: '6 – 10 %', perteMax: '-15 %', rendementCible: '3,5 – 5,0 %',
     horizonMin: 5,
     description: "Équilibre entre croissance et protection. Répartition proche 40/60 actions-taux.",
@@ -30,7 +30,7 @@ const PROFILS = [
   },
   {
     id: 'dynamique', nom: 'Dynamique', ordre: 3, scoreMin: 51, scoreMax: 67, sri: '4',
-    couleur: '#d9a441',
+    couleur: 'var(--profil-dynamique)',
     volatiliteCible: '10 – 14 %', perteMax: '-25 %', rendementCible: '5,0 – 6,5 %',
     horizonMin: 8,
     description: "Moteur actions majoritaire, poche obligataire de stabilisation.",
@@ -38,7 +38,7 @@ const PROFILS = [
   },
   {
     id: 'offensif', nom: 'Offensif', ordre: 4, scoreMin: 68, scoreMax: 84, sri: '5',
-    couleur: '#d97941',
+    couleur: 'var(--profil-offensif)',
     volatiliteCible: '14 – 18 %', perteMax: '-35 %', rendementCible: '6,5 – 7,5 %',
     horizonMin: 10,
     description: "Portefeuille orienté croissance long terme, forte sensibilité aux marchés actions.",
@@ -46,7 +46,7 @@ const PROFILS = [
   },
   {
     id: 'agressif', nom: 'Agressif', ordre: 5, scoreMin: 85, scoreMax: 100, sri: '5 à 6',
-    couleur: '#c0504d',
+    couleur: 'var(--profil-agressif)',
     volatiliteCible: '18 – 24 %', perteMax: '-45 %', rendementCible: '7,5 – 9,0 %',
     horizonMin: 12,
     description: "Exposition actions quasi intégrale, y compris petites capitalisations et thématiques.",
@@ -121,9 +121,12 @@ const LIBELLES_CLASSES = {
   diversifiants: 'Diversifiants'
 };
 
+/* Les couleurs pointent vers les jetons de css/app.css : une seule
+   source de vérité, et le basculement clair/sombre se fait sans
+   intervention du JavaScript. */
 const COULEURS_CLASSES = {
-  actions: '#c0504d',
-  obligations: '#4b7f9e',
-  monetaire: '#7f8c8d',
-  diversifiants: '#d9a441'
+  actions: 'var(--serie-actions)',
+  obligations: 'var(--serie-obligations)',
+  monetaire: 'var(--serie-monetaire)',
+  diversifiants: 'var(--serie-diversifiants)'
 };

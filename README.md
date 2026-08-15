@@ -40,6 +40,31 @@ transmises à personne. Deux utilisateurs de la même adresse ne partagent donc
 pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
 « Importer ».
 
+## Interface
+
+Registre visuel inspiré des interfaces Apple : surfaces arrondies et
+superposées, matériaux translucides sur les barres fixes (`backdrop-filter`),
+typographie système, boutons en pilule qui s'enfoncent au clic, transitions sur
+la courbe de ressort d'iOS. Le **mode sombre suit le réglage de l'appareil** —
+rien à activer.
+
+Deux règles s'appliquent au-delà du goût :
+
+- **Le rapport client reste sobre.** La feuille d'impression repasse en
+  monochrome, sans ombre ni accent coloré : un document remis à un client n'est
+  pas une interface.
+- **La palette des graphiques est validée, pas choisie à l'œil.** Bande de
+  clarté, plancher de chroma, séparation en vision déficiente et contraste sur
+  la surface sont vérifiés par un contrôleur, dans les deux modes. Deux
+  combinaisons ont d'ailleurs été écartées à ce titre : violet et bleu étaient
+  indiscernables sur fond sombre (ΔE 9,8, sous le plancher de 15). **Ne
+  retouchez pas une couleur de série sans relancer ce contrôle.**
+
+Toutes les couleurs sont des jetons CSS (`--serie-*`, `--scenario-*`,
+`--profil-*`) ; `js/data/` les référence par `var(--…)` plutôt que par des
+valeurs en dur, si bien que le basculement clair/sombre ne demande aucun
+JavaScript.
+
 ## Sur iPhone
 
 L'application est adaptée au téléphone : la barre latérale devient un bandeau
