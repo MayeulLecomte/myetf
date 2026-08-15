@@ -1,0 +1,67 @@
+ALLOCATION ETF — COMMENT OUVRIR L'APPLICATION
+==============================================
+
+1. Décompressez le dossier « myetf » où vous voulez
+   (Bureau, Documents, peu importe).
+
+2. Ouvrez le dossier et double-cliquez sur le fichier :
+
+      index.html
+
+   L'application s'ouvre dans votre navigateur habituel.
+
+C'est tout. Il n'y a rien à installer, rien à configurer,
+aucun compte à créer, aucune connexion internet nécessaire.
+
+
+SI LE DOUBLE-CLIC NE FONCTIONNE PAS
+-----------------------------------
+Faites un clic droit sur index.html, puis
+« Ouvrir avec » → Chrome, Firefox ou Safari.
+
+
+OÙ SONT ENREGISTRÉES LES DONNÉES ?
+----------------------------------
+Uniquement dans votre navigateur, sur votre ordinateur.
+Rien n'est envoyé sur internet, à personne.
+
+Le bouton « Enregistrer » (en haut à droite) conserve le
+dossier en cours ; il sera automatiquement rechargé à la
+prochaine ouverture.
+
+Le bouton « Exporter le dossier » crée un fichier que vous
+pouvez sauvegarder ou transmettre.
+
+Attention : vider les données de navigation du navigateur
+efface le dossier en cours. Exportez-le avant, par sécurité.
+
+
+PAR OÙ COMMENCER
+----------------
+Suivez les onglets de gauche dans l'ordre :
+
+  1. Client & enveloppe ... montant, type de contrat
+  2. Questionnaire ........ 18 questions
+  3. Profil de risque ..... résultat automatique
+  4. Contexte macro ....... votre lecture des marchés
+  5. Allocation cible ..... la répartition proposée
+  6. Sélection ETF ........ les supports retenus
+  7. Arbitrages ........... les mouvements à faire
+  8. Revenus & rachats .... si vous voulez une rente
+ 11. Rapport .............. à imprimer ou enregistrer en PDF
+
+Le lien « Pré-remplir un exemple » dans l'onglet
+Questionnaire permet de voir tourner l'application
+immédiatement, sans tout saisir.
+
+
+IMPORTANT
+---------
+Les caractéristiques des ETF fournies avec l'application
+(codes ISIN, frais, encours, notations, disponibilité dans
+les contrats) sont INDICATIVES et n'ont pas été vérifiées.
+Elles doivent être contrôlées dans l'onglet « Univers ETF »
+avant tout usage réel.
+
+Cette application est un outil de travail. Elle ne constitue
+pas un conseil en investissement.
