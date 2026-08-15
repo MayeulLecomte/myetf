@@ -155,6 +155,14 @@ async function principal() {
       note
     }, null, 2) + ';\n');
 
+  /* Le widget reprend le titre et la synthèse de la note. */
+  const cheminWidget = join(RACINE, 'data', 'widget.json');
+  if (existsSync(cheminWidget)) {
+    const w = JSON.parse(readFileSync(cheminWidget, 'utf8'));
+    w.note = { titre: note.titre, synthese: note.synthese };
+    writeFileSync(cheminWidget, JSON.stringify(w));
+  }
+
   console.log(`Note rédigée : « ${note.titre} »`);
   console.log(`${note.mouvements.length} mouvement(s) relevé(s), ${note.aVerifier.length} point(s) à vérifier.`);
   console.log(`Tokens : ${reponse.usage.input_tokens} en entrée, ${reponse.usage.output_tokens} en sortie.`);

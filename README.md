@@ -40,6 +40,44 @@ transmises à personne. Deux utilisateurs de la même adresse ne partagent donc
 pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
 « Importer ».
 
+## Sur iPhone
+
+L'application est adaptée au téléphone : la barre latérale devient un bandeau
+d'onglets défilant, les cartes passent en pleine largeur, les tableaux
+défilent horizontalement plutôt que de s'écraser, et toutes les saisies font
+au moins 16 px — en dessous, iOS agrandit la page à chaque fois qu'on touche
+un champ.
+
+**Ajout à l'écran d'accueil** : ouvrir le site dans Safari, toucher le bouton
+Partager, puis « Sur l'écran d'accueil ». L'application s'ouvre alors en plein
+écran, sans barre d'adresse, avec sa propre icône. Le manifeste et les
+métadonnées `apple-mobile-web-app-*` s'en chargent ; les marges d'encoche et
+de barre d'accueil sont gérées par `env(safe-area-inset-*)`.
+
+Les icônes sont générées par un encodeur PNG minimal en Python (bibliothèque
+standard seule) — aucune dépendance graphique dans le projet.
+
+## Widget iOS (Scriptable)
+
+`scriptable/allocation-etf.js` affiche les mouvements du jour sur l'écran
+d'accueil. Trois tailles :
+
+- **Petit** — la variation du jour des actions monde, semaine et année en dessous
+- **Moyen** — le titre de la note du jour et quatre repères d'allocation sur la semaine
+- **Grand** — la note, puis les trois plus fortes hausses et baisses de la semaine
+
+Installation : installer [Scriptable](https://apps.apple.com/app/scriptable/id1405459188),
+y coller le fichier sous le nom « Allocation ETF », puis appui long sur l'écran
+d'accueil → « + » → Scriptable → choisir la taille → appui long sur le widget →
+« Modifier le widget » → Script : « Allocation ETF ». Toucher le widget ouvre
+l'application.
+
+Le widget lit `data/widget.json` (moins d'un kilo-octet), régénéré à chaque
+relevé. **Aucune donnée client n'y figure** : uniquement des variations de
+marché publiques. Le portefeuille reste dans le navigateur et n'est envoyé
+nulle part — ce qui veut dire aussi que le widget ne peut pas afficher la
+dérive d'un portefeuille personnel.
+
 ## Publier une mise à jour
 
 Les fichiers `.js` et `.css` sont référencés avec un numéro de version
@@ -287,6 +325,9 @@ js/engine/backtest.js         simulation, rééquilibrage, contributions, risque
 scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
 scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
 package.json                  dépendances des scripts uniquement (SDK Anthropic)
+scriptable/allocation-etf.js  widget iOS, lit data/widget.json
+manifest.webmanifest          ajout à l'écran d'accueil
+icone-180/192/512.png         icônes, générées par encodeur PNG en Python
 .github/workflows/cours.yml   relevé automatique du mardi au samedi
 data/                         GÉNÉRÉ — archive des cours et rapports de couverture
 js/app.js                     état, rendu des onze vues, événements, persistance

@@ -267,3 +267,97 @@ input[type=range] { width: 100%; }
   table { font-size: 10px; }
   .saut-page { page-break-before: always; }
 }
+
+/* ============================================================
+   iPHONE & TABLETTE
+   Le poste de travail du conseiller reste la référence ; sur
+   téléphone la barre latérale devient un bandeau d'onglets
+   défilant et les cartes passent en pleine largeur.
+   ============================================================ */
+
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: rgba(28,53,87,.12); }
+
+/* Mode « ajouté à l'écran d'accueil » : la page occupe l'écran
+   entier, encoche et barre d'accueil comprises. */
+@supports (padding: max(0px)) {
+  .entete { padding-top: max(14px, env(safe-area-inset-top)); }
+  .contenu { padding-bottom: max(80px, env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 820px) {
+  .corps { flex-direction: column; }
+
+  .entete {
+    padding: 12px 16px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    flex-wrap: wrap; gap: 10px;
+  }
+  .entete .marque span { display: none; }        /* le sous-titre mangerait la largeur */
+  .entete .actions-entete { width: 100%; overflow-x: auto; padding-bottom: 2px; }
+  .entete .actions-entete::-webkit-scrollbar { display: none; }
+  .entete .actions-entete .bouton { white-space: nowrap; font-size: 13px; padding: 8px 12px; }
+
+  /* Barre d'onglets défilante, collée sous l'en-tête */
+  .nav {
+    width: 100%; border-right: 0; border-bottom: 1px solid var(--gris-ligne);
+    padding: 8px 12px; display: flex; gap: 8px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    position: sticky; top: 52px; z-index: 40;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav .separateur { display: none; }
+  .nav button {
+    width: auto; flex: 0 0 auto;
+    border-left: 0; border-radius: 999px;
+    border: 1px solid var(--gris-ligne);
+    padding: 8px 14px; min-height: 40px;
+    white-space: nowrap; font-size: 13px;
+  }
+  .nav button.actif { border-color: var(--bleu); }
+
+  .contenu { padding: 16px 14px 60px; }
+  h2 { font-size: 17px; }
+  .carte { padding: 16px 14px; border-radius: 12px; }
+  .grille.deux, .grille.trois, .grille.quatre { grid-template-columns: 1fr; gap: 12px; }
+
+  /* iOS agrandit la page dès qu'un champ passe sous 16 px : on impose
+     16 px sur toutes les saisies. Les sélecteurs reprennent exactement
+     ceux du bloc de base — un simple `input` a une spécificité plus
+     faible que `input[type=text]` et se ferait écraser par son
+     `font: inherit`. */
+  input[type=text], input[type=number], input[type=date], select, textarea {
+    font-size: 16px; min-height: 44px;
+  }
+  input[type=checkbox], input[type=radio] { min-height: 0; width: 20px; height: 20px; }
+  .options label { padding: 12px 14px; min-height: 44px; }
+  button.bouton { min-height: 44px; padding: 11px 16px; }
+
+  .barre-actions { gap: 8px; }
+  .barre-actions .bouton { flex: 1 1 auto; }
+
+  table { font-size: 12px; }
+  th, td { padding: 8px 6px; }
+  .kpi .valeur { font-size: 22px; }
+  .bandeau-profil { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .bandeau-profil > div:last-child { margin-left: 0 !important; text-align: left !important; }
+  .graphique { justify-content: center; }
+
+  /* Les tableaux de données défilent horizontalement plutôt que de
+     s'écraser : une colonne trop étroite tronque un montant sans
+     le dire, ce qui est pire qu'un défilement. */
+  .tableau-defilant { -webkit-overflow-scrolling: touch; }
+  #table-univers { min-width: 900px; }
+  #table-detention { min-width: 660px; }
+  #table-historique { min-width: 620px; }
+  #table-detention input[data-detention=libelle] { min-width: 150px; }
+  #table-detention input[data-detention=montant],
+  #table-detention input[data-detention=quantite] { min-width: 90px; }
+}
+
+@media (max-width: 420px) {
+  .entete .marque strong { font-size: 15px; }
+  .contenu { padding: 14px 10px 60px; }
+  .carte { padding: 14px 12px; }
+}

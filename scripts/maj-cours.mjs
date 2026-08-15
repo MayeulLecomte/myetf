@@ -265,6 +265,25 @@ async function principal() {
     introuvables.forEach(c => console.log(`  ${c.isin}  ${c.nom.slice(0, 52)}`));
   }
 
+  /* --- Charge utile du widget Scriptable ---
+     Volontairement minuscule : un widget iOS dispose de peu de
+     mémoire et se rafraîchit souvent. Aucune donnée client n'y
+     figure — uniquement des variations de marché. */
+  const classement = Object.entries(variations)
+    .filter(([, v]) => v.semaine !== null)
+    .sort((a, b) => (b[1].semaine || 0) - (a[1].semaine || 0));
+  const abrege = ([poche, v]) => ({
+    poche: (libelles[poche] || poche).replace(/ \(.*\)$/, ''),
+    jour: v.jour, semaine: v.semaine, annee: v.annee
+  });
+  writeFileSync(join(RACINE, 'data', 'widget.json'), JSON.stringify({
+    genere: archive.genere,
+    hausses: classement.slice(0, 3).map(abrege),
+    baisses: classement.slice(-3).reverse().map(abrege),
+    reperes: ['act-monde', 'obl-ig-euro', 'div-or', 'mon-euro']
+      .filter(p => variations[p]).map(p => abrege([p, variations[p]]))
+  }));
+
   couverture.sort((a, b) => a.isin < b.isin ? -1 : 1);
   writeFileSync(join(RACINE, 'data', 'couverture.json'),
     JSON.stringify({ genere: archive.genere, couverture }, null, 2));
