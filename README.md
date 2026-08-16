@@ -25,13 +25,14 @@
 > (absence de licence = tous droits réservés).
 
 Outil d'aide à la décision pour la construction et le suivi d'un portefeuille d'ETF
-en assurance-vie, PEA ou compte-titres. Il enchaîne cinq étapes :
+en assurance-vie, PEA ou compte-titres. Il enchaîne six étapes :
 
 1. **Questionnaire de profilage** (structure MIF 2 / DDA) → profil de risque
 2. **Allocation stratégique** issue du profil (actions / obligations / monétaire / diversifiants)
 3. **Lecture du contexte** économique, géopolitique et fiscal → probabilités de scénarios → **déviations tactiques bornées**
 4. **Sélection des supports** dans un univers ETF restreint, filtré par enveloppe et par contrat
 5. **Arbitrages** : comparaison au portefeuille détenu, ordres à passer, fiscalité, journal de suivi
+6. **Situation** : relevé daté du portefeuille, arrêtés semestriels, effet des arbitrages proposés
 
 ## L'écran d'ouverture : « Aujourd'hui »
 
@@ -49,6 +50,33 @@ Le verdict passe volontairement avant le détail. La réponse est le plus souven
 « rien à faire », et un écran d'accueil qui présenterait d'emblée une liste
 d'ordres pousserait à la rotation — ce que les bandes de tolérance servent
 précisément à éviter.
+
+## Situation des placements
+
+Un relevé daté : ce qui est détenu, à quel cours, pour quelle valeur, et quelle
+part du portefeuille. La date se choisit librement ; les arrêtés du **30 juin**
+et du **31 décembre** sont proposés d'office.
+
+Deux natures de relevé, que l'écran ne mélange jamais :
+
+- **Figée** — quantités et cours enregistrés à la date dite. C'est un relevé.
+- **Reconstituée** — quantités d'aujourd'hui revalorisées aux cours d'une date
+  passée. Exacte seulement si le portefeuille n'a pas bougé depuis, et toujours
+  signalée comme telle. C'est une estimation.
+
+Les arrêtés franchis depuis la dernière ouverture se figent d'office : c'est le
+moment où les quantités connues sont encore celles de l'arrêté. **Aucun arrêté
+antérieur à la première utilisation n'est figé rétroactivement** — enregistrer
+une reconstitution comme un relevé lui prêterait une exactitude qu'elle n'a pas.
+
+Trois réserves sont affichées quand elles s'appliquent : une ligne saisie en
+montant et non en quantité ne suit pas les cours ; un support sans historique
+(coté hors Euronext) est valorisé au dernier cours connu, postérieur à la date
+demandée ; un support sans aucun cours ne reçoit aucune valeur inventée.
+
+La rubrique porte enfin la comparaison **avant / après arbitrage** : le
+portefeuille actuel et ce qu'il deviendrait si les ordres proposés étaient
+passés, classe par classe, avec les deux relevés détaillés côte à côte.
 
 ## Accéder à l'application
 
@@ -420,6 +448,7 @@ js/data/etf-univers.js        42 supports ; données de marché relevées, contr
 js/data/fiscalite.js          taux, abattements, rendements courants, cascade de retrait
 js/data/historique.js         séries de performances annuelles par poche
 js/data/cours-marche.js       GÉNÉRÉ — performances et derniers cours par ISIN
+js/data/cours-historique.js   GÉNÉRÉ — cours de clôture quotidiens, calendrier commun
 js/data/note-marche.js        GÉNÉRÉ — note de marché du jour
 js/engine/profil.js           scoring, plafonnement, stress tests
 js/engine/allocation.js       stratégique, agrégation macro, tactique, métriques
@@ -427,8 +456,10 @@ js/engine/selection.js        filtrage de l'univers, notation et choix des suppo
 js/engine/arbitrage.js        écarts, ordres, fiscalité, journal
 js/engine/revenus.js          coussin, cascade de prélèvement, fiscalité, projection
 js/engine/backtest.js         simulation, rééquilibrage, contributions, risque de séquence
+js/engine/situation.js        relevé daté, arrêtés semestriels, avant/après arbitrage
 scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
 scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
+scripts/icones.py             regénère les icônes depuis le signe
 package.json                  dépendances des scripts uniquement (SDK Anthropic)
 scriptable/allocation-etf.js  widget iOS, lit data/widget.json
 manifest.webmanifest          ajout à l'écran d'accueil

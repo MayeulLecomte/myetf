@@ -255,6 +255,45 @@ async function principal() {
     entete + JSON.stringify(pochesTriees, null, 2) + ';\n\n' +
     'const DERNIERS_COURS = ' + JSON.stringify(derniers, null, 2) + ';\n');
 
+  /* --- Historique des cours pour l'onglet Situation ---
+     L'application ne peut pas lire data/cours.json : ouverte en file://,
+     elle n'a pas le droit de faire un fetch. L'archive est donc republiée
+     en JavaScript, sur un calendrier commun à toutes les séries : un
+     tableau de dates, puis un tableau de cours aligné dessus par ISIN,
+     avec null les jours sans cotation. Cette forme pèse le tiers du JSON
+     d'origine et se lit par recherche dichotomique. */
+  const calendrier = [...new Set(
+    Object.values(archive.series).flatMap(s => Object.keys(s.points))
+  )].sort();
+  const index = new Map(calendrier.map((d, i) => [d, i]));
+
+  const seriesAlignees = {};
+  for (const [isin, s] of Object.entries(archive.series)) {
+    const colonne = new Array(calendrier.length).fill(null);
+    for (const [date, cours] of Object.entries(s.points)) colonne[index.get(date)] = cours;
+    seriesAlignees[isin] = colonne;
+  }
+
+  const enteteHisto = [
+    '/* ============================================================',
+    '   HISTORIQUE DES COURS DE CLÔTURE',
+    '   Fichier GÉNÉRÉ automatiquement par scripts/maj-cours.mjs.',
+    '   Ne pas modifier à la main : toute retouche sera écrasée.',
+    '',
+    '   COURS_HISTORIQUE.dates    calendrier commun, trié',
+    '   COURS_HISTORIQUE.series   { ISIN: [cours aligné sur dates] }',
+    '   null = pas de cotation ce jour-là pour ce support.',
+    '',
+    '   Alimente les situations de portefeuille à une date passée.',
+    `   Généré le ${archive.genere} · ${calendrier.length} séances, ` +
+      `${Object.keys(seriesAlignees).length} supports.`,
+    '   ============================================================ */', '',
+    'const COURS_HISTORIQUE = '
+  ].join('\n');
+
+  writeFileSync(join(RACINE, 'js', 'data', 'cours-historique.js'),
+    enteteHisto + JSON.stringify({ genere: archive.genere, dates: calendrier, series: seriesAlignees }) + ';\n');
+
   /* --- Rapport --- */
   const introuvables = couverture.filter(c => c.statut === 'introuvable');
   const anneesCompletes = new Set();

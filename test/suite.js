@@ -335,5 +335,69 @@ ok(btM&&btM.nbAnnees===ANNEES_HISTORIQUE.length,'backtest exploitable sur les s�
 let chainM=100000; btM.annees.forEach(a=>{chainM=chainM*(1+a.rendement/100)});
 ok(Math.abs(chainM-btM.capitalFinal)<btM.capitalFinal*0.0002,'capital cohérent après injection des cours de marché (écart d\'arrondi '+Math.abs(chainM-btM.capitalFinal).toFixed(2)+' €)');
 
+// --- 11. Situation de portefeuille
+console.log('\n== Situation ==');
+const HD=COURS_HISTORIQUE.dates;
+console.log('   '+HD.length+' séances du '+HD[0]+' au '+HD[HD.length-1]+', '+Object.keys(COURS_HISTORIQUE.series).length+' supports');
+ok(HD.length>200,'historique des cours publié');
+ok(HD.every((d,i)=>i===0||HD[i-1]<d),'calendrier trié et sans doublon');
+ok(Object.values(COURS_HISTORIQUE.series).every(s=>s.length===HD.length),'chaque série est alignée sur le calendrier');
+
+const ISIN_TEST='IE00B4L5Y983';
+const cExact=MoteurSituation.coursALaDate(ISIN_TEST,HD[HD.length-1]);
+ok(cExact&&cExact.statut==='seance','cours retrouvé à une date de séance');
+// une date postérieure à la dernière séance retombe sur la dernière connue
+const cApres=MoteurSituation.coursALaDate(ISIN_TEST,'2030-01-01');
+ok(cApres&&cApres.statut==='anterieur'&&cApres.date===HD[HD.length-1],'date hors calendrier : dernière séance connue');
+ok(MoteurSituation.coursALaDate(ISIN_TEST,'2000-01-01')===null,'date antérieure à l\'historique : aucun cours');
+ok(MoteurSituation.coursALaDate('XX0000000000',HD[10])===null,'ISIN inconnu : aucun cours');
+
+const detentionTest=[
+  {isin:ISIN_TEST,libelle:'Monde',quantite:100,pvLatente:5000},
+  {isin:'IE00B5BMR087',libelle:'S&P 500',quantite:50,pvLatente:2000},
+  {isin:'FR0013346681',libelle:'Ligne en montant',montant:10000,pvLatente:0}
+];
+const sit=MoteurSituation.valoriser(detentionTest,HD[HD.length-1],{univers:ETF_UNIVERS});
+console.log('   portefeuille d\'essai : '+sit.total+' € sur '+sit.lignes.length+' lignes');
+ok(sit.lignes.length===3,'toutes les lignes sont valorisées');
+ok(Math.abs(sit.lignes.reduce((a,l)=>a+l.poids,0)-100)<0.3,'poids ≈ 100 %');
+ok(sit.total>0&&sit.lignes.every(l=>l.montant>=0),'montants positifs');
+ok(sit.lignes.find(l=>l.statut==='montant'),'ligne sans quantité repérée comme saisie en montant');
+ok(sit.pvLatente===7000,'plus-values latentes cumulées');
+// la même détention à deux dates donne deux valeurs : les cours ont bougé
+const sitAvant=MoteurSituation.valoriser(detentionTest,HD[0],{univers:ETF_UNIVERS});
+ok(sitAvant.total!==sit.total,'la valorisation suit la date demandée');
+// une ligne sans historique ni cours du jour ne fabrique pas de valeur
+const sitInconnue=MoteurSituation.valoriser([{isin:'XX0000000000',libelle:'Inconnu',quantite:10}],HD[5],{univers:[]});
+ok(sitInconnue.lignes[0].statut==='absent'&&sitInconnue.lignes[0].montant===0,'support sans cours : aucune valeur inventée');
+ok(!sitInconnue.fiable,'situation incomplète signalée comme telle');
+
+// --- après arbitrage
+const allocSit=MoteurAllocation.tactique('equilibre',m1.probas,m1.overlays,0.6);
+const selSit=MoteurSelection.construire(allocSit.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',montant:200000},ETF_UNIVERS);
+const detSit=[{isin:'LU0290358497',libelle:'Monétaire',montant:200000,pvLatente:0}];
+const anaSit=MoteurArbitrage.analyser(detSit,selSit.lignes,{enveloppe:'AV',apport:0},ETF_UNIVERS);
+const apresSit=MoteurSituation.apresArbitrage(detSit,anaSit.ordres,ETF_UNIVERS);
+const vAvant=MoteurSituation.valoriser(detSit,HD[HD.length-1],{univers:ETF_UNIVERS});
+const vApres=MoteurSituation.valoriser(apresSit,HD[HD.length-1],{univers:ETF_UNIVERS});
+console.log('   avant '+vAvant.total+' € → après '+vApres.total+' € sur '+vApres.lignes.length+' lignes');
+ok(Math.abs(vApres.total-vAvant.total)<vAvant.total*0.01,'l\'arbitrage conserve le capital (hors apport)');
+ok(vApres.lignes.length>vAvant.lignes.length,'l\'arbitrage diversifie le portefeuille');
+ok(apresSit.every(l=>l.montant>0),'aucune ligne résiduelle nulle après arbitrage');
+// un portefeuille déjà aligné ne bouge pas
+const dejaAligne=selSit.lignes.map(l=>({isin:l.etf.isin,libelle:l.etf.nom,montant:l.montant,pvLatente:0}));
+const anaNull=MoteurArbitrage.analyser(dejaAligne,selSit.lignes,{enveloppe:'AV',apport:0},ETF_UNIVERS);
+const apresNull=MoteurSituation.apresArbitrage(dejaAligne,anaNull.ordres,ETF_UNIVERS);
+ok(apresNull.length===dejaAligne.length,'portefeuille aligné : la situation après arbitrage est inchangée');
+
+// --- arrêtés semestriels
+const refs=MoteurSituation.datesReference('2026-08-16','2024-08-16',8);
+console.log('   arrêtés proposés : '+refs.join(', '));
+ok(refs[0]==='2026-06-30','arrêté le plus récent en tête');
+ok(refs.every(d=>d<='2026-08-16'&&d>='2024-08-16'),'aucun arrêté hors de la période couverte');
+ok(refs.every(d=>d.slice(5)==='06-30'||d.slice(5)==='12-31'),'seuls les 30 juin et 31 décembre sont retenus');
+ok(new Set(refs).size===refs.length,'aucun arrêté en double');
+ok(MoteurSituation.datesReference('2026-08-16','2026-08-01',8).length===0,'aucun arrêté sur une période qui n\'en contient pas');
+
 console.log('\n'+(echecs?'❌ '+echecs+' échec(s)':'✅ tous les tests passent'));
 process.exit(echecs?1:0);

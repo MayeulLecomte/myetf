@@ -17,6 +17,8 @@ const Etat = {
   historique: JSON.parse(JSON.stringify(HISTORIQUE_POCHES)),
   univers: JSON.parse(JSON.stringify(ETF_UNIVERS)),
   journal: [],
+  situations: [],                 /* relevés figés, du plus récent au plus ancien */
+  situationDate: null,            /* date observée dans l'onglet Situation */
   filtreUnivers: { classe: '', enveloppe: '', texte: '' }
 };
 
@@ -100,7 +102,8 @@ function sauver(silencieux) {
       identite: Etat.identite, filtres: Etat.filtres, reponses: Etat.reponses,
       macroChoix: Etat.macroChoix, scenariosManuels: Etat.scenariosManuels,
       detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal,
-      revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique
+      revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique,
+      situations: Etat.situations, situationDate: Etat.situationDate, dernierAcces: Etat.dernierAcces
     }));
     if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
   } catch (e) { notifier('Enregistrement impossible : ' + e.message, 'erreur'); }
@@ -248,6 +251,7 @@ function rendre(vue) {
     case 'allocation':    rendreAllocation(); break;
     case 'portefeuille':  rendrePortefeuille(); break;
     case 'arbitrages':    rendreArbitrages(); break;
+    case 'situation':     rendreSituation(); break;
     case 'revenus':       rendreRevenus(); break;
     case 'backtest':      rendreBacktest(); break;
     case 'univers':       rendreUnivers(); break;
@@ -267,6 +271,7 @@ function majNav() {
     macro: Object.keys(Etat.macroChoix).length > 0,
     allocation: !!p, portefeuille: !!p,
     arbitrages: Etat.detention.length > 0,
+    situation: Etat.detention.length > 0,
     revenus: Number(Etat.revenus.besoin) > 0,
     backtest: Object.keys(Etat.historique).some(k => Etat.historique[k].source === 'source'),
     univers: true, journal: Etat.journal.length > 0, rapport: !!p
@@ -1031,7 +1036,299 @@ function rendreArbitrages() {
 }
 
 /* ============================================================
-   VUE 8 — REVENUS
+   VUE 9 — SITUATION DES PLACEMENTS
+   -------------------------------------------------------------
+   Un relevé daté, et non une préconisation : ce qui est détenu,
+   à quel cours, pour quelle valeur. Deux natures cohabitent —
+   une situation figée est un enregistrement, une situation
+   reconstituée est un calcul à quantités inchangées. L'écran ne
+   les mélange jamais.
+   ============================================================ */
+
+function aujourdhuiISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') +
+         '-' + String(d.getDate()).padStart(2, '0');
+}
+
+/** Première séance de l'historique publié : rien n'est calculable avant. */
+function debutHistorique() {
+  return (typeof COURS_HISTORIQUE !== 'undefined' && COURS_HISTORIQUE.dates.length)
+    ? COURS_HISTORIQUE.dates[0] : null;
+}
+
+function situationCourante(dateISO) {
+  return MoteurSituation.valoriser(Etat.detention, dateISO, { univers: Etat.univers });
+}
+
+/** Enregistre le relevé du jour demandé. */
+function figerSituation(dateISO, origine) {
+  const s = situationCourante(dateISO);
+  Etat.situations = Etat.situations.filter(x => x.date !== dateISO);
+  Etat.situations.push({
+    date: dateISO,
+    figeeLe: aujourdhuiISO(),
+    origine: origine || 'manuelle',
+    total: s.total,
+    pvLatente: s.pvLatente,
+    fiable: s.fiable,
+    lignes: s.lignes.map(l => ({
+      isin: l.isin, libelle: l.libelle, poche: l.poche, classe: l.classe,
+      quantite: l.quantite, cours: l.cours, dateCours: l.dateCours,
+      montant: l.montant, poids: l.poids, statut: l.statut
+    }))
+  });
+  Etat.situations.sort((a, b) => a.date < b.date ? 1 : -1);
+  return s;
+}
+
+/**
+ * Fige d'office les arrêtés franchis depuis la dernière ouverture.
+ * On ne fige jamais rétroactivement un arrêté antérieur à la première
+ * utilisation : enregistrer une reconstitution comme un relevé
+ * reviendrait à lui prêter une exactitude qu'elle n'a pas.
+ */
+function figerArretesFranchis() {
+  const aujourd = aujourdhuiISO();
+  const precedent = Etat.dernierAcces;
+  Etat.dernierAcces = aujourd;
+  if (!precedent || !Etat.detention.length) return 0;
+
+  const franchis = MoteurSituation.datesReference(aujourd, precedent, 4)
+    .filter(d => d > precedent && !Etat.situations.some(s => s.date === d));
+
+  franchis.forEach(d => figerSituation(d, 'automatique'));
+  return franchis.length;
+}
+
+const LIBELLES_STATUT = {
+  seance:    { texte: '', classe: '' },
+  anterieur: { texte: 'séance antérieure', classe: 'gris' },
+  actuel:    { texte: 'hors période', classe: 'orange' },
+  montant:   { texte: 'montant saisi', classe: 'gris' },
+  absent:    { texte: 'sans cours', classe: 'rouge' }
+};
+
+function tableauSituation(s) {
+  return '<div class="tableau-defilant"><table><thead><tr>' +
+    '<th>Support</th><th>ISIN</th><th class="num">Quantité</th><th class="num">Cours</th>' +
+    '<th>Cours du</th><th class="num">Valorisation</th><th class="num">Poids</th>' +
+    '</tr></thead><tbody>' +
+    s.lignes.map(l => {
+      let st = LIBELLES_STATUT[l.statut] || LIBELLES_STATUT.seance;
+      /* Un cours de la veille sur une date tombant un samedi n'est pas une
+         réserve : on ne signale le report que s'il dépasse le week-end. */
+      if (l.statut === 'anterieur' && l.dateCours &&
+          (Date.parse(s.date) - Date.parse(l.dateCours)) / 86400000 <= 4) {
+        st = LIBELLES_STATUT.seance;
+      }
+      return '<tr><td>' + (l.classe ? '<span class="pastille" style="background:' +
+          (COULEURS_CLASSES[l.classe] || 'var(--gris-doux)') + '"></span>' : '') +
+        echapper(l.libelle) +
+        (st.texte ? ' <span class="badge ' + st.classe + '">' + st.texte + '</span>' : '') + '</td>' +
+        '<td style="font-family:monospace;font-size:12px">' + echapper(l.isin) + '</td>' +
+        '<td class="num">' + (l.quantite ? l.quantite.toLocaleString('fr-FR') : '—') + '</td>' +
+        '<td class="num">' + (l.cours ? l.cours.toFixed(2).replace('.', ',') + ' €' : '—') + '</td>' +
+        '<td style="font-size:12px;color:var(--gris-doux)">' + (l.dateCours ? dateFr(l.dateCours) : '—') + '</td>' +
+        '<td class="num">' + euro(l.montant) + '</td>' +
+        '<td class="num">' + pct(l.poids) + '</td></tr>';
+    }).join('') +
+    '</tbody><tfoot><tr><td colspan="5">Total</td>' +
+    '<td class="num">' + euro(s.total) + '</td><td class="num">100,0 %</td></tr></tfoot></table></div>';
+}
+
+function repartitionSituation(s) {
+  const ordre = ['actions', 'obligations', 'diversifiants', 'monetaire'];
+  const classes = Object.keys(s.parClasse)
+    .sort((a, b) => (ordre.indexOf(a) + 9) % 9 - (ordre.indexOf(b) + 9) % 9);
+  if (!classes.length) return '';
+  return '<div class="carte"><h3>Répartition par classe d\'actifs</h3>' +
+    '<table><thead><tr><th>Classe</th><th class="num">Valorisation</th><th class="num">Poids</th></tr></thead><tbody>' +
+    classes.map(cl => '<tr><td><span class="pastille" style="background:' +
+      (COULEURS_CLASSES[cl] || 'var(--gris-doux)') + '"></span>' +
+      echapper(LIBELLES_CLASSES[cl] || cl) + '</td>' +
+      '<td class="num">' + euro(s.parClasse[cl].montant) + '</td>' +
+      '<td class="num">' + pct(s.parClasse[cl].poids) + '</td></tr>').join('') +
+    '</tbody></table></div>';
+}
+
+function rendreSituation() {
+  const c = $('#situation-contenu');
+
+  if (!Etat.detention.length) {
+    c.innerHTML = '<div class="message alerte"><strong>Aucune ligne détenue.</strong> ' +
+      'Une situation est un relevé du portefeuille : saisissez les lignes dans l\'onglet « Arbitrages ».' +
+      '<div class="barre-actions"><button class="bouton" data-aller="arbitrages">Saisir le portefeuille</button></div></div>';
+    return;
+  }
+
+  const aujourd = aujourdhuiISO();
+  const date = Etat.situationDate || aujourd;
+  const figee = Etat.situations.find(s => s.date === date) || null;
+  const s = situationCourante(date);
+  const debut = debutHistorique();
+  const arretes = MoteurSituation.datesReference(aujourd, debut, 4);
+  const enQuantites = Etat.detention.filter(l => Number(l.quantite) > 0).length;
+
+  c.innerHTML =
+    /* --- Choix de la date --- */
+    '<div class="carte"><div class="filtres">' +
+      '<div class="champ"><label for="situation-date">Situation au</label>' +
+        '<input type="date" id="situation-date" value="' + date + '"' +
+        (debut ? ' min="' + debut + '"' : '') + ' max="' + aujourd + '"></div>' +
+      '<div class="champ" style="flex:1"><label>Arrêtés</label><div class="barre-actions" style="margin:0">' +
+        '<button class="bouton secondaire" data-situation-date="' + aujourd + '">Aujourd\'hui</button>' +
+        arretes.map(d => '<button class="bouton' + (d === date ? '' : ' secondaire') +
+          '" data-situation-date="' + d + '">' + dateFr(d) + '</button>').join('') +
+      '</div></div>' +
+    '</div></div>' +
+
+    /* --- Nature du relevé --- */
+    (figee
+      ? '<div class="message succes"><strong>Situation figée.</strong> Relevé enregistré le ' +
+        dateFr(figee.figeeLe) + (figee.origine === 'automatique' ? ', à l\'échéance de l\'arrêté' : '') +
+        '. Les quantités et les cours sont ceux de l\'enregistrement.</div>'
+      : '<div class="message ' + (date === aujourd ? 'info' : 'alerte') + '">' +
+        (date === aujourd
+          ? '<strong>Situation du jour.</strong> Calculée sur les quantités saisies et les derniers cours connus.'
+          : '<strong>Situation reconstituée.</strong> Les quantités d\'aujourd\'hui sont revalorisées aux cours ' +
+            'du ' + dateFr(date) + '. Elle n\'est exacte que si le portefeuille n\'a pas bougé depuis cette date.') +
+        '</div>') +
+
+    /* --- Réserves de calcul --- */
+    ((s.alertes.horsPeriode || s.alertes.sansCours || s.alertes.enMontant)
+      ? '<div class="message alerte"><strong>Réserves sur ce relevé.</strong><ul>' +
+        (s.alertes.horsPeriode ? '<li>' + s.alertes.horsPeriode + ' ligne(s) valorisée(s) au dernier cours connu, ' +
+          'postérieur à la date demandée : ces supports ne sont pas cotés sur Euronext et n\'ont pas d\'historique.</li>' : '') +
+        (s.alertes.sansCours ? '<li>' + s.alertes.sansCours + ' ligne(s) sans aucun cours : le montant saisi est repris tel quel.</li>' : '') +
+        (s.alertes.enMontant ? '<li>' + s.alertes.enMontant + ' ligne(s) saisie(s) en montant et non en quantité : ' +
+          'leur valeur ne suit pas les cours. Saisissez la quantité dans « Arbitrages » pour qu\'elles se revalorisent.</li>' : '') +
+        '</ul></div>' : '') +
+
+    '<div class="grille quatre">' +
+      kpi(euro(s.total), 'Valeur du portefeuille', dateFr(date)) +
+      kpi(String(s.lignes.length), 'Lignes détenues', enQuantites + ' suivie(s) en quantités') +
+      kpi(euro(s.pvLatente), 'Plus-value latente', 'saisie dans le portefeuille') +
+      kpi(s.fiable ? 'Complète' : 'Partielle', 'Couverture des cours',
+        s.fiable ? 'toutes les lignes valorisées à la date'
+                 : (s.alertes.horsPeriode + s.alertes.sansCours) + ' ligne(s) sans cours de la période') +
+    '</div>' +
+
+    '<div class="carte"><h3>Détail des positions</h3>' + tableauSituation(s) +
+      '<div class="barre-actions">' +
+        (figee
+          ? '<button class="bouton secondaire" data-degeler="' + date + '">Supprimer ce relevé figé</button>'
+          : '<button class="bouton" data-figer="' + date + '">Figer cette situation</button>') +
+        '<button class="bouton secondaire" id="btn-imprimer-situation">Imprimer / enregistrer en PDF</button>' +
+      '</div>' +
+      '<p class="intro" style="font-size:11px;margin-top:6px">Figer un relevé l\'enregistre dans ce navigateur ' +
+      'avec ses quantités et ses cours : il ne bougera plus, même si le portefeuille change ensuite. ' +
+      'Les arrêtés du 30 juin et du 31 décembre se figent d\'eux-mêmes à leur échéance.</p>' +
+    '</div>' +
+
+    repartitionSituation(s) +
+    blocAvantApres() +
+    blocRelevesFiges();
+
+  $('#situation-date').onchange = e => {
+    Etat.situationDate = e.target.value || aujourdhuiISO();
+    sauver(true); rendreSituation();
+  };
+  const btnImp = $('#btn-imprimer-situation');
+  if (btnImp) btnImp.onclick = () => {
+    const vue = $('#vue-situation');
+    vue.classList.add('impression');
+    window.print();
+    setTimeout(() => vue.classList.remove('impression'), 500);
+  };
+}
+
+/** Comparaison du portefeuille actuel et de ce qu'il deviendrait après les ordres. */
+function blocAvantApres() {
+  const r = resultatProfil();
+  if (!r) {
+    return '<div class="carte"><h3>Avant et après arbitrage</h3>' +
+      '<p class="intro">Le questionnaire doit être complété pour que l\'allocation cible, ' +
+      'et donc les ordres, puissent être calculés.</p></div>';
+  }
+
+  const sel = selectionCourante();
+  const analyse = MoteurArbitrage.analyser(
+    Etat.detention, sel.lignes,
+    { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
+    Etat.univers
+  );
+  if (!analyse) return '';
+
+  const aujourd = aujourdhuiISO();
+  const avant = MoteurSituation.valoriser(Etat.detention, aujourd, { univers: Etat.univers });
+  const detentionApres = MoteurSituation.apresArbitrage(Etat.detention, analyse.ordres, Etat.univers);
+  const apres = MoteurSituation.valoriser(detentionApres, aujourd, { univers: Etat.univers });
+
+  if (analyse.aucunMouvement) {
+    return '<div class="carte"><h3>Avant et après arbitrage</h3>' +
+      '<p class="intro">Aucun mouvement n\'est proposé : chaque ligne est dans sa bande de tolérance. ' +
+      'La situation après arbitrage serait identique à celle d\'aujourd\'hui.</p></div>';
+  }
+
+  const classes = ['actions', 'obligations', 'diversifiants', 'monetaire']
+    .filter(cl => (avant.parClasse[cl] || apres.parClasse[cl]));
+
+  const poids = (situation, cl) => (situation.parClasse[cl] || { poids: 0 }).poids;
+
+  return '<div class="carte"><h3>Avant et après arbitrage</h3>' +
+    '<p class="intro">Effet des ' + analyse.ordres.length + ' mouvement(s) proposés dans l\'onglet ' +
+    '« Arbitrages »' + (analyse.apport ? ', apport de ' + euro(analyse.apport) + ' inclus' : '') + '.</p>' +
+
+    '<div class="tableau-defilant"><table><thead><tr><th>Classe d\'actifs</th>' +
+    '<th class="num">Avant</th><th class="num">Poids</th>' +
+    '<th class="num">Après</th><th class="num">Poids</th><th class="num">Écart</th>' +
+    '</tr></thead><tbody>' +
+    classes.map(cl => {
+      const ecart = poids(apres, cl) - poids(avant, cl);
+      return '<tr><td><span class="pastille" style="background:' +
+        (COULEURS_CLASSES[cl] || 'var(--gris-doux)') + '"></span>' + echapper(LIBELLES_CLASSES[cl] || cl) + '</td>' +
+        '<td class="num">' + euro((avant.parClasse[cl] || {}).montant || 0) + '</td>' +
+        '<td class="num">' + pct(poids(avant, cl)) + '</td>' +
+        '<td class="num">' + euro((apres.parClasse[cl] || {}).montant || 0) + '</td>' +
+        '<td class="num">' + pct(poids(apres, cl)) + '</td>' +
+        '<td class="num">' + (Math.abs(ecart) < 0.05 ? '—' : signe(ecart)) + '</td></tr>';
+    }).join('') +
+    '</tbody><tfoot><tr><td>Total</td>' +
+    '<td class="num">' + euro(avant.total) + '</td><td class="num">100,0 %</td>' +
+    '<td class="num">' + euro(apres.total) + '</td><td class="num">100,0 %</td>' +
+    '<td class="num">' + (analyse.apport ? '+' + euro(analyse.apport) : '—') + '</td></tr></tfoot></table></div>' +
+
+    '<div class="grille deux" style="margin-top:16px">' +
+      '<div><h4 style="margin:0 0 8px">Situation avant arbitrage</h4>' + tableauSituation(avant) + '</div>' +
+      '<div><h4 style="margin:0 0 8px">Situation après arbitrage</h4>' + tableauSituation(apres) + '</div>' +
+    '</div>' +
+
+    '<p class="intro" style="font-size:11px;margin-top:10px">Les quantités d\'après arbitrage sont déduites ' +
+    'des montants au dernier cours connu : elles seront arrondies à l\'exécution réelle. ' +
+    'Fiscalité estimée sur les cessions : ' + euro(analyse.fiscalite.impotEstime) + '.</p>' +
+    '</div>';
+}
+
+function blocRelevesFiges() {
+  if (!Etat.situations.length) return '';
+  return '<div class="carte"><h3>Relevés figés</h3>' +
+    '<table><thead><tr><th>Date</th><th>Nature</th><th class="num">Valeur</th>' +
+    '<th class="num">Lignes</th><th>Figé le</th><th></th></tr></thead><tbody>' +
+    Etat.situations.map(s =>
+      '<tr><td><a href="#" data-situation-date="' + s.date + '">' + dateFr(s.date) + '</a></td>' +
+      '<td>' + (s.date.slice(5) === '12-31' || s.date.slice(5) === '06-30'
+        ? echapper(MoteurSituation.libelleReference(s.date)) : 'Relevé ponctuel') +
+        (s.origine === 'automatique' ? ' <span class="badge gris">automatique</span>' : '') + '</td>' +
+      '<td class="num">' + euro(s.total) + '</td>' +
+      '<td class="num">' + s.lignes.length + '</td>' +
+      '<td style="font-size:12px;color:var(--gris-doux)">' + dateFr(s.figeeLe) + '</td>' +
+      '<td><button class="bouton secondaire" data-degeler="' + s.date + '">✕</button></td></tr>').join('') +
+    '</tbody></table></div>';
+}
+
+/* ============================================================
+   VUE 10 — REVENUS
    ============================================================ */
 
 const CHAMPS_REVENUS = [
@@ -1664,6 +1961,29 @@ function brancher() {
     const aller = e.target.closest('[data-aller]');
     if (aller) { afficher(aller.dataset.aller); return; }
 
+    const dateSit = e.target.closest('[data-situation-date]');
+    if (dateSit) {
+      e.preventDefault();
+      Etat.situationDate = dateSit.dataset.situationDate;
+      sauver(true); afficher('situation'); return;
+    }
+    const figer = e.target.closest('[data-figer]');
+    if (figer) {
+      const d = figer.dataset.figer;
+      figerSituation(d, 'manuelle');
+      sauver(true); rendreSituation();
+      notifier('Situation au ' + dateFr(d) + ' figée.');
+      return;
+    }
+    const degeler = e.target.closest('[data-degeler]');
+    if (degeler) {
+      const d = degeler.dataset.degeler;
+      Etat.situations = Etat.situations.filter(s => s.date !== d);
+      sauver(true); rendreSituation();
+      notifier('Relevé du ' + dateFr(d) + ' supprimé.', 'info');
+      return;
+    }
+
     const supprD = e.target.closest('[data-supprimer-detention]');
     if (supprD) {
       Etat.detention.splice(Number(supprD.dataset.supprimerDetention), 1);
@@ -2072,6 +2392,12 @@ function injecterCoursMarche() {
   });
   brancher();
 
+  /* Les arrêtés du 30 juin et du 31 décembre franchis depuis la dernière
+     ouverture sont enregistrés d'office : c'est le moment où les quantités
+     connues sont encore celles de l'arrêté. */
+  const arretes = figerArretesFranchis();
+  if (arretes) sauver(true);
+
   /* Le widget iOS ouvre une section précise par une ancre (…/#note).
      On la consomme puis on l'efface : hors ce cas, et à chaque
      rechargement, l'application s'ouvre sur « Aujourd'hui ». */
@@ -2080,5 +2406,6 @@ function injecterCoursMarche() {
   if (existe) history.replaceState(null, '', location.pathname + location.search);
   afficher(existe ? demandee : 'accueil');
   if (restaure) notifier('Dossier précédent restauré.', 'info');
+  if (arretes) notifier(arretes + ' arrêté(s) semestriel(s) figé(s) — onglet « Situation ».', 'info');
   if (remplacees) console.info(remplacees + ' performances annuelles alimentées par les cours de marché.');
 })();
