@@ -6,7 +6,15 @@ const CLE_STOCKAGE = 'allocation-etf-dossier-v1';
 
 const Etat = {
   identite: {},
-  filtres: { etoilesMin: 4, encoursMin: 500, terMax: 0.60, exclureSynthetique: false, intensite: 0.6 },
+  /* Notation minimale à 3 étoiles : la note Morningstar est relative et à
+     distribution forcée — un tiers des fonds y est par construction. Sur les
+     ETF obligataires indiciels, qui se comparent à des gérants actifs libres
+     de charger le crédit ou la duration, elle plafonne à 3 sans que le support
+     ait rien de médiocre. À 4, le filtre écartait neuf obligataires sur dix et
+     reportait les poches longues sur du court terme : un filtre de qualité ne
+     doit pas déformer l'allocation issue du profil de risque. Il écarte donc
+     ce qui est franchement mauvais ; le choix du meilleur revient au score. */
+  filtres: { etoilesMin: 3, encoursMin: 500, terMax: 0.60, exclureSynthetique: false, intensite: 0.6 },
   reponses: {},
   macroChoix: {},
   scenariosManuels: null,
@@ -813,8 +821,8 @@ function rendrePortefeuille() {
       'avant remise au client.</div>' : '') +
 
     (sansNotation ? '<div class="message info"><strong>' + sansNotation + ' support(s) sans notation Morningstar.</strong> ' +
-      'La notation n\'est pas accessible sans abonnement : elle est retirée du score et le filtre « étoiles minimum » ' +
-      'ne s\'applique pas à ces supports. Saisissez-la dans l\'onglet « Univers ETF » pour la réintégrer.</div>' : '') +
+      'Morningstar ne note ni les monétaires, ni les ETC, ni les fonds de moins de trois ans. Pour ces supports, ' +
+      'la notation est retirée du barème du score et le filtre « étoiles minimum » ne s\'applique pas.</div>' : '') +
 
     (derives.length ? '<div class="message ' + (derives.some(d => d.cl === 'actions' && d.ecart > 0) ? 'erreur' : 'alerte') + '">' +
       '<strong>Le portefeuille réalisable s\'écarte de l\'allocation cible.</strong> ' +
@@ -1742,7 +1750,9 @@ function rendreUnivers() {
           '<option value="' + p + '"' + (e.poche === p ? ' selected' : '') + '>' + LIBELLES_POCHES[p] + '</option>').join('') + '</select></td>' +
       '<td class="num"><input type="number" data-etf="ter" data-index="' + i + '" value="' + e.ter + '" step="0.01" style="width:70px"></td>' +
       '<td class="num"><input type="number" data-etf="encours" data-index="' + i + '" value="' + e.encours + '" step="100" style="width:90px"></td>' +
-      '<td class="num"><select data-etf="morningstar" data-index="' + i + '" style="width:60px">' +
+      '<td class="num"><select data-etf="morningstar" data-index="' + i + '" style="width:60px"' +
+          (e.notationLe ? ' title="Note relevée le ' + dateFr(e.notationLe) + ' chez Morningstar"'
+                        : ' title="Morningstar ne note pas ce support : monétaire, ETC, matières premières ou fonds de moins de trois ans"') + '>' +
           '<option value=""' + (e.morningstar == null ? ' selected' : '') + '>—</option>' +
           [1, 2, 3, 4, 5].map(n => '<option value="' + n + '"' + (e.morningstar === n ? ' selected' : '') + '>' + n + '</option>').join('') + '</select></td>' +
       '<td><select data-etf="replication" data-index="' + i + '">' +

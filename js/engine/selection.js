@@ -31,7 +31,11 @@ const MoteurSelection = (function () {
       /* La notation Morningstar n'est pas opposable tant qu'elle n'a pas été
          saisie : le filtre ne s'applique qu'aux supports effectivement notés,
          faute de quoi un univers non renseigné serait entièrement écarté. */
-      if (e.morningstar != null && e.morningstar < (contexte.etoilesMin || 4)) return false;
+      /* Le seuil peut valoir 0 — « aucun filtre » : il faut le distinguer d'un
+         seuil absent, sans quoi la valeur de repli s'appliquerait justement
+         quand l'utilisateur a demandé qu'on n'applique rien. */
+      const seuil = contexte.etoilesMin == null ? 3 : Number(contexte.etoilesMin);
+      if (seuil > 0 && e.morningstar != null && e.morningstar < seuil) return false;
       if (contexte.encoursMin && (e.encours || 0) < contexte.encoursMin) return false;
       if (contexte.terMax && (e.ter || 0) > contexte.terMax) return false;
       if (contexte.exclureSynthetique && /Synth/i.test(e.replication)) return false;

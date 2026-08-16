@@ -10,10 +10,9 @@
 >
 > **Les caractéristiques de marché des ETF ont été relevées sur justETF le
 > 15 août 2026** — nom, ISIN, frais, encours, réplication, devise, éligibilité
-> PEA. Elles vieillissent et restent à recouper. **Deux contrôles n'ont pas été
-> faits** : le référencement effectif de chaque support dans le contrat du
-> client, et la notation Morningstar, inaccessible sans abonnement — laissée
-> vide, elle est retirée du score de sélection.
+> PEA — et **les notations Morningstar le 16 août 2026**. Elles vieillissent :
+> les notes sont recalculées chaque mois. **Un contrôle n'a pas été fait** :
+> le référencement effectif de chaque support dans le contrat du client.
 >
 > Les investissements en unités de compte présentent un **risque de perte en
 > capital**. Les performances passées ne préjugent pas des performances futures.
@@ -415,13 +414,31 @@ source ne connaît la liste des supports de *votre* contrat. La case « Contrat 
 (champ `verifie`) trace ce contrôle ; seule elle retire le badge orange dans la
 sélection. Elle est à `false` sur les 42 lignes.
 
-**La notation Morningstar est laissée vide** (`morningstar: null`) : la remplir
-d'estimations reviendrait à faire piloter la sélection par des étoiles inventées.
-Tant qu'elle vaut `null`, la notation est retirée du barème du score — ramené à
-100 sur les seuls critères renseignés — et le filtre « étoiles minimum » ne
-s'applique pas au support. Saisissez-la dans l'onglet **Univers ETF** pour la
-réintégrer ; dans une poche où certains supports sont notés et d'autres non, les
-scores ne sont pas comparables tant que la saisie n'est pas complète.
+**Les notations Morningstar** sont relevées par
+
+```bash
+node scripts/notations.mjs           # relevé seul
+node scripts/notations.mjs --ecrire  # inscrit les notes dans l'univers
+```
+
+auprès du moteur de recherche public de Morningstar, qui les rend par ISIN. Le
+script inscrit la note et la date du relevé (`notationLe`), signale les écarts
+de frais courants avec le relevé justETF — sans jamais les corriger seul — et
+n'écrit rien si un seul relevé a échoué, pour ne pas figer un univers incomplet.
+Les notes sont recalculées chaque mois : relancez-le périodiquement.
+
+**Neuf supports sur quarante-deux n'ont pas de note** et restent à `null` : les
+monétaires, les ETC sur l'or, les matières premières et les fonds de moins de
+trois ans, hors du champ de la notation. Tant qu'elle vaut `null`, la notation
+est retirée du barème du score — ramené à 100 sur les seuls critères renseignés
+— et le filtre « étoiles minimum » ne s'applique pas à ce support.
+
+**Le filtre à quatre étoiles ampute l'univers de moitié** : 23 supports
+éligibles sur 42 en architecture ouverte, contre 40 avec les estimations
+livrées à l'origine. Surtout, **aucun des trois supports labellisés ISR
+n'atteint quatre étoiles** — un client dont les préférences de durabilité sont
+prioritaires déclenche donc la dérogation, sauf à abaisser le filtre à trois
+étoiles, où deux supports labellisés redeviennent accessibles.
 
 Toutes les cellules de l'onglet **Univers ETF** sont modifiables, et l'univers
 complet s'exporte et se réimporte en JSON.
@@ -459,6 +476,7 @@ js/engine/backtest.js         simulation, rééquilibrage, contributions, risque
 js/engine/situation.js        relevé daté, arrêtés semestriels, avant/après arbitrage
 scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
 scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
+scripts/notations.mjs         relève les notes Morningstar et les inscrit dans l'univers
 scripts/icones.py             regénère les icônes depuis le signe
 package.json                  dépendances des scripts uniquement (SDK Anthropic)
 scriptable/allocation-etf.js  widget iOS, lit data/widget.json

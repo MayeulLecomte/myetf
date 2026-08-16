@@ -95,10 +95,37 @@ const alloc=MoteurAllocation.tactique('dynamique',m1.probas,m1.overlays,0.6);
 });
 const selEsg=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:0,terMax:1,esg:'prioritaire',montant:100000},ETF_UNIVERS);
 ok(Math.abs(selEsg.lignes.reduce((a,l)=>a+l.poids,0)-100)<0.6,'ESG prioritaire → portefeuille toujours investi à 100 % ('+selEsg.nbSupports+' lignes)');
-ok(selEsg.lignes.filter(l=>l.etf.isr).length>0,'ESG prioritaire → supports ISR retenus quand ils existent');
 ok(selEsg.avertissements.some(a=>a.indexOf('durabilit')>=0),'ESG prioritaire → dérogation signalée pour les poches sans support labellisé');
-const pochesIsr=new Set(ETF_UNIVERS.filter(e=>e.isr).map(e=>e.poche));
-ok(selEsg.lignes.every(l=>!pochesIsr.has(l.poche)||l.etf.isr),'ESG prioritaire → ISR systématiquement préféré là où il existe');
+/* L'invariant porte sur les supports ISR RÉELLEMENT ÉLIGIBLES, pas sur ceux
+   que l'univers contient : depuis le relevé des notations Morningstar, aucun
+   support labellisé n'atteint quatre étoiles, et le moteur n'a donc rien à
+   préférer. C'est un fait de marché, pas un défaut du moteur — il doit alors
+   le signaler, ce que vérifie l'assertion précédente. */
+const ctxEsg={enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:0,terMax:1,esg:'prioritaire',montant:100000};
+const isrEligibles=MoteurSelection.universEligible(ETF_UNIVERS,ctxEsg).filter(e=>e.isr);
+console.log('   supports ISR éligibles à 4 étoiles : '+isrEligibles.length+' sur '+ETF_UNIVERS.filter(e=>e.isr).length+' labellisés');
+if(isrEligibles.length){
+  ok(selEsg.lignes.filter(l=>l.etf.isr).length>0,'ESG prioritaire → supports ISR retenus quand ils sont éligibles');
+  const pochesIsr=new Set(isrEligibles.map(e=>e.poche));
+  ok(selEsg.lignes.every(l=>!pochesIsr.has(l.poche)||l.etf.isr),'ESG prioritaire → ISR systématiquement préféré là où il est éligible');
+}else{
+  ok(selEsg.lignes.every(l=>!l.etf.isr),'aucun support ISR éligible → aucun n\'est retenu');
+  ok(selEsg.avertissements.some(a=>a.indexOf('durabilit')>=0),'aucun support ISR éligible → dérogation explicite');
+}
+/* « Aucun filtre » vaut 0 et doit être respecté : un seuil nul ne doit pas être
+   confondu avec un seuil absent, faute de quoi le repli s'appliquerait au moment
+   précis où l'utilisateur a demandé qu'on n'applique rien. */
+const ctxSansFiltre={enveloppe:'CTO',etoilesMin:0,encoursMin:0,terMax:2,esg:'aucune'};
+const tousNotes=MoteurSelection.universEligible(ETF_UNIVERS,ctxSansFiltre);
+console.log('   sans filtre d\'étoiles : '+tousNotes.length+' supports éligibles en compte-titres');
+ok(tousNotes.some(e=>e.morningstar!==null&&e.morningstar<3),'« aucun filtre » laisse passer les supports mal notés');
+ok(MoteurSelection.universEligible(ETF_UNIVERS,Object.assign({},ctxSansFiltre,{etoilesMin:5}))
+   .every(e=>e.morningstar===null||e.morningstar===5),'seuil à 5 : seuls les supports notés 5 étoiles, ou non notés');
+
+/* En abaissant le filtre, les supports labellisés doivent redevenir accessibles :
+   sans quoi la préférence ESG serait inopérante quel que soit le réglage. */
+const selEsg3=MoteurSelection.construire(alloc.poches,Object.assign({},ctxEsg,{etoilesMin:3}),ETF_UNIVERS);
+ok(selEsg3.lignes.filter(l=>l.etf.isr).length>0,'ESG prioritaire à 3 étoiles → supports labellisés retenus ('+selEsg3.lignes.filter(l=>l.etf.isr).length+')');
 
 // --- 4 bis. Intégrité de l'univers
 console.log('\n== Univers ETF ==');
