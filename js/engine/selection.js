@@ -39,6 +39,10 @@ const MoteurSelection = (function () {
       if (contexte.encoursMin && (e.encours || 0) < contexte.encoursMin) return false;
       if (contexte.terMax && (e.ter || 0) > contexte.terMax) return false;
       if (contexte.exclureSynthetique && /Synth/i.test(e.replication)) return false;
+      /* Le référencement au contrat n'est opposable que si le conseiller a
+         fait le rapprochement : le filtre reste désactivé par défaut, faute
+         de quoi un univers non validé serait écarté en entier. */
+      if (contexte.contratSeulement && !e.verifie) return false;
       return true;
     });
   }

@@ -149,6 +149,75 @@ ok(isFinite(scoreSansNote.total)&&scoreSansNote.total>0&&scoreSansNote.total<=10
    'support non noté : score calculé sur le barème réduit ('+scoreSansNote.total+')');
 ok(scoreSansNote.detail.notation===undefined,'support non noté : la notation ne pèse pas dans le détail');
 
+// --- 4 ter. Rapprochement avec la liste des supports du contrat
+console.log('\n== Rapprochement au contrat ==');
+const u0=ETF_UNIVERS[0], u1=ETF_UNIVERS[1], u2=ETF_UNIVERS[2];
+
+/* Une liste d'assureur telle qu'elle se colle : colonnes séparées à la
+   sauvage, en-tête, fonds en euros, et un ISIN que l'univers ignore. */
+const listeType=
+ 'Support\tCode ISIN\tFrais de gestion\n'+
+ 'Fonds en euros Actif Général\t—\t0,60 %\n'+
+ u0.nom+'\t'+u0.isin+'\t0,20 %\n'+
+ u1.isin+' ; '+u1.nom+' ; 0,38 %\n'+
+ 'Amundi Euro Government Bond ; LU1287023342 ; 0,15 %\n'+
+ 'TOTAL 5 supports';
+const rapp=MoteurContrat.rapprocher(ETF_UNIVERS,listeType);
+ok(rapp.trouves.length===2,'liste type : les deux supports connus sont retrouvés ('+rapp.trouves.length+')');
+ok(rapp.trouves.every(t=>t.par==='isin'),'liste type : retrouvés par leur ISIN, pas par leur nom');
+ok(rapp.horsUnivers.length===1&&rapp.horsUnivers[0].isin==='LU1287023342',
+   'liste type : l\'ISIN inconnu de l\'univers est signalé');
+ok(rapp.absents.length===ETF_UNIVERS.length-2,'liste type : tout le reste de l\'univers est déclaré absent');
+ok(rapp.sansCorrespondance.length>=2,'liste type : en-tête, fonds en euros et total sont ignorés');
+ok(rapp.pochesVidees.length>0&&!rapp.pochesVidees.some(p=>p.poche===u0.poche),
+   'liste type : les poches vidées sont signalées, celle du support retenu exceptée');
+
+/* Un ISIN mal recopié ne doit rien valider : c'est exactement l'erreur
+   que le rapprochement est là pour attraper. */
+const faux=MoteurContrat.rapprocher(ETF_UNIVERS,u0.isin.slice(0,-1)+(u0.isin.slice(-1)==='3'?'4':'3'));
+ok(faux.trouves.length===0,'ISIN faux d\'un chiffre : aucun support validé');
+
+/* Nom seul : rapproché s'il ne désigne qu'un support, jamais s'il en
+   désigne deux. « MSCI World » à lui seul en désigne plusieurs. */
+const parNom=MoteurContrat.rapprocher(ETF_UNIVERS,u0.nom);
+ok(parNom.trouves.length===1&&parNom.trouves[0].par==='nom','nom exact et unique : rapproché, et signalé comme tel');
+const flou=MoteurContrat.rapprocher(ETF_UNIVERS,'MSCI World');
+ok(flou.trouves.length===0,'nom trop court pour être distinctif : rien n\'est tranché');
+
+/* Deux parts d'un même fonds ne sont pas le même support : la couverture
+   de change et la devise ne sont pas neutralisées par la normalisation. */
+const couverts=ETF_UNIVERS.filter(e=>e.hedge);
+ok(couverts.every(e=>MoteurContrat.mots(e.nom).some(m=>/hedg|couvert|eur/i.test(m))),
+   'un support couvert garde sa marque de couverture après normalisation');
+
+/* L'application horodate et nomme le contrôle, et n'invalide les absents
+   que si on le lui demande. */
+const copie=JSON.parse(JSON.stringify(ETF_UNIVERS));
+copie[3].verifie=true; copie[3].verifieLe='2026-01-01'; copie[3].verifieSource='Ancien contrat';
+const rappC=MoteurContrat.rapprocher(copie,u0.isin+'\n'+u1.isin);
+const resC=MoteurContrat.appliquer(copie,rappC,{contrat:'Contrat test',date:'2026-08-17',decocherAbsents:true});
+ok(resC.coches===2&&resC.decoches===1,'application : deux validés, un invalidé');
+ok(copie.filter(e=>e.verifie).length===2,'application : exactement les supports de la liste sont validés');
+ok(copie.filter(e=>e.verifie).every(e=>e.verifieLe==='2026-08-17'&&e.verifieSource==='Contrat test'),
+   'application : chaque validation porte sa date et le nom du contrat');
+ok(copie[3].verifieLe===undefined,'application : une validation retirée ne laisse pas sa date derrière elle');
+
+const copie2=JSON.parse(JSON.stringify(ETF_UNIVERS));
+copie2[3].verifie=true;
+MoteurContrat.appliquer(copie2,MoteurContrat.rapprocher(copie2,u0.isin),{contrat:'X',date:'2026-08-17',decocherAbsents:false});
+ok(copie2[3].verifie===true,'sans décochage : une validation antérieure survit au rapprochement');
+
+/* Le filtre « validés au contrat » ne doit mordre que sur demande. */
+const ctxContrat={enveloppe:'AV',contratAV:'av-large',etoilesMin:3,encoursMin:500,terMax:0.6,esg:'aucune',montant:100000};
+const universValide=JSON.parse(JSON.stringify(ETF_UNIVERS));
+universValide.forEach((e,i)=>{ e.verifie = i%2===0; });
+const sansFiltre=MoteurSelection.universEligible(universValide,ctxContrat);
+const avecFiltre=MoteurSelection.universEligible(universValide,Object.assign({},ctxContrat,{contratSeulement:true}));
+ok(avecFiltre.length<sansFiltre.length&&avecFiltre.every(e=>e.verifie),
+   'filtre contrat : ne retient que les supports validés ('+avecFiltre.length+' sur '+sansFiltre.length+')');
+ok(MoteurSelection.universEligible(ETF_UNIVERS,ctxContrat).length===sansFiltre.length,
+   'filtre contrat absent du contexte : l\'univers n\'est pas restreint');
+
 // --- 5. Arbitrage
 console.log('\n== Arbitrage ==');
 const selRef=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',montant:200000},ETF_UNIVERS);

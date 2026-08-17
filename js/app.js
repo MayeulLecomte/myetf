@@ -14,7 +14,10 @@ const Etat = {
      reportait les poches longues sur du court terme : un filtre de qualité ne
      doit pas déformer l'allocation issue du profil de risque. Il écarte donc
      ce qui est franchement mauvais ; le choix du meilleur revient au score. */
-  filtres: { etoilesMin: 3, encoursMin: 500, terMax: 0.60, exclureSynthetique: false, intensite: 0.6 },
+  /* `contratSeulement` reste à faux tant que le rapprochement n'a pas été
+     fait : à vrai sur un univers non validé, la sélection ne rendrait rien. */
+  filtres: { etoilesMin: 3, encoursMin: 500, terMax: 0.60, exclureSynthetique: false,
+             contratSeulement: false, intensite: 0.6 },
   reponses: {},
   macroChoix: {},
   scenariosManuels: null,
@@ -161,6 +164,7 @@ function contexteSelection() {
     encoursMin: Number(Etat.filtres.encoursMin),
     terMax: Number(Etat.filtres.terMax),
     exclureSynthetique: !!Etat.filtres.exclureSynthetique,
+    contratSeulement: !!Etat.filtres.contratSeulement,
     esg: p ? p.preferences.esg : 'aucune',
     objectifRevenus: besoinDeRevenu(),
     montant: Number(Etat.identite.montant) || 0
@@ -412,7 +416,7 @@ function rendreAccueil() {
         '<button class="bouton secondaire" data-aller="rapport">Voir le rapport</button></div></div>') +
 
     (nonValides ? '<div class="message alerte"><strong>' + nonValides + ' support(s) non validé(s) au contrat.</strong> ' +
-      'Contrôlez leur référencement dans la liste des supports avant de passer un ordre.' +
+      'Rapprochez l\'univers de la liste des supports de l\'assureur avant de passer un ordre.' +
       '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">Ouvrir l\'univers ETF</button></div></div>' : '') +
 
     blocNoteAccueil();
@@ -446,6 +450,7 @@ function rendreIdentite() {
   $('#f-encours').value = Etat.filtres.encoursMin;
   $('#f-ter').value = Etat.filtres.terMax;
   $('#f-synthetique').value = Etat.filtres.exclureSynthetique ? '1' : '0';
+  $('#f-contrat').value = Etat.filtres.contratSeulement ? '1' : '0';
   $('#f-intensite').value = Math.round(Etat.filtres.intensite * 100);
   majLibelleIntensite();
 }
@@ -817,8 +822,8 @@ function rendrePortefeuille() {
 
     (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non validé(s) au contrat.</strong> ' +
       'Leurs caractéristiques de marché ont été relevées sur source publique, mais leur référencement effectif ' +
-      'dans le contrat reste à contrôler sur la liste des supports, dans l\'onglet « Univers ETF », ' +
-      'avant remise au client.</div>' : '') +
+      'dans le contrat reste à contrôler avant remise au client : collez la liste des supports de l\'assureur ' +
+      'dans l\'onglet « Univers ETF », le rapprochement coche la colonne « Contrat » pour vous.</div>' : '') +
 
     (sansNotation ? '<div class="message info"><strong>' + sansNotation + ' support(s) sans notation Morningstar.</strong> ' +
       'Morningstar ne note ni les monétaires, ni les ETC, ni les fonds de moins de trois ans. Pour ces supports, ' +
@@ -866,7 +871,8 @@ function rendrePortefeuille() {
       'frais courants relatifs à la poche (20), encours (15), mode de réplication (10)' +
       (ctx.esg === 'aucune' ? '' : ', label ISR (' + (ctx.esg === 'prioritaire' ? 15 : 8) + ')') + '. ' +
       'Filtres appliqués : ' + ctx.etoilesMin + ' étoiles minimum, encours ≥ ' + ctx.encoursMin + ' M€, frais ≤ ' + pct(ctx.terMax, 2) +
-      (ctx.exclureSynthetique ? ', réplication physique uniquement' : '') + '.</p>' +
+      (ctx.exclureSynthetique ? ', réplication physique uniquement' : '') +
+      (ctx.contratSeulement ? ', supports validés au contrat uniquement' : '') + '.</p>' +
     '</div>';
 }
 
@@ -1854,14 +1860,169 @@ function ajouterDepuisCatalogue(isin) {
       (euronext ? '' : ' Non coté sur Euronext : sa valeur ne se rafraîchira pas toute seule.')
   });
 
+  /* Un support versé depuis le catalogue pendant qu'un rapprochement est
+     affiché doit y entrer aussitôt, sinon il apparaît encore comme absent
+     de l'univers dans le rapport qui vient de le faire ajouter. */
+  if (Rapprochement.rapport && $('#zone-contrat')) {
+    Rapprochement.rapport = MoteurContrat.rapprocher(Etat.univers, $('#zone-contrat').value);
+  }
+
   sauver(true);
   rendreUnivers();
   notifier('« ' + l[1] + ' » ajouté à l\'univers — sa ligne reste à contrôler.');
 }
 
+/* ============================================================
+   RAPPROCHEMENT AVEC LA LISTE DES SUPPORTS DU CONTRAT
+   -------------------------------------------------------------
+   Le rapprochement est calculé puis montré ; il n'est reporté sur
+   l'univers qu'au clic sur « Appliquer ». Entre les deux, rien
+   n'a bougé : c'est le seul contrôle qui engage le conseil, il ne
+   doit pas se faire dans le dos du conseiller.
+   ============================================================ */
+
+const Rapprochement = { rapport: null };
+
+function rendreRapprochement() {
+  const c = $('#rapprochement-contenu');
+  if (!c) return;
+  const r = Rapprochement.rapport;
+
+  if (!r) {
+    const valides = Etat.univers.filter(e => e.verifie);
+    c.innerHTML = valides.length
+      ? '<div class="message succes" style="margin-bottom:0">' + valides.length + ' support(s) sur ' +
+        Etat.univers.length + ' validés au contrat' +
+        (valides[0].verifieSource ? ' — ' + echapper(valides[0].verifieSource) : '') + '.</div>'
+      : '<div class="message info" style="margin-bottom:0"><strong>Aucun support n\'est encore validé.</strong> ' +
+        'Tant que la colonne « Contrat » est vide, la sélection porte sur des supports dont rien ne dit ' +
+        'qu\'ils sont souscriptibles : chaque ligne du portefeuille proposé porte la mention ' +
+        '« contrat à vérifier ».</div>';
+    return;
+  }
+
+  const nomPoche = p => LIBELLES_POCHES[p] || p;
+  const parIsin = r.trouves.filter(t => t.par === 'isin').length;
+  const parNom = r.trouves.length - parIsin;
+
+  const bloc = (titre, corps, classe) =>
+    '<div class="message ' + classe + '"><strong>' + titre + '</strong><br>' + corps + '</div>';
+
+  let html = '<div style="border-top:1px solid var(--gris-ligne);margin-top:16px;padding-top:14px">' +
+    '<h4 style="margin:0 0 10px">Rapprochement — ' + r.lignesLues + ' ligne(s) lues, ' +
+    r.isinsLus + ' ISIN reconnus</h4>';
+
+  html += bloc(r.trouves.length + ' support(s) de l\'univers retrouvés dans la liste',
+    (parIsin ? parIsin + ' par leur ISIN' : '') +
+    (parNom ? (parIsin ? ', ' : '') + parNom + ' par leur nom seul — à relire' : '') + '.' +
+    (r.trouves.length
+      ? '<div style="margin-top:8px;font-size:12px;max-height:180px;overflow:auto">' +
+        r.trouves.map(t => '<div>' + (t.par === 'nom' ? '<span class="badge orange">par le nom</span> ' : '') +
+          echapper(t.nom) + ' <span style="font-family:monospace;color:var(--gris-doux)">' +
+          echapper(t.isin) + '</span></div>').join('') + '</div>'
+      : ''),
+    r.trouves.length ? 'succes' : 'erreur');
+
+  if (r.absents.length) {
+    html += bloc(r.absents.length + ' support(s) de l\'univers absents de la liste',
+      'Ils ne sont pas souscriptibles dans ce contrat. Décochez-les — ou retirez-les de l\'univers ' +
+      'si le contrat est le seul que vous travaillez.' +
+      '<div style="margin-top:8px;font-size:12px;max-height:180px;overflow:auto">' +
+      r.absents.map(a => '<div>' + echapper(a.nom) + ' <span style="font-family:monospace;color:var(--gris-doux)">' +
+        echapper(a.isin) + '</span> · ' + echapper(nomPoche(a.poche)) + '</div>').join('') + '</div>',
+      'alerte');
+  }
+
+  if (r.pochesVidees.length) {
+    html += bloc(r.pochesVidees.length + ' poche(s) resteraient sans aucun support',
+      'L\'allocation cible attribuera un poids à ces poches sans pouvoir le remplir : ' +
+      r.pochesVidees.map(p => echapper(nomPoche(p.poche)) + ' (' + p.total + ' support(s) écartés)').join(' · ') +
+      '. Cherchez dans le catalogue européen ce que le contrat référence pour ces poches.',
+      'erreur');
+  }
+
+  if (r.ambigus.length) {
+    html += bloc(r.ambigus.length + ' ligne(s) désignant plusieurs supports',
+      'Aucune n\'a été tranchée : cochez à la main dans le tableau ci-dessous.' +
+      '<div style="margin-top:8px;font-size:12px">' +
+      r.ambigus.map(a => '<div style="margin-bottom:6px">« ' + echapper(a.ligne) + ' » → ' +
+        a.candidats.map(x => echapper(x.nom)).join(' · ') + '</div>').join('') + '</div>',
+      'alerte');
+  }
+
+  if (r.horsUnivers.length) {
+    html += bloc(r.horsUnivers.length + ' ISIN de la liste absents de votre univers',
+      'Ce sont les supports que le contrat référence et que l\'outil ne connaît pas. ' +
+      'Ceux qui figurent au catalogue européen s\'ajoutent d\'un clic.' +
+      '<div style="margin-top:8px;font-size:12px;max-height:200px;overflow:auto" id="hors-univers-liste">' +
+      r.horsUnivers.map(h => '<div style="margin-bottom:4px"><span style="font-family:monospace">' +
+        echapper(h.isin) + '</span> <span style="color:var(--gris-doux)">' +
+        echapper(h.ligne.length > 90 ? h.ligne.slice(0, 90) + '…' : h.ligne) + '</span>' +
+        (Catalogue.etat === 'pret'
+          ? ' <button class="bouton secondaire" style="padding:1px 8px;font-size:11px" data-catalogue-ajout="' +
+            echapper(h.isin) + '">Ajouter</button>' : '') + '</div>').join('') +
+      '</div>' +
+      (Catalogue.etat === 'pret' ? ''
+        : '<p style="font-size:11px;margin:8px 0 0">Ouvrez le catalogue européen, plus bas, pour les ajouter d\'un clic.</p>'),
+      'info');
+  }
+
+  if (r.sansCorrespondance.length) {
+    html += '<p class="intro" style="font-size:11px">' + r.sansCorrespondance.length +
+      ' ligne(s) sans ISIN ni nom reconnaissable ont été ignorées (en-têtes, totaux, fonds en euros, ' +
+      'unités de compte non ETF).</p>';
+  }
+
+  const aDecocher = ($('#contrat-decocher') && $('#contrat-decocher').checked)
+    ? r.absents.filter(a => a.verifie).length : 0;
+
+  html += '<div class="barre-actions">' +
+    '<button class="bouton" id="btn-appliquer-rapprochement">Appliquer — cocher ' + r.trouves.length +
+      ' support(s)' + (aDecocher ? ', en décocher ' + aDecocher : '') + '</button>' +
+    '<button class="bouton secondaire" id="btn-abandonner-rapprochement">Abandonner</button>' +
+    '</div></div>';
+
+  c.innerHTML = html;
+  $('#btn-appliquer-rapprochement').onclick = appliquerRapprochement;
+  $('#btn-abandonner-rapprochement').onclick = () => { Rapprochement.rapport = null; rendreUnivers(); };
+}
+
+function appliquerRapprochement() {
+  const r = Rapprochement.rapport;
+  if (!r) return;
+  const res = MoteurContrat.appliquer(Etat.univers, r, {
+    contrat: $('#contrat-nom').value,
+    date: aujourdhuiISO(),
+    decocherAbsents: $('#contrat-decocher').checked
+  });
+  Rapprochement.rapport = null;
+  sauver(true);
+  rendre('univers');
+  majNav();
+  notifier(res.coches + ' support(s) validés au contrat' +
+    (res.decoches ? ', ' + res.decoches + ' invalidés' : '') + '.');
+}
+
+/* Les supports que les filtres de l'onglet laissent voir. Les actions de
+   masse portent exactement sur cette liste : ce qui est coché est ce qui
+   est affiché, jamais davantage. */
+function universFiltre() {
+  const f = Etat.filtreUnivers;
+  return Etat.univers.filter(e => {
+    if (f.classe && e.classe !== f.classe) return false;
+    if (f.enveloppe && e.enveloppes.indexOf(f.enveloppe) < 0) return false;
+    if (f.texte) {
+      const t = f.texte.toLowerCase();
+      if ((e.nom + ' ' + e.isin + ' ' + e.emetteur + ' ' + (e.ticker || '')).toLowerCase().indexOf(t) < 0) return false;
+    }
+    return true;
+  });
+}
+
 function rendreUnivers() {
   const f = Etat.filtreUnivers;
   rendreCatalogue();
+  rendreRapprochement();
 
   $('#filtres-univers').innerHTML =
     '<div class="champ"><label>Classe d\'actifs</label><select data-filtre-univers="classe">' +
@@ -1877,15 +2038,7 @@ function rendreUnivers() {
       '<input type="text" data-filtre-univers="texte" value="' + echapper(f.texte) + '" placeholder="iShares, IE00B..."></div>' +
     '<div style="font-size:12px;color:var(--gris-doux);padding-bottom:10px" id="compteur-univers"></div>';
 
-  const liste = Etat.univers.filter(e => {
-    if (f.classe && e.classe !== f.classe) return false;
-    if (f.enveloppe && e.enveloppes.indexOf(f.enveloppe) < 0) return false;
-    if (f.texte) {
-      const t = f.texte.toLowerCase();
-      if ((e.nom + ' ' + e.isin + ' ' + e.emetteur + ' ' + (e.ticker || '')).toLowerCase().indexOf(t) < 0) return false;
-    }
-    return true;
-  });
+  const liste = universFiltre();
 
   $('#compteur-univers').textContent = liste.length + ' / ' + Etat.univers.length + ' supports · ' +
     Etat.univers.filter(e => e.donneesLe).length + ' aux données contrôlées · ' +
@@ -1923,7 +2076,16 @@ function rendreUnivers() {
           (e.donneesSource ? ' sur ' + echapper(e.donneesSource) : '') + '"' : '') + '>' +
         (e.donneesLe ? e.donneesLe.slice(8, 10) + '/' + e.donneesLe.slice(5, 7) + '/' + e.donneesLe.slice(2, 4) : '—') + '</td>' +
       '<td style="text-align:center"><input type="checkbox" data-etf="isr" data-index="' + i + '"' + (e.isr ? ' checked' : '') + '></td>' +
-      '<td style="text-align:center"><input type="checkbox" data-etf="verifie" data-index="' + i + '"' + (e.verifie ? ' checked' : '') + '></td>' +
+      '<td style="text-align:center"' +
+        (e.verifie && e.verifieLe
+          ? ' title="Référencement contrôlé le ' + dateFr(e.verifieLe) +
+            (e.verifieSource ? ' — ' + echapper(e.verifieSource) : '') + '"'
+          : ' title="Non contrôlé : ce support peut ne pas être référencé au contrat"') + '>' +
+        '<input type="checkbox" data-etf="verifie" data-index="' + i + '"' + (e.verifie ? ' checked' : '') + '>' +
+        (e.verifie && e.verifieLe
+          ? '<div style="font-size:10px;color:var(--gris-doux)">' + e.verifieLe.slice(8, 10) + '/' +
+            e.verifieLe.slice(5, 7) + '/' + e.verifieLe.slice(2, 4) + '</div>' : '') +
+      '</td>' +
       '<td><button class="bouton secondaire" data-supprimer-etf="' + i + '">✕</button></td>' +
     '</tr>';
   }).join('');
@@ -2289,6 +2451,17 @@ function brancher() {
           : e2.enveloppes.filter(x => x !== 'AV');
       } else if (t.type === 'checkbox') {
         e2[champ] = t.checked;
+        /* Un référencement coché sans date ni origine ne vaut rien six mois
+           plus tard : on horodate la case comme le fait le rapprochement. */
+        if (champ === 'verifie') {
+          if (t.checked) {
+            e2.verifieLe = aujourdhuiISO();
+            e2.verifieSource = ($('#contrat-nom') && $('#contrat-nom').value.trim()) || 'Contrôle manuel';
+          } else {
+            delete e2.verifieLe; delete e2.verifieSource;
+          }
+          rendreUnivers();
+        }
         if (champ === 'pea') {
           e2.enveloppes = t.checked
             ? Array.from(new Set(e2.enveloppes.concat(['PEA'])))
@@ -2354,6 +2527,17 @@ function brancher() {
     if (t.id === 'bt-allocation') { Etat.backtest.allocation = t.value; sauver(true); rendreBacktest(); return; }
     if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }
     if (t.id === 'f-synthetique') { Etat.filtres.exclureSynthetique = t.value === '1'; sauver(true); }
+    if (t.id === 'f-contrat') {
+      /* Restreindre la sélection à un univers dont rien n'est validé la
+         viderait entièrement : le filtre se refuse plutôt que de rendre
+         une allocation vide sans dire pourquoi. */
+      if (t.value === '1' && !Etat.univers.some(x => x.verifie)) {
+        t.value = '0';
+        notifier('Aucun support n\'est encore validé au contrat : rapprochez d\'abord la liste des supports, onglet « Univers ETF ».', 'alerte');
+        return;
+      }
+      Etat.filtres.contratSeulement = t.value === '1'; sauver(true);
+    }
     if (t.dataset.identite === 'enveloppe' || t.dataset.identite === 'contratAV') { rendreIdentite(); }
   });
 
@@ -2425,6 +2609,36 @@ function brancher() {
     revaloriser();
     sauver(true); rendre('arbitrages'); notifier('Détention initialisée sur l\'allocation cible.');
   };
+
+  $('#btn-rapprocher').onclick = () => {
+    const texte = $('#zone-contrat').value;
+    if (!texte.trim()) { notifier('Collez d\'abord la liste des supports du contrat.', 'alerte'); return; }
+    Rapprochement.rapport = MoteurContrat.rapprocher(Etat.univers, texte);
+    rendreRapprochement();
+    $('#rapprochement-contenu').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  $('#btn-vider-contrat').onclick = () => {
+    $('#zone-contrat').value = '';
+    Rapprochement.rapport = null;
+    rendreRapprochement();
+  };
+
+  const cocherAffiches = valeur => {
+    const liste = universFiltre();
+    if (!liste.length) { notifier('Aucun support affiché.', 'alerte'); return; }
+    if (liste.length > 1 && !confirm((valeur ? 'Cocher' : 'Décocher') + ' « Contrat » sur les ' +
+        liste.length + ' support(s) affichés ?')) return;
+    const source = ($('#contrat-nom').value.trim()) || 'Contrôle manuel';
+    liste.forEach(e => {
+      e.verifie = valeur;
+      if (valeur) { e.verifieLe = aujourdhuiISO(); e.verifieSource = source; }
+      else { delete e.verifieLe; delete e.verifieSource; }
+    });
+    sauver(true); rendre('univers'); majNav();
+    notifier(liste.length + ' support(s) ' + (valeur ? 'validés' : 'invalidés') + ' au contrat.');
+  };
+  $('#btn-cocher-contrat').onclick = () => cocherAffiches(true);
+  $('#btn-decocher-contrat').onclick = () => cocherAffiches(false);
 
   $('#btn-ajouter-etf').onclick = () => {
     Etat.univers.unshift({

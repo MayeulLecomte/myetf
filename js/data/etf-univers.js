@@ -9,10 +9,15 @@
      Ces données vieillissent : les encours bougent en permanence,
      les frais et les indices changent à l'occasion.
 
-   • verifie — référencement effectif du support DANS LE CONTRAT du
-     client, contrôlé par le conseiller sur la liste des supports.
-     Seul ce drapeau engage le conseil ; lui seul retire le bandeau
-     « à vérifier » dans la sélection.
+   • verifie / verifieLe / verifieSource — référencement effectif du
+     support DANS LE CONTRAT du client. Seul ce drapeau engage le
+     conseil ; lui seul retire le bandeau « à vérifier » dans la
+     sélection, et lui seul rend opposable le filtre « supports
+     validés au contrat ». Il n'est pas livré, et ne peut pas
+     l'être : il dépend du contrat, donc du dossier. Il se pose en
+     collant la liste des supports de l'assureur dans l'onglet
+     « Univers ETF » — le rapprochement coche, date et nomme le
+     contrat — ou à la main, case par case.
 
    • morningstar / notationLe — note en étoiles relevée auprès de
      Morningstar à cette date, par `node scripts/notations.mjs`.

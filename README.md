@@ -11,8 +11,10 @@
 > **Les caractéristiques de marché des ETF ont été relevées sur justETF le
 > 15 août 2026** — nom, ISIN, frais, encours, réplication, devise, éligibilité
 > PEA — et **les notations Morningstar le 16 août 2026**. Elles vieillissent :
-> les notes sont recalculées chaque mois. **Un contrôle n'a pas été fait** :
-> le référencement effectif de chaque support dans le contrat du client.
+> les notes sont recalculées chaque mois. **Un contrôle reste à faire, dossier
+> par dossier** : le référencement effectif de chaque support dans le contrat du
+> client. Il se fait en collant la liste des supports de l'assureur dans
+> l'onglet « Univers ETF ».
 >
 > Les investissements en unités de compte présentent un **risque de perte en
 > capital**. Les performances passées ne préjugent pas des performances futures.
@@ -450,11 +452,45 @@ quatorze frais courants erronés, la quasi-totalité des encours, et plusieurs
 erreurs de devise, de capitalisation et d'éligibilité PEA. Ces données
 vieillissent : refaites le relevé périodiquement.
 
-**Niveau 2 — référencement au contrat : à votre charge.** Quantalys et
-Morningstar sont des services sur abonnement sans interface publique, et aucune
-source ne connaît la liste des supports de *votre* contrat. La case « Contrat »
-(champ `verifie`) trace ce contrôle ; seule elle retire le badge orange dans la
-sélection. Elle est à `false` sur les 42 lignes.
+**Niveau 2 — référencement au contrat : à votre charge.** Aucune source ne
+connaît la liste des supports de *votre* contrat. La case « Contrat » (champ
+`verifie`) trace ce contrôle ; seule elle retire le badge orange dans la
+sélection. Elle est à `false` sur les 42 lignes livrées, et ne peut pas l'être
+autrement : elle dépend du contrat, donc du dossier.
+
+**Le rapprochement fait le travail à votre place.** En haut de l'onglet
+« Univers ETF », collez la liste des supports telle qu'elle sort de l'assureur —
+relevé PDF, tableur, extranet — et nommez le contrat. Les ISIN sont reconnus où
+qu'ils se trouvent dans la ligne ; à défaut d'ISIN, le nom est rapproché
+*lorsqu'il ne désigne qu'un seul support*, et la correspondance est signalée
+comme telle, à relire. Le rapport rend quatre choses :
+
+| | |
+|---|---|
+| **Retrouvés** | les supports de l'univers que le contrat référence |
+| **Absents** | ceux que l'univers porte et que le contrat ignore : non souscriptibles |
+| **Poches vidées** | les poches auxquelles l'allocation donnera un poids sans pouvoir le remplir |
+| **Hors univers** | les ISIN du contrat que l'outil ne connaît pas — ajoutables d'un clic depuis le catalogue européen |
+
+Rien n'est modifié avant que vous n'ayez lu le rapport et cliqué sur
+**Appliquer**. Chaque validation est alors datée et rattachée au contrat nommé
+(`verifieLe`, `verifieSource`), lisible en survolant la case. Une case cochée à
+la main est horodatée de la même façon : un référencement sans date ni origine
+ne vaut plus rien six mois après.
+
+Un ISIN faux d'un chiffre ne valide rien — c'est exactement l'erreur que le
+rapprochement attrape. Deux parts d'un même fonds ne sont pas non plus
+confondues : la normalisation des noms ne neutralise ni la devise, ni la
+couverture de change.
+
+Le contrôle est aussi possible à la main : filtrez le tableau, puis
+**Cocher « Contrat » sur les lignes affichées**. L'action porte exactement sur ce
+qui est affiché, jamais davantage.
+
+**Une fois le rapprochement fait**, le filtre « Référencement au contrat » de
+l'onglet *Client & enveloppe* restreint la sélection aux seuls supports validés.
+Il reste inactif par défaut, et refuse de s'activer sur un univers dont rien
+n'est validé : il viderait la sélection sans dire pourquoi.
 
 **Les notations Morningstar** sont relevées par
 
@@ -517,6 +553,7 @@ js/engine/arbitrage.js        écarts, ordres, fiscalité, journal
 js/engine/revenus.js          coussin, cascade de prélèvement, fiscalité, projection
 js/engine/backtest.js         simulation, rééquilibrage, contributions, risque de séquence
 js/engine/situation.js        relevé daté, arrêtés semestriels, avant/après arbitrage
+js/engine/contrat.js          rapprochement de l'univers et de la liste des supports
 scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
 scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
 scripts/notations.mjs         relève les notes Morningstar et les inscrit dans l'univers
@@ -542,8 +579,9 @@ node "/Users/Mayeul/APP ETF CGP/test/runner.js"
 Ils vérifient notamment que les allocations somment à 100 % pour les six profils
 et les quatre scénarios, que les déviations tactiques restent dans leurs bornes,
 qu'un profil Sécuritaire n'est jamais exposé aux actions, que chaque enveloppe
-aboutit à un portefeuille intégralement investi, et qu'après application des
-ordres le portefeuille converge vers sa cible à capital constant.
+aboutit à un portefeuille intégralement investi, qu'après application des
+ordres le portefeuille converge vers sa cible à capital constant, et qu'un ISIN
+faux d'un chiffre ne valide aucun support au rapprochement.
 
 Pour ajuster le modèle, tout se règle dans `js/data/` sans toucher aux moteurs :
 libellés et pondérations des questions, allocations cibles par profil, effets des

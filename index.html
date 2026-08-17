@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608171239">
+<link rel="stylesheet" href="css/app.css?v=202608171700">
 </head>
 <body>
 
@@ -107,6 +107,13 @@
             <select id="f-synthetique">
               <option value="0" selected>Autorisée</option>
               <option value="1">Exclue (réplication physique uniquement)</option>
+            </select>
+          </div>
+          <div class="champ">
+            <label for="f-contrat">Référencement au contrat</label>
+            <select id="f-contrat">
+              <option value="0" selected>Tous les supports de l'univers</option>
+              <option value="1">Seulement les supports validés au contrat</option>
             </select>
           </div>
           <div class="champ">
@@ -333,13 +340,44 @@
     <section class="vue" id="vue-univers">
       <h2>Univers ETF référencé</h2>
       <div class="message alerte">
-        <strong>Deux contrôles, dont un seul est fait.</strong>
+        <strong>Deux contrôles, un seul est fait.</strong>
         Les caractéristiques de marché — nom, ISIN, frais, encours, réplication, devise, capitalisation —
-        ont été relevées sur justETF le 15 août 2026 : c'est la colonne « Données ». Restent à votre charge
-        le <strong>référencement de chaque support dans le contrat</strong>, à contrôler sur la liste des
-        supports puis à cocher dans la colonne « Contrat », et la <strong>notation Morningstar</strong>,
-        inaccessible sans abonnement, laissée vide et donc retirée du score de sélection.
-        Toutes les cellules sont modifiables.
+        ont été relevées sur justETF le 15 août 2026, et les notations Morningstar le 16 : ce sont les
+        colonnes « Données » et « Morningstar ». Reste à votre charge le
+        <strong>référencement de chaque support dans le contrat</strong> : aucune source publique ne sait
+        ce que tel contrat référence. Collez la liste des supports de l'assureur ci-dessous, ou cochez
+        la colonne « Contrat » à la main. Toutes les cellules sont modifiables.
+      </div>
+
+      <div class="carte">
+        <h3>Rapprochement avec la liste des supports du contrat</h3>
+        <p class="intro">Collez la liste des supports telle qu'elle sort de l'assureur — relevé PDF,
+        tableur, extranet. Les ISIN sont reconnus où qu'ils se trouvent dans la ligne ; à défaut d'ISIN,
+        le nom est rapproché lorsqu'il ne désigne qu'un seul support. Rien n'est modifié avant que vous
+        n'ayez lu le rapprochement et cliqué sur « Appliquer ».</p>
+
+        <div class="grille deux">
+          <div class="champ">
+            <label for="contrat-nom">Contrat ou assureur</label>
+            <input type="text" id="contrat-nom" placeholder="Generali Espace Lux, Spirica, Linxea Avenir 2…">
+          </div>
+          <div class="champ" style="align-self:flex-end;padding-bottom:8px">
+            <label style="display:flex;align-items:center;gap:8px;font-weight:normal">
+              <input type="checkbox" id="contrat-decocher" checked>
+              Décocher les supports absents de la liste
+            </label>
+          </div>
+        </div>
+
+        <label for="zone-contrat">Liste des supports — une ligne par support</label>
+        <textarea id="zone-contrat" rows="8" placeholder="IE00B4L5Y983 · iShares Core MSCI World UCITS ETF USD (Acc) · 0,20 %&#10;LU1681043599 ; Amundi MSCI World Swap UCITS ETF EUR (Acc)&#10;FR0010315770 Lyxor MSCI World"></textarea>
+
+        <div class="barre-actions">
+          <button class="bouton" id="btn-rapprocher">Rapprocher</button>
+          <button class="bouton secondaire" id="btn-vider-contrat">Vider</button>
+        </div>
+
+        <div id="rapprochement-contenu"></div>
       </div>
 
       <div class="carte">
@@ -358,6 +396,8 @@
           </table>
         </div>
         <div class="barre-actions">
+          <button class="bouton secondaire" id="btn-cocher-contrat">Cocher « Contrat » sur les lignes affichées</button>
+          <button class="bouton secondaire" id="btn-decocher-contrat">Décocher</button>
           <button class="bouton secondaire" id="btn-ajouter-etf">+ Ajouter un ETF</button>
           <button class="bouton secondaire" id="btn-exporter-univers">Exporter l'univers (JSON)</button>
           <button class="bouton secondaire" id="btn-importer-univers">Importer un univers (JSON)</button>
@@ -415,22 +455,23 @@
   <span>Application de Mayeul Lecomte</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608171239"></script>
-<script src="js/data/allocations.js?v=202608171239"></script>
-<script src="js/data/macro.js?v=202608171239"></script>
-<script src="js/data/etf-univers.js?v=202608171239"></script>
-<script src="js/data/fiscalite.js?v=202608171239"></script>
-<script src="js/data/historique.js?v=202608171239"></script>
-<script src="js/data/note-marche.js?v=202608171239"></script>
-<script src="js/data/cours-historique.js?v=202608171239"></script>
-<script src="js/data/cours-marche.js?v=202608171239"></script>
-<script src="js/engine/profil.js?v=202608171239"></script>
-<script src="js/engine/allocation.js?v=202608171239"></script>
-<script src="js/engine/selection.js?v=202608171239"></script>
-<script src="js/engine/arbitrage.js?v=202608171239"></script>
-<script src="js/engine/revenus.js?v=202608171239"></script>
-<script src="js/engine/situation.js?v=202608171239"></script>
-<script src="js/engine/backtest.js?v=202608171239"></script>
-<script src="js/app.js?v=202608171239"></script>
+<script src="js/data/questionnaire.js?v=202608171700"></script>
+<script src="js/data/allocations.js?v=202608171700"></script>
+<script src="js/data/macro.js?v=202608171700"></script>
+<script src="js/data/etf-univers.js?v=202608171700"></script>
+<script src="js/data/fiscalite.js?v=202608171700"></script>
+<script src="js/data/historique.js?v=202608171700"></script>
+<script src="js/data/note-marche.js?v=202608171700"></script>
+<script src="js/data/cours-historique.js?v=202608171700"></script>
+<script src="js/data/cours-marche.js?v=202608171700"></script>
+<script src="js/engine/profil.js?v=202608171700"></script>
+<script src="js/engine/allocation.js?v=202608171700"></script>
+<script src="js/engine/selection.js?v=202608171700"></script>
+<script src="js/engine/arbitrage.js?v=202608171700"></script>
+<script src="js/engine/revenus.js?v=202608171700"></script>
+<script src="js/engine/situation.js?v=202608171700"></script>
+<script src="js/engine/contrat.js?v=202608171700"></script>
+<script src="js/engine/backtest.js?v=202608171700"></script>
+<script src="js/app.js?v=202608171700"></script>
 </body>
 </html>
