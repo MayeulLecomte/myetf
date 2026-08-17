@@ -56,6 +56,26 @@ de sections** (`1. Situation de départ`, `2. Détermination du profil`…). C'e
 structure d'un document imprimé, pas une adresse dans l'interface — elle est
 calculée à l'assemblage et n'a aucun rapport avec les onglets.
 
+## Un contexte non renseigné n'applique aucune déviation
+
+`agregerMacro({})` rend des probabilités de repli qui pèsent **66,7 % sur
+l'atterrissage en douceur**. Tant qu'aucun indicateur de contexte n'est choisi —
+et qu'aucune probabilité n'est forcée à la main —, ces valeurs **n'entrent dans
+aucun calcul** :
+
+- `intensiteEffective()` vaut 0, donc l'allocation cible est **strictement
+  l'allocation stratégique du profil** ;
+- `macroCourante().dominant` vaut **null** : aucune vue ne nomme de scénario
+  dominant, et le journal n'en enregistre pas ;
+- le backtest rend la même allocation en mode « tactique » et « stratégique » ;
+- les écarts d'arbitrage sont mesurés contre la stratégique.
+
+L'allocation stratégique seule est une réponse complète, pas un pis-aller : la
+vue s'affiche normalement et dit simplement qu'aucune vue de marché n'y est
+mêlée.
+
+**À reprendre dans « Méthode & limites » (chantier 5).**
+
 ## Ce qui ne doit jamais casser
 
 - **Les ancres `#…`** de toutes les vues. Elles servent de routage

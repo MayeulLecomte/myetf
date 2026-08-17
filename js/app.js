@@ -36,6 +36,7 @@ const Etat = {
   journal: [],
   situations: [],                 /* relevés figés, du plus récent au plus ancien */
   situationDate: null,            /* date observée dans l'onglet Situation */
+  avisTactiqueLu: false,          /* avis de changement de calcul, lu une fois */
   filtreUnivers: { classe: '', enveloppe: '', texte: '' }
 };
 
@@ -120,7 +121,8 @@ function sauver(silencieux) {
       macroChoix: Etat.macroChoix, scenariosManuels: Etat.scenariosManuels,
       detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal,
       revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique,
-      situations: Etat.situations, situationDate: Etat.situationDate, dernierAcces: Etat.dernierAcces
+      situations: Etat.situations, situationDate: Etat.situationDate,
+      avisTactiqueLu: Etat.avisTactiqueLu, dernierAcces: Etat.dernierAcces
     }));
     if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
   } catch (e) { notifier('Enregistrement impossible : ' + e.message, 'erreur'); }
@@ -175,8 +177,18 @@ function macroCourante() {
   const agrege = MoteurAllocation.agregerMacro(Etat.macroChoix);
   const probas = Etat.scenariosManuels ? Object.assign({}, Etat.scenariosManuels) : agrege.probas;
   MoteurAllocation.normaliserA100(probas);
-  const dominant = Object.keys(probas).sort((a, b) => probas[b] - probas[a])[0];
-  return { probas, overlays: agrege.overlays, journal: agrege.journal, dominant, calculees: agrege.probas };
+  /* `agregerMacro({})` rend des probabilités par défaut qui pèsent 66,7 % sur
+     l'atterrissage en douceur. Un contexte vierge produisait donc un
+     « scénario dominant » nommé, chiffré, affiché dans quatre vues et
+     ENREGISTRÉ AU JOURNAL comme s'il avait été retenu. Le dominant n'existe
+     que si une vue a été exprimée ; sinon il vaut null, et chaque affichage
+     doit le dire au lieu d'inventer. */
+  const exprime = contexteExprime();
+  const dominant = exprime
+    ? Object.keys(probas).sort((a, b) => probas[b] - probas[a])[0]
+    : null;
+  return { probas, overlays: agrege.overlays, journal: agrege.journal, dominant,
+           calculees: agrege.probas, exprime };
 }
 
 /* ============================================================
@@ -1165,7 +1177,18 @@ function rendreMacro() {
           .map(k => LIBELLES_CLASSES[k] + ' ' + signe(s.tilts[k], 0)).join(' · ') +
       '</div>' +
     '</div>').join('') +
-    (Etat.scenariosManuels ? '<div class="message info" style="margin-top:10px">Probabilités ajustées manuellement.</div>' : '');
+    (Etat.scenariosManuels
+      ? '<div class="message info" style="margin-top:10px">Probabilités ajustées manuellement.</div>'
+      /* Sans indicateur renseigné, les probabilités affichées sont celles du
+         repli — 66,7 % sur l'atterrissage en douceur. Les montrer sans le dire
+         reviendrait à présenter une vue de marché par défaut comme une lecture
+         du conseiller ; c'est exactement ce qu'elles ne sont pas. */
+      : !m.exprime
+        ? '<div class="message alerte" style="margin-top:10px"><strong>Aucun indicateur n\'est ' +
+          'renseigné.</strong> Les probabilités ci-dessus sont celles du repli, pas une lecture du ' +
+          'marché : tant qu\'aucun indicateur n\'est choisi, elles n\'entrent dans aucun calcul et ' +
+          'l\'allocation cible reste strictement stratégique.</div>'
+        : '');
 
   const alloc = allocationCourante();
   $('#overlays-macro').innerHTML = '<h3>Effets tactiques retenus</h3>' +
@@ -1217,7 +1240,24 @@ function rendreAllocation() {
      qu'aucune vue de marché n'y est mêlée, et propose d'aller en exprimer une. */
   const sansContexte = !contexteExprime();
 
+  /* Un dossier constitué avant cette version a pu produire un rapport où
+     l'allocation portait une déviation issue des probabilités par défaut.
+     Les chiffres ont changé : le dire une fois vaut mieux que laisser
+     découvrir l'écart en comparant deux rapports. Une fois lu, l'avis ne
+     revient pas — il vieillirait en bandeau permanent. */
+  const avisChangement = sansContexte && !Etat.avisTactiqueLu
+    ? '<div class="message alerte" id="avis-tactique">' +
+      '<strong>Ce que l\'application calcule a changé.</strong> Depuis cette version, un dossier ' +
+      'sans contexte saisi ne reçoit plus aucune déviation tactique : l\'allocation cible est ' +
+      'exactement l\'allocation stratégique du profil. Auparavant, un contexte vierge appliquait ' +
+      'des probabilités par défaut — les chiffres ci-dessous peuvent donc différer d\'un rapport ' +
+      'antérieur, jusqu\'à trois points sur une classe d\'actifs.' +
+      '<div class="barre-actions"><button class="bouton secondaire" id="btn-avis-lu">J\'ai compris</button>' +
+      '<button class="bouton secondaire" data-aller="macro">Renseigner le contexte</button></div></div>'
+    : '';
+
   c.innerHTML =
+    avisChangement +
     (sansContexte
       ? '<div class="message info"><strong>Allocation stratégique seule.</strong> ' +
         'Aucun indicateur de contexte n\'étant renseigné, aucune déviation tactique n\'est ' +
@@ -1229,7 +1269,8 @@ function rendreAllocation() {
       kpi(r.profil.nom, 'Profil', r.profil.sri ? 'SRI ' + r.profil.sri : '') +
       kpi(pct(metriquesTact.rendement), 'Rendement espéré', 'hypothèses long terme') +
       kpi(pct(metriquesTact.volatilite), 'Volatilité estimée', 'contre ' + pct(metriquesStrat.volatilite) + ' en stratégique') +
-      kpi(scenarioDominant ? Math.round(m.probas[m.dominant]) + ' %' : '—', 'Scénario dominant', scenarioDominant ? scenarioDominant.nom : '') +
+      kpi(scenarioDominant ? Math.round(m.probas[m.dominant]) + ' %' : '—', 'Scénario dominant',
+          scenarioDominant ? scenarioDominant.nom : 'aucun contexte renseigné') +
     '</div>' +
 
     (alloc.coussin ? '<div class="message info"><strong>Allocation ajustée pour servir un revenu.</strong> ' +
@@ -1577,9 +1618,16 @@ function rendreArbitrages() {
           'Aucune ligne ne s\'écarte de plus de ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) + ' de sa cible.</div>';
     })() +
 
+    (m.exprime ? '' :
+      '<div class="message alerte"><strong>Aucun contexte n\'est renseigné.</strong> ' +
+      'Les écarts ci-dessous sont mesurés contre l\'allocation stratégique du profil, sans ' +
+      'déviation tactique. Renseignez le contexte si une vue de marché doit peser sur les ordres.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
+      'Renseigner le contexte</button></div></div>') +
+    (!m.exprime ? '' :
     '<div class="message info"><strong>Justification du contexte.</strong> Scénario dominant retenu : ' +
       (scenarioDominant ? echapper(scenarioDominant.nom) + ' (' + Math.round(m.probas[m.dominant]) + ' %)' : 'non déterminé') +
-      '. ' + (scenarioDominant ? echapper(scenarioDominant.description) : '') + '</div>' +
+      '. ' + (scenarioDominant ? echapper(scenarioDominant.description) : '') + '</div>') +
 
     (analyse.inconnus.length ? '<div class="message alerte"><strong>Supports non reconnus.</strong> ' +
       analyse.inconnus.map(l => echapper(l.libelle)).join(', ') +
@@ -2127,6 +2175,11 @@ function optionsBacktest() {
 function poidsTestes() {
   const alloc = allocationCourante();
   if (!alloc) return null;
+  /* Sans déviation, « tactique » et « stratégique » désignent la même
+     allocation : on rend la stratégique dans les deux cas plutôt qu'une
+     tactique qui n'en diffère que par un arrondi de 0,1 point — un écart
+     sans cause visible est plus troublant qu'une égalité. */
+  if (intensiteEffective() === 0) return alloc.strategique.poches;
   return Etat.backtest.allocation === 'strategique' ? alloc.strategique.poches : alloc.poches;
 }
 
@@ -2794,7 +2847,8 @@ function rendreJournal() {
       '<div><span class="badge">' + echapper(j.profil) + '</span> <span class="badge gris">' + echapper(j.enveloppe) + '</span>' +
       ' <button class="bouton secondaire" data-supprimer-journal="' + i + '">Supprimer</button></div></div>' +
       '<p class="intro" style="font-size:12px;margin:8px 0">Scénario dominant : <strong>' +
-        echapper((SCENARIOS.find(s => s.id === j.scenarioDominant) || {}).nom || '—') + '</strong> · ' +
+        echapper((SCENARIOS.find(s => s.id === j.scenarioDominant) || {}).nom ||
+                 'aucun contexte renseigné') + '</strong> · ' +
         j.nbOrdres + ' mouvement(s) · rotation ' + pct(j.rotation) +
         (j.impot ? ' · fiscalité estimée ' + euro(j.impot) : '') + '</p>' +
       (j.ordres.length ? '<table><thead><tr><th>Sens</th><th>Support</th><th class="num">Montant</th></tr></thead><tbody>' +
@@ -3100,6 +3154,12 @@ function brancher() {
   brancherBalayage();
 
   document.addEventListener('click', e => {
+    if (e.target.closest('#btn-avis-lu')) {
+      Etat.avisTactiqueLu = true;
+      sauver(true); rendreAllocation();
+      return;
+    }
+
     const relais = e.target.closest('[data-relais]');
     if (relais) { fermerFeuille(); $('#' + relais.dataset.relais).click(); return; }
 
