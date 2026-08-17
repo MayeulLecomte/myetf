@@ -1604,3 +1604,19 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .entree-choix { background: var(--surface) !important; }
 }
+
+/* L'avertissement en tête du rapport, mode particulier. Il s'imprime —
+   c'est le seul endroit où une mise en garde compte vraiment, et elle
+   n'a pas à être plus discrète sur le papier qu'à l'écran. */
+.avertissement-rapport {
+  border-color: color-mix(in srgb, var(--orange) 42%, transparent);
+  background: color-mix(in srgb, var(--orange) 10%, var(--verre));
+  font-size: 13.5px; line-height: 1.55;
+}
+@media print {
+  .avertissement-rapport {
+    border: 1.5px solid #666 !important;
+    background: #fff !important;
+    font-size: 10.5px; color: #000 !important;
+  }
+}

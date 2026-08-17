@@ -110,14 +110,138 @@ const LIBELLES = {
       'document. Elles sont susceptibles d\'évoluer et ne constituent pas une prévision.',
     'phrase.mentions.signature':
       'Document établi le {date}. Conseiller : _______________________  ' +
-      'Signature du client : _______________________'
+      'Signature du client : _______________________',
+
+    /* Ce que l'outil ne fait pas — annexe « Méthode » du rapport. */
+    'phrase.methode.nefaitpas':
+      'Il ne délivre aucun conseil en investissement : il produit un support de travail que le ' +
+      'conseiller valide, complète et signe. Il ne passe aucun ordre et n\'est connecté à aucun ' +
+      'contrat. Il n\'exerce aucune surveillance des marchés : le suivi est déclenché par une revue, ' +
+      'jamais par une alerte.',
+
+    /* L'absence de contexte, dite là où elle change le chiffre affiché. Le
+       conseiller peut y remédier — un bouton l'y mène ; le particulier non,
+       le contexte n'existe pas dans son mode. */
+    'phrase.sansContexte.allocation':
+      '<strong>Allocation stratégique seule.</strong> Aucun indicateur de contexte n\'étant ' +
+      'renseigné, aucune déviation tactique n\'est appliquée : la répartition ci-dessous découle ' +
+      'du seul profil de risque. ' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
+      'Renseigner le contexte</button></div>',
+    'phrase.sansContexte.arbitrages':
+      '<strong>Aucun contexte n\'est renseigné.</strong> Les écarts ci-dessous sont mesurés contre ' +
+      'l\'allocation stratégique du profil, sans déviation tactique. Renseignez le contexte si une ' +
+      'vue de marché doit peser sur les ordres.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
+      'Renseigner le contexte</button></div>',
+    'phrase.rapport.contexte.absent':
+      'Aucune vue de marché n\'a été exprimée pour ce dossier. Aucune distribution de scénarios ' +
+      'n\'est donc retenue, et l\'allocation proposée est strictement celle du profil de risque.',
+
+    /* Vides chez le conseiller : ces deux mises en garde n'existent qu'en
+       mode particulier, où personne ne les dira à sa place. */
+    'phrase.backtest.avertissement': '',
+    'phrase.rapport.avertissement': ''
   },
 
-  /* Rempli au chantier 7 (c). Vide, le mode particulier parle donc
-     exactement comme le conseiller — ce qui est la preuve attendue de
-     l'étape (b) : le branchement ne change rien. */
-  particulier: {}
+  /* Ce que le mode particulier change, et rien d'autre. Deux voix, et
+     c'est voulu : la navigation au possessif — je regarde mes affaires —
+     et les champs de saisie au « votre » — l'outil me demande quelque
+     chose. */
+  particulier: {
+
+    'vue.client.nav':           'Mon enveloppe',
+    'vue.client.titre':         'Mon enveloppe',
+    'vue.profil.nav':           'Mon profil',
+    'vue.profil.titre':         'Mon profil de risque',
+    'vue.allocation.nav':       'Mon allocation',
+    'vue.allocation.titre':     'Mon allocation',
+    'vue.portefeuille.nav':     'Mes supports',
+    'vue.portefeuille.titre':   'Mes supports',
+    'vue.arbitrages.nav':       'Mes arbitrages',
+    'vue.arbitrages.titre':     'Mes arbitrages',
+    'vue.situation.nav':        'Mes placements',
+    'vue.journal.nav':          'Mon suivi',
+    'vue.journal.titre':        'Mon suivi',
+    'vue.rapport.nav':          'Ma synthèse',
+    'vue.rapport.titre':        'Ma synthèse',
+
+    'champ.nom':                'Nom du dossier (facultatif)',
+    'champ.nom.exemple':        'Assurance-vie 2026',
+    'champ.age':                'Votre âge',
+    'champ.versement':          'Votre versement mensuel',
+    'champ.enveloppe':          'Votre enveloppe',
+
+    'option.arbitrages.conseillee': 'Oui, sur proposition de cet outil',
+
+    'rapport.ligne.client':     'Dossier',
+
+    'phrase.accroche.longue':
+      '<strong>myetf construit et suit votre allocation d\'ETF</strong> — du questionnaire de ' +
+      'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres. Il ne délivre aucun ' +
+      'conseil : les décisions sont les vôtres.',
+    'phrase.accroche.courte':
+      '<strong>Votre allocation d\'ETF</strong> — vos décisions, votre suivi.',
+
+    'phrase.mentions.nature':
+      'Ce document est un support d\'aide à la décision que vous avez produit vous-même. Il ne ' +
+      'constitue pas un conseil en investissement, ni une recommandation d\'achat ou de vente.',
+    'phrase.mentions.scenarios':
+      'Les probabilités de scénarios macroéconomiques reflètent votre appréciation à la date du ' +
+      'document. Elles sont susceptibles d\'évoluer et ne constituent pas une prévision.',
+    'phrase.mentions.signature':
+      'Document établi le {date}.',
+
+    'phrase.methode.nefaitpas':
+      'Il ne délivre aucun conseil en investissement et ne se substitue pas à un professionnel. Il ' +
+      'ne passe aucun ordre et n\'est connecté à aucun contrat. Il n\'exerce aucune surveillance des ' +
+      'marchés : le suivi est déclenché par une revue que vous ouvrez, jamais par une alerte.',
+
+    /* Sans bouton : le contexte n'existe pas dans ce mode, et proposer d'y
+       aller enverrait vers un écran que la navigation ne montre pas. */
+    'phrase.sansContexte.allocation':
+      '<strong>Allocation issue de votre seul profil.</strong> Aucune vue de marché n\'est appliquée : ' +
+      'la répartition ci-dessous découle uniquement de vos réponses au questionnaire.',
+    'phrase.sansContexte.arbitrages':
+      '<strong>Écarts mesurés contre votre allocation cible.</strong> Aucune vue de marché n\'y est ' +
+      'mêlée : les ordres proposés ramènent le portefeuille vers l\'allocation de votre profil.',
+    'phrase.rapport.contexte.absent':
+      'Aucune vue de marché n\'est appliquée : l\'allocation présentée découle uniquement de vos ' +
+      'réponses au questionnaire.',
+
+    'phrase.backtest.avertissement':
+      'Une partie des performances passées est estimée, pas mesurée : ce backtest donne un ordre de ' +
+      'grandeur, pas une prévision. Consultez ' +
+      '<button class="lien" data-aller="methode">Méthode &amp; limites</button>.',
+    'phrase.rapport.avertissement':
+      '<strong>Ce document ne constitue pas un conseil en investissement.</strong> Vous l\'avez ' +
+      'produit vous-même, à partir de vos réponses et d\'hypothèses paramétrables. Les placements en ' +
+      'unités de compte présentent un risque de perte en capital, et les performances passées ne ' +
+      'préjugent pas des performances futures.'
+  }
 };
+
+/* ------------------------------------------------------------
+   LES VUES QUE LE MODE NE MONTRE PAS
+   ------------------------------------------------------------
+   Masquer porte sur la NAVIGATION, jamais sur le routage : une
+   ancre `#…` continue d'ouvrir sa vue dans les deux modes. C'est
+   ce qui garde le widget iOS vivant — il ouvre `#note`, masquée
+   en particulier.
+
+   Le contexte macro est masqué parce que le mode n'applique
+   aucune déviation tactique, ce qui rejoint la règle déjà
+   arrêtée : pas de contexte, allocation strictement stratégique.
+   ------------------------------------------------------------ */
+const VUES_MASQUEES = {
+  conseiller:  [],
+  particulier: ['note', 'macro', 'revenus']
+};
+
+function vueMasquee(vue) {
+  const mode = (typeof Etat !== 'undefined' && Etat.mode) || MODE_DEFAUT;
+  return (VUES_MASQUEES[mode] || []).indexOf(vue) >= 0;
+}
 
 /* Les deux modes coexistent le temps de trancher. `MODES` porte ce qui
    s'affiche sur l'écran d'entrée ; l'ordre est celui des boutons. */

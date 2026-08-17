@@ -408,9 +408,12 @@ function groupeDeVue(vue) {
    n'y a donc plus qu'une seule définition de l'ordre — celle des
    groupes de navigation — et l'on ne peut plus les désaccorder.
    ------------------------------------------------------------ */
-const PARCOURS = GROUPES
-  .filter(g => !g.secondaire && g.vues[0] !== 'accueil')
-  .reduce((tout, g) => tout.concat(g.vues), []);
+function parcours() {
+  return GROUPES
+    .filter(g => !g.secondaire && g.vues[0] !== 'accueil')
+    .reduce((tout, g) => tout.concat(g.vues), [])
+    .filter(v => !vueMasquee(v));
+}
 
 /* Le libellé est celui de la navigation, relu dans la page : une
    seconde table de noms finit toujours par contredire la première. */
@@ -432,13 +435,15 @@ function poserNav() {
   const nav = $('#nav');
   if (!nav) return;
   nav.innerHTML = GROUPES.map(g => {
+    const vues = g.vues.filter(v => !vueMasquee(v));
+    if (!vues.length) return '';
     /* Le premier groupe n'a qu'une vue et se nomme comme elle : lui poser
        un titre de bloc écrirait deux fois le même mot. */
-    const titre = g.vues.length > 1
+    const titre = vues.length > 1
       ? '<div class="bloc-titre' + (g.secondaire ? ' secondaire' : '') + '">' +
         echapper(g.libelle) + '</div>'
       : '';
-    return titre + g.vues.map(v =>
+    return titre + vues.map(v =>
       '<button data-vue="' + v + '"' +
         (v === 'accueil' ? ' class="actif accueil"' : (g.secondaire ? ' class="secondaire"' : '')) +
         '><span class="num"></span> ' + echapper(T('vue.' + v + '.nav')) + '</button>').join('');
@@ -450,11 +455,15 @@ function poserTitres() {
 }
 
 function poserBarresParcours() {
-  PARCOURS.forEach((vue, i) => {
+  /* Reposée telle quelle à chaque changement de mode : l'enchaînement saute
+     les vues que le mode ne montre pas. */
+  $$('.barre-parcours').forEach(b => b.remove());
+  const suite = parcours();
+  suite.forEach((vue, i) => {
     const section = $('#vue-' + vue);
     if (!section) return;
-    const precedent = PARCOURS[i - 1];
-    const suivant = PARCOURS[i + 1];
+    const precedent = suite[i - 1];
+    const suivant = suite[i + 1];
     const barre = document.createElement('div');
     /* Une navigation n'a rien à faire sur un document imprimé. */
     barre.className = 'barre-actions barre-parcours sans-impression';
@@ -514,7 +523,8 @@ function rendreNavMobile(vue) {
 
   /* Un groupe d'une seule vue n'a pas de ruban : il n'y aurait qu'une
      pilule, qui ne dirait rien de plus que la barre basse. */
-  if (groupe.vues.length < 2) { ruban.hidden = true; ruban.innerHTML = ''; return; }
+  const vuesGroupe = groupe.vues.filter(v => !vueMasquee(v));
+  if (vuesGroupe.length < 2) { ruban.hidden = true; ruban.innerHTML = ''; return; }
   ruban.hidden = false;
   ruban.innerHTML = groupe.vues.map(v => {
     const e = etat(v);
@@ -668,6 +678,9 @@ function libelleCloture(iso) {
 }
 
 function blocNoteAccueil() {
+  /* La note est masquée en mode particulier : la reprendre à l'accueil, avec
+     le bouton qui y mène, contredirait le masquage. */
+  if (vueMasquee('note')) return '';
   const n = (typeof NOTE_MARCHE !== 'undefined' && NOTE_MARCHE) ? NOTE_MARCHE : null;
   if (!n || !n.note) return '';
   return '<div class="carte"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">' +
@@ -946,7 +959,7 @@ function choisirMode(id) {
   Etat.mode = id;
   sauver(true);
   /* Le vocabulaire change en place : ni rechargement, ni perte de saisie. */
-  poserNav(); poserTitres(); majNav();
+  poserNav(); poserTitres(); poserBarresParcours(); majNav();
   rendre('accueil');
 }
 
@@ -1066,7 +1079,23 @@ function rendreIdentite() {
     }
     return '<div class="champ"><label>' + echapper(T('champ.' + f.id)) + '</label>' + saisie +
       (f.suffixe ? '<span class="suffixe">' + echapper(f.suffixe) + '</span>' : '') + '</div>';
-  }).join('');
+  }).join('') +
+    /* Le mode se change ici, et non dans un réglage d'application : c'est une
+       propriété du dossier, elle voyage avec lui à l'export. */
+    '<div class="champ"><label for="f-mode">Mode de lecture</label>' +
+      '<select id="f-mode">' + MODES.map(m =>
+        '<option value="' + echapper(m.id) + '"' +
+        ((Etat.mode || MODE_DEFAUT) === m.id ? ' selected' : '') + '>' +
+        echapper(m.bouton) + '</option>').join('') + '</select>' +
+      '<span class="suffixe">Ne change ni les calculs ni le dossier.</span></div>';
+
+  /* Les contraintes de sélection sont l'outillage du conseiller : notation
+     minimale, encours, frais, réplication, univers, référencement au contrat,
+     intensité tactique. Un particulier hérite des mêmes valeurs par défaut
+     sans avoir à les régler — et l'intensité n'a de toute façon aucun effet
+     dans un mode qui n'applique pas de déviation. */
+  const contraintes = $('#carte-contraintes');
+  if (contraintes) contraintes.hidden = (Etat.mode === 'particulier');
 
   $('#f-etoiles').value = Etat.filtres.etoilesMin;
   $('#f-encours').value = Etat.filtres.encoursMin;
@@ -1412,7 +1441,9 @@ function rendreAllocation() {
      Les chiffres ont changé : le dire une fois vaut mieux que laisser
      découvrir l'écart en comparant deux rapports. Une fois lu, l'avis ne
      revient pas — il vieillirait en bandeau permanent. */
-  const avisChangement = sansContexte && !Etat.avisTactiqueLu
+  /* Cet avis compare à un rapport antérieur produit avec des probabilités par
+     défaut. Un mode qui n'a jamais eu de contexte n'a jamais eu ce rapport. */
+  const avisChangement = sansContexte && !Etat.avisTactiqueLu && !vueMasquee('macro')
     ? '<div class="message alerte" id="avis-tactique">' +
       '<strong>Ce que l\'application calcule a changé.</strong> Depuis cette version, un dossier ' +
       'sans contexte saisi ne reçoit plus aucune déviation tactique : l\'allocation cible est ' +
@@ -1426,18 +1457,18 @@ function rendreAllocation() {
   c.innerHTML =
     avisChangement +
     (sansContexte
-      ? '<div class="message info"><strong>Allocation stratégique seule.</strong> ' +
-        'Aucun indicateur de contexte n\'étant renseigné, aucune déviation tactique n\'est ' +
-        'appliquée : la répartition ci-dessous découle du seul profil de risque. ' +
-        '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
-        'Renseigner le contexte</button></div></div>'
+      ? '<div class="message info">' + T('phrase.sansContexte.allocation') + '</div>'
       : '') +
-    '<div class="grille quatre">' +
+    /* « Scénario dominant » ne peut jamais rien valoir dans un mode sans
+       contexte : un indicateur structurellement vide occupe une place et
+       n'apprend rien. Il tombe, et les trois autres s'élargissent. */
+    '<div class="grille ' + (vueMasquee('macro') ? 'trois' : 'quatre') + '">' +
       kpi(r.profil.nom, 'Profil', r.profil.sri ? 'SRI ' + r.profil.sri : '') +
       kpi(pct(metriquesTact.rendement), 'Rendement espéré', 'hypothèses long terme') +
       kpi(pct(metriquesTact.volatilite), 'Volatilité estimée', 'contre ' + pct(metriquesStrat.volatilite) + ' en stratégique') +
-      kpi(scenarioDominant ? Math.round(m.probas[m.dominant]) + ' %' : '—', 'Scénario dominant',
-          scenarioDominant ? scenarioDominant.nom : 'aucun contexte renseigné') +
+      (vueMasquee('macro') ? '' :
+        kpi(scenarioDominant ? Math.round(m.probas[m.dominant]) + ' %' : '—', 'Scénario dominant',
+            scenarioDominant ? scenarioDominant.nom : 'aucun contexte renseigné')) +
     '</div>' +
 
     (alloc.coussin ? '<div class="message info"><strong>Allocation ajustée pour servir un revenu.</strong> ' +
@@ -1812,11 +1843,8 @@ function rendreArbitrages() {
     })() +
 
     (m.exprime ? '' :
-      '<div class="message alerte"><strong>Aucun contexte n\'est renseigné.</strong> ' +
-      'Les écarts ci-dessous sont mesurés contre l\'allocation stratégique du profil, sans ' +
-      'déviation tactique. Renseignez le contexte si une vue de marché doit peser sur les ordres.' +
-      '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
-      'Renseigner le contexte</button></div></div>') +
+      '<div class="message ' + (vueMasquee('macro') ? 'info' : 'alerte') + '">' +
+      T('phrase.sansContexte.arbitrages') + '</div>') +
     (!m.exprime ? '' :
     '<div class="message info"><strong>Justification du contexte.</strong> Scénario dominant retenu : ' +
       (scenarioDominant ? echapper(scenarioDominant.nom) + ' (' + Math.round(m.probas[m.dominant]) + ' %)' : 'non déterminé') +
@@ -2412,6 +2440,10 @@ function rendreBacktest() {
   const periode = ANNEES_HISTORIQUE[0] + ' – ' + ANNEES_HISTORIQUE[ANNEES_HISTORIQUE.length - 1];
 
   banniere.innerHTML =
+    /* Sans conseiller pour la traduire, la réserve passe en tête et en clair
+       plutôt qu'en note de bas de page. */
+    (T('phrase.backtest.avertissement')
+      ? '<div class="message alerte">' + T('phrase.backtest.avertissement') + '</div>' : '') +
     /* La mise en garde descend de l'intro jusqu'ici : elle doit être sous les
        yeux au moment où l'on lit les chiffres, pas trois écrans plus haut. */
     '<p class="intro rappel-local">Mesure le comportement du modèle, ne prédit rien. ' +
@@ -3215,9 +3247,7 @@ function annexeMethode(numero) {
     '</p>' +
 
     '<p style="font-size:11.5px;line-height:1.55"><strong>Ce que cet outil ne fait pas.</strong> ' +
-    'Il ne délivre aucun conseil en investissement : il produit un support de travail que le conseiller ' +
-    'valide, complète et signe. Il ne passe aucun ordre et n\'est connecté à aucun contrat. Il n\'exerce ' +
-    'aucune surveillance des marchés : le suivi est déclenché par une revue, jamais par une alerte.</p>' +
+    T('phrase.methode.nefaitpas') + '</p>' +
     '</div>';
 }
 
@@ -3315,7 +3345,10 @@ function controlesRapport() {
      remettre. */
   const exprime = contexteExprime();
   const intensite = intensiteEffective();
-  liste.push({
+  /* Une ligne sur laquelle on ne peut rien faire n'est pas un contrôle : dans
+     un mode sans contexte, l'absence de déviation est une propriété du mode,
+     dite une fois dans le document, et non une réserve à lever. */
+  if (!vueMasquee('macro')) liste.push({
     id: 'contexte',
     titre: 'Vue de marché appliquée au document',
     neutre: true,
@@ -3349,8 +3382,10 @@ function controlesRapport() {
     vue: 'backtest', bouton: 'Ouvrir le backtest'
   });
 
+  /* Le nom est facultatif en mode particulier — on ne se donne pas une
+     référence de dossier à soi-même. On ne contrôle pas un champ facultatif. */
   const nom = (Etat.identite.nom || '').trim();
-  liste.push({
+  if (Etat.mode !== 'particulier') liste.push({
     id: 'nom',
     titre: 'Nom ou référence du dossier',
     ok: !!nom,
@@ -3382,8 +3417,8 @@ function rendreControlesRapport() {
         (aRegarder ? aRegarder + (aRegarder > 1 ? ' points à regarder' : ' point à regarder')
                    : 'rien à signaler') + '</span>' +
     '</div>' +
-    '<p class="intro">Rien n\'est bloqué : le rapport s\'imprime dans tous les cas. Ces quatre ' +
-      'lignes rassemblent, à l\'instant où le document part, ce que l\'application dit ailleurs.</p>' +
+    '<p class="intro">Rien n\'est bloqué : le rapport s\'imprime dans tous les cas. Ces lignes ' +
+      'rassemblent, à l\'instant où le document part, ce que l\'application dit ailleurs.</p>' +
     liste.map(ctrl => {
       const coche = coches[ctrl.id] === ctrl.signature;
       return '<div class="controle' + (ctrl.ok ? ' ok' : '') + (coche ? ' relu' : '') + '">' +
@@ -3428,6 +3463,10 @@ function rendreRapport() {
     '<h3>' + (++nSection) + '. ' + t + '</h3>';
 
   c.innerHTML =
+    /* En tête du document, et pas seulement en annexe : sans professionnel
+       entre l'outil et celui qui décide, la réserve doit se lire d'abord. */
+    (T('phrase.rapport.avertissement')
+      ? '<div class="carte avertissement-rapport">' + T('phrase.rapport.avertissement') + '</div>' : '') +
     '<div class="carte">' +
       '<h3>Proposition d\'allocation d\'actifs</h3>' +
       '<table><tbody>' +
@@ -3454,19 +3493,28 @@ function rendreRapport() {
       '. Rendement annuel espéré sur la durée de placement : ' + pct(metriques.rendement) + '.</p>' +
     '</div>' +
 
+    /* Sans contexte saisi, `macroCourante()` rend des probabilités de repli
+       qui pèsent 66,7 % sur l'atterrissage en douceur. Les imprimer sous le
+       titre « distribution retenue » les présentait au client comme une vue
+       de marché que personne n'avait exprimée — la dernière fuite des
+       probabilités par défaut, et la plus visible, puisqu'elle était dans le
+       document remis. Sans contexte, il n'y a pas de tableau : il y a une
+       phrase qui dit qu'il n'y en a pas. */
     titre('Lecture du contexte de marché') +
-      '<p>Distribution de scénarios retenue à la date du ' + dateFr() + ' :</p>' +
-      '<table><thead><tr><th>Scénario</th><th class="num">Probabilité</th><th>Implications</th></tr></thead><tbody>' +
-      SCENARIOS.slice().sort((a, b) => m.probas[b.id] - m.probas[a.id]).map(s =>
-        '<tr><td><span class="pastille" style="background:' + s.couleur + '"></span><strong>' + s.nom + '</strong></td>' +
-        '<td class="num"><strong>' + Math.round(m.probas[s.id]) + ' %</strong></td>' +
-        '<td style="font-size:12px">' + echapper(s.description) + '</td></tr>').join('') +
-      '</tbody></table>' +
-      (alloc.explications.length && intensiteEffective() > 0
-        ? '<p style="margin-top:12px">Déviations tactiques retenues : ' +
-          alloc.explications.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation)).slice(0, 8)
-            .map(e => (LIBELLES_POCHES[e.poche] || e.poche) + ' ' + signe(e.deviation)).join(' · ') + '.</p>'
-        : '<p style="margin-top:12px">Aucune déviation tactique significative n\'est retenue à ce stade.</p>') +
+      (contexteExprime()
+        ? '<p>Distribution de scénarios retenue à la date du ' + dateFr() + ' :</p>' +
+          '<table><thead><tr><th>Scénario</th><th class="num">Probabilité</th><th>Implications</th></tr></thead><tbody>' +
+          SCENARIOS.slice().sort((a, b) => m.probas[b.id] - m.probas[a.id]).map(s =>
+            '<tr><td><span class="pastille" style="background:' + s.couleur + '"></span><strong>' + s.nom + '</strong></td>' +
+            '<td class="num"><strong>' + Math.round(m.probas[s.id]) + ' %</strong></td>' +
+            '<td style="font-size:12px">' + echapper(s.description) + '</td></tr>').join('') +
+          '</tbody></table>' +
+          (alloc.explications.length && intensiteEffective() > 0
+            ? '<p style="margin-top:12px">Déviations tactiques retenues : ' +
+              alloc.explications.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation)).slice(0, 8)
+                .map(e => (LIBELLES_POCHES[e.poche] || e.poche) + ' ' + signe(e.deviation)).join(' · ') + '.</p>'
+            : '<p style="margin-top:12px">Aucune déviation tactique significative n\'est retenue à ce stade.</p>')
+        : '<p>' + T('phrase.rapport.contexte.absent') + '</p>') +
     '</div>' +
 
     titre('Allocation cible', 'saut-page') +
@@ -3886,6 +3934,14 @@ function brancher() {
       if (t.checked) Etat.rapport.controles[ctrl.id] = ctrl.signature;
       else delete Etat.rapport.controles[ctrl.id];
       sauver(true); rendreControlesRapport(); return;
+    }
+    if (t.id === 'f-mode') {
+      Etat.mode = t.value;
+      sauver(true);
+      poserNav(); poserTitres(); poserBarresParcours(); majNav();
+      rendre('client');
+      notifier('Mode « ' + (MODES.find(m => m.id === t.value) || {}).bouton + ' ».', 'info');
+      return;
     }
     if (t.id === 'bt-allocation') { Etat.backtest.allocation = t.value; sauver(true); rendreBacktest(); return; }
     if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }

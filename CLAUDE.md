@@ -178,6 +178,18 @@ investissement » passe **en tête du document**, pas seulement en annexe : il
 n'y a plus de professionnel entre l'outil et celui qui décide. C'est le seul
 endroit où le mode particulier est plus exigeant que l'autre.
 
+## Le rapport ne montre pas de scénarios que personne n'a choisis
+
+Section « Lecture du contexte de marché ». Sans contexte saisi,
+`macroCourante()` rend les probabilités de repli — 66,7 % sur l'atterrissage
+en douceur — et le rapport les imprimait sous le titre « Distribution de
+scénarios retenue ». C'était la dernière fuite des probabilités par défaut, et
+la plus grave : les autres se lisaient à l'écran, celle-ci partait dans le
+document remis et signé.
+
+**Sans contexte, il n'y a pas de tableau : il y a une phrase qui dit qu'il n'y
+en a pas.** Le tableau revient dès qu'un indicateur est renseigné.
+
 ## Pistes — reportées, pas abandonnées
 
 Relevées à la relecture « premier dossier », hors chantier à ce stade :
