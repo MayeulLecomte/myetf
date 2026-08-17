@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>myetf — test de fumée de l'interface</title>
+<!--
+   ============================================================
+   TEST DE FUMÉE DE L'INTERFACE
+   ------------------------------------------------------------
+   `test/runner.js` couvre les moteurs : profil, allocation,
+   sélection, arbitrage, revenus, backtest, situation, contrat,
+   univers. Il ne touche pas à js/app.js — ni le rendu des vues,
+   ni les événements, ni la persistance, ni l'import/export.
+   C'est précisément là que les remaniements d'interface cassent
+   quelque chose sans qu'un seul test ne bronche.
+
+   Cette page charge l'application RÉELLE dans un cadre et la
+   pilote : elle rend les quinze vues sur un dossier vide, puis
+   sur un dossier complet, et vérifie qu'aucune ne lève d'erreur
+   ni ne rend une page blanche. Elle contrôle ensuite l'aller-
+   retour d'export, la persistance et la cohérence de l'état.
+
+   Aucune dépendance : c'est du HTML et du JavaScript, comme le
+   reste. Elle a en revanche besoin d'un serveur — un cadre en
+   file:// est traité comme une autre origine et son contenu
+   devient illisible.
+
+       python3 -m http.server 8777 --directory .
+       puis ouvrir  http://localhost:8777/test/fumee.html
+
+   ============================================================
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --fond: #f4f6fa; --surface: #fff; --texte: #0f1419; --doux: #5b6673;
+    --ligne: rgba(0,0,0,.1); --vert: #1a8a4c; --rouge: #cf3329; --or: #b4801f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fond: #0b0d12; --surface: #171a21; --texte: #f2f4f7; --doux: #98a2b0;
+            --ligne: rgba(255,255,255,.12); --vert: #45c96f; --rouge: #ff6961; --or: #e0ac4e; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px; background: var(--fond); color: var(--texte);
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    letter-spacing: -.006em;
+  }
+  h1 { font-size: 22px; letter-spacing: -.025em; margin: 0 0 4px; }
+  .intro { color: var(--doux); margin: 0 0 20px; max-width: 74ch; }
+  #bilan {
+    font-size: 17px; font-weight: 650; padding: 14px 18px; border-radius: 14px;
+    background: var(--surface); border: 1px solid var(--ligne); margin-bottom: 18px;
+  }
+  #bilan.ok { border-color: var(--vert); color: var(--vert); }
+  #bilan.ko { border-color: var(--rouge); color: var(--rouge); }
+  .groupe { margin-bottom: 18px; }
+  .groupe h2 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--doux); margin: 0 0 7px;
+  }
+  .l { padding: 3px 0 3px 22px; position: relative; font-variant-numeric: tabular-nums; }
+  .l::before { position: absolute; left: 0; font-weight: 700; }
+  .l.ok::before { content: '✓'; color: var(--vert); }
+  .l.ko::before { content: '✗'; color: var(--rouge); }
+  .l.ko { color: var(--rouge); }
+  .note { color: var(--doux); font-size: 12.5px; padding-left: 22px; }
+  iframe { position: absolute; left: -9999px; width: 430px; height: 900px; border: 0; }
+</style>
+</head>
+<body>
+
+<h1>Test de fumée de l'interface</h1>
+<p class="intro">Charge l'application réelle et la pilote. Complète <code>test/runner.js</code>, qui
+couvre les moteurs mais jamais le rendu, la persistance ni l'import/export. Exécuter après tout
+remaniement d'interface.</p>
+
+<div id="bilan">Chargement de l'application…</div>
+<div id="sortie"></div>
+
+<iframe id="app" title="Application sous test"></iframe>
+
+<script>
+/* ------------------------------------------------------------
+   Récolte des résultats
+   ------------------------------------------------------------ */
+const R = { total: 0, echecs: 0, groupe: null };
+
+function groupe(titre) {
+  const d = document.createElement('div');
+  d.className = 'groupe';
+  d.innerHTML = '<h2>' + titre + '</h2>';
+  document.getElementById('sortie').appendChild(d);
+  R.groupe = d;
+}
+function ok(condition, message) {
+  R.total++;
+  if (!condition) R.echecs++;
+  const l = document.createElement('div');
+  l.className = 'l ' + (condition ? 'ok' : 'ko');
+  l.textContent = message;
+  R.groupe.appendChild(l);
+  return !!condition;
+}
+function note(message) {
+  const l = document.createElement('div');
+  l.className = 'note';
+  l.textContent = message;
+  R.groupe.appendChild(l);
+}
+function bilan() {
+  const b = document.getElementById('bilan');
+  b.className = R.echecs ? 'ko' : 'ok';
+  b.textContent = R.echecs
+    ? R.echecs + ' échec(s) sur ' + R.total + ' contrôles'
+    : R.total + ' contrôles passent — l\'interface se rend sans rien casser';
+}
+
+/* Le dossier de démonstration : les mêmes réponses que le lien
+   « Pré-remplir un exemple », pour que le test parte d'un dossier
+   complet et non d'un jeu de valeurs inventé ici. */
+function dossierComplet(w, Etat) {
+  const lien = w.document.getElementById('lien-remplir-demo');
+  if (lien) lien.click();
+  Etat.identite.montant = 250000;
+  Etat.identite.enveloppe = 'AV';
+  Etat.identite.contratAV = 'av-large';
+  Etat.detention = [
+    { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World', montant: 120000, pvLatente: 20000 },
+    { isin: 'IE00B4WXJJ64', libelle: 'iShares Core € Govt Bond', montant: 60000, pvLatente: 0 },
+    { isin: 'IE00B4ND3602', libelle: 'iShares Physical Gold', montant: 20000, pvLatente: 5000 }
+  ];
+  Etat.revenus.besoin = 12000;
+}
+
+/* ------------------------------------------------------------
+   Le test
+   ------------------------------------------------------------ */
+async function lancer() {
+  const cadre = document.getElementById('app');
+
+  /* Le dossier d'un vrai utilisateur ne doit pas influencer le test,
+     et le test ne doit pas laisser de traces derrière lui. */
+  try { localStorage.removeItem('allocation-etf-dossier-v1'); } catch (e) { /* origine restreinte */ }
+
+  await new Promise((resoudre, rejeter) => {
+    cadre.onload = resoudre;
+    cadre.onerror = () => rejeter(new Error('cadre non chargé'));
+    cadre.src = '../index.html?fumee=1';
+  });
+
+  const w = cadre.contentWindow;
+  const d = w.document;
+
+  /* Les fichiers de l'application déclarent leurs globaux en `const`, qui
+     — contrairement à `var` et aux déclarations de fonction — ne devient
+     PAS une propriété de `window` : il vit dans la portée lexicale du
+     script. `w.Etat` est donc toujours indéfini, et seul un `eval` évalué
+     dans le contexte du cadre voit ces liaisons. Il rend la référence
+     réelle, pas une copie : muter l'objet obtenu mute bien l'application. */
+  const lire = nom => w.eval(nom);
+  const existe = nom => w.eval('typeof ' + nom) !== 'undefined';
+
+  /* --- 1. Les scripts se sont tous exécutés ---
+     Un fichier qui lève à l'analyse ou à l'exécution ne définit pas son
+     global : la liste ci-dessous est donc un contrôle de chargement
+     complet, pas une formalité. */
+  groupe('Chargement');
+  const globaux = ['QUESTIONS', 'PROFILS', 'SCENARIOS', 'LIBELLES_POCHES', 'ETF_UNIVERS',
+                   'HISTORIQUE_POCHES', 'PERFS_MARCHE', 'VARIATIONS_POCHES', 'COURS_HISTORIQUE',
+                   'MoteurProfil', 'MoteurAllocation', 'MoteurSelection', 'MoteurArbitrage',
+                   'MoteurRevenus', 'MoteurBacktest', 'MoteurSituation', 'MoteurContrat',
+                   'MoteurUnivers', 'Etat'];
+  const absents = globaux.filter(g => !existe(g));
+  ok(absents.length === 0, 'tous les scripts se sont exécutés' +
+     (absents.length ? ' — manquants : ' + absents.join(', ') : ''));
+
+  const Etat = lire('Etat');
+
+  /* Relevé avant toute manipulation : plusieurs contrôles portent sur ce
+     que montre l'application au premier coup d'œil, pas sur ce qu'elle
+     montre une fois qu'on l'a poussée. */
+  const progressionAuChargement =
+    (d.getElementById('txt-progression') || {}).textContent || 'absent';
+
+  /* Toute erreur survenant PENDANT le test est capturée : c'est ce qui
+     distingue « la vue s'est rendue » de « la vue s'est rendue sans se
+     plaindre ». */
+  const erreurs = [];
+  w.addEventListener('error', e => erreurs.push(e.message));
+  const consoleErreur = w.console.error;
+  w.console.error = function () { erreurs.push([].join.call(arguments, ' ')); consoleErreur.apply(w.console, arguments); };
+
+  /* --- 2. Les vues existent et se rendent sur un dossier VIDE ---
+     C'est l'état dans lequel arrive quelqu'un qui découvre l'outil, et
+     celui où les états vides doivent parler. Une vue qui lève ici, ou
+     qui rend une page blanche, est un cul-de-sac. */
+  groupe('Rendu sur un dossier vide');
+  const vues = [...d.querySelectorAll('.vue')].map(v => v.id.replace(/^vue-/, ''));
+  ok(vues.length >= 15, vues.length + ' vues déclarées');
+
+  let leve = [], vides = [];
+  for (const vue of vues) {
+    try {
+      w.afficher(vue);
+    } catch (e) { leve.push(vue + ' (' + e.message + ')'); continue; }
+    const section = d.getElementById('vue-' + vue);
+    const texte = (section.textContent || '').trim();
+    if (texte.length < 40) vides.push(vue + ' — ' + texte.length + ' car.');
+  }
+  ok(leve.length === 0, 'aucune vue ne lève d\'erreur' + (leve.length ? ' — ' + leve.join(', ') : ''));
+  ok(vides.length === 0, 'aucune vue ne rend une page blanche' +
+     (vides.length ? ' — ' + vides.join(', ') : ''));
+
+  /* --- 3. Le même parcours sur un dossier COMPLET --- */
+  groupe('Rendu sur un dossier complet');
+  dossierComplet(w, Etat);
+  leve = []; vides = [];
+  for (const vue of vues) {
+    try { w.afficher(vue); } catch (e) { leve.push(vue + ' (' + e.message + ')'); continue; }
+    const texte = (d.getElementById('vue-' + vue).textContent || '').trim();
+    if (texte.length < 40) vides.push(vue);
+  }
+  ok(leve.length === 0, 'aucune vue ne lève d\'erreur' + (leve.length ? ' — ' + leve.join(', ') : ''));
+  ok(vides.length === 0, 'aucune vue ne rend une page blanche' + (vides.length ? ' — ' + vides.join(', ') : ''));
+
+  const p = w.resultatProfil();
+  ok(p && p.profil, 'le dossier de démonstration détermine un profil — ' + (p ? p.profil.nom : '—'));
+  const sel = w.selectionCourante();
+  ok(sel && sel.lignes.length > 0, 'la sélection produit un portefeuille — ' +
+     (sel ? sel.lignes.length + ' lignes' : '0'));
+
+  /* --- 4. Les chiffres affichés sont ceux des moteurs ---
+     Un remaniement d'interface qui recopie un calcul au lieu de
+     l'appeler se verrait ici, et nulle part ailleurs. */
+  groupe('Concordance interface / moteurs');
+  w.afficher('portefeuille');
+  const texteSel = d.getElementById('vue-portefeuille').textContent;
+  ok(texteSel.indexOf(String(sel.nbSupports)) >= 0,
+     'le nombre de supports affiché est celui du moteur (' + sel.nbSupports + ')');
+  w.afficher('accueil');
+  ok(d.getElementById('vue-accueil').textContent.indexOf('200 000') >= 0 ||
+     d.getElementById('vue-accueil').textContent.indexOf('200 000') >= 0,
+     'l\'encours affiché à l\'accueil est celui de la détention');
+
+  /* --- 5. Aller-retour d'export ---
+     L'export est le seul moyen de déplacer un dossier d'un navigateur à
+     l'autre. S'il perd une clé, le dossier est perdu avec elle. */
+  groupe('Export et import');
+  const avant = JSON.parse(JSON.stringify(Etat));
+  const exporte = JSON.stringify(Etat);
+  Etat.identite = {}; Etat.reponses = {}; Etat.detention = [];
+  const relu = JSON.parse(exporte);
+  Object.keys(relu).forEach(k => { if (Etat[k] !== undefined) Etat[k] = relu[k]; });
+  const cles = ['identite', 'reponses', 'detention', 'filtres', 'revenus', 'backtest',
+                'macroChoix', 'journal', 'situations', 'univers', 'historique'];
+  const perdues = cles.filter(k => JSON.stringify(Etat[k]) !== JSON.stringify(avant[k]));
+  ok(perdues.length === 0, 'l\'aller-retour d\'export conserve toutes les clés' +
+     (perdues.length ? ' — perdues : ' + perdues.join(', ') : ''));
+  note(cles.length + ' clés contrôlées, dont l\'univers ETF et les séries historiques');
+
+  /* --- 6. Persistance --- */
+  groupe('Persistance');
+  w.sauver(true);
+  const brut = w.localStorage.getItem('allocation-etf-dossier-v1');
+  ok(!!brut, 'le dossier s\'écrit dans le navigateur');
+  if (brut) {
+    const stocke = JSON.parse(brut);
+    ok(stocke.identite && String(stocke.identite.montant) === '250000',
+       'le montant relu vaut celui qui a été saisi');
+    ok(Array.isArray(stocke.detention) && stocke.detention.length === 3,
+       'les trois lignes détenues sont relues');
+    note(Math.round(brut.length / 1024) + ' Ko écrits — la limite du navigateur est de 5 Mo environ');
+  }
+
+  /* --- 7. Navigation --- */
+  groupe('Navigation');
+  const boutons = [...d.querySelectorAll('#nav button[data-vue]')];
+  ok(boutons.length === vues.length,
+     boutons.length + ' entrées de navigation pour ' + vues.length + ' vues');
+  const orphelines = boutons.map(b => b.dataset.vue).filter(v => !d.getElementById('vue-' + v));
+  ok(orphelines.length === 0, 'aucune entrée ne pointe vers une vue absente' +
+     (orphelines.length ? ' — ' + orphelines.join(', ') : ''));
+  const sansEntree = vues.filter(v => !d.querySelector('#nav button[data-vue="' + v + '"]'));
+  ok(sansEntree.length === 0, 'aucune vue n\'est inaccessible depuis la navigation' +
+     (sansEntree.length ? ' — ' + sansEntree.join(', ') : ''));
+
+  /* Les deux ancres consommées par le widget iOS. Elles ne sont pas
+     décoratives : le widget ouvre l'application dessus. */
+  ok(!!d.getElementById('vue-note'), 'l\'ancre #note existe (widget iOS)');
+  ok(!!d.getElementById('vue-accueil'), 'l\'ancre #accueil existe (widget iOS)');
+
+  /* --- 8. Guidage --- */
+  groupe('Guidage');
+  /* Le compteur est relevé À L'OUVERTURE, avant que le questionnaire
+     n'ait jamais été rendu : c'est l'état que voit quelqu'un qui découvre
+     l'application, et le seul moment où le défaut « 0 / 0 » se montre.
+     Le contrôler après coup ne prouverait rien. */
+  ok(!/^0\s*\/\s*0/.test(progressionAuChargement),
+     'le compteur de questions annonce un total réel dès l\'ouverture — « ' +
+     progressionAuChargement + ' »');
+
+  w.localStorage.removeItem('allocation-etf-dossier-v1');
+  const vide = Etat.reponses;
+  Etat.reponses = {};
+  w.afficher('profil');
+  const texteProfil = d.getElementById('vue-profil').textContent;
+  ok(texteProfil.length > 60, 'un profil non déterminé affiche un état vide, pas une page nue');
+  ok(/questionnaire/i.test(texteProfil), 'l\'état vide nomme l\'étape manquante');
+  Etat.reponses = vide;
+
+  /* --- 9. Rien n'a protesté --- */
+  groupe('Console');
+  ok(erreurs.length === 0, 'aucune erreur pendant tout le parcours' +
+     (erreurs.length ? ' — ' + erreurs.slice(0, 3).join(' | ') : ''));
+
+  /* Le test ne laisse pas le dossier de démonstration derrière lui. */
+  try { w.localStorage.removeItem('allocation-etf-dossier-v1'); } catch (e) { /* ignoré */ }
+
+  bilan();
+}
+
+lancer().catch(e => {
+  groupe('Échec du harnais');
+  ok(false, 'le test n\'a pas pu s\'exécuter : ' + e.message);
+  note('Cette page a besoin d\'un serveur : un cadre en file:// est traité comme une autre origine.');
+  bilan();
+});
+</script>
+</body>
+</html>

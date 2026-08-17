@@ -777,14 +777,35 @@ icone-180/192/512.png         icônes, générées par encodeur PNG en Python
 data/                         GÉNÉRÉ — archive des cours et rapports de couverture
 js/app.js                     état, rendu des onze vues, événements, persistance
 test/runner.js                harnais de tests des moteurs (Node, sans dépendance)
-test/suite.js                 assertions
+test/suite.js                 assertions des moteurs
+test/fumee.html               test de fumée de l'interface (navigateur, sans dépendance)
 ```
 
-Pour rejouer les tests des moteurs après une modification :
+Deux harnais, qui ne couvrent pas la même chose.
+
+**Les moteurs** — profil, allocation, sélection, arbitrage, revenus, backtest,
+situation, contrat, univers. Node, sans dépendance :
 
 ```bash
 node "/Users/Mayeul/APP ETF CGP/test/runner.js"
 ```
+
+**L'interface** — le rendu des quinze vues, la persistance, l'import/export, la
+navigation. `js/app.js` n'est couvert par aucun test Node : c'est là que les
+remaniements d'interface cassent quelque chose sans qu'une seule assertion ne
+bronche. `test/fumee.html` charge l'application réelle dans un cadre et la
+pilote : elle rend chaque vue sur un dossier vide puis sur un dossier complet,
+vérifie qu'aucune ne lève d'erreur ni ne rend une page blanche, contrôle
+l'aller-retour d'export et relit ce qui a été écrit dans le navigateur.
+
+Elle a besoin d'un serveur — un cadre en `file://` est traité comme une autre
+origine et son contenu devient illisible :
+
+```bash
+python3 -m http.server 8777 --directory "/Users/Mayeul/APP ETF CGP"
+```
+
+puis ouvrir `http://localhost:8777/test/fumee.html`.
 
 Ils vérifient notamment que les allocations somment à 100 % pour les six profils
 et les quatre scénarios, que les déviations tactiques restent dans leurs bornes,
