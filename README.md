@@ -231,12 +231,27 @@ support sur lequel la variation est mesurée.
 La bande ne remplace pas la note de marché, elle la précède : la note
 explique, la bande montre.
 
+### Les bulles
+
+Les chiffres qui comptent sont posés sur des **bulles** : des tuiles très
+arrondies, à dégradé vif, halo clair en haut et ombre au fond, texte blanc dans
+les deux thèmes. Le verdict d'arbitrage est la plus grande — c'est la réponse à
+la seule question que pose l'accueil.
+
+**Ces dégradés ne codent rien.** Ce sont des surfaces ; c'est le chiffre
+qu'elles encadrent qui parle, et les couleurs tournent simplement par position
+pour distinguer deux tuiles voisines. Deux exceptions, où la couleur dit
+quelque chose : le verdict est vert quand il n'y a rien à faire et chaud quand
+il y a des ordres à passer. Les teintes **porteuses de sens** — classes
+d'actifs, scénarios macro, profils de risque, axes du score — restent celles de
+la palette validée et ne sont pas touchées.
+
 ### Ce qui reste sobre
 
-Le verdict prend un halo, les cartes entrent en cascade, les chiffres qui
-comptent grossissent. **Le rapport client, lui, ne bouge pas** : la règle
-d'impression le repasse en monochrome, sans ombre ni arrondi marqué. Un
-document remis à un client ne gagne rien à être ludique.
+**Le rapport client ne bouge pas** : la règle d'impression le repasse en
+monochrome, et les bulles y redeviennent de l'encre noire sur du papier blanc,
+sans dégradé, sans halo, sans arrondi marqué. Un document remis à un client ne
+gagne rien à être ludique.
 
 **Ajout à l'écran d'accueil** : ouvrir le site dans Safari, toucher le bouton
 Partager, puis « Sur l'écran d'accueil ». L'application s'ouvre alors en plein
