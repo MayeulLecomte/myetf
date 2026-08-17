@@ -541,7 +541,7 @@ retirés, mais un support écarté ne doit plus alimenter le modèle.
 
 Dans l'onglet Backtest, chaque cellule est colorée selon sa provenance :
 **vert** relevé sur les cours, **bleu** source documentée, **orange**
-estimation non vérifiée. Le bandeau de fiabilité résume la proportion.
+estimation non vérifiée. Le bandeau « Part sourcée du backtest » résume la proportion.
 
 ## Note de marché interne (facultatif)
 
@@ -719,7 +719,7 @@ du 15 août avait trouvées dans l'univers d'origine.
 **Ce que l'élargissement change vraiment** : pas le nombre de lignes — treize ou
 quatorze dans les deux cas, une par poche — mais leur qualité. À filtres
 identiques, les frais courants moyens du portefeuille passent de **0,152 % à
-0,118 %**, et le résiduel non investi tombe à zéro : chaque poche trouve enfin
+0,118 %**, et la part non investie tombe à zéro : chaque poche trouve enfin
 un support.
 
 Avant toute remise au client, versez les supports retenus dans l'univers de

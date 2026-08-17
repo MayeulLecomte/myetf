@@ -1442,3 +1442,27 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
      surface tactile, et « Données » ne prétend plus au même rang. */
   .bloc-titre { display: none; }
 }
+
+/* ---------- Infobulles de vocabulaire ----------
+   Poche, dérive, rotation restent les mots du métier — les remplacer par
+   leur définition ferait un libellé bavard et moins précis. Le repère les
+   lève au survol pour qui hésite, et s'efface pour qui les connaît.
+   `tabindex` le rend atteignable au clavier : une aide qu'on ne peut pas
+   atteindre sans souris n'aide pas tout le monde. */
+.aide {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; border-radius: var(--r-pilule);
+  font-size: 9.5px; font-weight: 700; line-height: 1;
+  color: var(--texte-doux); background: transparent;
+  box-shadow: inset 0 0 0 1.2px var(--ligne-forte);
+  cursor: help; vertical-align: middle; margin-left: 1px;
+  text-transform: none; letter-spacing: 0;
+  transition: color .18s var(--ressort), box-shadow .18s var(--ressort);
+}
+.aide:hover, .aide:focus-visible {
+  color: var(--bleu); box-shadow: inset 0 0 0 1.5px var(--bleu); outline: none;
+}
+.kpi .libelle .aide { width: 13px; height: 13px; font-size: 9px; }
+
+/* Une aide au survol n'a pas de sens sur du papier. */
+@media print { .aide { display: none !important; } }

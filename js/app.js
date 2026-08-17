@@ -874,7 +874,7 @@ function rendreAccueil() {
 
     '<div class="grille quatre">' +
       kpi(euro(analyse.total), 'Encours', r.profil.nom) +
-      kpi(pct(derive), 'Dérive maximale', 'seuil ' + euro(analyse.seuilMontant)) +
+      kpi(pct(derive), 'Dérive maximale', 'seuil ' + euro(analyse.seuilMontant), 'derive') +
       kpi(String(sel.nbSupports), 'Supports cibles', pct(sel.terMoyen, 2) + ' de frais moyens') +
       kpi(derniere ? dateFr(derniere) : '—', 'Dernière revue',
         derniere ? Etat.journal.length + ' revue(s) au journal' : 'aucune revue enregistrée') +
@@ -1191,7 +1191,7 @@ function rendreMacro() {
         : '');
 
   const alloc = allocationCourante();
-  $('#overlays-macro').innerHTML = '<h3>Effets tactiques retenus</h3>' +
+  $('#overlays-macro').innerHTML = '<h3>Déviations appliquées</h3>' +
     (!alloc ? '<div class="message alerte">Complétez le questionnaire pour visualiser les déviations appliquées.</div>' :
       (intensiteEffective() === 0
         ? '<div class="message info"><strong>Aucune déviation tactique n\'est appliquée.</strong> ' +
@@ -1299,7 +1299,7 @@ function rendreAllocation() {
 
     '<div class="carte"><h3>Détail par poche</h3>' +
       '<div class="tableau-defilant"><table><thead><tr>' +
-      '<th>Poche</th><th>Classe</th><th class="num">Stratégique</th><th class="num">Tactique</th><th class="num">Écart</th><th class="num">Montant</th>' +
+      '<th>Poche' + aide('poche') + '</th><th>Classe</th><th class="num">Stratégique</th><th class="num">Tactique</th><th class="num">Écart</th><th class="num">Montant</th>' +
       '</tr></thead><tbody>' +
       poches.map(p => {
         const t = alloc.poches[p], s = alloc.strategique.poches[p] || 0, d = t - s;
@@ -1317,9 +1317,35 @@ function rendreAllocation() {
     '</div>';
 }
 
-function kpi(valeur, libelle, detail) {
+/* ------------------------------------------------------------
+   LES TROIS TERMES DE MÉTIER QU'ON GARDE
+   Poche, dérive, rotation sont le vocabulaire du conseiller et
+   n'ont pas à être traduits — les remplacer par leur définition
+   ferait un libellé bavard et moins précis. Une phrase au survol
+   suffit à les lever pour qui hésite, sans encombrer l'écran de
+   qui les connaît.
+   ------------------------------------------------------------ */
+const INFOBULLES = {
+  poche: 'Une subdivision d\'une classe d\'actifs — actions monde, obligations souveraines ' +
+         'euro à court terme… C\'est le niveau auquel l\'allocation est pilotée et un support choisi.',
+  derive: 'L\'écart le plus fort, en points d\'encours, entre le poids réellement détenu par une ' +
+          'ligne et son poids cible. C\'est lui qui déclenche un arbitrage lorsqu\'il franchit le seuil.',
+  rotation: 'La part de l\'encours qui changerait de support si les ordres proposés étaient passés. ' +
+            'Une rotation élevée coûte en frais et, hors assurance-vie, en fiscalité.'
+};
+
+/** Le repère qui porte l'infobulle. Discret, et jamais dans un lien. */
+function aide(cle) {
+  return '<span class="aide" tabindex="0" role="note" aria-label="' + echapper(INFOBULLES[cle]) +
+    '" title="' + echapper(INFOBULLES[cle]) + '">?</span>';
+}
+
+/**
+ * @param {string} [cle] clé d'infobulle attachée au libellé
+ */
+function kpi(valeur, libelle, detail, cle) {
   return '<div class="carte kpi"><div class="valeur">' + echapper(valeur) + '</div>' +
-    '<div class="libelle">' + echapper(libelle) + '</div>' +
+    '<div class="libelle">' + echapper(libelle) + (cle ? ' ' + aide(cle) : '') + '</div>' +
     (detail ? '<div class="detail">' + echapper(detail) + '</div>' : '') + '</div>';
 }
 
@@ -1593,7 +1619,7 @@ function rendreArbitrages() {
   c.innerHTML =
     '<div class="grille quatre">' +
       kpi(String(analyse.ordres.length), 'Mouvements proposés', 'seuil de déclenchement ' + euro(analyse.seuilMontant)) +
-      kpi(pct(analyse.rotation), 'Rotation du portefeuille', 'part de l\'encours arbitrée') +
+      kpi(pct(analyse.rotation), 'Rotation du portefeuille', 'part de l\'encours arbitrée', 'rotation') +
       kpi(euro(analyse.fiscalite.impotEstime), 'Fiscalité estimée', analyse.fiscalite.taux ? 'PFU 30 %' : 'enveloppe non imposable') +
       kpi(euro(analyse.total), 'Encours après opération', 'dont apport ' + euro(analyse.apport)) +
     '</div>' +
@@ -2202,6 +2228,7 @@ function rendreBacktest() {
   const periode = ANNEES_HISTORIQUE[0] + ' – ' + ANNEES_HISTORIQUE[ANNEES_HISTORIQUE.length - 1];
 
   banniere.innerHTML =
+    '<h4 style="margin:0 0 8px">Part sourcée du backtest</h4>' +
     (fiab.estime > 0
       ? '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '"><strong>' + pct(fiab.estime) +
         ' de l\'allocation testée repose encore sur des séries estimées, non vérifiées.</strong> ' +
@@ -2286,7 +2313,7 @@ function rendreBacktest() {
     '</div>' +
 
     '<div class="carte"><h3>D\'où vient la performance</h3>' +
-      '<div class="tableau-defilant"><table><thead><tr><th>Poche</th><th class="num">Poids</th>' +
+      '<div class="tableau-defilant"><table><thead><tr><th>Poche' + aide('poche') + '</th><th class="num">Poids</th>' +
       '<th class="num">Gain / perte</th><th class="num">Points de performance</th><th class="num">Part du résultat</th>' +
       '</tr></thead><tbody>' +
       contrib.map(x => '<tr><td><span class="pastille" style="background:' +
@@ -2345,7 +2372,7 @@ function rendreBacktest() {
 }
 
 function rendreSeriesHistorique() {
-  $('#entete-historique').innerHTML = '<th>Poche</th>' +
+  $('#entete-historique').innerHTML = '<th>Poche' + aide('poche') + '</th>' +
     ANNEES_HISTORIQUE.map(a => '<th class="num">' + a + '</th>').join('') +
     '<th class="num">Cumul</th><th>Référence</th><th>Sourcé</th>';
 

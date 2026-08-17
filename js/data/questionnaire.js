@@ -7,7 +7,7 @@
 
 const IDENTITE = [
   { id: 'nom',        label: 'Nom / référence dossier', type: 'text',   placeholder: 'M. et Mme Dupont' },
-  { id: 'age',        label: 'Âge du souscripteur',     type: 'number', min: 18, max: 100, defaut: 45, suffixe: 'ans' },
+  { id: 'age',        label: 'Âge du client',     type: 'number', min: 18, max: 100, defaut: 45, suffixe: 'ans' },
   { id: 'montant',    label: 'Montant à investir',      type: 'number', min: 0, defaut: 100000, suffixe: '€' },
   { id: 'versement',  label: 'Versement programmé mensuel', type: 'number', min: 0, defaut: 0, suffixe: '€/mois' },
   {
@@ -19,7 +19,7 @@ const IDENTITE = [
     ]
   },
   {
-    id: 'contratAV', label: 'Univers du contrat (assurance-vie)', type: 'select', defaut: 'av-large',
+    id: 'contratAV', label: 'Gamme du contrat (assurance-vie)', type: 'select', defaut: 'av-large',
     dependDe: { champ: 'enveloppe', valeur: 'AV' },
     options: [
       { valeur: 'av-large',     label: 'Contrat architecture ouverte — univers large' },
