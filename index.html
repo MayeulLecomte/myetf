@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608170842">
+<link rel="stylesheet" href="css/app.css?v=202608171239">
 </head>
 <body>
 
@@ -367,10 +367,20 @@
       </div>
 
       <div class="carte">
+        <h3>Catalogue européen</h3>
+        <p class="intro">Plus de quatre mille ETF cotés à Paris, Amsterdam, Bruxelles, Francfort, Milan et
+        Londres. Ce n'est pas votre univers de travail : rien n'y est vérifié et rien n'entre dans la sélection
+        tant que vous ne l'avez pas versé dans l'univers ci-dessus. Cherchez-y le support que le contrat
+        référence, ajoutez-le, puis contrôlez sa ligne.</p>
+        <div id="catalogue-contenu"></div>
+      </div>
+
+      <div class="carte">
         <h3>Mise à jour des données</h3>
-        <p class="intro">Aucune source de données n'est interrogée automatiquement : Quantalys et Morningstar
-        sont des services sur abonnement sans interface publique. Le rafraîchissement est manuel ou par import
-        d'un fichier JSON produit à partir de vos extractions.</p>
+        <p class="intro">Les caractéristiques de marché viennent de justETF, les notations de Morningstar, et les
+        cours d'Euronext. Deux scripts les rafraîchissent : <code>node scripts/notations.mjs</code> pour les
+        notes, <code>node scripts/catalogue.mjs</code> pour le catalogue. Toute cellule reste modifiable à la
+        main, et l'univers s'exporte en JSON.</p>
         <ul id="liste-sources"></ul>
       </div>
     </section>
@@ -405,22 +415,22 @@
   <span>Application de Mayeul Lecomte</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608170842"></script>
-<script src="js/data/allocations.js?v=202608170842"></script>
-<script src="js/data/macro.js?v=202608170842"></script>
-<script src="js/data/etf-univers.js?v=202608170842"></script>
-<script src="js/data/fiscalite.js?v=202608170842"></script>
-<script src="js/data/historique.js?v=202608170842"></script>
-<script src="js/data/note-marche.js?v=202608170842"></script>
-<script src="js/data/cours-historique.js?v=202608170842"></script>
-<script src="js/data/cours-marche.js?v=202608170842"></script>
-<script src="js/engine/profil.js?v=202608170842"></script>
-<script src="js/engine/allocation.js?v=202608170842"></script>
-<script src="js/engine/selection.js?v=202608170842"></script>
-<script src="js/engine/arbitrage.js?v=202608170842"></script>
-<script src="js/engine/revenus.js?v=202608170842"></script>
-<script src="js/engine/situation.js?v=202608170842"></script>
-<script src="js/engine/backtest.js?v=202608170842"></script>
-<script src="js/app.js?v=202608170842"></script>
+<script src="js/data/questionnaire.js?v=202608171239"></script>
+<script src="js/data/allocations.js?v=202608171239"></script>
+<script src="js/data/macro.js?v=202608171239"></script>
+<script src="js/data/etf-univers.js?v=202608171239"></script>
+<script src="js/data/fiscalite.js?v=202608171239"></script>
+<script src="js/data/historique.js?v=202608171239"></script>
+<script src="js/data/note-marche.js?v=202608171239"></script>
+<script src="js/data/cours-historique.js?v=202608171239"></script>
+<script src="js/data/cours-marche.js?v=202608171239"></script>
+<script src="js/engine/profil.js?v=202608171239"></script>
+<script src="js/engine/allocation.js?v=202608171239"></script>
+<script src="js/engine/selection.js?v=202608171239"></script>
+<script src="js/engine/arbitrage.js?v=202608171239"></script>
+<script src="js/engine/revenus.js?v=202608171239"></script>
+<script src="js/engine/situation.js?v=202608171239"></script>
+<script src="js/engine/backtest.js?v=202608171239"></script>
+<script src="js/app.js?v=202608171239"></script>
 </body>
 </html>

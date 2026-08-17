@@ -1707,8 +1707,161 @@ function rendreSeriesHistorique() {
    VUE 10 — UNIVERS
    ============================================================ */
 
+/* ============================================================
+   CATALOGUE EUROPÉEN
+   -------------------------------------------------------------
+   Un annuaire de recherche, pas un univers : rien n'y est vérifié
+   et rien n'entre dans la sélection avant d'avoir été versé dans
+   l'univers de travail, où il arrive avec le drapeau « Contrat »
+   à faux comme n'importe quelle ligne non contrôlée.
+
+   Le fichier pèse un demi-mégaoctet : il n'est chargé que si l'on
+   ouvre le catalogue. Un <script> injecté fonctionne aussi bien en
+   file:// qu'en ligne, là où un fetch échouerait sur un double-clic.
+   ============================================================ */
+
+const Catalogue = { etat: 'absent', recherche: '', euronextSeul: false };
+
+function chargerCatalogue() {
+  if (Catalogue.etat !== 'absent') return;
+  Catalogue.etat = 'chargement';
+  rendreCatalogue();
+
+  const s = document.createElement('script');
+  s.src = 'js/data/catalogue-etf.js?v=' + Date.now();
+  s.onload = () => {
+    Catalogue.etat = (typeof CATALOGUE_ETF !== 'undefined') ? 'pret' : 'erreur';
+    rendreCatalogue();
+  };
+  s.onerror = () => { Catalogue.etat = 'erreur'; rendreCatalogue(); };
+  document.head.appendChild(s);
+}
+
+/** Lignes du catalogue correspondant à la recherche, limitées à l'affichable. */
+function chercherCatalogue(limite) {
+  const c = CATALOGUE_ETF;
+  const mots = Catalogue.recherche.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const dansUnivers = new Set(Etat.univers.map(e => e.isin));
+  const resultats = [];
+  let total = 0;
+
+  for (const l of c.lignes) {
+    if (Catalogue.euronextSeul && !/XPAR|XAMS|XBRU|XLIS/.test(l[8])) continue;
+    if (mots.length) {
+      const foin = (l[0] + ' ' + l[1] + ' ' + l[2] + ' ' +
+                    c.emetteurs[l[3]] + ' ' + c.categories[l[4]]).toLowerCase();
+      if (!mots.every(m => foin.indexOf(m) >= 0)) continue;
+    }
+    total++;
+    if (resultats.length < limite) {
+      resultats.push({
+        isin: l[0], nom: l[1], ticker: l[2], emetteur: c.emetteurs[l[3]],
+        categorie: c.categories[l[4]], ter: l[5], note: l[6], devise: l[7],
+        places: l[8].split(','), poche: l[9], deja: dansUnivers.has(l[0])
+      });
+    }
+  }
+  return { resultats, total };
+}
+
+function rendreCatalogue() {
+  const c = $('#catalogue-contenu');
+  if (!c) return;
+
+  if (Catalogue.etat === 'absent') {
+    c.innerHTML = '<div class="barre-actions" style="margin-top:0">' +
+      '<button class="bouton" id="btn-charger-catalogue">Ouvrir le catalogue</button></div>' +
+      '<p class="intro" style="font-size:11px">Un demi-mégaoctet à télécharger, une seule fois par session.</p>';
+    $('#btn-charger-catalogue').onclick = chargerCatalogue;
+    return;
+  }
+  if (Catalogue.etat === 'chargement') { c.innerHTML = '<p class="intro">Chargement du catalogue…</p>'; return; }
+  if (Catalogue.etat === 'erreur') {
+    c.innerHTML = '<div class="message erreur"><strong>Catalogue introuvable.</strong> ' +
+      'Le fichier <code>js/data/catalogue-etf.js</code> doit être présent à côté de l\'application. ' +
+      'Il se régénère par <code>node scripts/catalogue.mjs</code>.</div>';
+    return;
+  }
+
+  const { resultats, total } = chercherCatalogue(40);
+
+  c.innerHTML =
+    '<div class="filtres">' +
+      '<div class="champ" style="flex:1;min-width:240px"><label for="catalogue-q">Rechercher</label>' +
+        '<input type="search" id="catalogue-q" placeholder="nom, ISIN, émetteur, catégorie" value="' +
+        echapper(Catalogue.recherche) + '"></div>' +
+      '<div class="champ"><label for="catalogue-euronext">Places</label>' +
+        '<select id="catalogue-euronext">' +
+          '<option value="0"' + (Catalogue.euronextSeul ? '' : ' selected') + '>Toutes</option>' +
+          '<option value="1"' + (Catalogue.euronextSeul ? ' selected' : '') + '>Euronext seulement</option>' +
+        '</select></div>' +
+      '<div class="champ" style="align-self:flex-end;padding-bottom:8px;font-size:12px;color:var(--gris-doux)">' +
+        total.toLocaleString('fr-FR') + ' support(s) · ' + CATALOGUE_ETF.lignes.length.toLocaleString('fr-FR') +
+        ' au catalogue du ' + dateFr(CATALOGUE_ETF.genere) + '</div>' +
+    '</div>' +
+
+    (resultats.length
+      ? '<div class="tableau-defilant"><table><thead><tr>' +
+        '<th>Support</th><th>ISIN</th><th>Catégorie</th><th class="num">Frais</th>' +
+        '<th class="num">Note</th><th>Places</th><th></th></tr></thead><tbody>' +
+        resultats.map(r =>
+          '<tr><td>' + echapper(r.nom) + '<div style="font-size:11px;color:var(--gris-doux)">' +
+            echapper(r.emetteur) + (r.ticker ? ' · ' + echapper(r.ticker) : '') +
+            (r.devise ? ' · ' + echapper(r.devise) : '') + '</div></td>' +
+          '<td style="font-family:monospace;font-size:12px">' + echapper(r.isin) + '</td>' +
+          '<td style="font-size:12px">' + echapper(r.categorie) +
+            (r.poche ? '' : ' <span class="badge orange">poche à choisir</span>') + '</td>' +
+          '<td class="num">' + (r.ter == null ? '—' : pct(r.ter, 2)) + '</td>' +
+          '<td class="num">' + etoiles(r.note) + '</td>' +
+          '<td style="font-size:11px;color:var(--gris-doux)">' + echapper(r.places.join(' ')) + '</td>' +
+          '<td>' + (r.deja
+            ? '<span class="badge vert">dans l\'univers</span>'
+            : '<button class="bouton secondaire" data-catalogue-ajout="' + echapper(r.isin) + '">Ajouter</button>') +
+          '</td></tr>').join('') +
+        '</tbody></table></div>' +
+        (total > resultats.length
+          ? '<p class="intro" style="font-size:11px">' + resultats.length + ' premiers résultats sur ' +
+            total.toLocaleString('fr-FR') + ' : affinez la recherche.</p>' : '')
+      : '<div class="message info">Aucun support ne correspond à cette recherche.</div>');
+
+  const q = $('#catalogue-q');
+  q.oninput = () => { Catalogue.recherche = q.value; rendreCatalogue(); $('#catalogue-q').focus(); };
+  $('#catalogue-euronext').onchange = e => { Catalogue.euronextSeul = e.target.value === '1'; rendreCatalogue(); };
+}
+
+/** Verse un support du catalogue dans l'univers de travail. */
+function ajouterDepuisCatalogue(isin) {
+  const c = CATALOGUE_ETF;
+  const l = c.lignes.find(x => x[0] === isin);
+  if (!l) return;
+  if (Etat.univers.some(e => e.isin === isin)) { notifier('Ce support est déjà dans l\'univers.', 'info'); return; }
+
+  const poche = l[9] || 'act-monde';
+  const euronext = /XPAR|XAMS|XBRU|XLIS/.test(l[8]);
+
+  Etat.univers.unshift({
+    isin: l[0], ticker: l[2], nom: l[1], emetteur: c.emetteurs[l[3]],
+    classe: MoteurSelection.classeDePoche(poche), poche,
+    ter: l[5] == null ? 0.20 : l[5], encours: 0, morningstar: l[6], sri: 4,
+    replication: 'Physique', devise: l[7] || 'EUR', hedge: false, capitalisation: true, isr: false,
+    pea: false, enveloppes: ['AV', 'CTO'], contratsAV: ['av-large'], verifie: false,
+    donneesLe: c.genere, donneesSource: 'Morningstar (catalogue)',
+    notationLe: l[6] == null ? undefined : c.genere,
+    note: 'Ajouté depuis le catalogue le ' + dateFr() + '. ' +
+      (l[9] ? 'Poche déduite de la catégorie « ' + c.categories[l[4]] + ' ».'
+            : 'Catégorie « ' + c.categories[l[4]] + ' » sans poche correspondante : poche à choisir.') +
+      ' Encours, réplication, capitalisation et éligibilité PEA restent à renseigner.' +
+      (euronext ? '' : ' Non coté sur Euronext : sa valeur ne se rafraîchira pas toute seule.')
+  });
+
+  sauver(true);
+  rendreUnivers();
+  notifier('« ' + l[1] + ' » ajouté à l\'univers — sa ligne reste à contrôler.');
+}
+
 function rendreUnivers() {
   const f = Etat.filtreUnivers;
+  rendreCatalogue();
 
   $('#filtres-univers').innerHTML =
     '<div class="champ"><label>Classe d\'actifs</label><select data-filtre-univers="classe">' +
@@ -2026,6 +2179,9 @@ function brancher() {
   document.addEventListener('click', e => {
     const aller = e.target.closest('[data-aller]');
     if (aller) { afficher(aller.dataset.aller); return; }
+
+    const ajoutCat = e.target.closest('[data-catalogue-ajout]');
+    if (ajoutCat) { ajouterDepuisCatalogue(ajoutCat.dataset.catalogueAjout); return; }
 
     const dateSit = e.target.closest('[data-situation-date]');
     if (dateSit) {

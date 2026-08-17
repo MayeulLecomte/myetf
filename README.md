@@ -85,6 +85,40 @@ rapport ne montre que le jour même. Les sections du rapport sont numérotées �
 l'assemblage, « Revenus programmés » n'y figurant que si un besoin est
 renseigné.
 
+## Catalogue européen
+
+L'univers de travail compte 42 supports vérifiés. À côté, un **catalogue de
+4 533 ETF** cotés à Paris, Amsterdam, Bruxelles, Francfort, Milan et Londres,
+recensés par
+
+```bash
+node scripts/catalogue.mjs
+```
+
+**Ce n'est pas l'univers.** Rien n'y est vérifié, et rien n'entre dans la
+sélection tant que le conseiller ne l'a pas versé dans l'univers depuis
+l'onglet « Univers ETF ». Le catalogue sert à une seule chose : retrouver le
+support que le contrat référence, et l'ajouter d'un clic — il arrive alors avec
+son ISIN, son nom, ses frais, sa note et sa poche déduite de la catégorie
+Morningstar, mais avec le drapeau « Contrat » à faux et une note rappelant ce
+qui reste à renseigner.
+
+Trois partis pris :
+
+- **Chargé à la demande.** Le fichier pèse un demi-mégaoctet ; l'application
+  démarre sans lui et ne l'injecte, par un `<script>`, que si l'on ouvre le
+  catalogue. Un `fetch` aurait échoué sur un double-clic en `file://`.
+- **Levier, inverse et actifs numériques écartés** — 1 892 lignes sur 6 425.
+  Ils n'ont pas leur place dans un conseil patrimonial en unités de compte.
+- **Une poche déduite, jamais inventée.** 3 363 supports sur 4 533 sont
+  rattachés à une poche du modèle par leur catégorie Morningstar. Les autres
+  arrivent sans poche, à trancher à la main : un rattachement faux serait pire
+  qu'un rattachement absent.
+
+**1 351 supports sont cotés sur Euronext** : ce sont les seuls dont
+`maj-cours.mjs` sait relever les cours, et donc les seuls qui se revalorisent
+et se situent à une date passée sans saisie manuelle.
+
 ## Accéder à l'application
 
 En ligne : **https://mayeullecomte.github.io/myetf/**
@@ -474,6 +508,7 @@ js/data/fiscalite.js          taux, abattements, rendements courants, cascade de
 js/data/historique.js         séries de performances annuelles par poche
 js/data/cours-marche.js       GÉNÉRÉ — performances et derniers cours par ISIN
 js/data/cours-historique.js   GÉNÉRÉ — cours de clôture quotidiens, calendrier commun
+js/data/catalogue-etf.js      GÉNÉRÉ — 4 533 ETF européens, chargé à la demande
 js/data/note-marche.js        GÉNÉRÉ — note de marché du jour
 js/engine/profil.js           scoring, plafonnement, stress tests
 js/engine/allocation.js       stratégique, agrégation macro, tactique, métriques
@@ -485,6 +520,7 @@ js/engine/situation.js        relevé daté, arrêtés semestriels, avant/après
 scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
 scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
 scripts/notations.mjs         relève les notes Morningstar et les inscrit dans l'univers
+scripts/catalogue.mjs         recense les ETF cotés en Europe → catalogue de recherche
 scripts/icones.py             regénère les icônes depuis le signe
 package.json                  dépendances des scripts uniquement (SDK Anthropic)
 scriptable/allocation-etf.js  widget iOS, lit data/widget.json

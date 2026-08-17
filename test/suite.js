@@ -426,5 +426,32 @@ ok(refs.every(d=>d.slice(5)==='06-30'||d.slice(5)==='12-31'),'seuls les 30 juin 
 ok(new Set(refs).size===refs.length,'aucun arrêté en double');
 ok(MoteurSituation.datesReference('2026-08-16','2026-08-01',8).length===0,'aucun arrêté sur une période qui n\'en contient pas');
 
+// --- 12. Catalogue européen
+console.log('\n== Catalogue ==');
+const CAT=CATALOGUE_ETF;
+console.log('   '+CAT.lignes.length+' supports · '+CAT.emetteurs.length+' émetteurs · '+CAT.categories.length+' catégories');
+ok(CAT.lignes.length>2000,'catalogue peuplé');
+ok(CAT.lignes.every(l=>l.length===CAT.colonnes.length),'toutes les lignes ont le bon nombre de colonnes');
+ok(new Set(CAT.lignes.map(l=>l[0])).size===CAT.lignes.length,'aucun ISIN en double : les cotations multiples sont regroupées');
+ok(CAT.lignes.every(l=>/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(l[0])),'tous les ISIN sont bien formés');
+ok(CAT.lignes.every(l=>CAT.emetteurs[l[3]]!==undefined&&CAT.categories[l[4]]!==undefined),'index émetteur et catégorie toujours résolus');
+ok(CAT.lignes.every(l=>l[9]===null||LIBELLES_POCHES[l[9]]),'toute poche déduite existe dans le modèle');
+ok(CAT.lignes.every(l=>l[6]===null||(l[6]>=1&&l[6]<=5)),'notations dans les bornes');
+/* Les produits à levier, inverses et les actifs numériques n'ont rien à faire
+   dans un catalogue destiné à un conseil patrimonial en unités de compte. */
+const indesirables=CAT.lignes.filter(l=>/crypto|actifs digitaux|levier|leverag|\bshort\b|inverse/i.test(l[1]+' '+CAT.categories[l[4]]));
+ok(indesirables.length===0,'aucun produit à levier, inverse ou numérique ('+indesirables.length+' trouvé(s))');
+const surEuronext=CAT.lignes.filter(l=>/XPAR|XAMS|XBRU|XLIS/.test(l[8])).length;
+console.log('   '+surEuronext+' cotés sur Euronext · '+CAT.lignes.filter(l=>l[9]).length+' rattachés à une poche');
+ok(surEuronext>500,'part significative cotée sur Euronext, donc revalorisable');
+/* Contrôle croisé : le catalogue doit retrouver les supports de l'univers. */
+const connus=ETF_UNIVERS.filter(e=>CAT.lignes.some(l=>l[0]===e.isin));
+console.log('   '+connus.length+' des '+ETF_UNIVERS.length+' supports de l\'univers figurent au catalogue');
+ok(connus.length>=ETF_UNIVERS.length-12,'l\'univers est largement retrouvé dans le catalogue');
+/* Les frais et les notes doivent concorder là où les deux sources se recoupent. */
+const ecarts=connus.filter(e=>{const l=CAT.lignes.find(x=>x[0]===e.isin);
+  return l[6]!==null&&e.morningstar!==null&&l[6]!==e.morningstar;});
+ok(ecarts.length===0,'notations concordantes entre univers et catalogue ('+ecarts.length+' écart(s))');
+
 console.log('\n'+(echecs?'❌ '+echecs+' échec(s)':'✅ tous les tests passent'));
 process.exit(echecs?1:0);
