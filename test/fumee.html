@@ -285,10 +285,39 @@ async function lancer() {
   ok(sansEntree.length === 0, 'aucune vue n\'est inaccessible depuis la navigation' +
      (sansEntree.length ? ' — ' + sansEntree.join(', ') : ''));
 
-  /* Les deux ancres consommées par le widget iOS. Elles ne sont pas
-     décoratives : le widget ouvre l'application dessus. */
-  ok(!!d.getElementById('vue-note'), 'l\'ancre #note existe (widget iOS)');
-  ok(!!d.getElementById('vue-accueil'), 'l\'ancre #accueil existe (widget iOS)');
+  /* --- Les ancres ---
+     `location.hash` sert de routage au démarrage : chaque vue est
+     atteignable par une adresse. Un remaniement qui renomme un `id` casse
+     donc un signet, un lien envoyé par courriel, ou le widget iOS — sans
+     qu'aucune erreur ne se produise, puisque l'application s'ouvre
+     simplement sur l'accueil. La liste ci-dessous est figée exprès : c'est
+     le contrat rendu public, pas le reflet du DOM du jour. */
+  const ANCRES = ['accueil', 'client', 'questionnaire', 'profil', 'note', 'macro',
+                  'allocation', 'portefeuille', 'arbitrages', 'situation', 'revenus',
+                  'backtest', 'univers', 'journal', 'rapport'];
+  const cassees = ANCRES.filter(a => !d.getElementById('vue-' + a));
+  ok(cassees.length === 0, 'les ' + ANCRES.length + ' ancres historiques résolvent encore' +
+     (cassees.length ? ' — cassées : ' + cassees.map(x => '#' + x).join(', ') : ''));
+
+  /* Et elles ouvrent bien la vue qu'elles nomment, pas seulement un élément
+     qui porte l'identifiant. */
+  const malRoutees = ANCRES.filter(a => {
+    try { w.afficher(a); } catch (e) { return true; }
+    const section = d.getElementById('vue-' + a);
+    return !section || !section.classList.contains('actif');
+  });
+  ok(malRoutees.length === 0, 'chaque ancre ouvre bien sa vue' +
+     (malRoutees.length ? ' — ' + malRoutees.map(x => '#' + x).join(', ') : ''));
+
+  /* Les deux que le widget iOS ouvre nommément. Elles sont déjà couvertes
+     ci-dessus, mais méritent d'échouer seules : leur rupture rend le widget
+     muet, et le message doit le dire. */
+  w.afficher('note');
+  ok(d.getElementById('vue-note').classList.contains('actif'),
+     '#note ouvre la note du jour — le widget iOS en dépend');
+  w.afficher('accueil');
+  ok(d.getElementById('vue-accueil').classList.contains('actif'),
+     '#accueil ouvre l\'accueil — le widget iOS en dépend');
 
   /* --- 8. Guidage --- */
   groupe('Guidage');

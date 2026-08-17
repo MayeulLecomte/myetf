@@ -136,7 +136,14 @@ function charger() {
   } catch (e) { return false; }
 }
 
-function notifier(texte, type) {
+/**
+ * @param {string} texte
+ * @param {string} [type]   succes | info | alerte | erreur
+ * @param {Object} [action] {libelle, vue} — nommer une étape sans pouvoir y
+ *                          aller était le dernier endroit où l'on renvoyait
+ *                          l'utilisateur chercher un onglet lui-même.
+ */
+function notifier(texte, type, action) {
   const div = document.createElement('div');
   div.className = 'message ' + (type || 'succes');
   /* Le message se pose au-dessus de la barre basse plutôt que derrière :
@@ -144,8 +151,16 @@ function notifier(texte, type) {
   div.style.cssText = 'position:fixed;right:16px;left:auto;z-index:200;max-width:380px;' +
     'box-shadow:var(--ombre-3);bottom:calc(20px + var(--marge-barre, 0px))';
   div.textContent = texte;
+  if (action) {
+    const b = document.createElement('button');
+    b.className = 'bouton secondaire';
+    b.style.cssText = 'margin-top:10px;width:100%';
+    b.textContent = action.libelle;
+    b.onclick = () => { div.remove(); afficher(action.vue); };
+    div.appendChild(b);
+  }
   document.body.appendChild(div);
-  setTimeout(() => div.remove(), 4000);
+  setTimeout(() => div.remove(), action ? 9000 : 4000);
 }
 
 /* ============================================================
@@ -263,9 +278,28 @@ function capitalReference() {
   return detenu > 0 ? detenu : (Number(Etat.identite.montant) || 0);
 }
 
+/* Le conseiller a-t-il exprimé une vue de marché ? Un indicateur du contexte
+   renseigné, ou des probabilités de scénarios forcées à la main. */
+function contexteExprime() {
+  return Object.keys(Etat.macroChoix).length > 0 || !!Etat.scenariosManuels;
+}
+
+/* L'intensité de la gestion tactique, ramenée à zéro dans deux cas.
+
+   Le second corrige un défaut de fond : `agregerMacro({})` rend des
+   probabilités par défaut qui pèsent 66,7 % sur l'atterrissage en douceur.
+   Un contexte jamais renseigné produisait donc une allocation déviée —
+   jusqu'à 2,7 points sur un profil équilibré, le monétaire tombant de 10 %
+   à 7,3 %. L'outil affirmait une vue de marché que personne n'avait
+   exprimée, et le rapport la présentait au client comme un choix.
+
+   Sans contexte, l'allocation cible est donc strictement stratégique. Elle
+   reste affichée : c'est une allocation parfaitement défendable, celle qui
+   découle du seul profil de risque. */
 function intensiteEffective() {
   const p = resultatProfil();
   if (p && p.preferences.gestion === 'passive') return 0;
+  if (!contexteExprime()) return 0;
   return Number(Etat.filtres.intensite);
 }
 
@@ -316,15 +350,21 @@ function selectionCourante() {
 const GROUPES = [
   { id: 'aujourdhui', libelle: 'Aujourd\'hui', vues: ['accueil'],
     icone: 'M3 10.5 12 3l9 7.5M5.5 9.5V20h13V9.5' },
-  { id: 'marche', libelle: 'Marché', vues: ['note', 'macro'],
-    icone: 'M3 17.5 9 11l4 4 8-8.5M15.5 6.5H21V12' },
-  { id: 'dossier', libelle: 'Dossier', vues: ['client', 'questionnaire', 'profil', 'allocation', 'portefeuille'],
+  { id: 'profil', libelle: 'Profil', vues: ['client', 'questionnaire', 'profil'],
     icone: 'M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20.5c.8-3.6 3.9-5.5 7.5-5.5s6.7 1.9 7.5 5.5' },
-  { id: 'suivi', libelle: 'Suivi', vues: ['arbitrages', 'situation', 'revenus', 'journal'],
+  { id: 'allocation', libelle: 'Allocation',
+    vues: ['note', 'macro', 'allocation', 'portefeuille', 'arbitrages', 'backtest'],
+    icone: 'M3 17.5 9 11l4 4 8-8.5M15.5 6.5H21V12' },
+  { id: 'suivi', libelle: 'Suivi', vues: ['situation', 'revenus', 'journal', 'rapport'],
     icone: 'M4 7h12m0 0-3.5-3.5M16 7l-3.5 3.5M20 17H8m0 0 3.5-3.5M8 17l3.5 3.5' },
-  { id: 'plus', libelle: 'Plus', vues: ['rapport', 'backtest', 'univers'],
-    icone: 'M4.5 6.5h15M4.5 12h15M4.5 17.5h15' }
+  /* Les données ne sont pas une étape du parcours : elles n'ont pas d'entrée
+     dans la barre basse, où un cinquième onglet de même taille contredirait
+     leur caractère secondaire. On y accède depuis « Sélection des supports »
+     et depuis la feuille du bouton « ••• ». */
+  { id: 'donnees', libelle: 'Données', vues: ['univers'], secondaire: true,
+    icone: 'M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3Zm0 0v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3' }
 ];
+
 
 function groupeDeVue(vue) {
   return GROUPES.find(g => g.vues.indexOf(vue) >= 0) || GROUPES[0];
@@ -369,7 +409,7 @@ function rendreNavMobile(vue) {
     return '';
   };
 
-  barre.innerHTML = GROUPES.map(g =>
+  barre.innerHTML = GROUPES.filter(g => !g.secondaire).map(g =>
     '<button data-groupe="' + g.id + '"' + (g.id === groupe.id ? ' class="actif"' : '') + '>' +
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + g.icone + '"/></svg>' +
       '<span>' + echapper(g.libelle) + '</span>' +
@@ -484,23 +524,23 @@ function majNav() {
 /* Les trois étapes sans lesquelles rien ne peut être proposé. */
 function etapesDossier() {
   const manquantes = MoteurProfil.questionsManquantes(Etat.reponses).length;
-  const notees = QUESTIONS.filter(q => q.poids > 0).length;
   return [
     {
-      vue: 'client', numero: 1, titre: 'Montant et enveloppe',
+      vue: 'client', titre: 'Montant et enveloppe',
       fait: identiteRenseignee(),
       reste: 'Encore aux valeurs par défaut — ' + euro(Number(Etat.identite.montant) || 0) +
              ' en ' + libelleEnveloppe() + '. Le montant et l\'enveloppe déterminent ' +
              "l'univers de supports réellement accessible."
     },
     {
-      vue: 'questionnaire', numero: 2, titre: 'Questionnaire de profilage',
+      vue: 'questionnaire', titre: 'Questionnaire de profilage',
       fait: manquantes === 0,
-      reste: manquantes + (manquantes > 1 ? ' réponses manquantes' : ' réponse manquante') +
-             ' sur les ' + notees + ' qui comptent dans le score de risque.'
+      /* Le même décompte qu'à l'état vide : une seule façon de compter, sinon
+         l'accueil et la section annoncent deux totaux pour un questionnaire. */
+      reste: PREALABLES.questionnaire.reste()
     },
     {
-      vue: 'arbitrages', numero: 8, titre: 'Portefeuille détenu',
+      vue: 'arbitrages', titre: 'Portefeuille détenu',
       fait: Etat.detention.length > 0,
       reste: "Sans les lignes détenues, le portefeuille réel ne peut pas être comparé à l'allocation cible."
     }
@@ -776,7 +816,9 @@ function rendreAccueil() {
         '<div class="etapes-dossier">' +
         etapes.map(e =>
           '<div class="etape' + (e.fait ? ' faite' : '') + '">' +
-            '<span class="etape-marque">' + (e.fait ? '✓' : e.numero) + '</span>' +
+            /* Ni numéro, ni rang : une puce pleine pour ce qui est fait, un
+               anneau creux pour ce qui reste. L'ordre se lit dans la liste. */
+            '<span class="etape-marque">' + (e.fait ? '✓' : '') + '</span>' +
             '<div class="etape-corps"><strong>' + echapper(e.titre) + '</strong>' +
               '<div class="etape-detail">' + (e.fait ? 'Renseigné.' : echapper(e.reste)) + '</div></div>' +
             (e.fait ? '' : '<button class="bouton' + (e === aFaire[0] ? '' : ' secondaire') +
@@ -1129,7 +1171,11 @@ function rendreMacro() {
   $('#overlays-macro').innerHTML = '<h3>Effets tactiques retenus</h3>' +
     (!alloc ? '<div class="message alerte">Complétez le questionnaire pour visualiser les déviations appliquées.</div>' :
       (intensiteEffective() === 0
-        ? '<div class="message info">Gestion tactique neutralisée : l\'allocation cible reste strictement stratégique.</div>'
+        ? '<div class="message info"><strong>Aucune déviation tactique n\'est appliquée.</strong> ' +
+          (contexteExprime()
+            ? 'La gestion tactique est neutralisée par les préférences du client.'
+            : 'Aucun indicateur de contexte n\'est renseigné : l\'allocation cible reste ' +
+              'strictement celle du profil de risque.') + '</div>'
         : '') +
       (alloc.explications.length === 0
         ? '<p class="intro">Le contexte renseigné ne justifie aucune déviation significative.</p>'
@@ -1166,7 +1212,19 @@ function rendreAllocation() {
   const poches = Object.keys(alloc.poches).filter(p => alloc.poches[p] > 0)
     .sort((a, b) => alloc.poches[b] - alloc.poches[a]);
 
+  /* Sans contexte, la vue s'affiche quand même — l'allocation stratégique du
+     profil est une réponse complète, pas un pis-aller. Elle dit seulement
+     qu'aucune vue de marché n'y est mêlée, et propose d'aller en exprimer une. */
+  const sansContexte = !contexteExprime();
+
   c.innerHTML =
+    (sansContexte
+      ? '<div class="message info"><strong>Allocation stratégique seule.</strong> ' +
+        'Aucun indicateur de contexte n\'étant renseigné, aucune déviation tactique n\'est ' +
+        'appliquée : la répartition ci-dessous découle du seul profil de risque. ' +
+        '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
+        'Renseigner le contexte</button></div></div>'
+      : '') +
     '<div class="grille quatre">' +
       kpi(r.profil.nom, 'Profil', r.profil.sri ? 'SRI ' + r.profil.sri : '') +
       kpi(pct(metriquesTact.rendement), 'Rendement espéré', 'hypothèses long terme') +
@@ -1372,7 +1430,9 @@ function rendrePortefeuille() {
     (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non validé(s) au contrat.</strong> ' +
       'Leurs caractéristiques de marché ont été relevées sur source publique, mais leur référencement effectif ' +
       'dans le contrat reste à contrôler avant remise au client : collez la liste des supports de l\'assureur ' +
-      'dans l\'onglet « Univers ETF », le rapprochement coche la colonne « Contrat » pour vous.</div>' : '') +
+      'le rapprochement avec la liste des supports coche la colonne « Contrat » pour vous.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">' +
+      'Ouvrir l\'univers ETF</button></div></div>' : '') +
 
     (sansNotation ? '<div class="message info"><strong>' + sansNotation + ' support(s) sans notation Morningstar.</strong> ' +
       'Morningstar ne note ni les monétaires, ni les ETC, ni les fonds de moins de trois ans. Pour ces supports, ' +
@@ -1480,7 +1540,9 @@ function rendreArbitrages() {
 
   if (!analyse) {
     c.innerHTML = '<div class="message info">Saisissez au moins une ligne détenue ou un apport pour générer ' +
-      'des propositions d\'arbitrage. Le plan d\'investissement initial figure dans l\'onglet « Sélection ETF ».</div>';
+      'des propositions d\'arbitrage. Le plan d\'investissement initial figure dans la sélection des supports.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="portefeuille">' +
+      'Ouvrir la sélection des supports</button></div></div>';
     return;
   }
 
@@ -1522,7 +1584,9 @@ function rendreArbitrages() {
     (analyse.inconnus.length ? '<div class="message alerte"><strong>Supports non reconnus.</strong> ' +
       analyse.inconnus.map(l => echapper(l.libelle)).join(', ') +
       ' — ISIN absent de l\'univers référencé. Ces lignes sont traitées comme intégralement à céder. ' +
-      'Ajoutez-les dans l\'onglet « Univers ETF » si elles doivent être conservées.</div>' : '') +
+      'Ajoutez-les à l\'univers ETF si elles doivent être conservées.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">' +
+      'Ouvrir l\'univers ETF</button></div></div>' : '') +
 
     '<div class="carte"><h3>Écart d\'allocation par classe d\'actifs</h3>' +
       '<div class="barres">' + Object.keys(analyse.parClasse).map(cl => {
@@ -3011,12 +3075,21 @@ function brancher() {
      La feuille ne duplique pas les gestionnaires : elle relaie le clic
      aux vrais boutons de l'en-tête, qui restent la seule définition. */
   $('#btn-dossier-mobile').onclick = () => {
+    /* La feuille porte aussi les blocs secondaires — les données n'ont pas
+       d'entrée dans la barre basse, il leur faut un chemin ailleurs. */
+    const secondaires = GROUPES.filter(g => g.secondaire).map(g =>
+      '<div class="barre-actions" style="margin:0 0 8px">' +
+        '<button class="bouton secondaire" style="flex:1" data-aller="' + g.vues[0] + '">' +
+        echapper(g.libelle) + '</button></div>').join('');
+
     ouvrirFeuille('Dossier',
       ['btn-sauver', 'btn-exporter', 'btn-importer', 'btn-reinit'].map(id =>
         '<div class="barre-actions" style="margin:0 0 8px">' +
           '<button class="bouton' + (id === 'btn-sauver' ? '' : ' secondaire') +
           '" style="flex:1" data-relais="' + id + '">' +
-          echapper($('#' + id).textContent) + '</button></div>').join(''));
+          echapper($('#' + id).textContent) + '</button></div>').join('') +
+      (secondaires ? '<div style="border-top:1px solid var(--ligne);margin:12px 0 10px"></div>' +
+        secondaires : ''));
   };
 
   /* --- Feuille de détail --- */
@@ -3250,7 +3323,8 @@ function brancher() {
          une allocation vide sans dire pourquoi. */
       if (t.value === '1' && !Etat.univers.some(x => x.verifie)) {
         t.value = '0';
-        notifier('Aucun support n\'est encore validé au contrat : rapprochez d\'abord la liste des supports, onglet « Univers ETF ».', 'alerte');
+        notifier('Aucun support n\'est encore validé au contrat : rapprochez d\'abord la liste des supports.',
+                 'alerte', { libelle: 'Ouvrir l\'univers ETF', vue: 'univers' });
         return;
       }
       Etat.filtres.contratSeulement = t.value === '1'; sauver(true);
@@ -3609,6 +3683,7 @@ function verifierVersion() {
      les seuls 42 supports de l'univers de travail. */
   if (Etat.filtres.sourceUnivers === 'catalogue') chargerCatalogue();
   if (restaure) notifier('Dossier précédent restauré.', 'info');
-  if (arretes) notifier(arretes + ' arrêté(s) semestriel(s) figé(s) — onglet « Situation ».', 'info');
+  if (arretes) notifier(arretes + ' arrêté(s) semestriel(s) figé(s).', 'info',
+                        { libelle: 'Voir la situation', vue: 'situation' });
   if (remplacees) console.info(remplacees + ' performances annuelles alimentées par les cours de marché.');
 })();

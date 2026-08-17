@@ -14,7 +14,7 @@
 > les notes sont recalculées chaque mois. **Un contrôle reste à faire, dossier
 > par dossier** : le référencement effectif de chaque support dans le contrat du
 > client. Il se fait en collant la liste des supports de l'assureur dans
-> l'onglet « Univers ETF ».
+> « Univers ETF ».
 >
 > Les investissements en unités de compte présentent un **risque de perte en
 > capital**. Les performances passées ne préjugent pas des performances futures.
@@ -82,7 +82,7 @@ passés, classe par classe, avec les deux relevés détaillés côte à côte.
 Le **rapport client s'ouvre sur cette situation** : « 1. Situation de départ »
 donne le portefeuille détenu, sa répartition, et le rappel du dernier arrêté
 figé avec l'évolution depuis. On dit d'où l'on part avant de dire où l'on va.
-Le choix de la date et le figeage restent dans l'onglet « Situation » : le
+Le choix de la date et le figeage restent dans « Situation » : le
 rapport ne montre que le jour même. Les sections du rapport sont numérotées à
 l'assemblage, « Revenus programmés » n'y figurant que si un besoin est
 renseigné.
@@ -159,6 +159,33 @@ restent dans le navigateur de chaque utilisateur (`localStorage`) et ne sont
 transmises à personne. Deux utilisateurs de la même adresse ne partagent donc
 pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
 « Importer ».
+
+## Navigation
+
+Quinze vues réparties en quatre blocs, plus les données en registre secondaire :
+
+| Bloc | Vues |
+|---|---|
+| **Aujourd'hui** | l'écran d'ouverture |
+| **Profil** | Client & enveloppe · Questionnaire · Profil de risque |
+| **Allocation** | Note du jour · Contexte · Allocation cible · Sélection des supports · Arbitrages · Backtest |
+| **Suivi** | Situation · Revenus & rachats · Journal · Rapport |
+| **Données** *(secondaire)* | Univers ETF |
+
+**Aucun numéro d'onglet.** Un rang laisserait croire à un ordre obligatoire,
+alors qu'on peut très bien saisir un portefeuille avant de remplir le
+questionnaire. Ce qui compte n'est pas le rang mais l'état : une pastille
+pleine pour ce qui est fait, un anneau doré pour ce qui est entamé, un anneau
+pâle pour ce qui reste. Tout message qui renvoie à une étape la nomme et porte
+le bouton qui y mène.
+
+**La note du jour et le contexte restent deux vues distinctes**, côte à côte
+dans le même bloc. L'une est rédigée par un script, l'autre saisie par le
+conseiller : les fondre en une page effacerait cette différence de nature.
+
+**Les quinze ancres `#…` sont inchangées** et le resteront : elles servent de
+routage au démarrage, et `#note` comme `#accueil` sont ouvertes par le widget
+iOS. `test/fumee.html` vérifie que chacune résout et ouvre bien sa vue.
 
 ## Interface
 
@@ -638,13 +665,13 @@ Le contrôle est aussi possible à la main : filtrez le tableau, puis
 qui est affiché, jamais davantage.
 
 **Une fois le rapprochement fait**, le filtre « Référencement au contrat » de
-l'onglet *Client & enveloppe* restreint la sélection aux seuls supports validés.
+*Client & enveloppe* restreint la sélection aux seuls supports validés.
 Il reste inactif par défaut, et refuse de s'activer sur un univers dont rien
 n'est validé : il viderait la sélection sans dire pourquoi.
 
 ## Sélectionner dans tout le catalogue européen
 
-Le champ « Univers de sélection », onglet *Client & enveloppe*, choisit ce sur
+Le champ « Univers de sélection », dans *Client & enveloppe*, choisit ce sur
 quoi porte la sélection :
 
 | | |
@@ -676,7 +703,7 @@ distribuante et le label de durabilité sont **déduits du nom**, et marqués co
 tels. La réplication n'est pas publiée. **L'éligibilité PEA non plus** : un
 support du catalogue est réputé non éligible faute d'information, pas parce
 qu'il ne l'est pas — pour un PEA, restez sur l'univers de travail. Rien n'y est
-vérifié au contrat, et l'onglet *Sélection ETF* le dit en toutes lettres dès
+vérifié au contrat, et *Sélection des supports* le dit en toutes lettres dès
 qu'une ligne en vient.
 
 **La devise fait partie de la définition d'une poche.** « Obligations
@@ -696,7 +723,7 @@ identiques, les frais courants moyens du portefeuille passent de **0,152 % à
 un support.
 
 Avant toute remise au client, versez les supports retenus dans l'univers de
-travail depuis l'onglet *Univers ETF*, puis contrôlez leur ligne et leur
+travail depuis *Univers ETF*, puis contrôlez leur ligne et leur
 référencement au contrat.
 
 **Les notations Morningstar** sont relevées par

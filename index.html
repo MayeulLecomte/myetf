@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608181300">
+<link rel="stylesheet" href="css/app.css?v=202608181530">
 </head>
 <body>
 
@@ -50,24 +50,32 @@
 <div class="corps">
 
   <nav class="nav" id="nav">
-    <button data-vue="accueil" class="actif accueil"><span class="num"><span>·</span></span> Aujourd'hui</button>
-    <div class="separateur"></div>
-    <button data-vue="client"><span class="num"><span>1</span></span> Client &amp; enveloppe</button>
-    <button data-vue="questionnaire"><span class="num"><span>2</span></span> Questionnaire</button>
-    <button data-vue="profil"><span class="num"><span>3</span></span> Profil de risque</button>
-    <div class="separateur"></div>
-    <button data-vue="note"><span class="num"><span>4</span></span> Note de marché</button>
-    <button data-vue="macro"><span class="num"><span>5</span></span> Contexte macro</button>
-    <button data-vue="allocation"><span class="num"><span>6</span></span> Allocation cible</button>
-    <button data-vue="portefeuille"><span class="num"><span>7</span></span> Sélection ETF</button>
-    <button data-vue="arbitrages"><span class="num"><span>8</span></span> Arbitrages</button>
-    <button data-vue="situation"><span class="num"><span>9</span></span> Situation</button>
-    <button data-vue="revenus"><span class="num"><span>10</span></span> Revenus &amp; rachats</button>
-    <button data-vue="backtest"><span class="num"><span>11</span></span> Backtest</button>
-    <div class="separateur"></div>
-    <button data-vue="univers"><span class="num"><span>12</span></span> Univers ETF</button>
-    <button data-vue="journal"><span class="num"><span>13</span></span> Suivi &amp; journal</button>
-    <button data-vue="rapport"><span class="num"><span>14</span></span> Rapport</button>
+    <!-- Quatre blocs, plus les données en registre secondaire. Aucun numéro :
+         l'avancement se lit sur l'état de la pastille — complété, en cours, à
+         faire — et non sur un rang qui figerait l'ordre des vues. -->
+    <button data-vue="accueil" class="actif accueil"><span class="num"></span> Aujourd'hui</button>
+
+    <div class="bloc-titre">Profil</div>
+    <button data-vue="client"><span class="num"></span> Client &amp; enveloppe</button>
+    <button data-vue="questionnaire"><span class="num"></span> Questionnaire</button>
+    <button data-vue="profil"><span class="num"></span> Profil de risque</button>
+
+    <div class="bloc-titre">Allocation</div>
+    <button data-vue="note"><span class="num"></span> Note du jour</button>
+    <button data-vue="macro"><span class="num"></span> Contexte</button>
+    <button data-vue="allocation"><span class="num"></span> Allocation cible</button>
+    <button data-vue="portefeuille"><span class="num"></span> Sélection des supports</button>
+    <button data-vue="arbitrages"><span class="num"></span> Arbitrages</button>
+    <button data-vue="backtest"><span class="num"></span> Backtest</button>
+
+    <div class="bloc-titre">Suivi</div>
+    <button data-vue="situation"><span class="num"></span> Situation</button>
+    <button data-vue="revenus"><span class="num"></span> Revenus &amp; rachats</button>
+    <button data-vue="journal"><span class="num"></span> Journal</button>
+    <button data-vue="rapport"><span class="num"></span> Rapport</button>
+
+    <div class="bloc-titre secondaire">Données</div>
+    <button data-vue="univers" class="secondaire"><span class="num"></span> Univers ETF</button>
   </nav>
 
   <!-- Ruban segmenté : les vues du groupe courant. Mobile seulement ;
@@ -179,7 +187,7 @@
 
     <!-- ============ 4. NOTE DE MARCHÉ ============ -->
     <section class="vue" id="vue-note">
-      <h2>Note de marché</h2>
+      <h2>Note du jour</h2>
       <p class="intro">Note de travail rédigée chaque matin à partir des cours relevés la veille.
       Elle signale ce qui a bougé et ce qu'il convient de vérifier — elle ne formule aucune
       recommandation et n'est pas destinée à être remise à un client en l'état.</p>
@@ -221,7 +229,7 @@
       <h2>Allocation cible</h2>
       <div id="allocation-contenu"></div>
       <div class="barre-actions">
-        <button class="bouton" data-aller="portefeuille">Sélection des ETF →</button>
+        <button class="bouton" data-aller="portefeuille">Sélection des supports →</button>
       </div>
     </section>
 
@@ -298,7 +306,7 @@
     <section class="vue" id="vue-revenus">
       <h2>Revenus &amp; rachats programmés</h2>
       <p class="intro">Détermine sur quels supports prélever le revenu, dans quel ordre et pour quel coût fiscal.
-      Le plan s'appuie sur la détention saisie dans l'onglet « Arbitrages » et sur l'allocation cible.</p>
+      Le plan s'appuie sur la détention saisie dans les arbitrages et sur l'allocation cible.</p>
 
       <div class="carte">
         <h3>Besoin de revenu</h3>
@@ -445,7 +453,7 @@
 
     <!-- ============ 13. JOURNAL ============ -->
     <section class="vue" id="vue-journal">
-      <h2>Suivi &amp; journal des arbitrages</h2>
+      <h2>Journal des revues</h2>
       <p class="intro">Chaque revue validée est horodatée et conservée localement. Ce journal constitue la trace
       du suivi « au fil de l'eau » : dérive constatée, contexte retenu, mouvements proposés.</p>
       <div id="journal-contenu"></div>
@@ -494,24 +502,24 @@
   en investissement.</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608181300"></script>
-<script src="js/data/allocations.js?v=202608181300"></script>
-<script src="js/data/macro.js?v=202608181300"></script>
-<script src="js/data/etf-univers.js?v=202608181300"></script>
-<script src="js/data/fiscalite.js?v=202608181300"></script>
-<script src="js/data/historique.js?v=202608181300"></script>
-<script src="js/data/note-marche.js?v=202608181300"></script>
-<script src="js/data/cours-historique.js?v=202608181300"></script>
-<script src="js/data/cours-marche.js?v=202608181300"></script>
-<script src="js/engine/profil.js?v=202608181300"></script>
-<script src="js/engine/allocation.js?v=202608181300"></script>
-<script src="js/engine/selection.js?v=202608181300"></script>
-<script src="js/engine/arbitrage.js?v=202608181300"></script>
-<script src="js/engine/revenus.js?v=202608181300"></script>
-<script src="js/engine/situation.js?v=202608181300"></script>
-<script src="js/engine/contrat.js?v=202608181300"></script>
-<script src="js/engine/univers.js?v=202608181300"></script>
-<script src="js/engine/backtest.js?v=202608181300"></script>
-<script src="js/app.js?v=202608181300"></script>
+<script src="js/data/questionnaire.js?v=202608181530"></script>
+<script src="js/data/allocations.js?v=202608181530"></script>
+<script src="js/data/macro.js?v=202608181530"></script>
+<script src="js/data/etf-univers.js?v=202608181530"></script>
+<script src="js/data/fiscalite.js?v=202608181530"></script>
+<script src="js/data/historique.js?v=202608181530"></script>
+<script src="js/data/note-marche.js?v=202608181530"></script>
+<script src="js/data/cours-historique.js?v=202608181530"></script>
+<script src="js/data/cours-marche.js?v=202608181530"></script>
+<script src="js/engine/profil.js?v=202608181530"></script>
+<script src="js/engine/allocation.js?v=202608181530"></script>
+<script src="js/engine/selection.js?v=202608181530"></script>
+<script src="js/engine/arbitrage.js?v=202608181530"></script>
+<script src="js/engine/revenus.js?v=202608181530"></script>
+<script src="js/engine/situation.js?v=202608181530"></script>
+<script src="js/engine/contrat.js?v=202608181530"></script>
+<script src="js/engine/univers.js?v=202608181530"></script>
+<script src="js/engine/backtest.js?v=202608181530"></script>
+<script src="js/app.js?v=202608181530"></script>
 </body>
 </html>
