@@ -1810,6 +1810,53 @@ function rendreJournal() {
    VUE 10 — RAPPORT
    ============================================================ */
 
+/* Le rapport s'ouvre sur l'état des lieux : d'où l'on part, avant de dire
+   où l'on va. Le relevé détaillé, lui, reste dans l'onglet « Situation »,
+   qui seul permet de choisir la date et de figer un arrêté. */
+function blocSituationRapport(numero) {
+  const aujourd = aujourdhuiISO();
+
+  if (!Etat.detention.length) {
+    return '<div class="carte"><h3>' + numero + '. Situation de départ</h3>' +
+      '<p>Aucun portefeuille n\'est détenu à ce jour. La préconisation porte sur un investissement ' +
+      'initial de ' + euro(Number(Etat.identite.montant) || 0) + ' dans ' + libelleEnveloppe() + '.</p></div>';
+  }
+
+  const s = situationCourante(aujourd);
+  const classes = ['actions', 'obligations', 'diversifiants', 'monetaire'].filter(cl => s.parClasse[cl]);
+  const arrete = Etat.situations.filter(x => x.date !== aujourd)[0] || null;
+  const dateCours = s.lignes.map(l => l.dateCours).filter(Boolean).sort().slice(-1)[0];
+
+  return '<div class="carte"><h3>' + numero + '. Situation de départ</h3>' +
+    '<p>Portefeuille détenu au ' + dateFr(aujourd) + ', valorisé ' + euro(s.total) +
+    (dateCours && dateCours !== aujourd ? ' sur les cours de clôture du ' + dateFr(dateCours) : '') + '.</p>' +
+
+    '<table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Valorisation</th>' +
+    '<th class="num">Poids</th></tr></thead><tbody>' +
+    s.lignes.map(l => '<tr><td>' + echapper(l.libelle) + '</td>' +
+      '<td style="font-family:monospace;font-size:11px">' + echapper(l.isin) + '</td>' +
+      '<td class="num">' + euro(l.montant) + '</td>' +
+      '<td class="num">' + pct(l.poids) + '</td></tr>').join('') +
+    '</tbody><tfoot><tr><td colspan="2">Total</td><td class="num">' + euro(s.total) +
+    '</td><td class="num">100,0 %</td></tr></tfoot></table>' +
+
+    (classes.length ? '<p style="margin-top:10px">Répartition par classe d\'actifs : ' +
+      classes.map(cl => echapper(LIBELLES_CLASSES[cl] || cl) + ' ' + pct(s.parClasse[cl].poids)).join(' · ') +
+      '.</p>' : '') +
+
+    (arrete ? '<p>Pour mémoire, ' + MoteurSituation.libelleReference(arrete.date).toLowerCase() +
+      ' au ' + dateFr(arrete.date) + ' : ' + euro(arrete.total) +
+      (arrete.total ? ', soit une évolution de ' + signe(100 * (s.total - arrete.total) / arrete.total) +
+        ' depuis cette date' : '') + '.</p>' : '') +
+
+    (s.alertes.horsPeriode || s.alertes.sansCours
+      ? '<p style="font-size:11px;color:var(--gris-doux)">' +
+        (s.alertes.sansCours ? s.alertes.sansCours + ' ligne(s) sans cours de marché : la valeur retenue est celle saisie. ' : '') +
+        (s.alertes.horsPeriode ? s.alertes.horsPeriode + ' ligne(s) valorisée(s) au dernier cours connu. ' : '') +
+        '</p>' : '') +
+    '</div>';
+}
+
 function rendreRapport() {
   const r = resultatProfil();
   const c = $('#rapport-contenu');
@@ -1823,6 +1870,13 @@ function rendreRapport() {
   const segments = Object.keys(alloc.classes).map(cl => ({
     label: LIBELLES_CLASSES[cl], valeur: alloc.classes[cl], couleur: COULEURS_CLASSES[cl]
   }));
+
+  /* Les sections sont numérotées à l'assemblage : « Revenus programmés »
+     ne figure au rapport que si un besoin est renseigné, et une numérotation
+     écrite en dur y laissait un trou. */
+  let nSection = 0;
+  const titre = (t, classe) => '<div class="carte' + (classe ? ' ' + classe : '') + '">' +
+    '<h3>' + (++nSection) + '. ' + t + '</h3>';
 
   c.innerHTML =
     '<div class="carte">' +
@@ -1838,7 +1892,9 @@ function rendreRapport() {
       '</tbody></table>' +
     '</div>' +
 
-    '<div class="carte"><h3>1. Détermination du profil</h3>' +
+    blocSituationRapport(++nSection) +
+
+    titre('Détermination du profil') +
       '<p>Le questionnaire évalue trois axes indépendants. Le profil retenu correspond au minimum entre la ' +
       '<strong>capacité de perte</strong> (' + r.scores.capacite + '/100) et la <strong>tolérance au risque</strong> (' +
       r.scores.tolerance + '/100), plafonné le cas échéant par la connaissance des marchés (' + r.scores.connaissance + '/100).</p>' +
@@ -1849,7 +1905,7 @@ function rendreRapport() {
       '. Rendement annuel espéré sur la durée de placement : ' + pct(metriques.rendement) + '.</p>' +
     '</div>' +
 
-    '<div class="carte"><h3>2. Lecture du contexte de marché</h3>' +
+    titre('Lecture du contexte de marché') +
       '<p>Distribution de scénarios retenue à la date du ' + dateFr() + ' :</p>' +
       '<table><thead><tr><th>Scénario</th><th class="num">Probabilité</th><th>Implications</th></tr></thead><tbody>' +
       SCENARIOS.slice().sort((a, b) => m.probas[b.id] - m.probas[a.id]).map(s =>
@@ -1864,7 +1920,7 @@ function rendreRapport() {
         : '<p style="margin-top:12px">Aucune déviation tactique significative n\'est retenue à ce stade.</p>') +
     '</div>' +
 
-    '<div class="carte saut-page"><h3>3. Allocation cible</h3>' +
+    titre('Allocation cible', 'saut-page') +
       '<div class="graphique">' + donut(segments, 170, 32) + '<div style="flex:1;min-width:220px">' + legende(segments) + '</div></div>' +
       '<table style="margin-top:14px"><thead><tr><th>Poche</th><th class="num">Poids</th><th class="num">Montant</th></tr></thead><tbody>' +
       Object.keys(alloc.poches).filter(p => alloc.poches[p] > 0).sort((a, b) => alloc.poches[b] - alloc.poches[a]).map(p =>
@@ -1873,7 +1929,7 @@ function rendreRapport() {
       '</tbody></table>' +
     '</div>' +
 
-    '<div class="carte"><h3>4. Supports retenus</h3>' +
+    titre('Supports retenus') +
       '<table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Note</th><th class="num">Frais</th>' +
       '<th class="num">Poids</th><th class="num">Montant</th></tr></thead><tbody>' +
       sel.lignes.map(l => '<tr><td>' + echapper(l.etf.nom) + '</td>' +
@@ -1887,7 +1943,7 @@ function rendreRapport() {
       'et, le cas échéant, aux frais d\'arbitrage.</p>' +
     '</div>' +
 
-    '<div class="carte"><h3>5. Simulation de perte</h3>' +
+    titre('Simulation de perte') +
       '<table><thead><tr><th>Scénario de stress</th><th class="num">Impact</th><th class="num">Valeur du portefeuille</th></tr></thead><tbody>' +
       stress.map(s => '<tr><td>' + echapper(s.nom) + '</td><td class="num negatif">' + pct(s.impact) + '</td>' +
         '<td class="num">' + euro((Number(Etat.identite.montant) || 0) * (1 + s.impact / 100)) + '</td></tr>').join('') +
@@ -1905,7 +1961,7 @@ function rendreRapport() {
         primesVersees: Number(Etat.revenus.primesVersees) || 0, rendementEspere: metriques.rendement
       }, Etat.univers);
       if (!plan) return '';
-      return '<div class="carte saut-page"><h3>6. Revenus programmés</h3>' +
+      return titre('Revenus programmés', 'saut-page') +
         '<p>Revenu net souhaité : <strong>' + euro(plan.besoinParEcheance) + '</strong> par échéance ' +
         plan.frequence.libelle.toLowerCase() + ', soit ' + euro(plan.besoinAnnuel) + ' par an — taux de retrait de ' +
         pct(plan.tauxRetrait, 2) + ' pour un rendement réel espéré de ' + pct(plan.projection.tauxSoutenable, 2) + '. ' +
@@ -1923,7 +1979,7 @@ function rendreRapport() {
       '</div>';
     })() +
 
-    '<div class="carte"><h3>7. Suivi et arbitrages</h3>' +
+    titre('Suivi et arbitrages') +
       '<p>Le portefeuille fait l\'objet d\'une revue au moins semestrielle et à chaque évolution significative du ' +
       'contexte économique, géopolitique ou fiscal. Un arbitrage n\'est proposé que si l\'écart à l\'allocation cible ' +
       'dépasse ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) + ' de l\'encours, afin d\'éviter une rotation inutile. ' +

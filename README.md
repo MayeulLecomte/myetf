@@ -77,6 +77,14 @@ La rubrique porte enfin la comparaison **avant / après arbitrage** : le
 portefeuille actuel et ce qu'il deviendrait si les ordres proposés étaient
 passés, classe par classe, avec les deux relevés détaillés côte à côte.
 
+Le **rapport client s'ouvre sur cette situation** : « 1. Situation de départ »
+donne le portefeuille détenu, sa répartition, et le rappel du dernier arrêté
+figé avec l'évolution depuis. On dit d'où l'on part avant de dire où l'on va.
+Le choix de la date et le figeage restent dans l'onglet « Situation » : le
+rapport ne montre que le jour même. Les sections du rapport sont numérotées à
+l'assemblage, « Revenus programmés » n'y figurant que si un besoin est
+renseigné.
+
 ## Accéder à l'application
 
 En ligne : **https://mayeullecomte.github.io/myetf/**

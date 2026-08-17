@@ -93,11 +93,13 @@ const ETF_UNIVERS = [
   {
     isin: 'FR0011871128', ticker: 'PSP5', nom: 'Amundi PEA S&P 500 UCITS ETF Acc',
     emetteur: 'Amundi', classe: 'actions', poche: 'act-us',
-    ter: 0.12, encours: 1157, morningstar: 5, sri: 4, replication: 'Synthétique',
+    ter: 0.15, encours: 1157, morningstar: 5, sri: 4, replication: 'Synthétique',
     devise: 'EUR', hedge: false, capitalisation: true, isr: false,
     pea: true, enveloppes: ['AV', 'CTO', 'PEA'], contratsAV: ['av-standard'], verifie: false,
     donneesLe: '2026-08-15', donneesSource: 'justETF', notationLe: '2026-08-16',
-    note: 'Cet ISIN figurait à tort en poche technologie sous le nom « Amundi PEA Nasdaq-100 ».'
+    note: 'Cet ISIN figurait à tort en poche technologie sous le nom « Amundi PEA Nasdaq-100 ». ' +
+          'Frais portés de 0,12 à 0,15 % : justETF donne les frais courants du dernier exercice, ' +
+          'Morningstar et Boursorama le maximum statutaire. Le plus défavorable est retenu.'
   },
   {
     isin: 'LU0490618542', ticker: 'D5BM', nom: 'Xtrackers S&P 500 Swap UCITS ETF 1C',
@@ -179,7 +181,8 @@ const ETF_UNIVERS = [
     ter: 0.30, encours: 853, morningstar: 3, sri: 4, replication: 'Synthétique',
     devise: 'EUR', hedge: false, capitalisation: true, isr: true,
     pea: true, enveloppes: ['AV', 'CTO', 'PEA'], contratsAV: ['av-standard'], verifie: false,
-    donneesLe: '2026-08-15', donneesSource: 'justETF', notationLe: '2026-08-16'
+    donneesLe: '2026-08-15', donneesSource: 'justETF', notationLe: '2026-08-16',
+    note: 'Frais maintenus à 0,30 % : Morningstar annonce 0,20 %, mais justETF et Boursorama concordent sur 0,30 %.'
   },
 
   /* ---------------- ACTIONS PETITES CAPITALISATIONS ---------------- */
@@ -368,7 +371,8 @@ const ETF_UNIVERS = [
     devise: 'EUR', hedge: false, capitalisation: true, isr: false,
     pea: true, enveloppes: ['AV', 'CTO', 'PEA'], contratsAV: ['av-large'], verifie: false,
     donneesLe: '2026-08-15', donneesSource: 'justETF',
-    note: 'Ajouté : seul support monétaire réellement éligible au PEA de la gamme. Sans lui, un PEA ne peut porter aucune poche défensive.'
+    note: 'Ajouté : seul support monétaire réellement éligible au PEA de la gamme. Sans lui, un PEA ne peut porter aucune poche défensive. ' +
+          'Frais maintenus à 0,25 % : Morningstar annonce 0,40 %, mais justETF et Boursorama concordent sur 0,25 %.'
   },
 
   /* ---------------- OR ---------------- */
