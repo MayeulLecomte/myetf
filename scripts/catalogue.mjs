@@ -26,7 +26,22 @@ import { fileURLToPath } from 'node:url';
 
 const RACINE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const API = 'https://lt.morningstar.com/api/rest.svc/klr5zyak8x/security/screener';
-const CHAMPS = 'SecId|Name|isin|Ticker|categoryName|OngoingCharge|starRating|exchangeCode|currencyCode|brandingCompanyName';
+
+/* FundTNAV, SRRI et inceptionDate n'étaient pas relevés au départ, et c'est
+   ce qui interdisait de sélectionner dans le catalogue : sans encours, le
+   filtre de taille écartait tout ; sans date de création, on ne savait pas
+   distinguer un fonds jeune d'un fonds que Morningstar renonce à noter.
+   Les trois sont rendus par le même point d'entrée, sans coût.
+
+   ⚠ `SRRI` n'est PAS le SRI du DIC. C'est l'indicateur synthétique de
+   l'ancien DICI UCITS, calculé sur la seule volatilité ; le SRI des
+   documents d'informations clés PRIIPs y ajoute le risque de crédit et
+   suit une échelle différente — un ETF actions monde y ressort à 4 quand
+   son SRRI vaut 6. Les deux sont sur 1 à 7 et se ressemblent assez pour
+   être confondus, jamais assez pour se remplacer. Le SRI reste donc à
+   relever sur chaque DIC ; le SRRI n'est publié qu'à titre indicatif. */
+const CHAMPS = 'SecId|Name|isin|Ticker|categoryName|OngoingCharge|starRating|exchangeCode|' +
+               'currencyCode|brandingCompanyName|FundTNAV|SRRI|inceptionDate';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 const PAGE = 250;
@@ -51,37 +66,103 @@ const PLACES = [
    catégorie qui ne correspond à aucune poche laisse la ligne sans
    rattachement — le conseiller tranchera au moment de l'ajout,
    plutôt que de recevoir un classement inventé.
+
+   Les motifs sont appliqués sur un libellé DÉSACCENTUÉ. Morningstar
+   écrit « Actions Marchés Emergents » sans accent au second mot :
+   un motif portant « émergents » ne l'accrochait pas, et ces 108
+   supports actions sortaient sans poche pendant que les 32 lignes
+   obligataires correspondantes tombaient dans le repli « obligations
+   globales », voire — quand le libellé portait « Dominante EUR » —
+   dans les souveraines de la zone euro. Un classement faux est pire
+   qu'une absence de classement : il ne se voit pas.
+
+   La devise, enfin, fait partie de la définition de la poche et non de
+   son décor. « Obligations souveraines € court terme » n'accueille pas un
+   emprunt d'État américain, et « Obligations globales couvertes en € » ne
+   veut rien dire d'un fonds couvert en livres. Les poches marquées `euro`
+   exigent donc que la catégorie nomme l'euro — soit comme devise du
+   gisement (« Obligations EUR Emprunts d'État »), soit comme devise de
+   couverture (« … Couvertes en EUR »). Une catégorie qui accroche le motif
+   sans satisfaire cette exigence ne descend PAS à la règle suivante : elle
+   sort sans poche. Sans cela, une obligataire en dollars glissait de poche
+   en poche jusqu'à trouver un motif complaisant — c'est ainsi qu'une
+   *floating rate* en dollars s'est retrouvée en obligataire euro dans
+   l'univers d'origine.
    ------------------------------------------------------------- */
 const POCHES = [
-  [/monétaire|money market/i,                                'mon-euro'],
-  [/métaux précieux|precious metal|\bor\b|gold/i,            'div-or'],
-  [/matières premières|commodit/i,                           'div-matieres'],
+  [/monetaire|money market/i,                                'mon-euro',          true],
+  [/metaux precieux|precious metal|\bor\b|gold/i,            'div-or'],
+  [/matieres premieres|commodit/i,                           'div-matieres'],
   [/immobilier|real estate|property/i,                       'div-immobilier'],
-  [/obligation.*indexé|inflation/i,                          'obl-inflation'],
-  [/obligation.*haut rendement|high yield/i,                 'obl-hy-euro'],
-  [/obligation.*(pays émergents|marchés émergents)|emerging.*bond/i, 'obl-emergente'],
-  [/obligation.*(emprunts privés|entreprises|corporate)/i,   'obl-ig-euro'],
-  [/obligation.*(court terme|1-3|ultra)/i,                   'obl-souv-euro-ct'],
-  [/obligation.*(eur|euro|zone euro)/i,                      'obl-souv-euro-lt'],
-  [/obligation|bond/i,                                       'obl-globale-hedge'],
+  [/obligation.*indexe|inflation/i,                          'obl-inflation',     true],
+  [/obligation.*haut rendement|high yield/i,                 'obl-hy-euro',       true],
+  /* La dette émergente est libellée en dollars par construction : c'est la
+     seule poche obligataire du modèle qui n'exige pas l'euro. */
+  [/obligation.*(pays emergents|marches emergents)|emerging.*bond/i, 'obl-emergente'],
+  [/obligation.*(emprunts prives|entreprises|corporate)/i,   'obl-ig-euro',       true],
+  /* Avant les poches souveraines euro : un gisement mondial couvert en euro
+     est un « global aggregate couvert », pas un emprunt d'État de la zone. */
+  [/obligation.*(internationale|globale|monde).*couvertes? en eur/i, 'obl-globale-hedge'],
+  [/obligation.*(court terme|tres court|1-3|ultra)/i,        'obl-souv-euro-ct',  true],
+  [/obligation.*(emprunts d.etat|diversifiee|long terme|flexible)/i, 'obl-souv-euro-lt', true],
   [/technolog|information technology/i,                      'act-tech'],
-  [/petites cap|small cap|micro cap/i,                       'act-small'],
-  [/(volatilit|minimum vol|qualité|quality)/i,               'act-min-vol'],
-  [/(pays émergents|marchés émergents|emerging)/i,           'act-emergents'],
+  [/petites cap|small cap|micro cap|petites & moy/i,         'act-small'],
+  [/(volatilit|minimum vol|qualite|quality)/i,               'act-min-vol'],
+  [/(pays emergents|marches emergents|emerging|chine|china|inde|india|coree|korea|bresil|brazil|amerique latine|latin america|taiwan|afrique du sud)/i,
+                                                             'act-emergents'],
   [/japon|japan/i,                                           'act-japon'],
-  [/(etats-unis|états-unis|amérique du nord|us large|u\.s\.)/i, 'act-us'],
-  [/(europe|zone euro|france|allemagne|royaume-uni)/i,       'act-europe'],
+  [/(etats-unis|amerique du nord|us large|u\.s\.)/i,         'act-us'],
+  [/(europe|zone euro|france|allemagne|royaume-uni|suisse|italie|espagne|pays-bas|nordique|scandinav)/i,
+                                                             'act-europe'],
   [/(international|monde|global|world)/i,                    'act-monde']
 ];
+
+/* Catégories qui accrochent un motif mais désignent tout autre chose.
+   « Actions Asie hors Japon » n'est pas du Japon ; une obligataire
+   subordonnée n'est pas un emprunt d'État ; une obligataire à échéance
+   fixe ne se compare pas à un indice de duration constante. */
+const PIEGES = /hors japon|ex japan|subordonn|a echeance/i;
+
+/** La catégorie nomme-t-elle l'euro, comme gisement ou comme couverture ? */
+function enEuro(categorie) {
+  return /\beur\b|\beuro\b/i.test(categorie);
+}
+
+/* Les catégories sectorielles — santé, finance, énergie, matériaux… — ne
+   sont rattachées à AUCUNE poche, et c'est délibéré : le modèle n'a pas de
+   poche sectorielle hors technologie. Les y forcer reviendrait à faire
+   entrer un pari sectoriel dans une allocation qui n'en demande pas. */
+
+function sansAccent(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
 
 /* Catégories que l'on ne verse pas au catalogue : hors du champ d'un
    conseil patrimonial en unités de compte, ou franchement dangereuses
    entre les mains d'un particulier. */
 const ECARTEES = /actifs digitaux|crypto|levier|leverag|short|bear |x2|x3|inverse/i;
 
-function poche(categorie) {
+/* Les catégories Morningstar sont géographiques : elles ne savent pas dire
+   qu'un fonds est un « minimum volatilité » ou un « qualité ». Ces deux
+   poches du modèle ne peuvent donc venir que du nom du support, et
+   seulement là où la catégorie a déjà désigné une poche actions large —
+   un fonds technologique ou de petites capitalisations reste dans la
+   sienne, même s'il porte le mot « quality ». */
+const FACTEUR = /minimum volatilit|min\.? vol|minvol|low volatilit|quality factor|\bquality\b|\bqualite\b/i;
+const LARGES = ['act-monde', 'act-europe', 'act-us', 'act-emergents', 'act-japon'];
+
+function poche(categorie, nom) {
   if (!categorie) return null;
-  for (const [motif, p] of POCHES) if (motif.test(categorie)) return p;
+  const plat = sansAccent(categorie);
+  if (PIEGES.test(plat)) return null;
+
+  for (const [motif, p, euroExige] of POCHES) {
+    if (!motif.test(plat)) continue;
+    /* Le motif a accroché : la ligne est jugée ici, et nulle part ailleurs. */
+    if (euroExige && !enEuro(plat)) return null;
+    if (LARGES.includes(p) && FACTEUR.test(sansAccent(nom || ''))) return 'act-min-vol';
+    return p;
+  }
   return null;
 }
 
@@ -138,6 +219,10 @@ async function principal() {
           ter: r.OngoingCharge == null ? null : Number(r.OngoingCharge),
           note: r.starRating && r.starRating !== '0' ? Number(r.starRating) : null,
           devise: (r.currencyCode || '').trim(),
+          /* L'encours est rendu en euros ; l'univers le porte en millions. */
+          encours: r.FundTNAV == null ? null : Math.round(Number(r.FundTNAV) / 1e6),
+          srri: r.SRRI == null ? null : Number(r.SRRI),
+          creation: (r.inceptionDate || '').slice(0, 10) || null,
           places: [place.mic]
         });
       }
@@ -158,7 +243,8 @@ async function principal() {
 
   const table = lignes.map(l => [
     l.isin, l.nom, l.ticker, iEmetteur.get(l.emetteur), iCategorie.get(l.categorie),
-    l.ter, l.note, l.devise, l.places.join(','), poche(l.categorie)
+    l.ter, l.note, l.devise, l.places.join(','), poche(l.categorie, l.nom),
+    l.encours, l.srri, l.creation
   ]);
 
   const rattachees = table.filter(t => t[9]).length;
@@ -177,7 +263,14 @@ async function principal() {
     '',
     '   colonnes : isin, nom, ticker, émetteur (index), catégorie',
     '   (index), frais courants, note Morningstar, devise, places,',
-    '   poche déduite de la catégorie — null si aucune ne convient.',
+    '   poche déduite de la catégorie — null si aucune ne convient —,',
+    '   encours en M€, SRRI de l\'ancien DICI UCITS (1 à 7), date de',
+    '   création.',
+    '',
+    '   ⚠ Le SRRI n\'est PAS le SRI du document d\'informations clés :',
+    '   il ne mesure que la volatilité, sur une échelle qui place un',
+    '   ETF actions monde à 6 là où son SRI vaut 4. Le SRI reste à',
+    '   relever sur chaque DIC.',
     '',
     `   Généré le ${new Date().toISOString().slice(0, 10)} · ${table.length} supports · ` +
       `${rattachees} rattachés à une poche · ${surEuronext} cotés sur Euronext.`,
@@ -191,14 +284,18 @@ async function principal() {
     entete + JSON.stringify({
       genere: new Date().toISOString().slice(0, 10),
       emetteurs, categories,
-      colonnes: ['isin', 'nom', 'ticker', 'emetteur', 'categorie', 'ter', 'note', 'devise', 'places', 'poche'],
+      colonnes: ['isin', 'nom', 'ticker', 'emetteur', 'categorie', 'ter', 'note', 'devise',
+                 'places', 'poche', 'encours', 'srri', 'creation'],
       lignes: table
     }) + ';\n');
 
+  const renseigne = i => table.filter(t => t[i] != null).length;
   console.log(`\n\n${table.length} supports retenus · ${ecartees} écartés (levier, inverse, actifs numériques)`);
   console.log(`${rattachees} rattachés à une poche du modèle, ${table.length - rattachees} à trancher à la main`);
   console.log(`${surEuronext} cotés sur Euronext : revalorisables automatiquement`);
   console.log(`${emetteurs.length} émetteurs · ${categories.length} catégories`);
+  console.log(`renseignés : encours ${renseigne(10)} · frais ${renseigne(5)} · ` +
+              `note ${renseigne(6)} · SRRI ${renseigne(11)} · création ${renseigne(12)}`);
 }
 
 principal().catch(e => { console.error(e); process.exit(1); });

@@ -97,13 +97,25 @@ recensés par
 node scripts/catalogue.mjs
 ```
 
-**Ce n'est pas l'univers.** Rien n'y est vérifié, et rien n'entre dans la
-sélection tant que le conseiller ne l'a pas versé dans l'univers depuis
-l'onglet « Univers ETF ». Le catalogue sert à une seule chose : retrouver le
-support que le contrat référence, et l'ajouter d'un clic — il arrive alors avec
-son ISIN, son nom, ses frais, sa note et sa poche déduite de la catégorie
-Morningstar, mais avec le drapeau « Contrat » à faux et une note rappelant ce
-qui reste à renseigner.
+**Rien n'y est vérifié.** Le catalogue sert à deux choses : retrouver le
+support que le contrat référence pour l'ajouter d'un clic à l'univers de
+travail — il arrive alors avec le drapeau « Contrat » à faux et une note
+rappelant ce qui reste à renseigner — et servir de source à la sélection
+automatique, sur le mode décrit plus bas.
+
+Chaque ligne porte l'ISIN, le nom, l'émetteur, la catégorie Morningstar, les
+frais courants, la note en étoiles, la devise, les places de cotation, la poche
+déduite, l'**encours en millions d'euros**, la **date de création** et le
+**SRRI de l'ancien DICI**.
+
+> ⚠️ **Le SRRI n'est pas le SRI.** Morningstar publie l'indicateur synthétique
+> de l'ancien DICI UCITS, calculé sur la seule volatilité. Le SRI du document
+> d'informations clés PRIIPs y ajoute le risque de crédit et suit une échelle
+> différente : un ETF actions monde y ressort à **4** quand son SRRI vaut **6**.
+> Sur les 41 supports de l'univers qui ont un SRRI au catalogue, il diffère du
+> SRI saisi dans **31 cas**, presque toujours d'un à deux crans au-dessus. Le
+> champ `sri` reste donc vide pour les supports du catalogue, et le SRI reste à
+> relever sur chaque DIC.
 
 Trois partis pris :
 
@@ -112,10 +124,12 @@ Trois partis pris :
   catalogue. Un `fetch` aurait échoué sur un double-clic en `file://`.
 - **Levier, inverse et actifs numériques écartés** — 1 892 lignes sur 6 425.
   Ils n'ont pas leur place dans un conseil patrimonial en unités de compte.
-- **Une poche déduite, jamais inventée.** 3 363 supports sur 4 533 sont
+- **Une poche déduite, jamais inventée.** 2 603 supports sur 4 533 sont
   rattachés à une poche du modèle par leur catégorie Morningstar. Les autres
   arrivent sans poche, à trancher à la main : un rattachement faux serait pire
-  qu'un rattachement absent.
+  qu'un rattachement absent — il ne se voit pas. Le rattachement respecte la
+  devise de la poche et se méfie des libellés qui accrochent un motif sans le
+  mériter (« Actions Asie hors Japon »).
 
 **1 351 supports sont cotés sur Euronext** : ce sont les seuls dont
 `maj-cours.mjs` sait relever les cours, et donc les seuls qui se revalorisent
@@ -492,6 +506,62 @@ l'onglet *Client & enveloppe* restreint la sélection aux seuls supports validé
 Il reste inactif par défaut, et refuse de s'activer sur un univers dont rien
 n'est validé : il viderait la sélection sans dire pourquoi.
 
+## Sélectionner dans tout le catalogue européen
+
+Le champ « Univers de sélection », onglet *Client & enveloppe*, choisit ce sur
+quoi porte la sélection :
+
+| | |
+|---|---|
+| **Univers de travail** | 42 supports relevés un à un, cochables au contrat. Le seul univers opposable. |
+| **Catalogue européen** | **2 086 supports** sélectionnables, sur les 4 533 recensés. |
+
+Le catalogue n'est chargé qu'au moment où il devient la source — un
+demi-mégaoctet ne se télécharge pas sans qu'on l'ait demandé. L'univers de
+travail reste présent : ses lignes y sont mieux renseignées que leur homologue
+du catalogue, et les supports détenus doivent rester reconnus.
+
+**Trois exigences pour être sélectionnable** : une poche, des frais courants,
+un encours. Elles écartent 2 447 des 4 533 lignes — 1 930 sans poche du modèle
+(sectorielles, pays isolés, « Actions Autres »), 447 sans frais courants
+exploitables, 70 sans encours. Conseiller un fonds dont on ignore les frais ou
+la taille n'est pas conseiller. Les autres restent cherchables au catalogue et
+ajoutables à la main.
+
+**Des frais à zéro sont tenus pour absents, pas pour gratuits.** Sur les quatre
+supports affichés à 0 % et rattachés à une poche, deux facturent en réalité des
+frais connus — et ce zéro leur donnait le score de frais maximal, donc leur
+poche.
+
+**Ce que le catalogue sait et ne sait pas.** Frais, encours, note Morningstar et
+catégorie sont sourcés. La couverture de change, la part capitalisante ou
+distribuante et le label de durabilité sont **déduits du nom**, et marqués comme
+tels. La réplication n'est pas publiée. **L'éligibilité PEA non plus** : un
+support du catalogue est réputé non éligible faute d'information, pas parce
+qu'il ne l'est pas — pour un PEA, restez sur l'univers de travail. Rien n'y est
+vérifié au contrat, et l'onglet *Sélection ETF* le dit en toutes lettres dès
+qu'une ligne en vient.
+
+**La devise fait partie de la définition d'une poche.** « Obligations
+souveraines € court terme » n'accueille pas un emprunt d'État américain. Les
+poches euro exigent donc que la catégorie Morningstar nomme l'euro, comme
+devise du gisement ou comme devise de couverture ; une catégorie qui accroche
+le motif sans satisfaire cette exigence sort **sans poche** plutôt que de
+glisser vers la règle suivante. Sans cette règle, la sélection sur le catalogue
+retenait une *floating rate* en dollars comme obligataire euro et un fonds
+« Asie hors Japon » comme actions Japon — exactement les erreurs que le relevé
+du 15 août avait trouvées dans l'univers d'origine.
+
+**Ce que l'élargissement change vraiment** : pas le nombre de lignes — treize ou
+quatorze dans les deux cas, une par poche — mais leur qualité. À filtres
+identiques, les frais courants moyens du portefeuille passent de **0,152 % à
+0,118 %**, et le résiduel non investi tombe à zéro : chaque poche trouve enfin
+un support.
+
+Avant toute remise au client, versez les supports retenus dans l'univers de
+travail depuis l'onglet *Univers ETF*, puis contrôlez leur ligne et leur
+référencement au contrat.
+
 **Les notations Morningstar** sont relevées par
 
 ```bash
@@ -554,6 +624,7 @@ js/engine/revenus.js          coussin, cascade de prélèvement, fiscalité, pro
 js/engine/backtest.js         simulation, rééquilibrage, contributions, risque de séquence
 js/engine/situation.js        relevé daté, arrêtés semestriels, avant/après arbitrage
 js/engine/contrat.js          rapprochement de l'univers et de la liste des supports
+js/engine/univers.js          univers de sélection issu du catalogue européen
 scripts/maj-cours.mjs         relevé Euronext, archivage cumulatif, derniers cours
 scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
 scripts/notations.mjs         relève les notes Morningstar et les inscrit dans l'univers

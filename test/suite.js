@@ -218,6 +218,84 @@ ok(avecFiltre.length<sansFiltre.length&&avecFiltre.every(e=>e.verifie),
 ok(MoteurSelection.universEligible(ETF_UNIVERS,ctxContrat).length===sansFiltre.length,
    'filtre contrat absent du contexte : l\'univers n\'est pas restreint');
 
+// --- 4 quater. Univers de sélection issu du catalogue
+console.log('\n== Sélection dans le catalogue ==');
+const large=MoteurUnivers.depuisCatalogue(CATALOGUE_ETF);
+const bilan=MoteurUnivers.ecartes(CATALOGUE_ETF);
+console.log('   '+large.length+' supports sélectionnables sur '+CATALOGUE_ETF.lignes.length+
+  ' — écartés : '+bilan.sansPoche+' sans poche, '+bilan.sansFrais+' sans frais, '+bilan.sansEncours+' sans encours');
+ok(large.length>2000,'le catalogue fournit un univers de sélection substantiel');
+ok(large.length===bilan.retenus,'le décompte des écartés recouvre exactement les retenus');
+ok(large.every(e=>e.ter>0&&e.encours!=null&&LIBELLES_POCHES[e.poche]),
+   'tout support sélectionnable a une poche, des frais non nuls et un encours');
+ok(!large.some(e=>e.ter===0),'des frais à zéro sont tenus pour absents, pas pour gratuits');
+ok(large.every(e=>e.verifie===false),'aucun support du catalogue n\'est validé au contrat');
+ok(large.every(e=>e.deduit===true),'tout support du catalogue se déclare partiellement déduit');
+ok(large.every(e=>['actions','obligations','monetaire','diversifiants'].includes(e.classe)),
+   'classe d\'actifs toujours résolue');
+ok(large.every(e=>!e.pea||e.enveloppes.includes('PEA')),'cohérence PEA / enveloppes');
+
+/* Le SRRI de l'ancien DICI ne doit jamais être servi comme SRI du DIC :
+   sur les 41 supports de l'univers qui en ont un, il diffère du SRI saisi
+   dans 31 cas, presque toujours de un ou deux crans au-dessus. */
+ok(large.every(e=>e.sri===null),'le SRI reste vide : le SRRI du catalogue n\'en tient pas lieu');
+ok(large.some(e=>e.srri!=null),'le SRRI est conservé à part, à titre indicatif');
+
+/* Les poches du modèle doivent être peuplées, sans quoi élargir l'univers
+   ne servirait qu'à grossir les poches déjà servies. */
+const pochesLarge=new Set(large.map(e=>e.poche));
+const pochesModele=Object.keys(LIBELLES_POCHES);
+const vides=pochesModele.filter(p=>!pochesLarge.has(p));
+console.log('   '+pochesLarge.size+' poches sur '+pochesModele.length+' peuplées'+(vides.length?' — vides : '+vides.join(', '):''));
+ok(vides.length===0,'toutes les poches du modèle trouvent des supports dans le catalogue');
+
+/* Le rattachement des catégories est sensible aux accents : Morningstar
+   écrit « Marchés Emergents ». Ce test protège la correction. */
+const emergentsAct=large.filter(e=>e.poche==='act-emergents').length;
+const emergentsObl=large.filter(e=>e.poche==='obl-emergente').length;
+console.log('   émergents : '+emergentsAct+' actions, '+emergentsObl+' obligations');
+ok(emergentsAct>50,'les actions émergentes sont rattachées malgré l\'accent manquant');
+ok(emergentsObl>10,'les obligations émergentes ne tombent plus dans le repli « obligations globales »');
+
+/* Un univers de trois mille lignes doit produire une allocation complète,
+   et le résiduel non investi doit disparaître là où l'univers restreint
+   ne pouvait pas servir certaines poches. */
+const allocLarge=MoteurAllocation.tactique('equilibre',m1.probas,m1.overlays,0.6);
+const ctxLarge={enveloppe:'AV',contratAV:'av-large',etoilesMin:3,encoursMin:500,terMax:0.60,esg:'aucune',montant:200000};
+const selLarge=MoteurSelection.construire(allocLarge.poches,ctxLarge,large);
+const selPetit=MoteurSelection.construire(allocLarge.poches,ctxLarge,ETF_UNIVERS);
+console.log('   univers restreint : '+selPetit.nbSupports+' lignes sur '+selPetit.universEligible+
+  ' éligibles · catalogue : '+selLarge.nbSupports+' lignes sur '+selLarge.universEligible+' éligibles');
+ok(selLarge.universEligible>selPetit.universEligible*5,'le catalogue élargit massivement l\'univers éligible');
+ok(Math.abs(selLarge.lignes.reduce((a,l)=>a+l.poids,0)+selLarge.residuel-100)<0.6,
+   'poids + résiduel ≈ 100 % sur le catalogue');
+ok(selLarge.lignes.every(l=>isFinite(l.score.total)&&l.score.total>0),
+   'aucun score indéterminé malgré les données partielles du catalogue');
+ok(selLarge.terMoyen<=selPetit.terMoyen,
+   'à filtres égaux, le catalogue ne renchérit pas le portefeuille ('+selLarge.terMoyen+' % contre '+selPetit.terMoyen+' %)');
+
+/* La devise fait partie de la définition d'une poche. Une poche euro qui
+   accueille un gisement en dollars, c'est le risque de change entré dans
+   l'allocation sans être demandé — l'erreur même que le relevé du 15 août
+   avait trouvée dans l'univers d'origine. */
+const EURO_EXIGE = ['obl-souv-euro-ct', 'obl-souv-euro-lt', 'obl-ig-euro', 'obl-hy-euro',
+                    'obl-inflation', 'obl-globale-hedge', 'mon-euro'];
+const intrus = large.filter(e => EURO_EXIGE.includes(e.poche) && !/\beur\b|\beuro\b/i.test(e.categorie));
+if (intrus.length) intrus.slice(0,5).forEach(e=>console.log('   intrus : '+e.poche+' ← '+e.categorie+' — '+e.nom));
+ok(intrus.length===0,'aucune poche euro ne contient un gisement dans une autre devise');
+
+/* « Actions Asie hors Japon » accroche le motif « japon » : le piège est
+   explicite, et ce test le garde fermé. */
+ok(!large.some(e=>e.poche==='act-japon'&&/hors japon|ex japan/i.test(e.categorie)),
+   'la poche Japon ne contient pas les fonds « hors Japon »');
+
+/* Un support sans frais courants connus ne doit jamais être sélectionnable :
+   sans eux le plafond de frais le laisserait passer comme s'il était gratuit. */
+const avecTrou=ETF_UNIVERS.map(e=>Object.assign({},e));
+avecTrou[0].ter=null;
+ok(!MoteurSelection.universEligible(avecTrou,ctxLarge).some(e=>e.isin===avecTrou[0].isin),
+   'frais courants inconnus → support écarté de la sélection');
+
 // --- 5. Arbitrage
 console.log('\n== Arbitrage ==');
 const selRef=MoteurSelection.construire(alloc.poches,{enveloppe:'AV',contratAV:'av-large',etoilesMin:4,encoursMin:500,terMax:0.6,esg:'aucune',montant:200000},ETF_UNIVERS);

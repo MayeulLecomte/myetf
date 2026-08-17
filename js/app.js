@@ -17,7 +17,7 @@ const Etat = {
   /* `contratSeulement` reste à faux tant que le rapprochement n'a pas été
      fait : à vrai sur un univers non validé, la sélection ne rendrait rien. */
   filtres: { etoilesMin: 3, encoursMin: 500, terMax: 0.60, exclureSynthetique: false,
-             contratSeulement: false, intensite: 0.6 },
+             contratSeulement: false, sourceUnivers: 'travail', intensite: 0.6 },
   reponses: {},
   macroChoix: {},
   scenariosManuels: null,
@@ -155,6 +155,48 @@ function macroCourante() {
   return { probas, overlays: agrege.overlays, journal: agrege.journal, dominant, calculees: agrege.probas };
 }
 
+/* ============================================================
+   UNIVERS SUR LEQUEL PORTE LA SÉLECTION
+   -------------------------------------------------------------
+   Deux sources, et l'écart entre elles est un écart de garantie,
+   pas de taille :
+
+   • « travail » — les supports que le conseiller a retenus, dont
+     les caractéristiques ont été relevées une à une et dont le
+     référencement au contrat peut être coché. C'est le seul
+     univers qui puisse être opposable.
+   • « catalogue » — près de trois mille supports européens tels
+     que Morningstar les publie. Frais, encours, note et SRI sont
+     sourcés ; la couverture de change, la part capitalisante et
+     le label de durabilité sont déduits du nom ; l'éligibilité
+     PEA n'est pas connue. Rien n'y est vérifié au contrat.
+
+   En source « catalogue », l'univers de travail reste présent :
+   ses 42 lignes y sont mieux renseignées que leur homologue du
+   catalogue, et les supports détenus doivent rester reconnus.
+   ============================================================ */
+
+let __catalogueDerive = null;
+
+function universSelection() {
+  if (Etat.filtres.sourceUnivers !== 'catalogue') return Etat.univers;
+  if (typeof CATALOGUE_ETF === 'undefined') return Etat.univers;
+
+  if (!__catalogueDerive || __catalogueDerive.genere !== CATALOGUE_ETF.genere) {
+    __catalogueDerive = {
+      genere: CATALOGUE_ETF.genere,
+      supports: MoteurUnivers.depuisCatalogue(CATALOGUE_ETF)
+    };
+  }
+  const connus = new Set(Etat.univers.map(e => e.isin));
+  return Etat.univers.concat(__catalogueDerive.supports.filter(s => !connus.has(s.isin)));
+}
+
+/** Le catalogue est-il demandé comme source sans être encore chargé ? */
+function catalogueAttendu() {
+  return Etat.filtres.sourceUnivers === 'catalogue' && typeof CATALOGUE_ETF === 'undefined';
+}
+
 function contexteSelection() {
   const p = resultatProfil();
   return {
@@ -236,7 +278,7 @@ function allocationCourante() {
 function selectionCourante() {
   const a = allocationCourante();
   if (!a) return null;
-  return MoteurSelection.construire(a.poches, contexteSelection(), Etat.univers);
+  return MoteurSelection.construire(a.poches, contexteSelection(), universSelection());
 }
 
 /* ============================================================
@@ -250,6 +292,12 @@ function afficher(vue) {
   $$('#nav button').forEach(b => b.classList.toggle('actif', b.dataset.vue === vue));
   window.scrollTo(0, 0);
   rendre(vue);
+}
+
+/** Vue actuellement à l'écran, pour la rafraîchir sans changer d'onglet. */
+function vueCourante() {
+  const b = $('#nav button.actif');
+  return b ? b.dataset.vue : 'accueil';
 }
 
 function rendre(vue) {
@@ -372,7 +420,7 @@ function rendreAccueil() {
   const analyse = MoteurArbitrage.analyser(
     Etat.detention, sel.lignes,
     { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
-    Etat.univers
+    universSelection()
   );
 
   const derive = analyse.ecarts.reduce((m, e) => Math.max(m, Math.abs(e.pctCible - e.pctActuel)), 0);
@@ -451,8 +499,23 @@ function rendreIdentite() {
   $('#f-ter').value = Etat.filtres.terMax;
   $('#f-synthetique').value = Etat.filtres.exclureSynthetique ? '1' : '0';
   $('#f-contrat').value = Etat.filtres.contratSeulement ? '1' : '0';
+  $('#f-source').value = Etat.filtres.sourceUnivers || 'travail';
+  majLibelleSource();
   $('#f-intensite').value = Math.round(Etat.filtres.intensite * 100);
   majLibelleIntensite();
+}
+
+function majLibelleSource() {
+  const s = $('#f-source-val');
+  if (!s) return;
+  if (Etat.filtres.sourceUnivers !== 'catalogue') {
+    s.textContent = Etat.univers.length + ' supports, relevés un à un et cochables au contrat';
+    return;
+  }
+  if (typeof CATALOGUE_ETF === 'undefined') { s.textContent = 'Chargement du catalogue…'; return; }
+  const e = MoteurUnivers.ecartes(CATALOGUE_ETF);
+  s.textContent = e.retenus.toLocaleString('fr-FR') + ' supports sélectionnables · ' +
+    (e.sansPoche + e.sansFrais + e.sansEncours).toLocaleString('fr-FR') + ' écartés faute de poche, de frais ou d\'encours';
 }
 
 function majLibelleIntensite() {
@@ -806,6 +869,7 @@ function rendrePortefeuille() {
   const alloc = allocationCourante();
   const nonVerifies = sel.lignes.filter(l => !l.etf.verifie).length;
   const sansNotation = sel.lignes.filter(l => l.etf.morningstar == null).length;
+  const duCatalogue = sel.lignes.filter(l => l.etf.deduit).length;
 
   /* Écart entre l'allocation visée et celle réellement implémentable */
   const derives = Object.keys(alloc.classes)
@@ -819,6 +883,19 @@ function rendrePortefeuille() {
       kpi(euro(Number(Etat.identite.montant) || 0), 'Montant investi', libelleEnveloppe()) +
       kpi(euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100), 'Coût annuel des supports', 'hors frais de contrat') +
     '</div>' +
+
+    (catalogueAttendu()
+      ? '<div class="message info">Chargement du catalogue européen… la sélection ci-dessous porte encore ' +
+        'sur les ' + Etat.univers.length + ' supports de l\'univers de travail.</div>' : '') +
+
+    (duCatalogue ? '<div class="message alerte"><strong>' + duCatalogue + ' des ' + sel.lignes.length +
+      ' supports retenus viennent du catalogue européen.</strong> ' +
+      'Frais courants, encours, note et SRI sont sourcés chez Morningstar. En revanche la couverture de ' +
+      'change, la part capitalisante ou distribuante et le label de durabilité sont <em>déduits du nom</em>, ' +
+      'la réplication n\'est pas connue, et <strong>l\'éligibilité PEA n\'est pas publiée</strong> — un support ' +
+      'du catalogue est réputé non éligible faute d\'information, pas parce qu\'il ne l\'est pas. ' +
+      'Avant toute remise au client, versez les supports retenus dans l\'univers de travail depuis l\'onglet ' +
+      '« Univers ETF » et contrôlez leur ligne.</div>' : '') +
 
     (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non validé(s) au contrat.</strong> ' +
       'Leurs caractéristiques de marché ont été relevées sur source publique, mais leur référencement effectif ' +
@@ -926,7 +1003,7 @@ function rendreArbitrages() {
   const analyse = MoteurArbitrage.analyser(
     Etat.detention, sel.lignes,
     { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
-    Etat.univers
+    universSelection()
   );
 
   if (!analyse) {
@@ -1270,7 +1347,7 @@ function blocAvantApres() {
   const analyse = MoteurArbitrage.analyser(
     Etat.detention, sel.lignes,
     { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
-    Etat.univers
+    universSelection()
   );
   if (!analyse) return '';
 
@@ -1412,7 +1489,7 @@ function rendreRevenusContenuSeul() {
     couple: Etat.revenus.couple === true || Etat.revenus.couple === '1',
     primesVersees: Number(Etat.revenus.primesVersees) || 0,
     rendementEspere: metriques.rendement
-  }, Etat.univers);
+  }, universSelection());
 
   if (!plan) { c.innerHTML = '<div class="message alerte">Détention insuffisante pour établir un plan.</div>'; return; }
 
@@ -1737,9 +1814,14 @@ function chargerCatalogue() {
   s.src = 'js/data/catalogue-etf.js?v=' + Date.now();
   s.onload = () => {
     Catalogue.etat = (typeof CATALOGUE_ETF !== 'undefined') ? 'pret' : 'erreur';
-    rendreCatalogue();
+    majLibelleSource();
+    /* Le catalogue peut être devenu la source de la sélection pendant son
+       chargement : la vue à l'écran doit alors être refaite, pas seulement
+       la liste de recherche. */
+    if (Etat.filtres.sourceUnivers === 'catalogue') { majNav(); rendre(vueCourante()); }
+    else rendreCatalogue();
   };
-  s.onerror = () => { Catalogue.etat = 'erreur'; rendreCatalogue(); };
+  s.onerror = () => { Catalogue.etat = 'erreur'; majLibelleSource(); rendreCatalogue(); };
   document.head.appendChild(s);
 }
 
@@ -2274,7 +2356,7 @@ function rendreRapport() {
         coussinMois: Number(Etat.revenus.coussinMois), anciennete: Number(Etat.revenus.anciennete),
         couple: Etat.revenus.couple === true || Etat.revenus.couple === '1',
         primesVersees: Number(Etat.revenus.primesVersees) || 0, rendementEspere: metriques.rendement
-      }, Etat.univers);
+      }, universSelection());
       if (!plan) return '';
       return titre('Revenus programmés', 'saut-page') +
         '<p>Revenu net souhaité : <strong>' + euro(plan.besoinParEcheance) + '</strong> par échéance ' +
@@ -2527,6 +2609,16 @@ function brancher() {
     if (t.id === 'bt-allocation') { Etat.backtest.allocation = t.value; sauver(true); rendreBacktest(); return; }
     if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }
     if (t.id === 'f-synthetique') { Etat.filtres.exclureSynthetique = t.value === '1'; sauver(true); }
+    if (t.id === 'f-source') {
+      Etat.filtres.sourceUnivers = t.value;
+      sauver(true);
+      majLibelleSource();
+      /* Un demi-mégaoctet ne se télécharge pas sans qu'on l'ait demandé :
+         le catalogue n'arrive qu'au moment où il devient la source. */
+      if (t.value === 'catalogue' && Catalogue.etat === 'absent') chargerCatalogue();
+      else rendre(vueCourante());
+      return;
+    }
     if (t.id === 'f-contrat') {
       /* Restreindre la sélection à un univers dont rien n'est validé la
          viderait entièrement : le filtre se refuse plutôt que de rendre
@@ -2841,6 +2933,10 @@ function injecterCoursMarche() {
   const existe = demandee && document.getElementById('vue-' + demandee);
   if (existe) history.replaceState(null, '', location.pathname + location.search);
   afficher(existe ? demandee : 'accueil');
+  /* Le dossier restauré peut avoir le catalogue pour source de sélection :
+     il faut alors le charger avant que la première vue ne soit rendue sur
+     les seuls 42 supports de l'univers de travail. */
+  if (Etat.filtres.sourceUnivers === 'catalogue') chargerCatalogue();
   if (restaure) notifier('Dossier précédent restauré.', 'info');
   if (arretes) notifier(arretes + ' arrêté(s) semestriel(s) figé(s) — onglet « Situation ».', 'info');
   if (remplacees) console.info(remplacees + ' performances annuelles alimentées par les cours de marché.');

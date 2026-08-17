@@ -36,6 +36,10 @@ const MoteurSelection = (function () {
          quand l'utilisateur a demandé qu'on n'applique rien. */
       const seuil = contexte.etoilesMin == null ? 3 : Number(contexte.etoilesMin);
       if (seuil > 0 && e.morningstar != null && e.morningstar < seuil) return false;
+      /* Des frais courants inconnus ne valent pas des frais nuls : sans eux
+         le score de frais serait indéterminé, et le support passerait le
+         plafond de frais comme s'il était gratuit. */
+      if (e.ter == null) return false;
       if (contexte.encoursMin && (e.encours || 0) < contexte.encoursMin) return false;
       if (contexte.terMax && (e.ter || 0) > contexte.terMax) return false;
       if (contexte.exclureSynthetique && /Synth/i.test(e.replication)) return false;
