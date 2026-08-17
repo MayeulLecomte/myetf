@@ -607,6 +607,99 @@ function fermerFeuille() {
   setTimeout(() => { f.hidden = true; }, 260);
 }
 
+/* ------------------------------------------------------------
+   L'ACCROCHE, LA FRAÎCHEUR, LA DÉCOUVERTE
+   Trois choses qu'on ne peut apprendre nulle part ailleurs dans
+   l'application : à quoi elle sert et pour qui, de quand datent
+   les données sur lesquelles elle raisonne, et comment la voir
+   fonctionner sans avoir rien à saisir.
+   ------------------------------------------------------------ */
+
+function accroche() {
+  return '<div class="accroche">' +
+    '<p><strong>myetf construit et suit une allocation d\'ETF pour un client</strong> — du ' +
+      'questionnaire de profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres. ' +
+      'C\'est un outil de travail pour le conseiller, qui valide et signe : ce n\'est pas un ' +
+      'service rendu au client final.</p>' +
+    fraicheurDonnees() +
+    (dossierEntame() ? '' :
+      '<div class="barre-actions" style="margin-top:14px">' +
+        '<button class="bouton" id="btn-decouvrir">Découvrir avec un dossier exemple</button>' +
+      '</div>') +
+    '</div>';
+}
+
+/* Un dossier est entamé dès qu'une saisie a eu lieu — pas seulement quand il
+   est complet. C'est ce qui décide si le bouton de démonstration s'affiche,
+   et s'il faut demander confirmation avant d'écraser.
+
+   `montant` ne peut PAS servir de témoin : l'initialisation lui pose 100 000 €
+   par défaut, comme à l'âge et à l'enveloppe. Un dossier vierge en porterait
+   donc un, et le bouton ne se serait jamais montré. Seuls comptent les champs
+   qu'aucune valeur par défaut ne remplit. */
+function dossierEntame() {
+  return !!Etat.identite.nom ||
+         Object.keys(Etat.reponses).length > 0 ||
+         Etat.detention.length > 0 ||
+         Etat.journal.length > 0 ||
+         Etat.situations.length > 0;
+}
+
+/* De quand datent les données. Il y a quatre relevés distincts, qui ne
+   vieillissent pas au même rythme : les cours bougent chaque séance, les
+   notations chaque mois, les caractéristiques à l'occasion. Les afficher
+   tous les quatre serait illisible ; n'en afficher qu'un serait faux. Trois
+   suffisent, le quatrième — le catalogue — n'entre en jeu que dans l'onglet
+   Univers, où il porte déjà sa date. */
+function fraicheurDonnees() {
+  const dateMax = champ => {
+    const d = ETF_UNIVERS.map(e => e[champ]).filter(Boolean).sort();
+    return d[d.length - 1] || null;
+  };
+  const entrees = [
+    { l: 'Caractéristiques', d: dateMax('donneesLe'), s: 'justETF' },
+    { l: 'Notations', d: dateMax('notationLe'), s: 'Morningstar' },
+    { l: 'Cours', d: (typeof VARIATIONS_POCHES !== 'undefined' && VARIATIONS_POCHES.genere) || null,
+      s: 'Euronext' }
+  ].filter(x => x.d);
+  if (!entrees.length) return '';
+
+  return '<div class="fraicheur">' + entrees.map(x =>
+    '<span title="' + echapper(x.l + ' relevées le ' + dateFr(x.d) + ' sur ' + x.s) + '">' +
+      '<i></i>' + echapper(x.l) + ' <b>' + dateFr(x.d).replace(/ \d{4}$/, '') + '</b>' +
+      ' <em>' + echapper(x.s) + '</em></span>').join('') +
+    '</div>';
+}
+
+/* Remplit un dossier de démonstration. Deux profondeurs : le questionnaire
+   seul, depuis l'onglet 2, ou le dossier entier depuis l'accueil — montant,
+   enveloppe, réponses et lignes détenues — pour que l'application se montre
+   en marche sans qu'on ait rien à saisir. */
+function remplirExemple(complet) {
+  QUESTIONS.forEach(q => { Etat.reponses[q.id] = Math.min(2, q.options.length - 1); });
+  Etat.reponses.q_horizon = 3; Etat.reponses.q_perteMax = 3; Etat.reponses.q_reaction = 2;
+  Etat.reponses.q_esg = 1;
+  if (!Etat.identite.nom) Etat.identite.nom = 'Dossier exemple';
+
+  if (complet) {
+    Etat.identite.age = Etat.identite.age || 45;
+    Etat.identite.montant = 250000;
+    Etat.identite.enveloppe = 'AV';
+    Etat.identite.contratAV = 'av-large';
+    /* Un portefeuille volontairement déséquilibré : à l'équilibre, l'accueil
+       afficherait « rien à faire » et la démonstration ne montrerait rien. */
+    Etat.detention = [
+      { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World UCITS ETF USD (Acc)',
+        montant: 150000, pvLatente: 28000 },
+      { isin: 'IE00B4WXJJ64', libelle: 'iShares Core € Govt Bond UCITS ETF (Dist)',
+        montant: 70000, pvLatente: 1200 },
+      { isin: 'IE00B4ND3602', libelle: 'iShares Physical Gold ETC',
+        montant: 30000, pvLatente: 9400 }
+    ];
+  }
+  sauver(true);
+}
+
 function rendreAccueil() {
   const c = $('#accueil-contenu');
   const etapes = etapesDossier();
@@ -615,6 +708,7 @@ function rendreAccueil() {
   /* --- Dossier incomplet : dire ce qui manque, pas « complétez le dossier » --- */
   if (aFaire.length) {
     c.innerHTML =
+      accroche() +
       filPoches() +
       '<h2>Remplissez le dossier</h2>' +
       '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont pas ' +
@@ -652,6 +746,7 @@ function rendreAccueil() {
   const rien = analyse.aucunMouvement;
 
   c.innerHTML =
+    accroche() +
     filPoches() +
     '<h2>Aujourd\'hui</h2>' +
 
@@ -2794,6 +2889,19 @@ function brancher() {
     const relais = e.target.closest('[data-relais]');
     if (relais) { fermerFeuille(); $('#' + relais.dataset.relais).click(); return; }
 
+    /* Le bouton n'apparaît que sur un dossier vierge, mais la garde reste :
+       un rendu concurrent, un retour arrière du navigateur, et le clic
+       arriverait sur un dossier commencé. Écraser le travail de quelqu'un
+       sans le lui demander n'est pas rattrapable. */
+    if (e.target.closest('#btn-decouvrir')) {
+      if (dossierEntame() &&
+          !confirm('Un dossier est déjà commencé. Le remplacer par le dossier exemple ?')) return;
+      remplirExemple(true);
+      rendre('accueil'); majNav();
+      notifier('Dossier exemple chargé — 250 000 € en assurance-vie, profil dynamique.');
+      return;
+    }
+
     const pastille = e.target.closest('[data-poche]');
     if (pastille) { ouvrirPoche(pastille.dataset.poche); return; }
 
@@ -3162,11 +3270,8 @@ function brancher() {
 
   $('#lien-remplir-demo').onclick = e => {
     e.preventDefault();
-    QUESTIONS.forEach(q => { Etat.reponses[q.id] = Math.min(2, q.options.length - 1); });
-    Etat.reponses.q_horizon = 3; Etat.reponses.q_perteMax = 3; Etat.reponses.q_reaction = 2;
-    Etat.reponses.q_esg = 1;
-    if (!Etat.identite.nom) Etat.identite.nom = 'Dossier exemple';
-    sauver(true); rendreQuestionnaire(); majNav();
+    remplirExemple(false);
+    rendreQuestionnaire(); majNav();
     notifier('Questionnaire pré-rempli à titre de démonstration.');
   };
 }
