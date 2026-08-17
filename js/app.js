@@ -358,9 +358,15 @@ function rendreNavMobile(vue) {
     const b = $('#nav button[data-vue="' + v + '"]');
     return b ? b.textContent.replace(/^\s*[\d·]+\s*/, '').trim() : v;
   };
-  const complete = v => {
+  /* Les trois états sont lus sur la colonne latérale plutôt que recalculés :
+     un seul endroit décide de l'avancement, et le ruban ne peut pas en
+     diverger. */
+  const etat = v => {
     const b = $('#nav button[data-vue="' + v + '"]');
-    return b && b.classList.contains('complet');
+    if (!b) return '';
+    if (b.classList.contains('complet')) return 'complet';
+    if (b.classList.contains('encours')) return 'encours';
+    return '';
   };
 
   barre.innerHTML = GROUPES.map(g =>
@@ -373,9 +379,13 @@ function rendreNavMobile(vue) {
      pilule, qui ne dirait rien de plus que la barre basse. */
   if (groupe.vues.length < 2) { ruban.hidden = true; ruban.innerHTML = ''; return; }
   ruban.hidden = false;
-  ruban.innerHTML = groupe.vues.map(v =>
-    '<button data-vue="' + v + '"' + (v === vue ? ' class="actif"' : '') +
-      (complete(v) ? ' data-complet="1"' : '') + '>' + echapper(libelle(v)) + '</button>').join('');
+  ruban.innerHTML = groupe.vues.map(v => {
+    const e = etat(v);
+    return '<button data-vue="' + v + '"' + (v === vue ? ' class="actif"' : '') +
+      (e === 'complet' ? ' data-complet="1"' : '') +
+      (e === 'encours' ? ' data-etat="encours"' : '') +
+      '>' + echapper(libelle(v)) + '</button>';
+  }).join('');
 
   const actif = ruban.querySelector('button.actif');
   if (actif) actif.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
@@ -402,10 +412,24 @@ function rendre(vue) {
   majNav();
 }
 
+/* L'identité a-t-elle été renseignée, ou porte-t-elle encore ses valeurs
+   d'usine ? L'initialisation pose 45 ans, 100 000 €, assurance-vie et
+   architecture ouverte : un dossier vierge est donc « rempli » sans que
+   personne n'ait rien saisi. L'annoncer « renseigné » ferait croire à
+   l'utilisateur qu'il a fait quelque chose qu'il n'a pas fait. */
+function identiteRenseignee() {
+  if (Etat.identite.nom) return true;
+  return IDENTITE.some(f => f.defaut !== undefined &&
+    Etat.identite[f.id] !== undefined &&
+    String(Etat.identite[f.id]) !== String(f.defaut));
+}
+
 function majNav() {
   const p = resultatProfil();
+  const repondues = QUESTIONS.filter(q => Etat.reponses[q.id] !== undefined).length;
+
   const complet = {
-    client: !!Etat.identite.montant,
+    client: identiteRenseignee(),
     questionnaire: MoteurProfil.questionsManquantes(Etat.reponses).length === 0,
     profil: !!p,
     note: typeof NOTE_MARCHE !== 'undefined' && !!NOTE_MARCHE,
@@ -415,9 +439,33 @@ function majNav() {
     situation: Etat.detention.length > 0,
     revenus: Number(Etat.revenus.besoin) > 0,
     backtest: Object.keys(Etat.historique).some(k => Etat.historique[k].source === 'source'),
-    univers: true, journal: Etat.journal.length > 0, rapport: !!p
+    journal: Etat.journal.length > 0, rapport: !!p
   };
-  $$('#nav button').forEach(b => b.classList.toggle('complet', !!complet[b.dataset.vue]));
+
+  /* Trois états et non deux. « En cours » est celui d'une étape entamée et
+     pas finie — un questionnaire à moitié rempli, une identité laissée à ses
+     valeurs d'usine. Sans lui, ces deux cas se confondaient avec « à faire »,
+     alors qu'ils ne demandent pas le même effort.
+
+     L'univers ETF n'a aucun des trois : ce n'est pas une étape du parcours
+     mais une référence, et lui donner un avancement laisserait croire qu'on
+     doit le « finir ». */
+  const encours = {
+    client: !complet.client,
+    questionnaire: !complet.questionnaire && repondues > 0
+  };
+
+  $$('#nav button').forEach(b => {
+    const v = b.dataset.vue;
+    b.classList.toggle('complet', !!complet[v]);
+    b.classList.toggle('encours', !complet[v] && !!encours[v]);
+  });
+
+  /* Le compteur du questionnaire vit dans index.html, où il est écrit
+     « 0 / 0 » en dur, et n'était calculé qu'à l'ouverture de l'onglet 2.
+     Quelqu'un qui ne s'y rendait pas lisait donc un total faux. Il se
+     recalcule maintenant à chaque rendu, dès le premier. */
+  majProgression();
   rendreNavMobile(vueCourante());
 }
 
@@ -440,8 +488,10 @@ function etapesDossier() {
   return [
     {
       vue: 'client', numero: 1, titre: 'Montant et enveloppe',
-      fait: !!Etat.identite.montant,
-      reste: "Le montant et l'enveloppe déterminent l'univers de supports réellement accessible."
+      fait: identiteRenseignee(),
+      reste: 'Encore aux valeurs par défaut — ' + euro(Number(Etat.identite.montant) || 0) +
+             ' en ' + libelleEnveloppe() + '. Le montant et l\'enveloppe déterminent ' +
+             "l'univers de supports réellement accessible."
     },
     {
       vue: 'questionnaire', numero: 2, titre: 'Questionnaire de profilage',
@@ -616,6 +666,14 @@ function fermerFeuille() {
    ------------------------------------------------------------ */
 
 function accroche() {
+  /* Deux phrases pour qui découvre, une ligne pour qui revient : la même
+     accroche tous les jours cesse d'être lue et ne fait plus qu'occuper le
+     haut de l'écran. */
+  if (dossierEntame()) {
+    return '<div class="accroche courte">' +
+      '<p><strong>Allocation d\'ETF pour un client</strong> — outil de travail du conseiller.</p>' +
+      fraicheurDonnees() + '</div>';
+  }
   return '<div class="accroche">' +
     '<p><strong>myetf construit et suit une allocation d\'ETF pour un client</strong> — du ' +
       'questionnaire de profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres. ' +
@@ -894,13 +952,7 @@ function rendreProfil() {
   const r = resultatProfil();
   const c = $('#profil-contenu');
 
-  if (!r) {
-    const manquantes = MoteurProfil.questionsManquantes(Etat.reponses);
-    c.innerHTML = '<div class="message alerte"><strong>Questionnaire incomplet.</strong> ' +
-      manquantes.length + ' question(s) restent sans réponse :<ul>' +
-      manquantes.map(q => '<li>' + echapper(q.texte) + '</li>').join('') + '</ul></div>';
-    return;
-  }
+  if (!r) { c.innerHTML = etatVide('profil'); return; }
 
   const alloc = allocationCourante();
   const metriques = MoteurAllocation.metriques(alloc.classes);
@@ -1099,7 +1151,7 @@ function rendreMacro() {
 function rendreAllocation() {
   const r = resultatProfil();
   const c = $('#allocation-contenu');
-  if (!r) { c.innerHTML = messageIncomplet(); return; }
+  if (!r) { c.innerHTML = etatVide('allocation'); return; }
 
   const alloc = allocationCourante();
   const m = macroCourante();
@@ -1172,9 +1224,107 @@ function kpi(valeur, libelle, detail) {
     (detail ? '<div class="detail">' + echapper(detail) + '</div>' : '') + '</div>';
 }
 
-function messageIncomplet() {
-  return '<div class="message alerte"><strong>Profil non déterminé.</strong> Complétez le questionnaire ' +
-    '(onglet 2) pour générer l\'allocation.</div>';
+/* ============================================================
+   LES PRÉALABLES
+   -------------------------------------------------------------
+   Chaque vue dépend de ce qui a été renseigné avant elle. Faute
+   de le déclarer, six d'entre elles affichaient le même « Profil
+   non déterminé », qui ne disait ni quelle réponse manquait, ni
+   combien, ni où aller la remplir — un cul-de-sac poli.
+
+   Les dépendances sont donc écrites une fois, ici, et l'état vide
+   s'en déduit : ce qui manque, pourquoi la vue ne peut rien en
+   dire, et le bouton qui y mène.
+   ============================================================ */
+
+const PREALABLES = {
+  questionnaire: {
+    vue: 'questionnaire',
+    titre: 'Le questionnaire de profilage n\'est pas terminé',
+    bouton: 'Reprendre le questionnaire',
+    pourquoi: 'Le profil de risque se calcule à partir de ces réponses, et toute la suite en découle : ' +
+              'allocation cible, sélection des supports, arbitrages.',
+    /* Le blocage porte sur les questions NOTÉES : la préférence de durabilité
+       n'entre pas dans le score et n'empêche pas de calculer un profil.
+       Le décompte affiché, lui, porte sur toutes les questions — sans quoi
+       la barre de progression annonçait un total et cette phrase un autre,
+       et l'on cherchait laquelle des deux mentait. */
+    satisfait: () => MoteurProfil.questionsManquantes(Etat.reponses).length === 0,
+    reste: () => {
+      const n = QUESTIONS.filter(q => Etat.reponses[q.id] === undefined).length;
+      return n + (n > 1 ? ' réponses manquantes' : ' réponse manquante') +
+             ' sur les ' + QUESTIONS.length + ' du questionnaire.';
+    }
+  },
+  detention: {
+    vue: 'arbitrages',
+    titre: 'Aucune ligne détenue n\'est saisie',
+    bouton: 'Saisir le portefeuille détenu',
+    ici: 'Le tableau de saisie se trouve ci-dessus.',
+    pourquoi: 'Sans le portefeuille réel, il n\'y a rien à comparer à l\'allocation cible : ni écart, ' +
+              'ni ordre à passer, ni situation à dater.',
+    satisfait: () => Etat.detention.length > 0,
+    reste: () => 'Le collage d\'un relevé d\'assureur suffit — un ISIN et un montant par ligne.'
+  },
+  revue: {
+    vue: 'arbitrages',
+    titre: 'Aucune revue n\'a encore été enregistrée',
+    bouton: 'Ouvrir les arbitrages',
+    pourquoi: 'Le journal conserve la trace des revues validées : ce qui a été décidé, quand, et pourquoi.',
+    satisfait: () => Etat.journal.length > 0,
+    reste: () => 'Une revue s\'enregistre depuis les arbitrages, une fois les ordres arrêtés.'
+  }
+};
+
+/* Ce dont chaque vue a besoin pour montrer quelque chose. L'ordre compte :
+   c'est celui dans lequel les manques sont présentés, donc celui dans lequel
+   il faut les combler. */
+const DEPENDANCES = {
+  profil:       ['questionnaire'],
+  allocation:   ['questionnaire'],
+  portefeuille: ['questionnaire'],
+  backtest:     ['questionnaire'],
+  rapport:      ['questionnaire'],
+  arbitrages:   ['questionnaire', 'detention'],
+  revenus:      ['questionnaire', 'detention'],
+  situation:    ['detention'],
+  journal:      ['revue']
+};
+
+function manquePour(vue) {
+  return (DEPENDANCES[vue] || []).filter(k => !PREALABLES[k].satisfait());
+}
+
+/** L'état vide d'une vue : ce qui manque, pourquoi, et par où commencer. */
+function etatVide(vue) {
+  const manques = manquePour(vue);
+  if (!manques.length) return '';
+
+  return '<div class="etat-vide">' +
+    '<h3>' + (manques.length > 1
+      ? 'Deux étapes manquent avant de pouvoir afficher cette section'
+      : 'Une étape manque avant de pouvoir afficher cette section') + '</h3>' +
+    manques.map((k, i) => {
+      const pre = PREALABLES[k];
+      return '<div class="etat-vide-etape">' +
+        '<span class="etat-vide-marque">' + (i + 1) + '</span>' +
+        '<div>' +
+          '<strong>' + echapper(pre.titre) + '</strong>' +
+          '<div class="etat-vide-reste">' + echapper(pre.reste()) + '</div>' +
+          '<div class="etat-vide-pourquoi">' + echapper(pre.pourquoi) + '</div>' +
+          /* Un bouton qui renvoie à la vue déjà ouverte ne mène nulle part :
+             quand ce qui manque se saisit ici même, on le dit au lieu de
+             proposer un aller-retour sur place. */
+          (pre.vue === vue
+            ? '<div class="etat-vide-ici">' + echapper(pre.ici || 'À renseigner sur cette page.') + '</div>'
+            : '<div class="barre-actions" style="margin-top:10px">' +
+                '<button class="bouton' + (i ? ' secondaire' : '') + '" data-aller="' + pre.vue + '">' +
+                  echapper(pre.bouton) + '</button>' +
+              '</div>') +
+        '</div>' +
+      '</div>';
+    }).join('') +
+    '</div>';
 }
 
 /* ============================================================
@@ -1184,7 +1334,7 @@ function messageIncomplet() {
 function rendrePortefeuille() {
   const r = resultatProfil();
   const c = $('#portefeuille-contenu');
-  if (!r) { c.innerHTML = messageIncomplet(); return; }
+  if (!r) { c.innerHTML = etatVide('portefeuille'); return; }
 
   const sel = selectionCourante();
   const ctx = contexteSelection();
@@ -1319,7 +1469,7 @@ function rendreArbitrages() {
   rendreDetention();
   const r = resultatProfil();
   const c = $('#arbitrages-contenu');
-  if (!r) { c.innerHTML = messageIncomplet(); return; }
+  if (!r) { c.innerHTML = etatVide('arbitrages'); return; }
 
   const sel = selectionCourante();
   const analyse = MoteurArbitrage.analyser(
@@ -1568,12 +1718,7 @@ function repartitionSituation(s) {
 function rendreSituation() {
   const c = $('#situation-contenu');
 
-  if (!Etat.detention.length) {
-    c.innerHTML = '<div class="message alerte"><strong>Aucune ligne détenue.</strong> ' +
-      'Une situation est un relevé du portefeuille : saisissez les lignes dans l\'onglet « Arbitrages ».' +
-      '<div class="barre-actions"><button class="bouton" data-aller="arbitrages">Saisir le portefeuille</button></div></div>';
-    return;
-  }
+  if (!Etat.detention.length) { c.innerHTML = etatVide('situation'); return; }
 
   const aujourd = aujourdhuiISO();
   const date = Etat.situationDate || aujourd;
@@ -1782,7 +1927,7 @@ function rendreRevenusContenuSeul() {
   const c = $('#revenus-contenu');
   if (!c) return;
   const r = resultatProfil();
-  if (!r) { c.innerHTML = messageIncomplet(); return; }
+  if (!r) { c.innerHTML = etatVide('revenus'); return; }
 
   const parAn = MoteurRevenus.FREQUENCES[Etat.revenus.frequence].parAn;
   const besoinAnnuel = Number(Etat.revenus.besoin) * parAn;
@@ -1933,7 +2078,7 @@ function rendreBacktest() {
   const c = $('#backtest-contenu');
   const banniere = $('#backtest-fiabilite');
 
-  if (!poids) { banniere.innerHTML = ''; c.innerHTML = messageIncomplet(); return; }
+  if (!poids) { banniere.innerHTML = ''; c.innerHTML = etatVide('backtest'); return; }
 
   const opt = optionsBacktest();
   const fiab = MoteurBacktest.fiabilite(poids, Etat.historique);
@@ -2578,11 +2723,7 @@ function rendreUnivers() {
 
 function rendreJournal() {
   const c = $('#journal-contenu');
-  if (!Etat.journal.length) {
-    c.innerHTML = '<div class="message info">Aucune revue enregistrée. Validez une revue depuis l\'onglet ' +
-      '« Arbitrages » pour alimenter le journal.</div>';
-    return;
-  }
+  if (!Etat.journal.length) { c.innerHTML = etatVide('journal'); return; }
   c.innerHTML = Etat.journal.map((j, i) =>
     '<div class="carte"><div style="display:flex;justify-content:space-between;align-items:center">' +
       '<h3 style="margin:0">Revue du ' + dateFr(j.date) + '</h3>' +
@@ -2653,7 +2794,7 @@ function blocSituationRapport(numero) {
 function rendreRapport() {
   const r = resultatProfil();
   const c = $('#rapport-contenu');
-  if (!r) { c.innerHTML = messageIncomplet(); return; }
+  if (!r) { c.innerHTML = etatVide('rapport'); return; }
 
   const alloc = allocationCourante();
   const sel = selectionCourante();
