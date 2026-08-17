@@ -338,7 +338,101 @@ async function lancer() {
   ok(/questionnaire/i.test(texteProfil), 'l\'état vide nomme l\'étape manquante');
   Etat.reponses = vide;
 
-  /* --- 9. Rien n'a protesté --- */
+  /* --- 9. Le second mode ---
+     L'application se lit de deux façons, et jusqu'ici le harnais n'en
+     parcourait qu'une. Un mode qui masque des vues, renomme la moitié des
+     libellés et réécrit le rapport a exactement ce qu'il faut pour casser
+     sans bruit : c'est le seul endroit du test où l'on rejoue tout.
+
+     Le dossier ne change pas — c'est le même que ci-dessus, restauré. */
+  groupe('Mode particulier');
+  dossierComplet(w, Etat);
+  Etat.mode = 'particulier';
+  w.poserNav(); w.poserTitres(); w.poserBarresParcours(); w.majNav();
+
+  leve = []; vides = [];
+  for (const vue of vues) {
+    try { w.afficher(vue); } catch (e) { leve.push(vue + ' (' + e.message + ')'); continue; }
+    const texte = (d.getElementById('vue-' + vue).textContent || '').trim();
+    if (texte.length < 40) vides.push(vue);
+  }
+  ok(leve.length === 0, 'aucune vue ne lève d\'erreur en mode particulier' +
+     (leve.length ? ' — ' + leve.join(', ') : ''));
+  ok(vides.length === 0, 'aucune vue ne rend une page blanche en mode particulier' +
+     (vides.length ? ' — ' + vides.join(', ') : ''));
+
+  /* Le vocabulaire a bien changé : sans ce contrôle, une table d'écarts
+     débranchée passerait tous les autres sans qu'on s'en aperçoive. */
+  const navRapport = d.querySelector('#nav button[data-vue="rapport"]');
+  ok(navRapport && /Ma synthèse/.test(navRapport.textContent),
+     'le vocabulaire du mode est appliqué — « ' +
+     (navRapport ? navRapport.textContent.trim() : 'entrée absente') + ' »');
+
+  /* Trois vues quittent la colonne : la note du jour, le contexte macro et
+     les revenus programmés. */
+  const MASQUEES = ['note', 'macro', 'revenus'];
+  const encoreLa = MASQUEES.filter(v => d.querySelector('#nav button[data-vue="' + v + '"]'));
+  ok(encoreLa.length === 0, 'les ' + MASQUEES.length + ' vues masquées quittent la navigation' +
+     (encoreLa.length ? ' — encore présentes : ' + encoreLa.join(', ') : ''));
+  const boutonsP = [...d.querySelectorAll('#nav button[data-vue]')];
+  ok(boutonsP.length === vues.length - MASQUEES.length,
+     boutonsP.length + ' entrées de navigation pour ' + vues.length + ' vues, dont ' +
+     MASQUEES.length + ' masquées');
+
+  /* --- Les ancres survivent au masquage ---
+     C'est la décision de fond du mode : masquer porte sur la navigation, pas
+     sur le routage. Une ancre qui cesserait de résoudre ici rendrait le
+     widget iOS muet sans qu'aucun autre contrôle ne bronche. */
+  const malRouteesP = ANCRES.filter(a => {
+    try { w.afficher(a); } catch (e) { return true; }
+    const section = d.getElementById('vue-' + a);
+    return !section || !section.classList.contains('actif');
+  });
+  ok(malRouteesP.length === 0, 'les ' + ANCRES.length + ' ancres ouvrent leur vue en mode particulier' +
+     (malRouteesP.length ? ' — ' + malRouteesP.map(x => '#' + x).join(', ') : ''));
+
+  w.afficher('note');
+  const sectionNote = d.getElementById('vue-note');
+  ok(sectionNote.classList.contains('actif') && sectionNote.textContent.trim().length > 40,
+     '#note ouvre la note du jour alors qu\'elle est masquée — le widget iOS en dépend');
+
+  /* Le ruban mobile lit ses libellés dans la colonne : une vue masquée n'y a
+     plus d'entrée, et le ruban affichait alors son identifiant brut —
+     « revenus » au lieu d'un libellé. Le repli est volontaire et utile, mais
+     il ne doit jamais se voir. */
+  const brutes = [];
+  for (const vue of vues) {
+    try { w.afficher(vue); } catch (e) { continue; }
+    [...d.querySelectorAll('#sous-nav button[data-vue]')].forEach(b => {
+      const l = b.textContent.trim();
+      if (l === b.dataset.vue || MASQUEES.indexOf(b.dataset.vue) >= 0) brutes.push(vue + '→' + l);
+    });
+  }
+  ok(brutes.length === 0, 'le ruban mobile ne montre ni vue masquée ni identifiant brut' +
+     (brutes.length ? ' — ' + brutes.slice(0, 4).join(', ') : ''));
+
+  /* --- Le mode ne touche à aucun calcul ---
+     C'est la contrainte de fond du chantier : un seul moteur, un seul
+     dossier. Le jour où ce contrôle échoue, c'est qu'un `if (mode)` s'est
+     glissé autour d'un chiffre. */
+  Etat.macroChoix = {};
+  Etat.scenariosManuels = null;
+  Etat.mode = 'conseiller';
+  const allocConseiller = JSON.stringify(w.allocationCourante().poches);
+  Etat.mode = 'particulier';
+  const allocParticulier = JSON.stringify(w.allocationCourante().poches);
+  ok(allocConseiller === allocParticulier,
+     'sans contexte, le même dossier rend la même allocation cible dans les deux modes');
+
+  /* Le mode voyage avec le dossier : c'est un champ, pas un réglage de
+     l'application. */
+  const relumode = JSON.parse(JSON.stringify(Etat));
+  ok(relumode.mode === 'particulier', 'le mode fait partie du dossier exporté');
+
+  Etat.mode = 'conseiller';
+  w.poserNav(); w.poserTitres(); w.poserBarresParcours(); w.majNav();
+
+  /* --- 10. Rien n'a protesté --- */
   groupe('Console');
   ok(erreurs.length === 0, 'aucune erreur pendant tout le parcours' +
      (erreurs.length ? ' — ' + erreurs.slice(0, 3).join(' | ') : ''));

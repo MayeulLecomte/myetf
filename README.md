@@ -899,6 +899,18 @@ pilote : elle rend chaque vue sur un dossier vide puis sur un dossier complet,
 vérifie qu'aucune ne lève d'erreur ni ne rend une page blanche, contrôle
 l'aller-retour d'export et relit ce qui a été écrit dans le navigateur.
 
+**Elle rejoue ce parcours une fois par mode de lecture.** Un mode qui masque
+des vues, renomme la moitié des libellés et réécrit le rapport a tout ce qu'il
+faut pour casser sans bruit — c'est d'ailleurs là qu'un défaut s'était glissé :
+le ruban mobile affichait l'identifiant brut d'une vue masquée. Trois contrôles
+y méritent d'échouer seuls : que
+`#note` ouvre encore la note du jour alors qu'elle est masquée — le widget iOS
+en dépend —, que le vocabulaire du mode soit bien appliqué, et que **le même
+dossier sans contexte rende la même allocation cible dans les deux modes**.
+Ce dernier est la garde du principe : un seul moteur, aucun calcul propre à un
+mode. Le jour où il échoue, c'est qu'un `if (mode)` s'est glissé autour d'un
+chiffre.
+
 Elle a besoin d'un serveur — un cadre en `file://` est traité comme une autre
 origine et son contenu devient illisible :
 

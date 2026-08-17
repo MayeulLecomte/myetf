@@ -85,7 +85,12 @@ qu'aucune déviation n'est appliquée dans le document remis.
 - **`#note` et `#accueil`** en particulier — le widget iOS les ouvre.
 - **Les moteurs** (`js/engine/`) et leurs 192 assertions : `node test/runner.js`.
 - **Le rendu**, la persistance, l'import/export : `test/fumee.html`, qui a besoin
-  d'un serveur.
+  d'un serveur. Il **rejoue son parcours une fois par mode** : un mode qui
+  masque des vues et renomme les libellés casse sans bruit.
+- **L'équivalence des deux modes** : sans contexte, le même dossier doit rendre
+  la même allocation cible en conseiller et en particulier. C'est la garde du
+  principe « un seul moteur ». Le jour où ce contrôle échoue, c'est qu'un
+  `if (mode)` s'est glissé autour d'un chiffre.
 
 Lancer les deux harnais **avant et après** tout remaniement d'interface, et
 comparer — pas seulement constater qu'ils passent à la fin.

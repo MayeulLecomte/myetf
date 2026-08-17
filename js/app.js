@@ -526,7 +526,7 @@ function rendreNavMobile(vue) {
   const vuesGroupe = groupe.vues.filter(v => !vueMasquee(v));
   if (vuesGroupe.length < 2) { ruban.hidden = true; ruban.innerHTML = ''; return; }
   ruban.hidden = false;
-  ruban.innerHTML = groupe.vues.map(v => {
+  ruban.innerHTML = vuesGroupe.map(v => {
     const e = etat(v);
     return '<button data-vue="' + v + '"' + (v === vue ? ' class="actif"' : '') +
       (e === 'complet' ? ' data-complet="1"' : '') +
