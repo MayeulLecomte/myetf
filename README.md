@@ -171,6 +171,28 @@ L'annexe se décoche avant impression.
 au client quand c'est le cas : « Aucune déviation n'est appliquée dans le
 présent document. »
 
+## Avant d'imprimer
+
+Quatre contrôles rassemblés en tête du rapport, à l'instant où le document
+cesse d'être un écran de travail pour devenir une pièce remise et signée :
+
+| Contrôle | Ce qu'il regarde |
+|---|---|
+| Référencement au contrat | combien des supports proposés ne portent pas la coche « référencé au contrat » |
+| Vue de marché appliquée | si le document présente l'allocation stratégique seule ou une allocation déviée |
+| Part estimée du backtest | quelle fraction de l'allocation testée repose sur des séries non vérifiées |
+| Nom du dossier | s'il est renseigné, faute de quoi le rapport imprime un tiret |
+
+**Aucun ne bloque l'impression.** Un outil qui refuse d'imprimer se contourne,
+et le conseiller reste seul juge de ce qu'il remet : c'est une relecture, pas
+un garde-fou. Les deux contrôles du milieu ne signalent d'ailleurs pas des
+défauts mais des points à confirmer — une allocation stratégique seule est une
+réponse complète, et le backtest ne figure pas au rapport.
+
+Chaque ligne se coche une fois relue. **La coche retient l'état exact qu'elle a
+validé** : un support de plus, un contexte saisi, un nom corrigé, et elle tombe
+d'elle-même. La liste ne s'imprime pas.
+
 ## Accéder à l'application
 
 En ligne : **https://mayeullecomte.github.io/myetf/**
@@ -203,6 +225,11 @@ le bouton qui y mène.
 **La note du jour et le contexte restent deux vues distinctes**, côte à côte
 dans le même bloc. L'une est rédigée par un script, l'autre saisie par le
 conseiller : les fondre en une page effacerait cette différence de nature.
+
+**Chaque vue du parcours porte une barre « ← précédent / suivant → »**, posée
+par le code à partir des blocs ci-dessus. C'est la seule définition de l'ordre :
+les boutons écrits à la main dans `index.html` avaient fini par en dévier, et
+« Profil de risque » enchaînait sur le contexte en sautant la note du jour.
 
 **Les quinze ancres `#…` sont inchangées** et le resteront : elles servent de
 routage au démarrage, et `#note` comme `#accueil` sont ouvertes par le widget
@@ -278,6 +305,11 @@ support sur lequel la variation est mesurée.
 
 La bande ne remplace pas la note de marché, elle la précède : la note
 explique, la bande montre.
+
+**Elle n'apparaît qu'à partir de la première saisie.** Sur un dossier vierge,
+onze pastilles et leurs variations du jour ne disent rien à quelqu'un qui n'a
+pas encore de portefeuille, et elles repoussaient les étapes à remplir sous la
+ligne de flottaison.
 
 ### Le verre
 

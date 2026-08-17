@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608191400">
+<link rel="stylesheet" href="css/app.css?v=202608191500">
 </head>
 <body>
 
@@ -149,10 +149,6 @@
           </div>
         </div>
       </div>
-
-      <div class="barre-actions">
-        <button class="bouton" data-aller="questionnaire">Passer au questionnaire →</button>
-      </div>
     </section>
 
     <!-- ============ 2. QUESTIONNAIRE ============ -->
@@ -161,28 +157,31 @@
       <p class="intro">Structure conforme aux exigences MIF 2 / DDA : connaissance et expérience, situation
       financière et capacité à subir des pertes, objectifs et horizon, tolérance au risque, préférences de durabilité.</p>
 
-      <div class="carte compacte sans-impression">
+      <!-- Le repère suit le défilement. Dix-huit questions en cinq sections :
+           une barre posée en tête de page sortait du champ dès la troisième, et
+           l'on ne savait plus ni où l'on en était, ni dans quelle section. Il
+           porte aussi la seule chose qu'on veut savoir en cours de saisie —
+           que fermer l'onglet ne perd rien. -->
+      <div class="carte compacte sans-impression repere-q" id="repere-questionnaire">
         <div class="progression"><div id="barre-progression" style="width:0%"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gris-doux)">
+        <div class="repere-q-ligne">
+          <span class="repere-q-section" id="txt-section"></span>
           <span id="txt-progression">0 / 0 questions</span>
           <span><a href="#" id="lien-remplir-demo">Pré-remplir un exemple</a></span>
         </div>
       </div>
+      <!-- La mention se lit une fois, au début : elle reste hors du repère
+           collant, qui doit rester court pour ne pas manger l'écran d'un
+           téléphone à chaque défilement. -->
+      <p class="repere-q-note">Chaque réponse est enregistrée aussitôt : vous pouvez fermer et reprendre plus tard.</p>
 
       <div id="questions"></div>
-
-      <div class="barre-actions">
-        <button class="bouton" data-aller="profil">Voir le profil →</button>
-      </div>
     </section>
 
     <!-- ============ 3. PROFIL ============ -->
     <section class="vue" id="vue-profil">
       <h2>Profil de risque</h2>
       <div id="profil-contenu"></div>
-      <div class="barre-actions">
-        <button class="bouton" data-aller="macro">Contexte de marché →</button>
-      </div>
     </section>
 
     <!-- ============ 4. NOTE DE MARCHÉ ============ -->
@@ -217,28 +216,18 @@
           <div class="carte" id="overlays-macro"></div>
         </div>
       </div>
-
-      <div class="barre-actions">
-        <button class="bouton" data-aller="allocation">Allocation cible →</button>
-      </div>
     </section>
 
     <!-- ============ 6. ALLOCATION ============ -->
     <section class="vue" id="vue-allocation">
       <h2>Allocation cible</h2>
       <div id="allocation-contenu"></div>
-      <div class="barre-actions">
-        <button class="bouton" data-aller="portefeuille">Sélection des supports →</button>
-      </div>
     </section>
 
     <!-- ============ 7. SÉLECTION ETF ============ -->
     <section class="vue" id="vue-portefeuille">
       <h2>Sélection des supports</h2>
       <div id="portefeuille-contenu"></div>
-      <div class="barre-actions">
-        <button class="bouton" data-aller="arbitrages">Arbitrages →</button>
-      </div>
     </section>
 
     <!-- ============ 8. ARBITRAGES ============ -->
@@ -268,8 +257,8 @@
           </table>
         </div>
         <div class="barre-actions">
+          <button class="bouton" id="btn-charger-cible">Partir de l'allocation cible</button>
           <button class="bouton secondaire" id="btn-ajouter-ligne">+ Ajouter une ligne</button>
-          <button class="bouton secondaire" id="btn-charger-cible">Partir de l'allocation cible</button>
           <button class="bouton secondaire" id="btn-coller-valos">Coller les valorisations du contrat</button>
           <button class="bouton secondaire" id="btn-revaloriser">Revaloriser aux cours du jour</button>
           <div class="champ" style="margin:0 0 0 auto;min-width:200px">
@@ -317,12 +306,12 @@
     <!-- ============ 11. BACKTEST ============ -->
     <section class="vue" id="vue-backtest">
       <h2>Backtest de l'allocation</h2>
-      <p class="intro">Rejoue l'allocation sur des performances annuelles calendaires, en euros, dividendes
+      <p class="intro" id="backtest-intro">Rejoue l'allocation sur des performances annuelles calendaires, en euros, dividendes
       réinvestis.</p>
 
       <div id="backtest-fiabilite"></div>
 
-      <div class="carte">
+      <div class="carte" id="backtest-reglages">
         <div class="filtres">
           <div class="champ"><label for="bt-capital">Capital simulé (€)</label>
             <input type="number" id="bt-capital" value="100000" min="1000" step="10000"></div>
@@ -340,7 +329,7 @@
 
       <div id="backtest-contenu"></div>
 
-      <div class="carte">
+      <div class="carte" id="backtest-series">
         <h3>Séries de performances</h3>
         <p class="intro" style="font-size:12px">Performances calendaires nettes, en euros, dividendes réinvestis.
         Remplacez ces valeurs par celles extraites de Quantalys, Morningstar ou justETF pour obtenir un backtest
@@ -462,6 +451,7 @@
     <!-- ============ 14. RAPPORT ============ -->
     <section class="vue" id="vue-rapport">
       <h2>Rapport de préconisation</h2>
+      <div id="rapport-controles" class="sans-impression"></div>
       <div class="barre-actions sans-impression">
         <button class="bouton" id="btn-imprimer">Imprimer / enregistrer en PDF</button>
         <label style="display:flex;align-items:center;gap:8px;font-weight:normal;margin:0">
@@ -506,24 +496,24 @@
   en investissement.</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608191400"></script>
-<script src="js/data/allocations.js?v=202608191400"></script>
-<script src="js/data/macro.js?v=202608191400"></script>
-<script src="js/data/etf-univers.js?v=202608191400"></script>
-<script src="js/data/fiscalite.js?v=202608191400"></script>
-<script src="js/data/historique.js?v=202608191400"></script>
-<script src="js/data/note-marche.js?v=202608191400"></script>
-<script src="js/data/cours-historique.js?v=202608191400"></script>
-<script src="js/data/cours-marche.js?v=202608191400"></script>
-<script src="js/engine/profil.js?v=202608191400"></script>
-<script src="js/engine/allocation.js?v=202608191400"></script>
-<script src="js/engine/selection.js?v=202608191400"></script>
-<script src="js/engine/arbitrage.js?v=202608191400"></script>
-<script src="js/engine/revenus.js?v=202608191400"></script>
-<script src="js/engine/situation.js?v=202608191400"></script>
-<script src="js/engine/contrat.js?v=202608191400"></script>
-<script src="js/engine/univers.js?v=202608191400"></script>
-<script src="js/engine/backtest.js?v=202608191400"></script>
-<script src="js/app.js?v=202608191400"></script>
+<script src="js/data/questionnaire.js?v=202608191500"></script>
+<script src="js/data/allocations.js?v=202608191500"></script>
+<script src="js/data/macro.js?v=202608191500"></script>
+<script src="js/data/etf-univers.js?v=202608191500"></script>
+<script src="js/data/fiscalite.js?v=202608191500"></script>
+<script src="js/data/historique.js?v=202608191500"></script>
+<script src="js/data/note-marche.js?v=202608191500"></script>
+<script src="js/data/cours-historique.js?v=202608191500"></script>
+<script src="js/data/cours-marche.js?v=202608191500"></script>
+<script src="js/engine/profil.js?v=202608191500"></script>
+<script src="js/engine/allocation.js?v=202608191500"></script>
+<script src="js/engine/selection.js?v=202608191500"></script>
+<script src="js/engine/arbitrage.js?v=202608191500"></script>
+<script src="js/engine/revenus.js?v=202608191500"></script>
+<script src="js/engine/situation.js?v=202608191500"></script>
+<script src="js/engine/contrat.js?v=202608191500"></script>
+<script src="js/engine/univers.js?v=202608191500"></script>
+<script src="js/engine/backtest.js?v=202608191500"></script>
+<script src="js/app.js?v=202608191500"></script>
 </body>
 </html>

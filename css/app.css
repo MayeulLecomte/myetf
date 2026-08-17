@@ -1490,3 +1490,87 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 .lien:hover, .lien:focus-visible { text-decoration-thickness: 2px; outline: none; }
 
 @media print { .rappel-local { display: none !important; } }
+
+/* ============================================================
+   AJOUTS DU CHANTIER 6 BIS
+   ============================================================ */
+
+/* ---------- La barre de parcours ----------
+   Le retour à gauche, la suite à droite : les deux extrémités de la
+   barre, pour qu'on ne clique pas l'un en visant l'autre. */
+.barre-parcours { margin-top: 22px; }
+.barre-parcours .suivant { margin-left: auto; }
+
+/* ---------- L'accueil ---------- */
+.accroche-note {
+  margin: 8px 0 0; font-size: 12.5px; color: var(--texte-doux); max-width: 74ch;
+}
+/* La durée se lit d'un coup d'œil, sans se confondre avec ce qui manque. */
+.etape-duree {
+  display: inline-block; margin-left: 2px;
+  padding: 2px 8px; border-radius: var(--r-pilule);
+  background: var(--ligne); color: var(--texte-doux);
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+
+/* ---------- Le repère du questionnaire ----------
+   Il colle sous l'en-tête, et sous le ruban de vues quand il y en a un.
+   Le flou reste sur ce conteneur — c'est un bloc, pas une ligne de
+   liste — et le fond doit être franc : la carte passe au-dessus des
+   questions pendant le défilement. */
+.repere-q {
+  position: sticky; top: 66px; z-index: 30;
+  background: var(--verre-fort);
+}
+.repere-q-ligne {
+  display: flex; align-items: baseline;
+  gap: 6px 14px; flex-wrap: wrap;
+  font-size: 12px; color: var(--texte-doux);
+}
+/* Le nom de la section passe avant le décompte : c'est lui qu'on cherche
+   au milieu de dix-huit questions. `margin-right: auto` le laisse seul sur
+   sa ligne dès que la largeur manque — sur un téléphone, il occupait sinon
+   la place que les deux autres lui laissaient, c'est-à-dire aucune. */
+.repere-q-section {
+  margin-right: auto;
+  font-family: var(--ronde); font-weight: 650; font-size: 13px;
+  color: var(--texte);
+}
+.repere-q-note { margin: 8px 2px 16px; font-size: 11.5px; color: var(--texte-doux); }
+
+/* ---------- Le backtest sans profil ----------
+   Trois blocs statiques s'effacent derrière l'état vide. Ils sont
+   nommés un à un : `[hidden]` seul se ferait reprendre par toute règle
+   d'affichage plus spécifique, comme c'est déjà le cas du sous-menu. */
+#backtest-intro[hidden], #backtest-reglages[hidden], #backtest-series[hidden] { display: none; }
+
+/* ---------- La liste de contrôle avant impression ---------- */
+.controles-tete {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.controles-tete h3 { margin: 0; }
+.controles .intro { margin: 8px 0 4px; }
+.controle {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 2px;
+  border-top: 1px solid var(--ligne);
+}
+.controle input[type="checkbox"] { margin-top: 3px; flex: none; }
+.controle-corps { min-width: 0; }
+.controle-corps label { cursor: pointer; }
+.controle-detail { font-size: 12.5px; color: var(--texte-doux); margin: 3px 0 0; }
+.controle-detail + .lien { font-size: 12.5px; margin-top: 6px; display: inline-block; }
+/* Relu : la ligne s'efface sans disparaître — on doit pouvoir revenir
+   dessus, mais elle ne doit plus retenir le regard. */
+.controle.relu strong, .controle.relu .controle-detail { color: var(--texte-doux); }
+.controle.relu strong { font-weight: 550; }
+.controles-pied {
+  border-top: 1px solid var(--ligne); padding-top: 12px; margin-top: 2px;
+  font-size: 12px; color: var(--texte-doux);
+}
+
+@media (max-width: 820px) {
+  /* Sous l'en-tête ET sous le ruban de vues, qui collent tous deux. */
+  .repere-q { top: 114px; }
+}

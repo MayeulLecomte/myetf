@@ -37,7 +37,9 @@ const Etat = {
   situations: [],                 /* relevés figés, du plus récent au plus ancien */
   situationDate: null,            /* date observée dans l'onglet Situation */
   avisTactiqueLu: false,          /* avis de changement de calcul, lu une fois */
-  rapport: { annexeMethode: true },   /* annexe « Méthode » jointe au rapport */
+  /* `controles` retient, pour chaque ligne de la liste de contrôle relue
+     avant impression, l'état exact qui a été relu — pas un simple oui. */
+  rapport: { annexeMethode: true, controles: {} },
   filtreUnivers: { classe: '', enveloppe: '', texte: '' }
 };
 
@@ -384,6 +386,50 @@ function groupeDeVue(vue) {
   return GROUPES.find(g => g.vues.indexOf(vue) >= 0) || GROUPES[0];
 }
 
+/* ------------------------------------------------------------
+   LA BARRE DE PARCOURS
+   ------------------------------------------------------------
+   Treize vues s'enchaînent, et chacune n'offrait qu'un « suivant ».
+   Sur téléphone, le balayage ramène en arrière ; sur un écran large,
+   il fallait viser la colonne de gauche — l'application avançait,
+   elle ne reculait pas.
+
+   Les deux boutons sont posés par le code plutôt qu'écrits dans la
+   page. Les six barres en dur avaient déjà divergé de l'ordre
+   affiché : « Profil de risque » enchaînait sur le contexte macro en
+   sautant la note du jour, qui le précède pourtant dans le bloc. Il
+   n'y a donc plus qu'une seule définition de l'ordre — celle des
+   groupes de navigation — et l'on ne peut plus les désaccorder.
+   ------------------------------------------------------------ */
+const PARCOURS = GROUPES
+  .filter(g => !g.secondaire && g.vues[0] !== 'accueil')
+  .reduce((tout, g) => tout.concat(g.vues), []);
+
+/* Le libellé est celui de la navigation, relu dans la page : une
+   seconde table de noms finit toujours par contredire la première. */
+function libelleVue(vue) {
+  const b = $('#nav button[data-vue="' + vue + '"]');
+  return b ? b.textContent.trim() : vue;
+}
+
+function poserBarresParcours() {
+  PARCOURS.forEach((vue, i) => {
+    const section = $('#vue-' + vue);
+    if (!section) return;
+    const precedent = PARCOURS[i - 1];
+    const suivant = PARCOURS[i + 1];
+    const barre = document.createElement('div');
+    /* Une navigation n'a rien à faire sur un document imprimé. */
+    barre.className = 'barre-actions barre-parcours sans-impression';
+    barre.innerHTML =
+      (precedent ? '<button class="bouton secondaire precedent" data-aller="' + precedent + '">← ' +
+        echapper(libelleVue(precedent)) + '</button>' : '') +
+      (suivant ? '<button class="bouton suivant" data-aller="' + suivant + '">' +
+        echapper(libelleVue(suivant)) + ' →</button>' : '');
+    section.appendChild(barre);
+  });
+}
+
 function afficher(vue) {
   $$('.vue').forEach(v => v.classList.remove('actif'));
   const cible = $('#vue-' + vue);
@@ -553,6 +599,11 @@ function etapesDossier() {
     {
       vue: 'questionnaire', titre: 'Questionnaire de profilage',
       fait: manquantes === 0,
+      /* Dix-huit questions à choix unique, en cinq sections. Sans durée
+         annoncée, on ne sait pas si l'on en a pour deux minutes ou vingt —
+         et c'est cela, pas le nombre de questions, qui décide si l'on
+         commence maintenant ou « plus tard ». */
+      duree: 'comptez environ 7 minutes',
       /* Le même décompte qu'à l'état vide : une seule façon de compter, sinon
          l'accueil et la section annoncent deux totaux pour un questionnaire. */
       reste: PREALABLES.questionnaire.reste()
@@ -617,6 +668,11 @@ function tonVariation(v) {
 }
 
 function filPoches() {
+  /* Sur un dossier vierge, cette bande occupait le premier écran pour rien :
+     onze pastilles et leurs variations du jour ne disent rien à qui n'a pas
+     encore de portefeuille, et elles repoussaient les étapes à remplir sous
+     la ligne de flottaison. Elle revient dès la première saisie. */
+  if (!dossierEntame()) return '';
   if (typeof VARIATIONS_POCHES === 'undefined' || !VARIATIONS_POCHES) return '';
   const v = VARIATIONS_POCHES.variations || {};
   const poches = Object.keys(v)
@@ -741,7 +797,13 @@ function accroche() {
     (dossierEntame() ? '' :
       '<div class="barre-actions" style="margin-top:14px">' +
         '<button class="bouton" id="btn-decouvrir">Découvrir avec un dossier exemple</button>' +
-      '</div>') +
+      '</div>' +
+      /* Rien ne disait que c'était réversible, et un conseiller prudent n'y
+         touchait pas, de peur d'avoir à tout défaire. « Nouveau dossier »
+         existe dans l'en-tête, mais aucun lien ne le rattachait à ce
+         bouton-ci : c'est ici qu'il faut le savoir. */
+      '<p class="accroche-note">Un dossier complet se charge, pour parcourir l\'outil de bout en ' +
+        'bout. « Nouveau dossier », en haut de l\'écran, remet tout à zéro.</p>') +
     '</div>';
 }
 
@@ -843,7 +905,9 @@ function rendreAccueil() {
                anneau creux pour ce qui reste. L'ordre se lit dans la liste. */
             '<span class="etape-marque">' + (e.fait ? '✓' : '') + '</span>' +
             '<div class="etape-corps"><strong>' + echapper(e.titre) + '</strong>' +
-              '<div class="etape-detail">' + (e.fait ? 'Renseigné.' : echapper(e.reste)) + '</div></div>' +
+              '<div class="etape-detail">' + (e.fait ? 'Renseigné.' : echapper(e.reste)) +
+                (e.duree && !e.fait ? ' <span class="etape-duree">' + echapper(e.duree) + '</span>' : '') +
+              '</div></div>' +
             (e.fait ? '' : '<button class="bouton' + (e === aFaire[0] ? '' : ' secondaire') +
               '" data-aller="' + e.vue + '">Ouvrir</button>') +
           '</div>').join('') +
@@ -1003,6 +1067,28 @@ function majProgression() {
   const p = Math.round(100 * repondues / total);
   $('#barre-progression').style.width = p + '%';
   $('#txt-progression').textContent = repondues + ' / ' + total + ' questions renseignées';
+  majSectionCourante();
+}
+
+/* Le repère nomme la section sous les yeux pendant le défilement. Cinq
+   cartes seulement : on relit leur position à chaque défilement plutôt
+   que d'entretenir un observateur d'intersection, et l'on nomme la
+   dernière carte dont le haut est passé sous le repère. */
+function majSectionCourante() {
+  const champ = $('#txt-section');
+  const vue = $('#vue-questionnaire');
+  if (!champ || !vue || !vue.classList.contains('actif')) return;
+
+  const cartes = $$('#questions .section-q');
+  if (!cartes.length) { champ.textContent = ''; return; }
+
+  const repere = $('#repere-questionnaire');
+  const seuil = repere ? repere.getBoundingClientRect().bottom : 0;
+  let courante = cartes[0];
+  cartes.forEach(c => { if (c.getBoundingClientRect().top <= seuil + 8) courante = c; });
+
+  const h = courante.querySelector('h3');
+  champ.textContent = h ? h.textContent.trim() : '';
 }
 
 /* ============================================================
@@ -2205,6 +2291,13 @@ function optionsBacktest() {
   };
 }
 
+function montrerBacktest(actif) {
+  ['#backtest-intro', '#backtest-reglages', '#backtest-series'].forEach(sel => {
+    const el = $(sel);
+    if (el) el.hidden = !actif;
+  });
+}
+
 function poidsTestes() {
   const alloc = allocationCourante();
   if (!alloc) return null;
@@ -2228,7 +2321,17 @@ function rendreBacktest() {
   const c = $('#backtest-contenu');
   const banniere = $('#backtest-fiabilite');
 
-  if (!poids) { banniere.innerHTML = ''; c.innerHTML = etatVide('backtest'); return; }
+  if (!poids) {
+    banniere.innerHTML = '';
+    c.innerHTML = etatVide('backtest');
+    /* Comme toutes les autres vues bloquées : l'état vide reste seul. Ses
+       réglages et ses séries s'affichaient en entier — trois cent vingt-sept
+       mots et quinze colonnes — alors que la vue annonçait par ailleurs qu'il
+       manquait le questionnaire. */
+    montrerBacktest(false);
+    return;
+  }
+  montrerBacktest(true);
 
   const opt = optionsBacktest();
   const fiab = MoteurBacktest.fiabilite(poids, Etat.historique);
@@ -3095,11 +3198,143 @@ function blocSituationRapport(numero) {
     '</div>';
 }
 
+/* ------------------------------------------------------------
+   LA LISTE DE CONTRÔLE AVANT IMPRESSION
+   ------------------------------------------------------------
+   Chacune de ces réserves existe déjà quelque part dans
+   l'application — sur quatre vues différentes. Aucune ne se
+   présentait au moment où l'on clique sur « Imprimer », c'est-à-
+   dire à l'instant où le document cesse d'être un écran de travail
+   pour devenir une pièce remise et signée.
+
+   Elle ne bloque rien, et c'est délibéré. Un outil qui refuse
+   d'imprimer se contourne, et le conseiller reste seul juge de ce
+   qu'il remet. C'est une relecture, pas un garde-fou.
+
+   Une case cochée retient l'état exact qu'elle a validé. Si cet
+   état change — un support de plus, un contexte saisi, un nom
+   corrigé —, la coche tombe d'elle-même : une relecture porte sur
+   ce qui a été relu, pas sur la ligne qui l'annonçait.
+   ------------------------------------------------------------ */
+function controlesRapport() {
+  const sel = selectionCourante();
+  const liste = [];
+
+  const nonVerifies = sel ? sel.lignes.filter(l => !l.etf.verifie).length : 0;
+  liste.push({
+    id: 'contrat',
+    titre: 'Référencement des supports au contrat',
+    ok: !!sel && nonVerifies === 0,
+    signature: 'contrat:' + (sel ? nonVerifies + '/' + sel.lignes.length : '-'),
+    detail: !sel ? 'Aucun support n\'est encore sélectionné.'
+      : nonVerifies === 0
+        ? 'Les ' + sel.lignes.length + ' supports proposés sont cochés comme référencés au contrat.'
+        : nonVerifies + ' des ' + sel.lignes.length + ' supports proposés ne portent pas la coche ' +
+          '« référencé au contrat ». Un support absent du contrat ne peut pas être souscrit, et ' +
+          'le rapport le propose pourtant.',
+    vue: 'univers', bouton: 'Ouvrir l\'univers ETF'
+  });
+
+  /* Un contexte non renseigné n'est pas un défaut : l'allocation stratégique
+     seule est une réponse complète. Cette ligne n'est donc pas une réserve,
+     mais un point à confirmer — ce qui est remis doit être ce qu'on voulait
+     remettre. */
+  const exprime = contexteExprime();
+  const intensite = intensiteEffective();
+  liste.push({
+    id: 'contexte',
+    titre: 'Vue de marché appliquée au document',
+    neutre: true,
+    ok: exprime && intensite > 0,
+    signature: 'contexte:' + (exprime ? '1' : '0') + ':' + intensite,
+    detail: !exprime
+      ? 'Aucun indicateur de contexte n\'est renseigné : le document présente l\'allocation ' +
+        'stratégique du profil, sans aucune déviation tactique.'
+      : intensite === 0
+        ? 'Le contexte est renseigné, mais l\'intensité tactique est nulle — le client a demandé ' +
+          'une allocation figée. Le document présente l\'allocation stratégique.'
+        : 'Le contexte est renseigné : le document présente une allocation déviée, à ' +
+          pct(intensite * 100) + ' de l\'intensité maximale.',
+    vue: 'macro', bouton: 'Ouvrir le contexte'
+  });
+
+  const poids = poidsTestes();
+  const fiab = poids ? MoteurBacktest.fiabilite(poids, Etat.historique) : null;
+  liste.push({
+    id: 'backtest',
+    titre: 'Part estimée des séries du backtest',
+    neutre: true,
+    ok: !!fiab && fiab.estime === 0,
+    signature: 'backtest:' + (fiab ? Math.round(fiab.estime) : '-'),
+    detail: !fiab ? 'Aucune allocation n\'est encore rejouée.'
+      : fiab.estime === 0
+        ? 'Toutes les séries rejouées viennent des cours relevés ou d\'une source documentée.'
+        : pct(fiab.estime) + ' de l\'allocation testée repose sur des séries estimées, non ' +
+          'vérifiées. Le backtest ne figure pas au rapport : ce contrôle porte sur ce qui a servi ' +
+          'à se convaincre, pas sur ce qui est remis.',
+    vue: 'backtest', bouton: 'Ouvrir le backtest'
+  });
+
+  const nom = (Etat.identite.nom || '').trim();
+  liste.push({
+    id: 'nom',
+    titre: 'Nom ou référence du dossier',
+    ok: !!nom,
+    signature: 'nom:' + nom,
+    detail: nom
+      ? 'Le document sera remis au nom de « ' + nom + ' ».'
+      : 'Le champ est vide : le rapport imprimera un tiret à la place du nom.',
+    vue: 'client', bouton: 'Ouvrir « Client & enveloppe »'
+  });
+
+  return liste;
+}
+
+function rendreControlesRapport() {
+  const zone = $('#rapport-controles');
+  if (!zone) return;
+  /* Sans profil, la vue est un état vide : il n'y a rien à relire. */
+  if (!resultatProfil()) { zone.innerHTML = ''; return; }
+
+  const liste = controlesRapport();
+  const coches = (Etat.rapport && Etat.rapport.controles) || {};
+  const aRegarder = liste.filter(x => !x.ok).length;
+  const relues = liste.filter(x => coches[x.id] === x.signature).length;
+
+  zone.innerHTML = '<div class="carte controles">' +
+    '<div class="controles-tete">' +
+      '<h3>Avant d\'imprimer</h3>' +
+      '<span class="badge ' + (aRegarder ? 'orange' : 'vert') + '">' +
+        (aRegarder ? aRegarder + (aRegarder > 1 ? ' points à regarder' : ' point à regarder')
+                   : 'rien à signaler') + '</span>' +
+    '</div>' +
+    '<p class="intro">Rien n\'est bloqué : le rapport s\'imprime dans tous les cas. Ces quatre ' +
+      'lignes rassemblent, à l\'instant où le document part, ce que l\'application dit ailleurs.</p>' +
+    liste.map(ctrl => {
+      const coche = coches[ctrl.id] === ctrl.signature;
+      return '<div class="controle' + (ctrl.ok ? ' ok' : '') + (coche ? ' relu' : '') + '">' +
+        '<input type="checkbox" id="ctrl-' + ctrl.id + '" data-controle="' + ctrl.id + '"' +
+          (coche ? ' checked' : '') + '>' +
+        '<div class="controle-corps">' +
+          '<label for="ctrl-' + ctrl.id + '"><strong>' + echapper(ctrl.titre) + '</strong></label> ' +
+          '<span class="badge ' + (ctrl.ok ? 'vert' : (ctrl.neutre ? 'gris' : 'orange')) + '">' +
+            (ctrl.ok ? 'rien à signaler' : (ctrl.neutre ? 'à confirmer' : 'à vérifier')) + '</span>' +
+          '<div class="controle-detail">' + echapper(ctrl.detail) + '</div>' +
+          (ctrl.ok ? '' : '<button type="button" class="lien" data-aller="' + ctrl.vue + '">' +
+            echapper(ctrl.bouton) + '</button>') +
+        '</div></div>';
+    }).join('') +
+    '<div class="controles-pied">' + relues + ' des ' + liste.length +
+      ' lignes relues pour ce dossier.</div>' +
+    '</div>';
+}
+
 function rendreRapport() {
   const r = resultatProfil();
   const c = $('#rapport-contenu');
   const caseAnnexe = $('#opt-annexe-methode');
   if (caseAnnexe) caseAnnexe.checked = !Etat.rapport || Etat.rapport.annexeMethode !== false;
+  rendreControlesRapport();
   if (!r) { c.innerHTML = etatVide('rapport'); return; }
 
   const alloc = allocationCourante();
@@ -3292,6 +3527,13 @@ function brancherBalayage() {
 }
 
 function brancher() {
+
+  poserBarresParcours();
+
+  /* Le repère de section se recalcule au défilement — et au redimensionnement,
+     qui déplace le repère collant autant que les cartes. */
+  window.addEventListener('scroll', majSectionCourante, { passive: true });
+  window.addEventListener('resize', majSectionCourante);
 
   $('#nav').addEventListener('click', e => {
     const b = e.target.closest('button[data-vue]');
@@ -3557,6 +3799,17 @@ function brancher() {
     if (t.id === 'opt-annexe-methode') {
       Etat.rapport.annexeMethode = t.checked;
       sauver(true); rendreRapport(); return;
+    }
+    if (t.dataset.controle) {
+      const ctrl = controlesRapport().find(x => x.id === t.dataset.controle);
+      if (!ctrl) return;
+      if (!Etat.rapport) Etat.rapport = {};
+      if (!Etat.rapport.controles) Etat.rapport.controles = {};
+      /* On enregistre l'état relu, pas un simple oui : c'est lui qui permettra
+         de laisser tomber la coche si le dossier bouge ensuite. */
+      if (t.checked) Etat.rapport.controles[ctrl.id] = ctrl.signature;
+      else delete Etat.rapport.controles[ctrl.id];
+      sauver(true); rendreControlesRapport(); return;
     }
     if (t.id === 'bt-allocation') { Etat.backtest.allocation = t.value; sauver(true); rendreBacktest(); return; }
     if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }

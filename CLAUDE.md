@@ -100,3 +100,45 @@ répétés d'une liste.
 
 **Le rapport client échappe à tout cela** : à l'impression, ni halo, ni verre, ni
 fonte arrondie. Un document remis à un client ne gagne rien à être ludique.
+
+## La liste de contrôle avant impression ne bloque rien
+
+Quatre lignes rassemblées en tête du rapport — référencement des supports au
+contrat, vue de marché appliquée, part estimée des séries du backtest, nom du
+dossier. Chacune existait déjà ailleurs dans l'application ; aucune ne se
+présentait au moment où le document cesse d'être un écran de travail pour
+devenir une pièce remise et signée.
+
+**Elle n'empêche jamais d'imprimer, et ce n'est pas un oubli.** Un outil qui
+refuse d'imprimer se contourne, et le conseiller reste seul juge de ce qu'il
+remet. C'est une relecture, pas un garde-fou.
+
+Deux des quatre lignes ne sont pas des défauts mais des points **à confirmer** :
+un contexte non renseigné produit une allocation stratégique, qui est une
+réponse complète ; et le backtest ne figure pas au rapport — sa part estimée
+porte sur ce qui a servi à se convaincre, pas sur ce qui est remis.
+
+**Une case cochée retient l'état exact qu'elle a validé**, pas un simple oui.
+Si cet état change — un support de plus, un contexte saisi, un nom corrigé —,
+la coche tombe d'elle-même. Une relecture porte sur ce qui a été relu.
+
+## L'ordre du parcours n'a qu'une seule définition
+
+Les treize vues du parcours portent une barre « ← précédent / suivant → » posée
+par `poserBarresParcours()`, et l'ordre est déduit de `GROUPES` — la même
+constante qui alimente la navigation. Les six barres écrites à la main dans
+`index.html` avaient déjà divergé de l'ordre affiché : « Profil de risque »
+enchaînait sur le contexte macro en sautant la note du jour, qui le précède
+pourtant dans son bloc. **Ne pas réintroduire de bouton de navigation en dur
+dans une vue du parcours** : il se désaccordera.
+
+## Pistes — reportées, pas abandonnées
+
+Relevées à la relecture « premier dossier », hors chantier à ce stade :
+
+| Piste | Ce qui accroche |
+|---|---|
+| **Refonte de l'univers ETF** | 3 482 mots et 42 lignes de tableau sur une vue, trois cartes empilées ; un premier visiteur n'y comprend pas ce qu'on attend de lui |
+| **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation |
+| **Note du jour en vitrine** | c'est le seul écran immédiatement lisible sans dossier, et il est rangé derrière deux niveaux de navigation |
+| **Nom du dossier obligatoire** | à traiter **dans le chantier 7**, pas avant : ce qu'on exige dépend du mode — un particulier n'a pas de « référence dossier » |
