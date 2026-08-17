@@ -375,12 +375,31 @@ function etapesDossier() {
   ];
 }
 
+/* La note porte la date des COURS qu'elle commente, pas celle de sa
+   rédaction. « Note du 14 août » un lundi se lit comme un retard alors
+   que c'est la dernière clôture publiée : le relevé tourne du mardi au
+   samedi et lit toujours la séance de la veille, si bien qu'un lundi
+   regarde forcément le vendredi. On nomme donc le jour de la semaine, et
+   l'on ne signale un retard que s'il en est vraiment un. */
+function libelleCloture(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const jours = Math.round((new Date(aujourdhuiISO()) - d) / 86400000);
+  const nom = d.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' });
+  return { texte: 'clôtures du ' + nom, retard: jours > 4, jours };
+}
+
 function blocNoteAccueil() {
   const n = (typeof NOTE_MARCHE !== 'undefined' && NOTE_MARCHE) ? NOTE_MARCHE : null;
   if (!n || !n.note) return '';
   return '<div class="carte"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">' +
       '<h3 style="margin:0">' + echapper(n.note.titre) + '</h3>' +
-      '<span class="badge gris">note du ' + dateFr(n.genere) + '</span></div>' +
+      (function (f) {
+        return '<span class="badge ' + (f.retard ? 'orange' : 'gris') + '"' +
+          ' title="La note commente la dernière séance publiée. Le relevé tourne du mardi au ' +
+          'samedi et lit la clôture de la veille : un lundi regarde donc le vendredi.">' +
+          echapper(f.texte) + (f.retard ? ' · ' + f.jours + ' jours' : '') + '</span>';
+      })(libelleCloture(n.genere)) + '</div>' +
     '<p class="intro" style="margin:8px 0 0">' + echapper(n.note.synthese) + '</p>' +
     '<div class="barre-actions"><button class="bouton secondaire" data-aller="note">Lire la note de marché</button></div>' +
     '</div>';
@@ -687,7 +706,11 @@ function rendreNote() {
     '<div class="carte">' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px">' +
         '<h3 style="margin:0">' + echapper(n.titre) + '</h3>' +
-        '<span class="badge gris">Cours du ' + dateFr(NOTE_MARCHE.genere) + '</span>' +
+        (function (f) {
+          return '<span class="badge ' + (f.retard ? 'orange' : 'gris') + '">' +
+            echapper(f.texte.charAt(0).toUpperCase() + f.texte.slice(1)) +
+            (f.retard ? ' · ' + f.jours + ' jours' : '') + '</span>';
+        })(libelleCloture(NOTE_MARCHE.genere)) +
       '</div>' +
       '<p style="margin-top:12px;font-size:15px;line-height:1.6">' + echapper(n.synthese) + '</p>' +
     '</div>' +

@@ -392,6 +392,16 @@ estimation non vérifiée. Le bandeau de fiabilité résume la proportion.
 
 ## Note de marché interne (facultatif)
 
+> **La note porte la date des cours qu'elle commente, pas celle de sa
+> rédaction.** Le relevé tourne du mardi au samedi à 06 h 10 UTC et lit la
+> clôture de la veille : le samedi ramène le vendredi, et il n'y a pas de
+> passage le dimanche ni le lundi. Un lundi après-midi affiche donc les
+> clôtures du vendredi, et c'est le bon comportement — les clôtures du lundi
+> ne sont publiées que le mardi matin. L'étiquette nomme le jour de la semaine
+> pour lever l'ambiguïté, et ne passe à l'orange qu'au-delà de quatre jours,
+> quand le retard en est vraiment un.
+
+
 `scripts/note-marche.mjs` fait rédiger par l'API Claude une **note de travail
 quotidienne** à partir des variations relevées la veille : ce qui a bougé, ce
 que cela peut signifier, ce qu'il faut vérifier dans les dossiers.
