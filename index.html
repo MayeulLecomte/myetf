@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608172100">
+<link rel="stylesheet" href="css/app.css?v=202608180100">
 </head>
 <body>
 
@@ -39,6 +39,9 @@
     <button class="bouton discret" id="btn-reinit">Nouveau dossier</button>
     <input type="file" id="fichier-import" accept="application/json" hidden>
   </div>
+  <!-- Sur téléphone, les quatre actions de dossier tiennent dans une
+       feuille plutôt que dans une rangée qui occupe le quart de l'écran. -->
+  <button class="bouton discret actions-mobile" id="btn-dossier-mobile" aria-label="Actions du dossier">•••</button>
 </header>
 
 <div class="corps">
@@ -63,6 +66,10 @@
     <button data-vue="journal"><span class="num"><span>13</span></span> Suivi &amp; journal</button>
     <button data-vue="rapport"><span class="num"><span>14</span></span> Rapport</button>
   </nav>
+
+  <!-- Ruban segmenté : les vues du groupe courant. Mobile seulement ;
+       au-delà de 820 px la colonne latérale montre les quinze d'un coup. -->
+  <nav class="sous-nav" id="sous-nav" hidden></nav>
 
   <main class="contenu">
 
@@ -453,6 +460,21 @@
   </main>
 </div>
 
+<!-- Barre basse : cinq destinations à portée de pouce. Mobile seulement. -->
+<nav class="tabbar" id="tabbar" aria-label="Navigation principale"></nav>
+
+<!-- Feuille de détail, qui monte du bas. -->
+<div class="feuille-fond" id="feuille" hidden>
+  <div class="feuille" role="dialog" aria-modal="true" aria-labelledby="feuille-titre">
+    <div class="feuille-poignee" id="feuille-poignee"></div>
+    <div class="feuille-tete">
+      <h3 id="feuille-titre">Détail</h3>
+      <button class="bouton secondaire" id="feuille-fermer" aria-label="Fermer">Fermer</button>
+    </div>
+    <div id="feuille-corps"></div>
+  </div>
+</div>
+
 <footer class="pied">
   <svg class="logo-pied" viewBox="0 0 64 64" role="img" aria-label="Allocation ETF">
     <rect width="64" height="64" rx="14" fill="var(--logo-fond)"/>
@@ -463,24 +485,24 @@
   <span>Application de Mayeul Lecomte</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608172100"></script>
-<script src="js/data/allocations.js?v=202608172100"></script>
-<script src="js/data/macro.js?v=202608172100"></script>
-<script src="js/data/etf-univers.js?v=202608172100"></script>
-<script src="js/data/fiscalite.js?v=202608172100"></script>
-<script src="js/data/historique.js?v=202608172100"></script>
-<script src="js/data/note-marche.js?v=202608172100"></script>
-<script src="js/data/cours-historique.js?v=202608172100"></script>
-<script src="js/data/cours-marche.js?v=202608172100"></script>
-<script src="js/engine/profil.js?v=202608172100"></script>
-<script src="js/engine/allocation.js?v=202608172100"></script>
-<script src="js/engine/selection.js?v=202608172100"></script>
-<script src="js/engine/arbitrage.js?v=202608172100"></script>
-<script src="js/engine/revenus.js?v=202608172100"></script>
-<script src="js/engine/situation.js?v=202608172100"></script>
-<script src="js/engine/contrat.js?v=202608172100"></script>
-<script src="js/engine/univers.js?v=202608172100"></script>
-<script src="js/engine/backtest.js?v=202608172100"></script>
-<script src="js/app.js?v=202608172100"></script>
+<script src="js/data/questionnaire.js?v=202608180100"></script>
+<script src="js/data/allocations.js?v=202608180100"></script>
+<script src="js/data/macro.js?v=202608180100"></script>
+<script src="js/data/etf-univers.js?v=202608180100"></script>
+<script src="js/data/fiscalite.js?v=202608180100"></script>
+<script src="js/data/historique.js?v=202608180100"></script>
+<script src="js/data/note-marche.js?v=202608180100"></script>
+<script src="js/data/cours-historique.js?v=202608180100"></script>
+<script src="js/data/cours-marche.js?v=202608180100"></script>
+<script src="js/engine/profil.js?v=202608180100"></script>
+<script src="js/engine/allocation.js?v=202608180100"></script>
+<script src="js/engine/selection.js?v=202608180100"></script>
+<script src="js/engine/arbitrage.js?v=202608180100"></script>
+<script src="js/engine/revenus.js?v=202608180100"></script>
+<script src="js/engine/situation.js?v=202608180100"></script>
+<script src="js/engine/contrat.js?v=202608180100"></script>
+<script src="js/engine/univers.js?v=202608180100"></script>
+<script src="js/engine/backtest.js?v=202608180100"></script>
+<script src="js/app.js?v=202608180100"></script>
 </body>
 </html>

@@ -133,7 +133,10 @@ function charger() {
 function notifier(texte, type) {
   const div = document.createElement('div');
   div.className = 'message ' + (type || 'succes');
-  div.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:200;max-width:380px;box-shadow:var(--ombre)';
+  /* Le message se pose au-dessus de la barre basse plutôt que derrière :
+     `bottom` compte depuis le bord de l'écran, pas depuis le contenu. */
+  div.style.cssText = 'position:fixed;right:16px;left:auto;z-index:200;max-width:380px;' +
+    'box-shadow:var(--ombre-3);bottom:calc(20px + var(--marge-barre, 0px))';
   div.textContent = texte;
   document.body.appendChild(div);
   setTimeout(() => div.remove(), 4000);
@@ -285,6 +288,42 @@ function selectionCourante() {
    NAVIGATION
    ============================================================ */
 
+/* ============================================================
+   NAVIGATION
+   -------------------------------------------------------------
+   Quinze onglets tiennent dans une colonne latérale sur un écran
+   large. Sur un téléphone, ils devenaient un ruban de quinze
+   pilules qu'il fallait faire glisser pour trouver la sixième :
+   on ne sait jamais où l'on est ni ce qui reste.
+
+   D'où deux étages sur mobile, comme dans les applications qu'on
+   ouvre tous les jours : cinq destinations dans une barre basse,
+   à portée de pouce, et les vues du groupe courant dans un ruban
+   segmenté sous l'en-tête. Deux touchers suffisent pour aller
+   n'importe où, et la barre basse dit en permanence où l'on est.
+
+   La colonne latérale reste seule maîtresse au-dessus de 820 px :
+   elle montre les quinze d'un coup, ce qu'aucune barre basse ne
+   sait faire.
+   ============================================================ */
+
+const GROUPES = [
+  { id: 'aujourdhui', libelle: 'Aujourd\'hui', vues: ['accueil'],
+    icone: 'M3 10.5 12 3l9 7.5M5.5 9.5V20h13V9.5' },
+  { id: 'marche', libelle: 'Marché', vues: ['note', 'macro'],
+    icone: 'M3 17.5 9 11l4 4 8-8.5M15.5 6.5H21V12' },
+  { id: 'dossier', libelle: 'Dossier', vues: ['client', 'questionnaire', 'profil', 'allocation', 'portefeuille'],
+    icone: 'M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20.5c.8-3.6 3.9-5.5 7.5-5.5s6.7 1.9 7.5 5.5' },
+  { id: 'suivi', libelle: 'Suivi', vues: ['arbitrages', 'situation', 'revenus', 'journal'],
+    icone: 'M4 7h12m0 0-3.5-3.5M16 7l-3.5 3.5M20 17H8m0 0 3.5-3.5M8 17l3.5 3.5' },
+  { id: 'plus', libelle: 'Plus', vues: ['rapport', 'backtest', 'univers'],
+    icone: 'M4.5 6.5h15M4.5 12h15M4.5 17.5h15' }
+];
+
+function groupeDeVue(vue) {
+  return GROUPES.find(g => g.vues.indexOf(vue) >= 0) || GROUPES[0];
+}
+
 function afficher(vue) {
   $$('.vue').forEach(v => v.classList.remove('actif'));
   const cible = $('#vue-' + vue);
@@ -298,6 +337,42 @@ function afficher(vue) {
 function vueCourante() {
   const b = $('#nav button.actif');
   return b ? b.dataset.vue : 'accueil';
+}
+
+/* La barre basse et le ruban segmenté se déduisent entièrement de la
+   colonne latérale : un seul jeu de libellés, un seul état d'avancement,
+   et rien à tenir à jour en double le jour où une vue s'ajoute. */
+function rendreNavMobile(vue) {
+  const barre = $('#tabbar');
+  const ruban = $('#sous-nav');
+  if (!barre || !ruban) return;
+
+  const groupe = groupeDeVue(vue);
+  const libelle = v => {
+    const b = $('#nav button[data-vue="' + v + '"]');
+    return b ? b.textContent.replace(/^\s*[\d·]+\s*/, '').trim() : v;
+  };
+  const complete = v => {
+    const b = $('#nav button[data-vue="' + v + '"]');
+    return b && b.classList.contains('complet');
+  };
+
+  barre.innerHTML = GROUPES.map(g =>
+    '<button data-groupe="' + g.id + '"' + (g.id === groupe.id ? ' class="actif"' : '') + '>' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + g.icone + '"/></svg>' +
+      '<span>' + echapper(g.libelle) + '</span>' +
+    '</button>').join('');
+
+  /* Un groupe d'une seule vue n'a pas de ruban : il n'y aurait qu'une
+     pilule, qui ne dirait rien de plus que la barre basse. */
+  if (groupe.vues.length < 2) { ruban.hidden = true; ruban.innerHTML = ''; return; }
+  ruban.hidden = false;
+  ruban.innerHTML = groupe.vues.map(v =>
+    '<button data-vue="' + v + '"' + (v === vue ? ' class="actif"' : '') +
+      (complete(v) ? ' data-complet="1"' : '') + '>' + echapper(libelle(v)) + '</button>').join('');
+
+  const actif = ruban.querySelector('button.actif');
+  if (actif) actif.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
 }
 
 function rendre(vue) {
@@ -337,6 +412,7 @@ function majNav() {
     univers: true, journal: Etat.journal.length > 0, rapport: !!p
   };
   $$('#nav button').forEach(b => b.classList.toggle('complet', !!complet[b.dataset.vue]));
+  rendreNavMobile(vueCourante());
 }
 
 /* ============================================================
@@ -405,6 +481,126 @@ function blocNoteAccueil() {
     '</div>';
 }
 
+/* ------------------------------------------------------------
+   LE FIL DES POCHES
+   Une bande horizontale, en tête d'accueil : une pastille par
+   poche, l'anneau teinté par la variation du jour, du vert au
+   rouge en passant par le gris quand la séance n'a rien dit.
+
+   Elle ne remplace pas la note de marché, elle la précède : la
+   note explique, la bande montre. Les poches sont classées par
+   amplitude du jour — ce qui a bougé se lit en premier, ce qui
+   n'a pas bougé finit la bande sans encombrer le regard.
+   ------------------------------------------------------------ */
+
+function tonVariation(v) {
+  if (v == null) return 'neutre';
+  if (v >= 0.75) return 'hausse-forte';
+  if (v > 0.08) return 'hausse';
+  if (v <= -0.75) return 'baisse-forte';
+  if (v < -0.08) return 'baisse';
+  return 'plat';
+}
+
+function filPoches() {
+  if (typeof VARIATIONS_POCHES === 'undefined' || !VARIATIONS_POCHES) return '';
+  const v = VARIATIONS_POCHES.variations || {};
+  const poches = Object.keys(v)
+    .filter(p => LIBELLES_POCHES[p])
+    .sort((a, b) => Math.abs(v[b].jour || 0) - Math.abs(v[a].jour || 0));
+  if (!poches.length) return '';
+
+  const f = libelleCloture(VARIATIONS_POCHES.genere);
+
+  return '<div class="fil-entete">' +
+      '<h4 style="margin:0">Les poches aujourd\'hui</h4>' +
+      '<span class="fil-date">' + echapper(f.texte) + '</span>' +
+    '</div>' +
+    '<div class="fil" role="list">' +
+    poches.map(p => {
+      const d = v[p];
+      const ton = tonVariation(d.jour);
+      const nom = LIBELLES_POCHES[p];
+      return '<button class="fil-item ' + ton + '" role="listitem" data-poche="' + echapper(p) + '"' +
+        ' title="' + echapper(nom + ' — ' + (d.instrument || '')) + '">' +
+        '<span class="fil-anneau"><span class="fil-pastille" style="background:' +
+          teintePoche(p) + '">' +
+          echapper(initialesPoche(nomCourtPoche(nom))) + '</span></span>' +
+        '<span class="fil-nom">' + echapper(nomCourtPoche(nom)) + '</span>' +
+        '<span class="fil-var">' + (d.jour == null ? '—' : signe(d.jour, 2)) + '</span>' +
+      '</button>';
+    }).join('') +
+    '</div>';
+}
+
+/** Deux lettres pour la pastille : la poche se reconnaît, le rond reste rond. */
+function initialesPoche(nom) {
+  const mots = nom.replace(/[()/.]/g, ' ').split(/\s+/).filter(m => m.length > 1);
+  if (mots.length >= 2) return (mots[0][0] + mots[1][0]).toUpperCase();
+  return (mots[0] || nom).slice(0, 2).toUpperCase();
+}
+
+/* La pastille garde la couleur de sa classe d'actifs — quatre familles,
+   lisibles d'un coup d'œil — mais s'éclaircit d'un cran à chaque poche de
+   la famille. Dix-neuf teintes franchement distinctes seraient au-delà de
+   ce qu'un œil sépare ; une famille dégradée se lit, elle, sans effort. */
+function teintePoche(poche) {
+  const classe = MoteurSelection.classeDePoche(poche);
+  const soeurs = Object.keys(LIBELLES_POCHES).filter(p => MoteurSelection.classeDePoche(p) === classe);
+  const rang = Math.max(0, soeurs.indexOf(poche));
+  const part = soeurs.length > 1 ? rang / (soeurs.length - 1) : 0;
+  /* De −16 % à +26 % de blanc : la famille reste reconnaissable aux deux
+     bouts, alors qu'une amplitude plus large ferait virer les extrêmes. */
+  const blanc = Math.round(-16 + part * 42);
+  return blanc >= 0
+    ? 'color-mix(in srgb, ' + COULEURS_CLASSES[classe] + ' ' + (100 - blanc) + '%, white)'
+    : 'color-mix(in srgb, ' + COULEURS_CLASSES[classe] + ' ' + (100 + blanc) + '%, black)';
+}
+
+function nomCourtPoche(nom) {
+  return nom
+    .replace(/^Obligations? /, 'Obl. ')
+    .replace(/^Actions /, '')
+    .replace(/ \(.*\)$/, '')
+    .replace(/ \/ .*$/, '');
+}
+
+/** Détail d'une poche, ouvert au toucher d'une pastille du fil. */
+function ouvrirPoche(poche) {
+  const v = (typeof VARIATIONS_POCHES !== 'undefined' && VARIATIONS_POCHES.variations[poche]) || null;
+  if (!v) return;
+  const nom = LIBELLES_POCHES[poche] || poche;
+  const ligne = (l, x) => '<div class="feuille-ligne"><span>' + l + '</span><strong class="' +
+    tonVariation(x) + '">' + (x == null ? '—' : signe(x, 2)) + '</strong></div>';
+
+  ouvrirFeuille(nom,
+    '<p class="intro" style="font-size:12.5px;margin-bottom:14px">Mesuré sur ' +
+      echapper(v.instrument || 'le support de référence de la poche') +
+      ', aux clôtures du ' + dateFr(v.date) + '.</p>' +
+    ligne('Jour', v.jour) + ligne('Semaine', v.semaine) +
+    ligne('Mois', v.mois) + ligne('Un an', v.annee) +
+    '<div class="barre-actions"><button class="bouton secondaire" data-aller="allocation">' +
+      'Voir l\'allocation cible</button></div>');
+}
+
+/* Une feuille qui monte du bas : sur un téléphone, c'est le geste
+   qu'on attend d'un détail — on la referme en la repoussant, sans
+   perdre l'écran d'où l'on vient. */
+function ouvrirFeuille(titre, contenu) {
+  const f = $('#feuille');
+  $('#feuille-titre').textContent = titre;
+  $('#feuille-corps').innerHTML = contenu;
+  f.hidden = false;
+  requestAnimationFrame(() => f.classList.add('ouverte'));
+}
+
+function fermerFeuille() {
+  const f = $('#feuille');
+  if (!f || f.hidden) return;
+  f.classList.remove('ouverte');
+  setTimeout(() => { f.hidden = true; }, 260);
+}
+
 function rendreAccueil() {
   const c = $('#accueil-contenu');
   const etapes = etapesDossier();
@@ -413,6 +609,7 @@ function rendreAccueil() {
   /* --- Dossier incomplet : dire ce qui manque, pas « complétez le dossier » --- */
   if (aFaire.length) {
     c.innerHTML =
+      filPoches() +
       '<h2>Remplissez le dossier</h2>' +
       '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont pas ' +
         'renseignées. Tout reste dans ce navigateur : rien n\'est transmis.</p>' +
@@ -449,6 +646,7 @@ function rendreAccueil() {
   const rien = analyse.aucunMouvement;
 
   c.innerHTML =
+    filPoches() +
     '<h2>Aujourd\'hui</h2>' +
 
     '<div class="verdict ' + (rien ? 'calme' : 'action') + '">' +
@@ -2436,6 +2634,39 @@ function rendreRapport() {
    ÉVÉNEMENTS
    ============================================================ */
 
+/* Balayage horizontal : d'une vue à l'autre à l'intérieur du groupe.
+   Le geste s'arrête aux frontières du groupe plutôt que de traverser
+   les quinze vues — sans quoi on quitte « Dossier » sans l'avoir voulu.
+
+   Trois gardes : le geste doit être franchement horizontal, il ne doit
+   pas partir d'une zone qui défile elle-même — un tableau large, un
+   ruban, le fil des poches —, et il ignore les champs de saisie, où
+   glisser sert à placer le curseur. */
+function brancherBalayage() {
+  const zone = $('.contenu');
+  let x0 = null, y0 = null, valable = false;
+
+  zone.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) { valable = false; return; }
+    valable = !e.target.closest('.tableau-defilant, .fil, .sous-nav, input, textarea, select, .graphique');
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive: true });
+
+  zone.addEventListener('touchend', e => {
+    if (!valable || x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * .6) return;
+
+    const vue = vueCourante();
+    const g = groupeDeVue(vue);
+    const i = g.vues.indexOf(vue) + (dx < 0 ? 1 : -1);
+    if (i < 0 || i >= g.vues.length) return;
+    afficher(g.vues[i]);
+  }, { passive: true });
+}
+
 function brancher() {
 
   $('#nav').addEventListener('click', e => {
@@ -2443,9 +2674,51 @@ function brancher() {
     if (b) afficher(b.dataset.vue);
   });
 
+  $('#sous-nav').addEventListener('click', e => {
+    const b = e.target.closest('button[data-vue]');
+    if (b) afficher(b.dataset.vue);
+  });
+
+  /* --- Barre basse ---
+     Toucher le groupe où l'on se trouve déjà remonte en haut de la vue,
+     comme partout ailleurs, plutôt que de rejouer un rendu identique. */
+  $('#tabbar').addEventListener('click', e => {
+    const b = e.target.closest('button[data-groupe]');
+    if (!b) return;
+    const g = GROUPES.find(x => x.id === b.dataset.groupe);
+    if (!g) return;
+    if (groupeDeVue(vueCourante()).id === g.id) window.scrollTo({ top: 0, behavior: 'smooth' });
+    else afficher(g.vues[0]);
+  });
+
+  /* --- Actions de dossier, sur téléphone ---
+     La feuille ne duplique pas les gestionnaires : elle relaie le clic
+     aux vrais boutons de l'en-tête, qui restent la seule définition. */
+  $('#btn-dossier-mobile').onclick = () => {
+    ouvrirFeuille('Dossier',
+      ['btn-sauver', 'btn-exporter', 'btn-importer', 'btn-reinit'].map(id =>
+        '<div class="barre-actions" style="margin:0 0 8px">' +
+          '<button class="bouton' + (id === 'btn-sauver' ? '' : ' secondaire') +
+          '" style="flex:1" data-relais="' + id + '">' +
+          echapper($('#' + id).textContent) + '</button></div>').join(''));
+  };
+
+  /* --- Feuille de détail --- */
+  $('#feuille-fermer').onclick = fermerFeuille;
+  $('#feuille').addEventListener('click', e => { if (e.target.id === 'feuille') fermerFeuille(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fermerFeuille(); });
+
+  brancherBalayage();
+
   document.addEventListener('click', e => {
+    const relais = e.target.closest('[data-relais]');
+    if (relais) { fermerFeuille(); $('#' + relais.dataset.relais).click(); return; }
+
+    const pastille = e.target.closest('[data-poche]');
+    if (pastille) { ouvrirPoche(pastille.dataset.poche); return; }
+
     const aller = e.target.closest('[data-aller]');
-    if (aller) { afficher(aller.dataset.aller); return; }
+    if (aller) { fermerFeuille(); afficher(aller.dataset.aller); return; }
 
     const ajoutCat = e.target.closest('[data-catalogue-ajout]');
     if (ajoutCat) { ajouterDepuisCatalogue(ajoutCat.dataset.catalogueAjout); return; }

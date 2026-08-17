@@ -132,6 +132,39 @@ async function principal() {
   await Promise.all(travailleurs);
   process.stdout.write('\n');
 
+  /* --- Séances incomplètes : écartées avant d'entrer dans l'archive ---
+     Le relevé tourne à 06 h 10 UTC, marchés fermés : il ne voit que des
+     clôtures complètes. Lancé à la main en séance, il rapporte en
+     revanche la date du jour pour le seul support déjà coté, et cette
+     séance d'un support sur trente-quatre entre alors au calendrier —
+     où elle devient la « dernière séance connue » que toute situation
+     de portefeuille ira chercher, pour n'y trouver aucun cours.
+
+     Une date ENCORE INCONNUE de l'archive n'est donc retenue que si la
+     moitié au moins des supports relevés la rapportent. La règle ne
+     vaut que pour les dates nouvelles : dans le passé, une couverture
+     partielle est normale — un support n'a pas de cours avant sa
+     création. */
+  const dejaConnues = new Set(
+    Object.values(archive.series).flatMap(s => Object.keys(s.points)));
+
+  const rapports = {};
+  for (const { r } of resultats) {
+    if (!r) continue;
+    for (const d of Object.keys(r.points)) {
+      if (!dejaConnues.has(d)) rapports[d] = (rapports[d] || 0) + 1;
+    }
+  }
+  const releves = resultats.filter(x => x.r).length;
+  const incompletes = new Set(
+    Object.keys(rapports).filter(d => rapports[d] * 2 < releves));
+
+  if (incompletes.size) {
+    for (const { r } of resultats) {
+      if (r) for (const d of incompletes) delete r.points[d];
+    }
+  }
+
   /* --- Fusion dans l'archive : on n'écrase jamais, on complète --- */
   let nouveauxPoints = 0, trouves = 0;
   const couverture = [];
@@ -251,9 +284,15 @@ async function principal() {
     '   ============================================================ */', '',
     'const PERFS_MARCHE = '
   ].join('\n');
+  /* Les variations jour / semaine / mois / année par poche n'alimentaient
+     que le widget iOS et la note de marché, par un JSON que l'application
+     ne peut pas lire en file://. Elles sont republiées ici : c'est ce qui
+     fait défiler le fil d'accueil. */
   writeFileSync(join(RACINE, 'js', 'data', 'cours-marche.js'),
     entete + JSON.stringify(pochesTriees, null, 2) + ';\n\n' +
-    'const DERNIERS_COURS = ' + JSON.stringify(derniers, null, 2) + ';\n');
+    'const DERNIERS_COURS = ' + JSON.stringify(derniers, null, 2) + ';\n\n' +
+    'const VARIATIONS_POCHES = ' +
+      JSON.stringify({ genere: archive.genere, variations }, null, 2) + ';\n');
 
   /* --- Historique des cours pour l'onglet Situation ---
      L'application ne peut pas lire data/cours.json : ouverte en file://,
@@ -301,6 +340,10 @@ async function principal() {
 
   console.log(`\nSupports trouvés      : ${trouves} / ${univers.length}`);
   console.log(`Nouveaux points       : ${nouveauxPoints}`);
+  if (incompletes.size) {
+    console.log(`Séances écartées      : ${[...incompletes].sort().join(', ')} ` +
+                `(couverture insuffisante — relevé passé en séance ?)`);
+  }
   console.log(`Poches documentées    : ${Object.keys(parPoche).length} / ${Object.keys(libelles).length}`);
   console.log(`Années calendaires    : ${[...anneesCompletes].sort().join(', ') || 'aucune complète'}`);
   console.log(`Attendu par le backtest : ${annees.join(', ')}`);

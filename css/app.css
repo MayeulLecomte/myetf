@@ -595,7 +595,9 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 
 /* ============================================================
    iPHONE & TABLETTE
-   La barre latérale devient un bandeau d'onglets défilant.
+   La colonne latérale cède la place à deux étages : une barre
+   basse de cinq destinations et un ruban segmenté pour les vues
+   du groupe courant. Voir plus bas, « BARRE BASSE & RUBAN ».
    ============================================================ */
 
 @media (max-width: 820px) {
@@ -672,4 +674,302 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
   .contenu { padding: 16px 10px 60px; }
   .carte { padding: 16px 14px; }
   h2 { font-size: 20px; }
+}
+
+/* ============================================================
+   LE FIL DES POCHES
+   ------------------------------------------------------------
+   Une bande horizontale en tête d'accueil : une pastille par
+   poche, l'anneau teinté par la variation du jour. Elle se fait
+   défiler au doigt, avec accrochage — on s'arrête sur une
+   pastille, jamais entre deux.
+
+   L'anneau porte la couleur du sens, la pastille porte celle de
+   la classe d'actifs : deux informations superposées sans se
+   gêner, comme un cadran et son aiguille.
+   ============================================================ */
+
+.fil-entete {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; margin: 0 0 10px;
+}
+.fil-date { font-size: 11.5px; color: var(--texte-doux); }
+
+.fil {
+  display: flex; gap: 14px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 2px 2px 16px;
+  margin-bottom: 8px;
+  scrollbar-width: none;
+}
+.fil::-webkit-scrollbar { display: none; }
+
+.fil-item {
+  flex: 0 0 auto; scroll-snap-align: start;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  width: 74px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; color: var(--texte);
+  transition: transform .2s var(--ressort);
+}
+.fil-item:active { transform: scale(.93); }
+
+/* L'anneau est un dégradé conique : deux teintes voisines du même
+   sens, qui tournent. Un aplat aurait suffi à dire le sens, mais
+   pas à donner envie d'y toucher. */
+.fil-anneau {
+  width: 62px; height: 62px; border-radius: var(--r-pilule);
+  padding: 3px; display: grid; place-items: center;
+  background: var(--ligne-forte);
+}
+.fil-pastille {
+  width: 100%; height: 100%; border-radius: var(--r-pilule);
+  display: grid; place-items: center;
+  color: #fff; font-size: 15px; font-weight: 700; letter-spacing: -.02em;
+  box-shadow: inset 0 0 0 3px var(--surface);
+}
+/* Hauteur fixe de deux lignes : sans elle, une poche au nom court et
+   une poche au nom long décalent leurs pourcentages, et la bande perd
+   sa ligne de base — le regard ne compare plus rien. */
+.fil-nom {
+  font-size: 11px; line-height: 1.25; text-align: center;
+  color: var(--texte-doux);
+  height: 2.5em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fil-var {
+  font-size: 12px; font-weight: 680; font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+}
+
+.fil-item.hausse-forte .fil-anneau { background: conic-gradient(from 210deg, var(--vert), #57c98a, var(--vert)); }
+.fil-item.hausse .fil-anneau       { background: conic-gradient(from 210deg, color-mix(in srgb, var(--vert) 62%, transparent), color-mix(in srgb, var(--vert) 32%, transparent), color-mix(in srgb, var(--vert) 62%, transparent)); }
+.fil-item.baisse-forte .fil-anneau { background: conic-gradient(from 210deg, var(--rouge), #ee7a72, var(--rouge)); }
+.fil-item.baisse .fil-anneau       { background: conic-gradient(from 210deg, color-mix(in srgb, var(--rouge) 62%, transparent), color-mix(in srgb, var(--rouge) 32%, transparent), color-mix(in srgb, var(--rouge) 62%, transparent)); }
+.fil-item.plat .fil-anneau,
+.fil-item.neutre .fil-anneau       { background: var(--ligne-forte); }
+
+.fil-item.hausse-forte .fil-var, .fil-item.hausse .fil-var { color: var(--vert); }
+.fil-item.baisse-forte .fil-var, .fil-item.baisse .fil-var { color: var(--rouge); }
+.fil-item.plat .fil-var, .fil-item.neutre .fil-var { color: var(--texte-doux); }
+
+.hausse-forte, .hausse { color: var(--vert); }
+.baisse-forte, .baisse { color: var(--rouge); }
+
+/* ============================================================
+   FEUILLE DE DÉTAIL
+   Elle monte du bas, se referme d'un toucher à côté, d'un
+   « Fermer » ou d'Échap. Sur grand écran elle se centre : le
+   geste n'a pas de sens à la souris, la boîte de dialogue si.
+   ============================================================ */
+
+.feuille-fond {
+  position: fixed; inset: 0; z-index: 120;
+  background: rgba(15, 20, 25, 0);
+  display: flex; align-items: flex-end; justify-content: center;
+  transition: background .26s var(--ressort);
+}
+.feuille-fond.ouverte { background: rgba(15, 20, 25, .42); }
+
+.feuille {
+  width: 100%; max-width: 520px;
+  background: var(--surface);
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  padding: 8px 22px 26px;
+  padding-bottom: max(26px, env(safe-area-inset-bottom));
+  box-shadow: var(--ombre-3);
+  transform: translateY(100%);
+  transition: transform .3s var(--ressort);
+  max-height: 84vh; overflow-y: auto;
+}
+.feuille-fond.ouverte .feuille { transform: none; }
+
+.feuille-poignee {
+  width: 38px; height: 5px; border-radius: var(--r-pilule);
+  background: var(--ligne-forte); margin: 0 auto 12px;
+}
+.feuille-tete {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px;
+}
+.feuille-tete h3 { margin: 0; font-size: 19px; }
+.feuille-ligne {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 12px 0; border-top: 1px solid var(--ligne);
+  font-size: 14px;
+}
+.feuille-ligne:first-of-type { border-top: 0; }
+.feuille-ligne span { color: var(--texte-doux); }
+.feuille-ligne strong { font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+@media (min-width: 821px) {
+  .feuille-fond { align-items: center; }
+  .feuille { border-radius: var(--r-l); transform: translateY(14px) scale(.97); opacity: 0; }
+  .feuille-fond.ouverte .feuille { transform: none; opacity: 1; }
+  .feuille-poignee { display: none; }
+}
+
+/* ============================================================
+   BARRE BASSE & RUBAN SEGMENTÉ — mobile uniquement
+   ============================================================ */
+
+.tabbar { display: none; }
+.sous-nav { display: none; }
+
+@media (max-width: 820px) {
+
+  /* La colonne latérale cède la place aux deux étages. */
+  .nav { display: none; }
+
+  .sous-nav {
+    display: flex; gap: 8px;
+    padding: 10px 14px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    position: sticky; top: 52px; z-index: 40;
+    background: var(--voile);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--ligne);
+    scrollbar-width: none;
+  }
+  .sous-nav[hidden] { display: none; }
+  .sous-nav::-webkit-scrollbar { display: none; }
+  .sous-nav button {
+    flex: 0 0 auto;
+    border-radius: var(--r-pilule);
+    border: 1px solid var(--ligne);
+    background: var(--surface);
+    padding: 8px 15px; min-height: 40px;
+    white-space: nowrap; font: inherit; font-size: 13px; color: var(--texte);
+    cursor: pointer;
+    transition: transform .18s var(--ressort), background .18s var(--ressort);
+  }
+  .sous-nav button:active { transform: scale(.95); }
+  .sous-nav button.actif {
+    background: var(--bleu); color: #fff; font-weight: 620; border-color: transparent;
+  }
+  /* Une pastille verte plutôt qu'un ✓ : le ruban est étroit, et
+     l'avancement s'y lit du coin de l'œil, pas en le lisant. */
+  .sous-nav button[data-complet]::before {
+    content: ''; display: inline-block;
+    width: 6px; height: 6px; border-radius: var(--r-pilule);
+    background: var(--vert); margin-right: 7px; vertical-align: middle;
+  }
+  .sous-nav button.actif[data-complet]::before { background: rgba(255, 255, 255, .85); }
+
+  .tabbar {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+    background: var(--voile);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    backdrop-filter: saturate(180%) blur(22px);
+    border-top: 1px solid var(--ligne);
+    padding: 6px 4px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+  .tabbar button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: 0; cursor: pointer;
+    padding: 5px 2px; font: inherit;
+    font-size: 10.5px; font-weight: 560; letter-spacing: -.005em;
+    color: var(--texte-doux);
+    transition: color .18s var(--ressort), transform .18s var(--ressort);
+  }
+  .tabbar button:active { transform: scale(.9); }
+  .tabbar button svg {
+    width: 25px; height: 25px; display: block;
+    fill: none; stroke: currentColor; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .tabbar button.actif { color: var(--bleu); }
+  .tabbar button.actif svg { stroke-width: 2.1; }
+
+  /* La barre basse recouvre le bas de page : le contenu et le pied
+     lui laissent la hauteur qu'elle occupe, sinon la dernière ligne
+     d'un tableau reste inatteignable. */
+  .contenu { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .pied { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
+
+/* ============================================================
+   UN PEU PLUS DE RELIEF
+   ------------------------------------------------------------
+   Le registre reste celui d'un outil professionnel, mais rien
+   n'oblige un outil professionnel à être terne. Le verdict prend
+   un dégradé, les cartes entrent en cascade, les chiffres qui
+   comptent grossissent.
+
+   Le rapport client, lui, ne bouge pas : la règle d'impression
+   plus haut le repasse en monochrome. Un document remis à un
+   client ne gagne rien à être ludique.
+   ============================================================ */
+
+.verdict { position: relative; overflow: hidden; }
+.verdict::after {
+  content: ''; position: absolute; inset: auto -30px -60px auto;
+  width: 190px; height: 190px; border-radius: 50%;
+  opacity: .16; pointer-events: none;
+  background: radial-gradient(circle at 30% 30%, currentColor, transparent 68%);
+}
+.verdict.calme  { color: var(--vert); }
+.verdict.action { color: var(--or); }
+.verdict-titre  { font-size: 30px; }
+
+/* Les cartes d'une vue entrent l'une après l'autre. Le décalage
+   s'arrête au sixième rang : au-delà, l'attente se voit. */
+.vue.actif > .carte, .vue.actif > .grille, .vue.actif > .verdict,
+.vue.actif #accueil-contenu > .carte, .vue.actif #accueil-contenu > .grille {
+  animation: monte .42s var(--ressort) backwards;
+}
+.vue.actif > *:nth-child(2)  { animation-delay: .03s; }
+.vue.actif > *:nth-child(3)  { animation-delay: .06s; }
+.vue.actif > *:nth-child(4)  { animation-delay: .09s; }
+.vue.actif > *:nth-child(5)  { animation-delay: .12s; }
+.vue.actif > *:nth-child(n+6) { animation-delay: .15s; }
+
+@keyframes monte {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vue.actif > *, .fil-item, .feuille { animation: none !important; }
+  .feuille { transition: none; }
+}
+
+@media print {
+  .fil, .fil-entete, .tabbar, .sous-nav, .feuille-fond { display: none !important; }
+  .verdict::after { display: none; }
+  .vue.actif > * { animation: none !important; }
+}
+
+/* ---------- En-tête sur téléphone ---------- */
+
+.actions-mobile { display: none; }
+
+@media (max-width: 820px) {
+  /* Les quatre actions de dossier — enregistrer, exporter, importer,
+     nouveau — occupaient une rangée entière sous la marque, soit le
+     quart de l'écran avant le premier contenu. Elles passent dans une
+     feuille, derrière un seul bouton. */
+  .entete { flex-wrap: nowrap; }
+  .entete .actions-entete { display: none; }
+  .actions-mobile {
+    display: block; flex: none;
+    padding: 8px 14px; letter-spacing: .12em; font-size: 13px;
+  }
+
+  /* Quatre indicateurs empilés font défiler trois écrans pour quatre
+     nombres. En deux colonnes ils tiennent d'un regard. */
+  .grille.quatre { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grille.quatre .kpi { padding: 14px 15px; }
+  .grille.quatre .kpi .valeur { font-size: 21px; }
+  .grille.quatre .kpi .libelle { font-size: 10px; margin-top: 5px; }
+  .grille.quatre .kpi .detail { font-size: 11px; }
+}
+
+/* Hauteur réservée par la barre basse, lue par les éléments flottants. */
+:root { --marge-barre: 0px; }
+@media (max-width: 820px) {
+  :root { --marge-barre: calc(64px + env(safe-area-inset-bottom)); }
 }

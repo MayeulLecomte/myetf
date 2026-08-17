@@ -172,11 +172,56 @@ JavaScript.
 
 ## Sur iPhone
 
-L'application est adaptée au téléphone : la barre latérale devient un bandeau
-d'onglets défilant, les cartes passent en pleine largeur, les tableaux
-défilent horizontalement plutôt que de s'écraser, et toutes les saisies font
-au moins 16 px — en dessous, iOS agrandit la page à chaque fois qu'on touche
-un champ.
+Quinze onglets tiennent dans une colonne latérale sur un écran large. Sur un
+téléphone, ils devenaient un ruban de quinze pilules qu'il fallait faire
+glisser pour trouver la sixième : on ne savait jamais où l'on était ni ce qui
+restait. L'interface mobile est donc à **deux étages**.
+
+| | |
+|---|---|
+| **Barre basse** | Cinq destinations à portée de pouce — Aujourd'hui, Marché, Dossier, Suivi, Plus — qui disent en permanence où l'on est. Toucher le groupe où l'on se trouve déjà remonte en haut de la vue. |
+| **Ruban segmenté** | Sous l'en-tête, les vues du groupe courant, avec une pastille verte sur celles qui sont renseignées. Il disparaît quand le groupe n'a qu'une vue. |
+
+Deux touchers suffisent pour aller n'importe où. Le **balayage horizontal**
+passe d'une vue à l'autre à l'intérieur du groupe, et s'arrête à ses
+frontières — sans quoi on quitterait « Dossier » sans l'avoir voulu. Il ignore
+les zones qui défilent déjà : tableaux larges, rubans, fil des poches, champs
+de saisie.
+
+Les quatre actions de dossier — enregistrer, exporter, importer, nouveau —
+occupaient une rangée entière sous la marque, soit le quart de l'écran avant
+le premier contenu. Elles passent dans une feuille, derrière un seul bouton.
+
+Le reste suit : cartes en pleine largeur, indicateurs en deux colonnes plutôt
+qu'empilés, tableaux qui défilent horizontalement plutôt que de s'écraser, et
+toutes les saisies à 16 px au moins — en dessous, iOS agrandit la page à
+chaque fois qu'on touche un champ.
+
+**Au-delà de 820 px, rien ne change** : la colonne latérale montre les quinze
+vues d'un coup, ce qu'aucune barre basse ne sait faire.
+
+### Le fil des poches
+
+En tête d'accueil, une bande horizontale qu'on fait défiler : une pastille par
+poche, l'anneau teinté par la variation du jour, du vert au rouge en passant
+par le gris quand la séance n'a rien dit. Les poches sont classées par
+amplitude — ce qui a bougé se lit en premier.
+
+La pastille garde la couleur de sa classe d'actifs et s'éclaircit d'un cran à
+chaque poche de la famille : dix-neuf teintes franchement distinctes seraient
+au-delà de ce qu'un œil sépare, une famille dégradée se lit sans effort. Un
+toucher ouvre une feuille avec le jour, la semaine, le mois et l'année, et le
+support sur lequel la variation est mesurée.
+
+La bande ne remplace pas la note de marché, elle la précède : la note
+explique, la bande montre.
+
+### Ce qui reste sobre
+
+Le verdict prend un halo, les cartes entrent en cascade, les chiffres qui
+comptent grossissent. **Le rapport client, lui, ne bouge pas** : la règle
+d'impression le repasse en monochrome, sans ombre ni arrondi marqué. Un
+document remis à un client ne gagne rien à être ludique.
 
 **Ajout à l'écran d'accueil** : ouvrir le site dans Safari, toucher le bouton
 Partager, puis « Sur l'écran d'accueil ». L'application s'ouvre alors en plein
