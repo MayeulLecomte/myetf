@@ -5,13 +5,19 @@
    tolérance au risque, préférences de durabilité.
    ============================================================= */
 
+/* Les libellés de ces champs vivent dans `js/data/libelles.js`, sous les clés
+   `champ.<id>` : ils changent avec le mode — « Âge du client » pour un
+   conseiller, « Votre âge » pour un particulier — et n'ont donc plus qu'une
+   seule définition. Ce qui reste ici est structurel : type, bornes, valeur
+   par défaut, unité, options. `exemple: true` demande un texte d'exemple,
+   pris sous `champ.<id>.exemple`. */
 const IDENTITE = [
-  { id: 'nom',        label: 'Nom / référence dossier', type: 'text',   placeholder: 'M. et Mme Dupont' },
-  { id: 'age',        label: 'Âge du client',     type: 'number', min: 18, max: 100, defaut: 45, suffixe: 'ans' },
-  { id: 'montant',    label: 'Montant à investir',      type: 'number', min: 0, defaut: 100000, suffixe: '€' },
-  { id: 'versement',  label: 'Versement programmé mensuel', type: 'number', min: 0, defaut: 0, suffixe: '€/mois' },
+  { id: 'nom',        type: 'text',   exemple: true },
+  { id: 'age',        type: 'number', min: 18, max: 100, defaut: 45, suffixe: 'ans' },
+  { id: 'montant',    type: 'number', min: 0, defaut: 100000, suffixe: '€' },
+  { id: 'versement',  type: 'number', min: 0, defaut: 0, suffixe: '€/mois' },
   {
-    id: 'enveloppe', label: 'Enveloppe support', type: 'select', defaut: 'AV',
+    id: 'enveloppe', type: 'select', defaut: 'AV',
     options: [
       { valeur: 'AV',  label: 'Assurance-vie / Capitalisation' },
       { valeur: 'PEA', label: 'PEA' },
@@ -19,7 +25,7 @@ const IDENTITE = [
     ]
   },
   {
-    id: 'contratAV', label: 'Gamme du contrat (assurance-vie)', type: 'select', defaut: 'av-large',
+    id: 'contratAV', type: 'select', defaut: 'av-large',
     dependDe: { champ: 'enveloppe', valeur: 'AV' },
     options: [
       { valeur: 'av-large',     label: 'Contrat architecture ouverte — univers large' },
@@ -217,7 +223,9 @@ const QUESTIONS = [
     texte: "Acceptez-vous des arbitrages tactiques en cours de vie du contrat (2 à 4 par an) ?",
     options: [
       { label: 'Non, je veux une allocation figée',            score: 40,  meta: { gestion: 'passive' } },
-      { label: 'Oui, sur proposition de mon conseiller',       score: 75,  meta: { gestion: 'conseillee' } },
+      /* Seul le libellé dépend du mode ; le score et le `meta` n'en dépendent
+         pas et n'en dépendront pas — aucun calcul n'est propre à un mode. */
+      { cle: 'option.arbitrages.conseillee',                  score: 75,  meta: { gestion: 'conseillee' } },
       { label: 'Oui, y compris des mouvements significatifs',  score: 100, meta: { gestion: 'active' } }
     ]
   },

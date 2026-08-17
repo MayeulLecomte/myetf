@@ -132,6 +132,52 @@ enchaînait sur le contexte macro en sautant la note du jour, qui le précède
 pourtant dans son bloc. **Ne pas réintroduire de bouton de navigation en dur
 dans une vue du parcours** : il se désaccordera.
 
+## Deux modes de lecture, le temps de trancher
+
+L'application se lit de deux façons — **conseiller** (un dossier construit pour
+un client) et **particulier** (le sien). C'est une **phase de test** : l'un des
+deux sera vraisemblablement retiré, et rien ne doit rendre ce retrait coûteux.
+
+**Un seul code, un seul moteur, un seul format de dossier.** Le mode est un
+réglage du dossier — `Etat.mode`, exporté avec lui — et **aucun calcul ne lui
+est propre**. S'il faut un jour écrire `if (Etat.mode === …)` autour d'un
+chiffre, c'est que la frontière a été mal posée.
+
+Ce que le mode change, et rien d'autre : **les vues visibles**, **le
+vocabulaire**, et **le rapport**.
+
+Le vocabulaire vit dans `js/data/libelles.js`, en deux tables qui ne sont pas
+jumelles :
+
+| Table | Contenu |
+|---|---|
+| `defaut` | le vocabulaire du conseiller, mot pour mot ce qui était écrit dans les pages |
+| `particulier` | **uniquement ce que le mode change** |
+
+`particulier` se lit donc comme la définition du mode. Le jour où l'un des deux
+l'emporte : on supprime un littéral, ou l'on replie ses écarts dans les
+défauts. `T('cle')` retombe toujours sur le défaut — une clé oubliée rend le
+mot du conseiller, jamais un blanc.
+
+Deux régimes d'échappement, à ne pas confondre : les clés `phrase.*` sont des
+fragments **HTML**, insérés tels quels ; tout le reste est du texte simple,
+**échappé au point d'usage**.
+
+**Un dossier sans champ `mode` s'ouvre en conseiller.** L'écran d'entrée ne
+paraît que sur un dossier vierge dont le mode n'est pas choisi — un dossier
+existant est forcément entamé, il ne le voit jamais.
+
+**Une ancre résout toujours et ouvre sa vue, même masquée en navigation.**
+Masquer porte sur la navigation, pas sur le routage : `#note` doit continuer
+d'ouvrir la note en mode particulier, sans quoi le widget iOS deviendrait muet
+sans qu'aucun test ne le signale.
+
+**En mode particulier, l'avertissement grossit.** Adéquation et signatures
+disparaissent du rapport, mais « ne constitue pas un conseil en
+investissement » passe **en tête du document**, pas seulement en annexe : il
+n'y a plus de professionnel entre l'outil et celui qui décide. C'est le seul
+endroit où le mode particulier est plus exigeant que l'autre.
+
 ## Pistes — reportées, pas abandonnées
 
 Relevées à la relecture « premier dossier », hors chantier à ce stade :

@@ -203,6 +203,26 @@ transmises à personne. Deux utilisateurs de la même adresse ne partagent donc
 pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
 « Importer ».
 
+## Deux modes de lecture
+
+L'application se lit de deux façons, choisies sur un écran d'entrée à la
+première ouverture : **« Je suis conseiller »** — un dossier construit et suivi
+pour un client — ou **« J'investis pour moi-même »**.
+
+Le choix ne touche **ni les calculs, ni le format du dossier** : c'est un
+réglage du dossier (`mode`), exporté avec lui et modifiable ensuite dans
+« Client & enveloppe ». Il ne change que trois choses : les vues montrées, le
+vocabulaire, et le rapport.
+
+Le vocabulaire vit dans `js/data/libelles.js`, en une table de défauts — celle
+du conseiller — et une table d'écarts, qui ne porte que ce que le mode
+particulier change. **Les deux modes coexistent le temps de trancher** : l'un
+des deux sera vraisemblablement retiré, et la structure est faite pour que ce
+retrait tienne en une suppression.
+
+**Un dossier enregistré ou exporté avant l'existence du champ s'ouvre en mode
+conseiller**, sans rien demander.
+
 ## Navigation
 
 Quinze vues réparties en quatre blocs, plus les données en registre secondaire :

@@ -1574,3 +1574,33 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
   /* Sous l'en-tête ET sous le ruban de vues, qui collent tous deux. */
   .repere-q { top: 114px; }
 }
+
+/* ---------- L'écran d'entrée ----------
+   Deux choix de même poids : ni l'un ni l'autre n'est recommandé, et
+   rien dans le dessin ne doit le suggérer. Ce sont des cartes de verre
+   comme les autres, pas des boutons pleins — le choix se pose, il ne
+   s'expédie pas. */
+.entree { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+.entree-choix {
+  flex: 1 1 260px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  text-align: left; cursor: pointer;
+  padding: 22px 24px;
+  border-radius: 28px;
+  border: 1px solid var(--verre-bord);
+  background: var(--verre);
+  -webkit-backdrop-filter: var(--verre-flou);
+  backdrop-filter: var(--verre-flou);
+  box-shadow: var(--verre-ombre);
+  font: inherit; color: var(--texte);
+  transition: background .25s var(--ressort), transform .18s var(--ressort),
+              border-color .25s var(--ressort);
+}
+.entree-choix:hover { background: var(--verre-fort); border-color: var(--bleu); }
+.entree-choix:active { transform: scale(.985); }
+.entree-choix strong { font-family: var(--ronde); font-size: 17px; font-weight: 680; }
+.entree-choix span { font-size: 13px; color: var(--texte-doux); line-height: 1.45; }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .entree-choix { background: var(--surface) !important; }
+}

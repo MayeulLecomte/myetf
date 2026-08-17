@@ -40,7 +40,14 @@ const Etat = {
   /* `controles` retient, pour chaque ligne de la liste de contrôle relue
      avant impression, l'état exact qui a été relu — pas un simple oui. */
   rapport: { annexeMethode: true, controles: {} },
-  filtreUnivers: { classe: '', enveloppe: '', texte: '' }
+  filtreUnivers: { classe: '', enveloppe: '', texte: '' },
+  /* Le mode de lecture — « conseiller » ou « particulier ». `null` signifie
+     « pas encore choisi » et fait paraître l'écran d'entrée ; un dossier
+     enregistré avant ce champ s'ouvre donc en conseiller, par le repli de
+     `T()`. Il est déclaré ici, et non simplement absent, pour que l'import
+     d'un dossier le rapporte : `lireFichier` ne recopie que les clés que
+     l'état connaît déjà. */
+  mode: null
 };
 
 /* ============================================================
@@ -125,7 +132,7 @@ function sauver(silencieux) {
       detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal,
       revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique,
       situations: Etat.situations, situationDate: Etat.situationDate,
-      avisTactiqueLu: Etat.avisTactiqueLu, rapport: Etat.rapport,
+      avisTactiqueLu: Etat.avisTactiqueLu, rapport: Etat.rapport, mode: Etat.mode,
       dernierAcces: Etat.dernierAcces
     }));
     if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
@@ -410,6 +417,36 @@ const PARCOURS = GROUPES
 function libelleVue(vue) {
   const b = $('#nav button[data-vue="' + vue + '"]');
   return b ? b.textContent.trim() : vue;
+}
+
+/* ------------------------------------------------------------
+   LA COLONNE DE NAVIGATION ET LES TITRES DE VUE
+   ------------------------------------------------------------
+   Tous deux posés depuis `js/data/libelles.js`, parce que leur
+   texte dépend du mode. La colonne reste ensuite la source des
+   libellés pour le ruban mobile, la barre basse et la barre de
+   parcours, qui l'y lisent déjà : renommer une vue dans la table
+   les suit toutes les trois sans les toucher.
+   ------------------------------------------------------------ */
+function poserNav() {
+  const nav = $('#nav');
+  if (!nav) return;
+  nav.innerHTML = GROUPES.map(g => {
+    /* Le premier groupe n'a qu'une vue et se nomme comme elle : lui poser
+       un titre de bloc écrirait deux fois le même mot. */
+    const titre = g.vues.length > 1
+      ? '<div class="bloc-titre' + (g.secondaire ? ' secondaire' : '') + '">' +
+        echapper(g.libelle) + '</div>'
+      : '';
+    return titre + g.vues.map(v =>
+      '<button data-vue="' + v + '"' +
+        (v === 'accueil' ? ' class="actif accueil"' : (g.secondaire ? ' class="secondaire"' : '')) +
+        '><span class="num"></span> ' + echapper(T('vue.' + v + '.nav')) + '</button>').join('');
+  }).join('');
+}
+
+function poserTitres() {
+  $$('h2[data-titre]').forEach(h => { h.textContent = T('vue.' + h.dataset.titre + '.titre'); });
 }
 
 function poserBarresParcours() {
@@ -785,14 +822,11 @@ function accroche() {
      haut de l'écran. */
   if (dossierEntame()) {
     return '<div class="accroche courte">' +
-      '<p><strong>Allocation d\'ETF pour un client</strong> — outil de travail du conseiller.</p>' +
+      '<p>' + T('phrase.accroche.courte') + '</p>' +
       fraicheurDonnees() + '</div>';
   }
   return '<div class="accroche">' +
-    '<p><strong>myetf construit et suit une allocation d\'ETF pour un client</strong> — du ' +
-      'questionnaire de profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres. ' +
-      'C\'est un outil de travail pour le conseiller, qui valide et signe : ce n\'est pas un ' +
-      'service rendu au client final.</p>' +
+    '<p>' + T('phrase.accroche.longue') + '</p>' +
     fraicheurDonnees() +
     (dossierEntame() ? '' :
       '<div class="barre-actions" style="margin-top:14px">' +
@@ -878,8 +912,47 @@ function remplirExemple(complet) {
   sauver(true);
 }
 
+/* ------------------------------------------------------------
+   L'ÉCRAN D'ENTRÉE
+   ------------------------------------------------------------
+   Deux boutons, dans l'accueil et non dans une fenêtre : une
+   modale sortirait du routage par ancres, et le test de fumée ne
+   la verrait pas.
+
+   Il ne paraît que sur un dossier vierge dont le mode n'est pas
+   choisi. Un dossier existant est forcément entamé — il ne le
+   voit donc jamais et s'ouvre en conseiller, comme avant.
+   ------------------------------------------------------------ */
+function ecranEntree() {
+  return '<div class="accroche">' +
+      '<p><strong>myetf construit et suit une allocation d\'ETF</strong> — du questionnaire de ' +
+      'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +
+      fraicheurDonnees() +
+    '</div>' +
+    '<h2>Pour commencer</h2>' +
+    '<p class="intro">Ce choix ne change ni les calculs ni le dossier : seulement le vocabulaire et ' +
+      'les écrans montrés. Il se modifie ensuite dans « ' + echapper(T('vue.client.nav')) + ' ».</p>' +
+    '<div class="entree">' +
+      MODES.map(m =>
+        '<button class="entree-choix" data-mode="' + echapper(m.id) + '">' +
+          '<strong>' + echapper(m.bouton) + '</strong>' +
+          '<span>' + echapper(m.sous) + '</span>' +
+        '</button>').join('') +
+    '</div>';
+}
+
+function choisirMode(id) {
+  if (!MODES.some(m => m.id === id)) return;
+  Etat.mode = id;
+  sauver(true);
+  /* Le vocabulaire change en place : ni rechargement, ni perte de saisie. */
+  poserNav(); poserTitres(); majNav();
+  rendre('accueil');
+}
+
 function rendreAccueil() {
   const c = $('#accueil-contenu');
+  if (!Etat.mode && !dossierEntame()) { c.innerHTML = ecranEntree(); return; }
   const etapes = etapesDossier();
   const aFaire = etapes.filter(e => !e.fait);
 
@@ -989,9 +1062,9 @@ function rendreIdentite() {
       saisie = '<input type="' + f.type + '" data-identite="' + f.id + '" value="' + echapper(val) + '"' +
         (f.min !== undefined ? ' min="' + f.min + '"' : '') +
         (f.max !== undefined ? ' max="' + f.max + '"' : '') +
-        (f.placeholder ? ' placeholder="' + echapper(f.placeholder) + '"' : '') + '>';
+        (f.exemple ? ' placeholder="' + echapper(T('champ.' + f.id + '.exemple')) + '"' : '') + '>';
     }
-    return '<div class="champ"><label>' + echapper(f.label) + '</label>' + saisie +
+    return '<div class="champ"><label>' + echapper(T('champ.' + f.id)) + '</label>' + saisie +
       (f.suffixe ? '<span class="suffixe">' + echapper(f.suffixe) + '</span>' : '') + '</div>';
   }).join('');
 
@@ -1053,7 +1126,8 @@ function rendreQuestionnaire() {
         '<div class="options">' + q.options.map((o, i) =>
           '<label class="' + (rep === i ? 'choisi' : '') + '">' +
           '<input type="radio" name="' + q.id + '" value="' + i + '" data-question="' + q.id + '"' +
-          (rep === i ? ' checked' : '') + '> ' + echapper(o.label) + '</label>').join('') +
+          (rep === i ? ' checked' : '') + '> ' +
+          echapper(o.cle ? T(o.cle) : o.label) + '</label>').join('') +
         '</div></div>';
     }).join('') + '</div>';
   }).join('');
@@ -3357,7 +3431,7 @@ function rendreRapport() {
     '<div class="carte">' +
       '<h3>Proposition d\'allocation d\'actifs</h3>' +
       '<table><tbody>' +
-      ligne('Client', Etat.identite.nom || '—') +
+      ligne(T('rapport.ligne.client'), Etat.identite.nom || '—') +
       ligne('Date', dateFr()) +
       ligne('Enveloppe', libelleEnveloppe()) +
       ligne('Montant', euro(Number(Etat.identite.montant) || 0)) +
@@ -3467,10 +3541,7 @@ function rendreRapport() {
 
     '<div class="carte mentions"><h3>Mentions</h3>' +
       '<h4>Nature du document</h4>' +
-      '<p>Ce document est un support d\'aide à la décision produit par un outil interne. Il ne constitue ni un ' +
-      'conseil en investissement personnalisé au sens de l\'article D. 321-1 du code monétaire et financier, ni une ' +
-      'recommandation d\'achat ou de vente, tant qu\'il n\'a pas été validé, complété et signé par le conseiller dans ' +
-      'le cadre du rapport d\'adéquation remis au client.</p>' +
+      '<p>' + T('phrase.mentions.nature') + '</p>' +
       '<h4>Risques</h4>' +
       '<p>Les investissements en unités de compte présentent un risque de perte en capital. L\'assureur ne s\'engage ' +
       'que sur le nombre d\'unités de compte et non sur leur valeur. Les performances passées ne préjugent pas des ' +
@@ -3482,10 +3553,8 @@ function rendreRapport() {
       'contrat à la date de souscription. Les notations Morningstar sont des indicateurs quantitatifs rétrospectifs ' +
       'et ne constituent pas une prévision de performance.</p>' +
       '<h4>Scénarios</h4>' +
-      '<p>Les probabilités de scénarios macroéconomiques reflètent l\'appréciation du conseiller à la date du ' +
-      'document. Elles sont susceptibles d\'évoluer et ne constituent pas une prévision.</p>' +
-      '<p style="margin-top:14px">Document établi le ' + dateFr() + '. Conseiller : _______________________  ' +
-      'Signature du client : _______________________</p>' +
+      '<p>' + T('phrase.mentions.scenarios') + '</p>' +
+      '<p style="margin-top:14px">' + T('phrase.mentions.signature', { date: dateFr() }) + '</p>' +
     '</div>';
 }
 
@@ -3528,6 +3597,10 @@ function brancherBalayage() {
 
 function brancher() {
 
+  /* Dans cet ordre : la colonne porte les libellés que la barre de parcours
+     y relit ensuite. */
+  poserNav();
+  poserTitres();
   poserBarresParcours();
 
   /* Le repère de section se recalcule au défilement — et au redimensionnement,
@@ -3610,6 +3683,9 @@ function brancher() {
 
     const pastille = e.target.closest('[data-poche]');
     if (pastille) { ouvrirPoche(pastille.dataset.poche); return; }
+
+    const choix = e.target.closest('[data-mode]');
+    if (choix) { choisirMode(choix.dataset.mode); return; }
 
     const aller = e.target.closest('[data-aller]');
     if (aller) { fermerFeuille(); afficher(aller.dataset.aller); return; }
@@ -3852,6 +3928,10 @@ function brancher() {
   $('#btn-importer').onclick = () => $('#fichier-import').click();
   $('#fichier-import').onchange = e => lireFichier(e.target.files[0], d => {
     Object.keys(d).forEach(k => { if (Etat[k] !== undefined) Etat[k] = d[k]; });
+    /* Un dossier exporté avant que le mode existe n'en porte aucun : il a été
+       construit par un conseiller, et s'ouvre comme tel. */
+    if (!Etat.mode) Etat.mode = MODE_DEFAUT;
+    poserNav(); poserTitres();
     sauver(true); afficher('client'); notifier('Dossier importé.');
   });
 

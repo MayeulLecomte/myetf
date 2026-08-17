@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608191500">
+<link rel="stylesheet" href="css/app.css?v=202608191600">
 </head>
 <body>
 
@@ -49,35 +49,13 @@
 
 <div class="corps">
 
-  <nav class="nav" id="nav">
-    <!-- Quatre blocs, plus les données en registre secondaire. Aucun numéro :
-         l'avancement se lit sur l'état de la pastille — complété, en cours, à
-         faire — et non sur un rang qui figerait l'ordre des vues. -->
-    <button data-vue="accueil" class="actif accueil"><span class="num"></span> Aujourd'hui</button>
-
-    <div class="bloc-titre">Profil</div>
-    <button data-vue="client"><span class="num"></span> Client &amp; enveloppe</button>
-    <button data-vue="questionnaire"><span class="num"></span> Questionnaire</button>
-    <button data-vue="profil"><span class="num"></span> Profil de risque</button>
-
-    <div class="bloc-titre">Allocation</div>
-    <button data-vue="note"><span class="num"></span> Note du jour</button>
-    <button data-vue="macro"><span class="num"></span> Contexte</button>
-    <button data-vue="allocation"><span class="num"></span> Allocation cible</button>
-    <button data-vue="portefeuille"><span class="num"></span> Sélection des supports</button>
-    <button data-vue="arbitrages"><span class="num"></span> Arbitrages</button>
-    <button data-vue="backtest"><span class="num"></span> Backtest</button>
-
-    <div class="bloc-titre">Suivi</div>
-    <button data-vue="situation"><span class="num"></span> Situation</button>
-    <button data-vue="revenus"><span class="num"></span> Revenus &amp; rachats</button>
-    <button data-vue="journal"><span class="num"></span> Journal</button>
-    <button data-vue="rapport"><span class="num"></span> Rapport</button>
-
-    <div class="bloc-titre secondaire">Données</div>
-    <button data-vue="univers" class="secondaire"><span class="num"></span> Univers ETF</button>
-    <button data-vue="methode" class="secondaire"><span class="num"></span> Méthode &amp; limites</button>
-  </nav>
+  <!-- Posée par `poserNav()`, à partir des blocs de `GROUPES` et des
+       libellés de `js/data/libelles.js`. Elle n'est pas écrite ici parce
+       qu'elle en serait une seconde définition : le ruban mobile, la barre
+       basse et la barre de parcours lisent tous les trois leurs libellés
+       dans cette colonne, et une copie en dur finirait par en dévier.
+       Aucun numéro : l'avancement se lit sur l'état de la pastille. -->
+  <nav class="nav" id="nav"></nav>
 
   <!-- Ruban segmenté : les vues du groupe courant. Mobile seulement ;
        au-delà de 820 px la colonne latérale montre les quinze d'un coup. -->
@@ -92,7 +70,7 @@
 
     <!-- ============ 1. CLIENT ============ -->
     <section class="vue" id="vue-client">
-      <h2>Client &amp; enveloppe</h2>
+      <h2 data-titre="client"></h2>
       <p class="intro">Ces informations déterminent les supports réellement accessibles et les montants des
       arbitrages. Seul l'âge pèse sur le score de risque, par des points de vigilance.</p>
 
@@ -153,7 +131,7 @@
 
     <!-- ============ 2. QUESTIONNAIRE ============ -->
     <section class="vue" id="vue-questionnaire">
-      <h2>Questionnaire de profilage</h2>
+      <h2 data-titre="questionnaire"></h2>
       <p class="intro">Structure conforme aux exigences MIF 2 / DDA : connaissance et expérience, situation
       financière et capacité à subir des pertes, objectifs et horizon, tolérance au risque, préférences de durabilité.</p>
 
@@ -180,13 +158,13 @@
 
     <!-- ============ 3. PROFIL ============ -->
     <section class="vue" id="vue-profil">
-      <h2>Profil de risque</h2>
+      <h2 data-titre="profil"></h2>
       <div id="profil-contenu"></div>
     </section>
 
     <!-- ============ 4. NOTE DE MARCHÉ ============ -->
     <section class="vue" id="vue-note">
-      <h2>Note du jour</h2>
+      <h2 data-titre="note"></h2>
       <p class="intro">Rédigée chaque matin sur les cours de la veille : ce qui a bougé, ce qu'il faut
       vérifier. Document de travail, à ne pas remettre en l'état.</p>
       <div id="note-contenu"></div>
@@ -194,7 +172,7 @@
 
     <!-- ============ 5. MACRO ============ -->
     <section class="vue" id="vue-macro">
-      <h2>Contexte économique, géopolitique et fiscal</h2>
+      <h2 data-titre="macro"></h2>
       <p class="intro">Le conseiller renseigne sa lecture du contexte. Le moteur en déduit une distribution de
       scénarios, puis des déviations tactiques bornées par rapport à l'allocation stratégique du profil.
       Les probabilités calculées peuvent être ajustées manuellement.</p>
@@ -220,19 +198,19 @@
 
     <!-- ============ 6. ALLOCATION ============ -->
     <section class="vue" id="vue-allocation">
-      <h2>Allocation cible</h2>
+      <h2 data-titre="allocation"></h2>
       <div id="allocation-contenu"></div>
     </section>
 
     <!-- ============ 7. SÉLECTION ETF ============ -->
     <section class="vue" id="vue-portefeuille">
-      <h2>Sélection des supports</h2>
+      <h2 data-titre="portefeuille"></h2>
       <div id="portefeuille-contenu"></div>
     </section>
 
     <!-- ============ 8. ARBITRAGES ============ -->
     <section class="vue" id="vue-arbitrages">
-      <h2>Arbitrages proposés</h2>
+      <h2 data-titre="arbitrages"></h2>
       <p class="intro">Saisissez le portefeuille actuellement détenu pour obtenir les mouvements à réaliser.
       Un dossier sans détention existante donne simplement le plan d'investissement initial.</p>
 
@@ -283,7 +261,7 @@
 
     <!-- ============ 9. SITUATION ============ -->
     <section class="vue" id="vue-situation">
-      <h2>Situation des placements</h2>
+      <h2 data-titre="situation"></h2>
       <p class="intro">Ce qui est détenu à une date donnée, à quel cours, pour quelle valeur. Les arrêtés du
       30 juin et du 31 décembre sont proposés d'office.</p>
       <div id="situation-contenu"></div>
@@ -291,7 +269,7 @@
 
     <!-- ============ 10. REVENUS ============ -->
     <section class="vue" id="vue-revenus">
-      <h2>Revenus &amp; rachats programmés</h2>
+      <h2 data-titre="revenus"></h2>
       <p class="intro">Détermine sur quels supports prélever le revenu, dans quel ordre et pour quel coût fiscal.
       Le plan s'appuie sur la détention saisie dans les arbitrages et sur l'allocation cible.</p>
 
@@ -305,7 +283,7 @@
 
     <!-- ============ 11. BACKTEST ============ -->
     <section class="vue" id="vue-backtest">
-      <h2>Backtest de l'allocation</h2>
+      <h2 data-titre="backtest"></h2>
       <p class="intro" id="backtest-intro">Rejoue l'allocation sur des performances annuelles calendaires, en euros, dividendes
       réinvestis.</p>
 
@@ -351,7 +329,7 @@
 
     <!-- ============ 12. UNIVERS ============ -->
     <section class="vue" id="vue-univers">
-      <h2>Univers ETF référencé</h2>
+      <h2 data-titre="univers"></h2>
       <p class="intro">Les supports que vous retenez, et le contrôle qui n'appartient qu'à vous :
       leur référencement dans le contrat du client.</p>
 
@@ -431,7 +409,7 @@
 
     <!-- ============ 13. JOURNAL ============ -->
     <section class="vue" id="vue-journal">
-      <h2>Journal des revues</h2>
+      <h2 data-titre="journal"></h2>
       <p class="intro">Chaque revue validée est horodatée et conservée localement. Ce journal constitue la trace
       du suivi « au fil de l'eau » : dérive constatée, contexte retenu, mouvements proposés.</p>
       <div id="journal-contenu"></div>
@@ -442,7 +420,7 @@
          n'a pas sa place devant un client. L'annexe jointe au rapport en
          reprend trois sections sur cinq. -->
     <section class="vue" id="vue-methode">
-      <h2>Méthode &amp; limites</h2>
+      <h2 data-titre="methode"></h2>
       <p class="intro">Ce que l'outil calcule, comment, et ce qu'il ne fait pas. Écrit pour vous, pas
       pour le client : l'annexe jointe au rapport en reprend une version courte.</p>
       <div id="methode-contenu"></div>
@@ -450,7 +428,7 @@
 
     <!-- ============ 14. RAPPORT ============ -->
     <section class="vue" id="vue-rapport">
-      <h2>Rapport de préconisation</h2>
+      <h2 data-titre="rapport"></h2>
       <div id="rapport-controles" class="sans-impression"></div>
       <div class="barre-actions sans-impression">
         <button class="bouton" id="btn-imprimer">Imprimer / enregistrer en PDF</button>
@@ -496,24 +474,25 @@
   en investissement.</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608191500"></script>
-<script src="js/data/allocations.js?v=202608191500"></script>
-<script src="js/data/macro.js?v=202608191500"></script>
-<script src="js/data/etf-univers.js?v=202608191500"></script>
-<script src="js/data/fiscalite.js?v=202608191500"></script>
-<script src="js/data/historique.js?v=202608191500"></script>
-<script src="js/data/note-marche.js?v=202608191500"></script>
-<script src="js/data/cours-historique.js?v=202608191500"></script>
-<script src="js/data/cours-marche.js?v=202608191500"></script>
-<script src="js/engine/profil.js?v=202608191500"></script>
-<script src="js/engine/allocation.js?v=202608191500"></script>
-<script src="js/engine/selection.js?v=202608191500"></script>
-<script src="js/engine/arbitrage.js?v=202608191500"></script>
-<script src="js/engine/revenus.js?v=202608191500"></script>
-<script src="js/engine/situation.js?v=202608191500"></script>
-<script src="js/engine/contrat.js?v=202608191500"></script>
-<script src="js/engine/univers.js?v=202608191500"></script>
-<script src="js/engine/backtest.js?v=202608191500"></script>
-<script src="js/app.js?v=202608191500"></script>
+<script src="js/data/libelles.js?v=202608191600"></script>
+<script src="js/data/questionnaire.js?v=202608191600"></script>
+<script src="js/data/allocations.js?v=202608191600"></script>
+<script src="js/data/macro.js?v=202608191600"></script>
+<script src="js/data/etf-univers.js?v=202608191600"></script>
+<script src="js/data/fiscalite.js?v=202608191600"></script>
+<script src="js/data/historique.js?v=202608191600"></script>
+<script src="js/data/note-marche.js?v=202608191600"></script>
+<script src="js/data/cours-historique.js?v=202608191600"></script>
+<script src="js/data/cours-marche.js?v=202608191600"></script>
+<script src="js/engine/profil.js?v=202608191600"></script>
+<script src="js/engine/allocation.js?v=202608191600"></script>
+<script src="js/engine/selection.js?v=202608191600"></script>
+<script src="js/engine/arbitrage.js?v=202608191600"></script>
+<script src="js/engine/revenus.js?v=202608191600"></script>
+<script src="js/engine/situation.js?v=202608191600"></script>
+<script src="js/engine/contrat.js?v=202608191600"></script>
+<script src="js/engine/univers.js?v=202608191600"></script>
+<script src="js/engine/backtest.js?v=202608191600"></script>
+<script src="js/app.js?v=202608191600"></script>
 </body>
 </html>
