@@ -54,6 +54,10 @@ jobs:
         if: env.ANTHROPIC_API_KEY != ''
         run: node scripts/note-marche.mjs | tee -a /tmp/rapport.txt
 
+      # Le marqueur porté par index.html sert de cache-buster ; version.json
+      # le republie à part, hors cache, pour que les navigateurs qui gardent
+      # un index.html périmé s'aperçoivent qu'ils travaillent sur une vieille
+      # version. Les deux doivent donc bouger ensemble.
       - name: Versionner les ressources si les données ont changé
         run: |
           if [ -n "$(git status --porcelain data js/data/cours-marche.js js/data/note-marche.js)" ]; then
@@ -64,6 +68,7 @@ jobs:
           p.write_text(re.sub(r'\?v=\d+', f'?v={v}', p.read_text()))
           print('version', v)
           PY
+            node scripts/version.mjs
           fi
 
       - name: Publier

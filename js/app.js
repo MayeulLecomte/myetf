@@ -3288,7 +3288,56 @@ function injecterCoursMarche() {
   return remplacees;
 }
 
+/* ============================================================
+   VERSION PÉRIMÉE DANS LE CACHE
+   -------------------------------------------------------------
+   Les numéros de version des scripts et de la feuille de style
+   vivent DANS index.html. Si le navigateur garde index.html, il
+   garde aussi les anciens numéros : le cache-buster ne buste
+   plus rien et l'application reste indéfiniment à sa version
+   d'hier. Safari sur iPhone est particulièrement tenace.
+
+   D'où ce contrôle. `version.json` est le seul fichier demandé
+   hors cache ; son marqueur est comparé à celui que porte le
+   `<script>` de app.js — c'est-à-dire à la version réellement
+   chargée. S'ils divergent, on recharge une fois sur une adresse
+   neuve, ce qui oblige le navigateur à redemander index.html.
+
+   Le rechargement ne peut pas boucler : l'adresse porte le
+   marqueur visé, et un second passage sur la même valeur
+   n'entreprend rien — il le dit, au lieu de recharger sans fin.
+   ============================================================ */
+
+function versionChargee() {
+  const s = document.querySelector('script[src*="js/app.js"]');
+  const m = s && s.src.match(/[?&]v=(\d+)/);
+  return m ? m[1] : null;
+}
+
+function verifierVersion() {
+  /* Ouverte par double-clic (file://), l'application n'a pas le droit de
+     faire un fetch — et n'a aucun cache serveur à contourner. */
+  if (location.protocol.indexOf('http') !== 0) return;
+
+  const chargee = versionChargee();
+  if (!chargee) return;
+
+  fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => {
+      if (!d || !d.version || d.version === chargee) return;
+      if (location.search.indexOf('maj=' + d.version) >= 0) {
+        notifier('Version ' + d.version + ' publiée, mais le cache du navigateur ne la libère pas. ' +
+          'Fermez l\'onglet et rouvrez l\'adresse.', 'alerte');
+        return;
+      }
+      location.replace(location.pathname + '?maj=' + d.version);
+    })
+    .catch(() => { /* hors ligne : garder ce qu'on a est le bon choix */ });
+}
+
 (function init() {
+  verifierVersion();
   const restaure = charger();
   const remplacees = injecterCoursMarche();
   IDENTITE.forEach(f => {

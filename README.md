@@ -332,6 +332,33 @@ cd "/Users/Mayeul/APP ETF CGP" && python3 -c "import re,datetime,pathlib;p=pathl
 
 Le site se régénère en une à deux minutes.
 
+
+### Quand le navigateur reste sur l'ancienne version
+
+Les numéros de version des scripts et de la feuille de style vivent **dans**
+`index.html`. Si le navigateur garde `index.html` en cache, il garde aussi les
+anciens numéros : le cache-buster ne buste plus rien, et l'application reste
+indéfiniment à sa version d'hier. Safari sur iPhone est particulièrement tenace
+là-dessus — l'application s'ouvre, fonctionne, mais sans les nouveautés.
+
+`version.json` répond à ça. C'est le seul fichier que l'application demande
+**hors cache** ; au démarrage, elle compare son marqueur à celui que porte le
+`<script>` de `app.js`, c'est-à-dire à la version réellement chargée. S'ils
+divergent, elle recharge une fois sur `?maj=<version>` — une adresse neuve, que
+le navigateur est obligé d'aller rechercher.
+
+Le rechargement ne peut pas boucler : l'adresse porte le marqueur visé, et un
+second passage sur la même valeur affiche un message au lieu de recharger.
+
+Le fichier se régénère depuis `index.html`, et doit l'être à chaque publication :
+
+```bash
+node scripts/version.mjs
+```
+
+Le relevé quotidien s'en charge tout seul : il réécrit le marqueur d'`index.html`
+puis relance ce script dans la foulée.
+
 ## Lancer l'application en local
 
 Aucune installation, aucune dépendance, aucun accès réseau requis.
@@ -716,6 +743,8 @@ scripts/note-marche.mjs       rédaction de la note interne via l'API Claude
 scripts/notations.mjs         relève les notes Morningstar et les inscrit dans l'univers
 scripts/catalogue.mjs         recense les ETF cotés en Europe → catalogue de recherche
 scripts/icones.py             regénère les icônes depuis le signe
+scripts/version.mjs           republie version.json, lu hors cache par l'application
+version.json                  GÉNÉRÉ — marqueur de la version publiée
 package.json                  dépendances des scripts uniquement (SDK Anthropic)
 scriptable/allocation-etf.js  widget iOS, lit data/widget.json
 manifest.webmanifest          ajout à l'écran d'accueil
