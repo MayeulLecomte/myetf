@@ -827,8 +827,13 @@ function rendreAccueil() {
       accroche() +
       filPoches() +
       '<h2>Remplissez le dossier</h2>' +
-      '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont pas ' +
-        'renseignées. Tout reste dans ce navigateur : rien n\'est transmis.</p>' +
+      '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont ' +
+        'pas renseignées.</p>' +
+      /* Cette phrase reste ici, et pas seulement dans « Méthode & limites » :
+         c'est le moment où l'on commence à saisir, donc le moment où il faut
+         le savoir. Une page de référence se lit après coup, ou jamais. */
+      '<p class="intro rappel-local">Vos données restent dans ce navigateur — exportez votre dossier ' +
+        'régulièrement. <button class="lien" data-aller="methode">Méthode &amp; limites</button></p>' +
 
       '<div class="carte"><h3>' + aFaire.length + ' étape' + (aFaire.length > 1 ? 's' : '') + ' à compléter</h3>' +
         '<div class="etapes-dossier">' +
@@ -860,7 +865,6 @@ function rendreAccueil() {
   const derive = analyse.ecarts.reduce((m, e) => Math.max(m, Math.abs(e.pctCible - e.pctActuel)), 0);
   const derniere = Etat.journal.length
     ? Etat.journal.map(j => j.date).sort().slice(-1)[0] : null;
-  const nonValides = sel.lignes.filter(l => !l.etf.verifie).length;
   const rien = analyse.aucunMouvement;
 
   c.innerHTML =
@@ -899,9 +903,6 @@ function rendreAccueil() {
         '<div class="barre-actions"><button class="bouton" data-aller="arbitrages">Ouvrir les arbitrages</button>' +
         '<button class="bouton secondaire" data-aller="rapport">Voir le rapport</button></div></div>') +
 
-    (nonValides ? '<div class="message alerte"><strong>' + nonValides + ' support(s) non validé(s) au contrat.</strong> ' +
-      'Rapprochez l\'univers de la liste des supports de l\'assureur avant de passer un ordre.' +
-      '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">Ouvrir l\'univers ETF</button></div></div>' : '') +
 
     blocNoteAccueil();
 }
@@ -2234,6 +2235,10 @@ function rendreBacktest() {
   const periode = ANNEES_HISTORIQUE[0] + ' – ' + ANNEES_HISTORIQUE[ANNEES_HISTORIQUE.length - 1];
 
   banniere.innerHTML =
+    /* La mise en garde descend de l'intro jusqu'ici : elle doit être sous les
+       yeux au moment où l'on lit les chiffres, pas trois écrans plus haut. */
+    '<p class="intro rappel-local">Mesure le comportement du modèle, ne prédit rien. ' +
+      '<button class="lien" data-aller="methode">Méthode &amp; limites</button></p>' +
     '<h4 style="margin:0 0 8px">Part sourcée du backtest</h4>' +
     (fiab.estime > 0
       ? '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '"><strong>' + pct(fiab.estime) +

@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608191100">
+<link rel="stylesheet" href="css/app.css?v=202608191400">
 </head>
 <body>
 
@@ -93,9 +93,8 @@
     <!-- ============ 1. CLIENT ============ -->
     <section class="vue" id="vue-client">
       <h2>Client &amp; enveloppe</h2>
-      <p class="intro">Ces informations déterminent l'univers de supports réellement accessible et les montants
-      utilisés dans les propositions d'arbitrage. Elles ne sont pas notées dans le score de risque, à l'exception
-      de l'âge qui déclenche des points de vigilance.</p>
+      <p class="intro">Ces informations déterminent les supports réellement accessibles et les montants des
+      arbitrages. Seul l'âge pèse sur le score de risque, par des points de vigilance.</p>
 
       <div class="carte">
         <div class="grille deux" id="champs-identite"></div>
@@ -189,9 +188,8 @@
     <!-- ============ 4. NOTE DE MARCHÉ ============ -->
     <section class="vue" id="vue-note">
       <h2>Note du jour</h2>
-      <p class="intro">Note de travail rédigée chaque matin à partir des cours relevés la veille.
-      Elle signale ce qui a bougé et ce qu'il convient de vérifier — elle ne formule aucune
-      recommandation et n'est pas destinée à être remise à un client en l'état.</p>
+      <p class="intro">Rédigée chaque matin sur les cours de la veille : ce qui a bougé, ce qu'il faut
+      vérifier. Document de travail, à ne pas remettre en l'état.</p>
       <div id="note-contenu"></div>
     </section>
 
@@ -297,9 +295,8 @@
     <!-- ============ 9. SITUATION ============ -->
     <section class="vue" id="vue-situation">
       <h2>Situation des placements</h2>
-      <p class="intro">Relevé du portefeuille à une date donnée : ce qui est détenu, à quel cours, pour quelle
-      valeur. Les arrêtés semestriels — 30 juin et 31 décembre — sont proposés d'office. La situation avant et
-      après arbitrage compare le portefeuille actuel à ce qu'il deviendrait si les ordres proposés étaient passés.</p>
+      <p class="intro">Ce qui est détenu à une date donnée, à quel cours, pour quelle valeur. Les arrêtés du
+      30 juin et du 31 décembre sont proposés d'office.</p>
       <div id="situation-contenu"></div>
     </section>
 
@@ -321,7 +318,7 @@
     <section class="vue" id="vue-backtest">
       <h2>Backtest de l'allocation</h2>
       <p class="intro">Rejoue l'allocation sur des performances annuelles calendaires, en euros, dividendes
-      réinvestis. Le backtest mesure le comportement du modèle d'allocation — il ne prédit rien.</p>
+      réinvestis.</p>
 
       <div id="backtest-fiabilite"></div>
 
@@ -366,15 +363,8 @@
     <!-- ============ 12. UNIVERS ============ -->
     <section class="vue" id="vue-univers">
       <h2>Univers ETF référencé</h2>
-      <div class="message alerte">
-        <strong>Deux contrôles, un seul est fait.</strong>
-        Les caractéristiques de marché — nom, ISIN, frais, encours, réplication, devise, capitalisation —
-        ont été relevées sur justETF le 15 août 2026, et les notations Morningstar le 16 : ce sont les
-        colonnes « Données » et « Morningstar ». Reste à votre charge le
-        <strong>référencement de chaque support dans le contrat</strong> : aucune source publique ne sait
-        ce que tel contrat référence. Collez la liste des supports de l'assureur ci-dessous, ou cochez
-        la colonne « Contrat » à la main. Toutes les cellules sont modifiables.
-      </div>
+      <p class="intro">Les supports que vous retenez, et le contrôle qui n'appartient qu'à vous :
+      leur référencement dans le contrat du client.</p>
 
       <div class="carte">
         <h3>Rapprochement avec la liste des supports du contrat</h3>
@@ -444,10 +434,8 @@
 
       <div class="carte">
         <h3>Mise à jour des données</h3>
-        <p class="intro">Les caractéristiques de marché viennent de justETF, les notations de Morningstar, et les
-        cours d'Euronext. Deux scripts les rafraîchissent : <code>node scripts/notations.mjs</code> pour les
-        notes, <code>node scripts/catalogue.mjs</code> pour le catalogue. Toute cellule reste modifiable à la
-        main, et l'univers s'exporte en JSON.</p>
+        <p class="intro">Caractéristiques justETF, notations Morningstar, cours Euronext.
+        Toute cellule reste modifiable à la main. La procédure de rafraîchissement figure au README.</p>
         <ul id="liste-sources"></ul>
       </div>
     </section>
@@ -518,24 +506,24 @@
   en investissement.</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608191100"></script>
-<script src="js/data/allocations.js?v=202608191100"></script>
-<script src="js/data/macro.js?v=202608191100"></script>
-<script src="js/data/etf-univers.js?v=202608191100"></script>
-<script src="js/data/fiscalite.js?v=202608191100"></script>
-<script src="js/data/historique.js?v=202608191100"></script>
-<script src="js/data/note-marche.js?v=202608191100"></script>
-<script src="js/data/cours-historique.js?v=202608191100"></script>
-<script src="js/data/cours-marche.js?v=202608191100"></script>
-<script src="js/engine/profil.js?v=202608191100"></script>
-<script src="js/engine/allocation.js?v=202608191100"></script>
-<script src="js/engine/selection.js?v=202608191100"></script>
-<script src="js/engine/arbitrage.js?v=202608191100"></script>
-<script src="js/engine/revenus.js?v=202608191100"></script>
-<script src="js/engine/situation.js?v=202608191100"></script>
-<script src="js/engine/contrat.js?v=202608191100"></script>
-<script src="js/engine/univers.js?v=202608191100"></script>
-<script src="js/engine/backtest.js?v=202608191100"></script>
-<script src="js/app.js?v=202608191100"></script>
+<script src="js/data/questionnaire.js?v=202608191400"></script>
+<script src="js/data/allocations.js?v=202608191400"></script>
+<script src="js/data/macro.js?v=202608191400"></script>
+<script src="js/data/etf-univers.js?v=202608191400"></script>
+<script src="js/data/fiscalite.js?v=202608191400"></script>
+<script src="js/data/historique.js?v=202608191400"></script>
+<script src="js/data/note-marche.js?v=202608191400"></script>
+<script src="js/data/cours-historique.js?v=202608191400"></script>
+<script src="js/data/cours-marche.js?v=202608191400"></script>
+<script src="js/engine/profil.js?v=202608191400"></script>
+<script src="js/engine/allocation.js?v=202608191400"></script>
+<script src="js/engine/selection.js?v=202608191400"></script>
+<script src="js/engine/arbitrage.js?v=202608191400"></script>
+<script src="js/engine/revenus.js?v=202608191400"></script>
+<script src="js/engine/situation.js?v=202608191400"></script>
+<script src="js/engine/contrat.js?v=202608191400"></script>
+<script src="js/engine/univers.js?v=202608191400"></script>
+<script src="js/engine/backtest.js?v=202608191400"></script>
+<script src="js/app.js?v=202608191400"></script>
 </body>
 </html>

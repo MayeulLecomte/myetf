@@ -1466,3 +1466,27 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 
 /* Une aide au survol n'a pas de sens sur du papier. */
 @media print { .aide { display: none !important; } }
+
+/* ---------- Rappels de contexte ----------
+   Deux phrases qui auraient pu vivre dans « Méthode & limites » et qui
+   restent là où elles servent : le stockage local au moment où l'on
+   commence à saisir, la portée du backtest au moment où l'on en lit les
+   chiffres. Une page de référence se lit après coup, ou jamais. */
+
+.rappel-local {
+  font-size: 12.5px;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
+  margin-bottom: 14px;
+}
+
+/* Un bouton qui a l'air d'un lien : c'est bien une navigation, mais elle
+   passe par le même gestionnaire que les autres, et un <a href="#…">
+   laisserait une ancre dans la barre d'adresse. */
+.lien {
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: var(--bleu); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.lien:hover, .lien:focus-visible { text-decoration-thickness: 2px; outline: none; }
+
+@media print { .rappel-local { display: none !important; } }

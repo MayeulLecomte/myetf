@@ -747,7 +747,8 @@ Avant toute remise au client, versez les supports retenus dans l'univers de
 travail depuis *Univers ETF*, puis contrôlez leur ligne et leur
 référencement au contrat.
 
-**Les notations Morningstar** sont relevées par
+**Les scripts de rafraîchissement ne sont plus cités dans l'interface** — leur
+place est ici. Les notations Morningstar sont relevées par
 
 ```bash
 node scripts/notations.mjs           # relevé seul
