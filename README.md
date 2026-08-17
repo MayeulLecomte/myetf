@@ -231,26 +231,50 @@ support sur lequel la variation est mesurée.
 La bande ne remplace pas la note de marché, elle la précède : la note
 explique, la bande montre.
 
-### Les bulles
+### Le verre
 
-Les chiffres qui comptent sont posés sur des **bulles** : des tuiles très
-arrondies, à dégradé vif, halo clair en haut et ombre au fond, texte blanc dans
-les deux thèmes. Le verdict d'arbitrage est la plus grande — c'est la réponse à
-la seule question que pose l'accueil.
+Les surfaces ne sont pas peintes : elles sont **dépolies**, et la couleur leur
+vient d'un halo posé derrière la page. Trois taches très étalées — indigo,
+magenta, turquoise — que les cartes, les barres et les tuiles filtrent en
+glissant par-dessus. Deux tuiles voisines ne rendent donc pas la même teinte
+sans qu'aucune couleur ait été assignée à l'une ou à l'autre, et la même tuile
+change en défilant. C'est ce mouvement relatif qui fait le matériau : un verre
+sur un fond uni n'est qu'un rectangle pâle.
 
-**Ces dégradés ne codent rien.** Ce sont des surfaces ; c'est le chiffre
-qu'elles encadrent qui parle, et les couleurs tournent simplement par position
-pour distinguer deux tuiles voisines. Deux exceptions, où la couleur dit
-quelque chose : le verdict est vert quand il n'y a rien à faire et chaud quand
-il y a des ordres à passer. Les teintes **porteuses de sens** — classes
-d'actifs, scénarios macro, profils de risque, axes du score — restent celles de
-la palette validée et ne sont pas touchées.
+Le chiffre, lui, reste en **encre pleine**. C'est lui qu'on vient lire ; il ne
+doit rien à l'ambiance. Titres et chiffres passent en **SF Pro Rounded**
+(`ui-rounded`) — la voix d'Apple quand elle se détend, et qui contredit juste
+ce qu'il faut la froideur du verre. Le texte courant reste en SF Pro Text :
+une fonte arrondie sur dix lignes de paragraphe fatigue. Aucune police n'est
+demandée au réseau ; sur un appareil Apple ce sont les vraies.
+
+Trois règles tiennent l'ensemble :
+
+- **Le flou va sur les conteneurs, jamais sur les lignes d'une liste.**
+  Soixante lignes de catalogue floutées rendent le défilement inutilisable sur
+  un téléphone. Vingt-trois éléments portent un `backdrop-filter` dans toute
+  l'application ; les lignes du catalogue sont simplement transparentes
+  au-dessus du verre de leur carte.
+- **Le halo est un vrai élément, à `z-index: 0`** — pas un pseudo-élément à
+  z-index négatif. Un calque en z-index négatif sort de l'ordre de peinture
+  normal, et le `backdrop-filter` de l'en-tête, qui échantillonne ce qui est
+  peint derrière lui, n'y trouve plus rien : il rend du noir sur toute sa
+  surface dès que la page défile. Le contenu passe au premier plan par l'ordre
+  du document.
+- **Sans `backdrop-filter`, le verre devient opaque.** Une règle `@supports`
+  donne aux navigateurs qui ne savent pas flouter une surface pleine : moins
+  belle, parfaitement lisible.
+
+Les teintes **porteuses de sens** — classes d'actifs, scénarios macro, profils
+de risque, axes du score — restent celles de la palette validée et ne sont pas
+touchées. Deux exceptions où la couleur dit quelque chose : le verdict est vert
+quand il n'y a rien à faire, chaud quand il y a des ordres à passer.
 
 ### Ce qui reste sobre
 
 **Le rapport client ne bouge pas** : la règle d'impression le repasse en
-monochrome, et les bulles y redeviennent de l'encre noire sur du papier blanc,
-sans dégradé, sans halo, sans arrondi marqué. Un document remis à un client ne
+monochrome : ni halo, ni verre, ni fonte arrondie — de l'encre noire sur du
+papier blanc. Un document remis à un client ne
 gagne rien à être ludique.
 
 **Ajout à l'écran d'accueil** : ouvrir le site dans Safari, toucher le bouton
