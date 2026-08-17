@@ -37,6 +37,7 @@ const Etat = {
   situations: [],                 /* relevés figés, du plus récent au plus ancien */
   situationDate: null,            /* date observée dans l'onglet Situation */
   avisTactiqueLu: false,          /* avis de changement de calcul, lu une fois */
+  rapport: { annexeMethode: true },   /* annexe « Méthode » jointe au rapport */
   filtreUnivers: { classe: '', enveloppe: '', texte: '' }
 };
 
@@ -122,7 +123,8 @@ function sauver(silencieux) {
       detention: Etat.detention, apport: Etat.apport, univers: Etat.univers, journal: Etat.journal,
       revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique,
       situations: Etat.situations, situationDate: Etat.situationDate,
-      avisTactiqueLu: Etat.avisTactiqueLu, dernierAcces: Etat.dernierAcces
+      avisTactiqueLu: Etat.avisTactiqueLu, rapport: Etat.rapport,
+      dernierAcces: Etat.dernierAcces
     }));
     if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
   } catch (e) { notifier('Enregistrement impossible : ' + e.message, 'erreur'); }
@@ -373,7 +375,7 @@ const GROUPES = [
      dans la barre basse, où un cinquième onglet de même taille contredirait
      leur caractère secondaire. On y accède depuis « Sélection des supports »
      et depuis la feuille du bouton « ••• ». */
-  { id: 'donnees', libelle: 'Données', vues: ['univers'], secondaire: true,
+  { id: 'donnees', libelle: 'Données', vues: ['univers', 'methode'], secondaire: true,
     icone: 'M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3Zm0 0v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3' }
 ];
 
@@ -459,6 +461,7 @@ function rendre(vue) {
     case 'backtest':      rendreBacktest(); break;
     case 'univers':       rendreUnivers(); break;
     case 'journal':       rendreJournal(); break;
+    case 'methode':       rendreMethode(); break;
     case 'rapport':       rendreRapport(); break;
   }
   majNav();
@@ -492,6 +495,9 @@ function majNav() {
     revenus: Number(Etat.revenus.besoin) > 0,
     backtest: Object.keys(Etat.historique).some(k => Etat.historique[k].source === 'source'),
     journal: Etat.journal.length > 0, rapport: !!p
+    /* Ni « univers », ni « methode » : ce sont des références, pas des
+       étapes, et leur donner un avancement laisserait croire qu'on doit
+       les finir. */
   };
 
   /* Trois états et non deux. « En cours » est celui d'une étape entamée et
@@ -2886,6 +2892,154 @@ function rendreJournal() {
 }
 
 /* ============================================================
+   MÉTHODE & LIMITES
+   -------------------------------------------------------------
+   Un outil qui produit des chiffres doit dire d'où ils viennent.
+   Cette vue est l'écran de travail du conseiller : elle dit tout,
+   y compris ce qui n'a pas sa place devant un client — que les
+   allocations stratégiques sont calibrées à la main, que la
+   plupart des séries du backtest sont estimées, que rien n'est
+   sauvegardé ailleurs que dans ce navigateur.
+
+   L'annexe jointe au rapport en reprend trois sections sur cinq :
+   d'où vient l'allocation, ce qu'est une déviation tactique, ce
+   que l'outil ne fait pas. Ni le détail du backtest, ni le
+   stockage — ce sont des sujets d'outil, pas de conseil.
+   ============================================================ */
+
+function rendreMethode() {
+  const c = $('#methode-contenu');
+  if (!c) return;
+
+  const p = resultatProfil();
+  const bornes = Object.keys(BORNES_TACTIQUES).filter(k => k !== 'poche')
+    .map(k => (LIBELLES_CLASSES[k] || k) + ' ± ' + BORNES_TACTIQUES[k] + ' pts').join(' · ');
+
+  /* La part estimée est calculée en direct plutôt qu'écrite en dur : elle
+     baisse à chaque série documentée, et un chiffre figé mentirait vite. */
+  const poids = p ? MoteurAllocation.strategique(p.profil.id).poches : null;
+  const fiab = poids ? MoteurBacktest.fiabilite(poids, Etat.historique) : null;
+
+  c.innerHTML =
+    '<div class="carte"><h3>1. D\'où viennent les allocations stratégiques</h3>' +
+      '<p>Chacun des ' + PROFILS.length + ' profils porte une répartition entre actions, obligations, ' +
+      'monétaire et diversifiants, puis une sous-répartition en poches. Ces pondérations sont ' +
+      '<strong>calibrées à la main</strong>, à partir des pratiques de place et d\'hypothèses de long ' +
+      'terme paramétrées dans <code>js/engine/allocation.js</code>.</p>' +
+      '<p><strong>Ce n\'est pas une optimisation moyenne-variance.</strong> Aucune frontière efficiente ' +
+      'n\'est calculée, et la corrélation entre classes est traitée par une moyenne unique. Les ' +
+      'allocations sont défendables ; elles ne sont pas optimales au sens mathématique, et ne prétendent ' +
+      'pas l\'être.</p>' +
+      '<p>Le profil lui-même sort du questionnaire : capacité à subir une perte, tolérance déclarée, ' +
+      'connaissance et expérience. Le plus faible des trois plafonne le résultat — un client averti mais ' +
+      'sans capacité de perte reste prudent.</p>' +
+    '</div>' +
+
+    '<div class="carte"><h3>2. Comment sont calculées les déviations tactiques</h3>' +
+      '<p>' + INDICATEURS.length + ' indicateurs de contexte que vous renseignez — cycle, inflation, ' +
+      'crédit, politique monétaire, géopolitique… — alimentent ' + SCENARIOS.length + ' scénarios : ' +
+      echapper(SCENARIOS.map(x => x.nom).join(', ')) + '. Chaque scénario incline certaines classes et ' +
+      'certaines poches ; l\'inclinaison retenue est la moyenne pondérée par les probabilités.</p>' +
+      '<p>Cette déviation est ensuite <strong>bornée</strong> (' + echapper(bornes) + ', et ± ' +
+      BORNES_TACTIQUES.poche + ' pts par poche), puis multipliée par l\'intensité que vous réglez. ' +
+      'Une déviation ne peut donc jamais transformer un profil prudent en profil offensif.</p>' +
+
+      '<div class="message alerte"><strong>Un contexte non renseigné n\'applique aucune déviation.</strong> ' +
+      'Tant qu\'aucun indicateur n\'est choisi et qu\'aucune probabilité n\'est forcée à la main, ' +
+      'l\'allocation cible est <strong>strictement l\'allocation stratégique du profil</strong>. ' +
+      'Concrètement : aucun scénario dominant n\'est nommé ni inscrit au journal, le backtest rend la ' +
+      'même allocation en mode tactique et stratégique, et les écarts d\'arbitrage sont mesurés contre ' +
+      'la stratégique. Les probabilités affichées dans « Contexte » sont alors des valeurs de repli, ' +
+      'qui n\'entrent dans aucun calcul.</div>' +
+
+      '<p>Les probabilités peuvent être forcées à la main : c\'est alors votre lecture qui prime, et ' +
+      'elle est enregistrée telle quelle au journal.</p>' +
+    '</div>' +
+
+    '<div class="carte"><h3>3. Ce que le backtest mesure, et ne mesure pas</h3>' +
+      '<p>Il rejoue l\'allocation sur des <strong>performances annuelles calendaires</strong>, en euros, ' +
+      'dividendes réinvestis, avec rééquilibrage en fin d\'année. Il mesure le comportement du <em>modèle ' +
+      'd\'allocation</em> — pas celui des supports retenus, pas celui d\'un portefeuille réel.</p>' +
+      '<p><strong>Il ne mesure pas :</strong> les frais du contrat, la fiscalité, les frais d\'arbitrage, ' +
+      'l\'écart entre un ETF et son indice, ni le moment des versements. Le pas annuel efface tout ce ' +
+      'qui se passe à l\'intérieur d\'une année : une baisse de 30 % en mars suivie d\'un rebond n\'y ' +
+      'laisse aucune trace, alors qu\'elle aurait fait vendre bien des clients.</p>' +
+      '<p><strong>Il ignore le risque de séquence.</strong> Deux portefeuilles de même rendement moyen ' +
+      'finissent très différemment selon l\'ordre des années, et cet ordre compte d\'autant plus qu\'on ' +
+      'retire du capital.</p>' +
+      (fiab
+        ? '<div class="message ' + (fiab.estime > 40 ? 'alerte' : 'info') + '">' +
+          '<strong>' + pct(fiab.estime) + ' des séries utilisées sont des estimations</strong> — sur ' +
+          'l\'allocation stratégique de votre profil actuel. ' + pct(fiab.marche) + ' proviennent des ' +
+          'cours relevés automatiquement et ' + pct(fiab.source) + ' d\'une source documentée. Une série ' +
+          'estimée est un ordre de grandeur que j\'ai posé, pas une donnée : elle se remplace dans ' +
+          '« Backtest », où chaque série peut être saisie et marquée comme sourcée.</div>'
+        : '<p class="intro">Complétez le questionnaire pour connaître la part estimée sur votre profil.</p>') +
+    '</div>' +
+
+    '<div class="carte"><h3>4. Tout est stocké dans ce navigateur</h3>' +
+      '<p>Aucun serveur, aucun compte, aucune transmission. Le dossier vit dans le stockage local de ' +
+      '<strong>ce navigateur, sur cet appareil</strong>. C\'est ce qui garantit qu\'aucune donnée client ' +
+      'ne circule — et c\'est aussi ce qui le rend fragile.</p>' +
+      '<p><strong>Le dossier est perdu si :</strong> vous changez de navigateur ou d\'appareil ; vous ' +
+      'effacez les données de site dans les réglages ; vous travaillez en navigation privée et fermez ' +
+      'la fenêtre ; le navigateur fait le ménage de lui-même après une longue inactivité.</p>' +
+      '<p><strong>L\'export est la seule sauvegarde.</strong> Il produit un fichier JSON qui contient ' +
+      'tout — identité, réponses, détention, univers, journal, arrêtés — et se réimporte à l\'identique, ' +
+      'sur n\'importe quel appareil. Exportez à chaque revue, et avant toute manipulation des réglages ' +
+      'de votre navigateur.</p>' +
+      '<div class="barre-actions">' +
+        '<button class="bouton" data-relais="btn-exporter">Exporter le dossier maintenant</button>' +
+        '<button class="bouton secondaire" data-relais="btn-importer">Importer un dossier</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="carte"><h3>5. Ce que l\'outil ne fait pas</h3>' +
+      '<p><strong>Il ne conseille pas.</strong> Il produit un support de travail. La préconisation ' +
+      'n\'existe qu\'une fois validée, complétée et signée par vous dans le rapport d\'adéquation.</p>' +
+      '<p><strong>Il ne passe aucun ordre</strong> et n\'est connecté à aucun contrat. Les mouvements ' +
+      'proposés sont à saisir chez l\'assureur ou le teneur de compte.</p>' +
+      '<p><strong>Il ne surveille rien.</strong> Aucune alerte de marché, aucun contrôle quotidien : le ' +
+      'suivi se déclenche quand vous ouvrez une revue, jamais tout seul. C\'est un choix — une alerte ' +
+      'pousse à agir, et les bandes de tolérance servent précisément à ne pas agir.</p>' +
+      '<p><strong>Il ne vérifie pas le référencement au contrat.</strong> Aucune source publique ne ' +
+      'connaît la liste des supports d\'un contrat donné : ce contrôle vous revient, et il est le seul ' +
+      'qui engage le conseil.</p>' +
+      '<p><strong>Il ne relève pas le SRI</strong> des documents d\'informations clés, ni ne suit les ' +
+      'changements d\'indice, de frais ou de politique de distribution d\'un support.</p>' +
+    '</div>';
+}
+
+/* L'annexe jointe au rapport : trois sections sur cinq, resserrées à une
+   demi-page. Ni le détail du backtest, ni le stockage — ce sont des sujets
+   d'outil, pas de conseil, et le client n'a pas à en connaître. */
+function annexeMethode(numero) {
+  const m = macroCourante();
+  return '<div class="carte saut-page"><h3>' + numero + '. Annexe — méthode</h3>' +
+    '<p style="font-size:11.5px;line-height:1.55"><strong>D\'où vient l\'allocation.</strong> ' +
+    'Le questionnaire détermine un profil de risque à partir de trois axes — capacité à subir une ' +
+    'perte, tolérance déclarée, connaissance et expérience — dont le plus faible plafonne le résultat. ' +
+    'À chaque profil correspond une répartition entre actions, obligations, monétaire et diversifiants, ' +
+    'calibrée sur des hypothèses de long terme. Il ne s\'agit pas d\'une optimisation mathématique.</p>' +
+
+    '<p style="font-size:11.5px;line-height:1.55"><strong>Ce qu\'est une déviation tactique.</strong> ' +
+    'Une lecture du contexte économique et géopolitique, traduite en probabilités de scénarios, incline ' +
+    'temporairement l\'allocation autour de sa cible. Cette inclinaison est bornée et ne peut pas ' +
+    'changer la nature du profil. ' +
+    (m.exprime
+      ? 'Elle est appliquée dans le présent document.'
+      : '<strong>Aucune déviation n\'est appliquée dans le présent document</strong> : aucun contexte ' +
+        'n\'ayant été renseigné, l\'allocation proposée est strictement celle du profil de risque.') +
+    '</p>' +
+
+    '<p style="font-size:11.5px;line-height:1.55"><strong>Ce que cet outil ne fait pas.</strong> ' +
+    'Il ne délivre aucun conseil en investissement : il produit un support de travail que le conseiller ' +
+    'valide, complète et signe. Il ne passe aucun ordre et n\'est connecté à aucun contrat. Il n\'exerce ' +
+    'aucune surveillance des marchés : le suivi est déclenché par une revue, jamais par une alerte.</p>' +
+    '</div>';
+}
+
+/* ============================================================
    VUE 10 — RAPPORT
    ============================================================ */
 
@@ -2939,6 +3093,8 @@ function blocSituationRapport(numero) {
 function rendreRapport() {
   const r = resultatProfil();
   const c = $('#rapport-contenu');
+  const caseAnnexe = $('#opt-annexe-methode');
+  if (caseAnnexe) caseAnnexe.checked = !Etat.rapport || Etat.rapport.annexeMethode !== false;
   if (!r) { c.innerHTML = etatVide('rapport'); return; }
 
   const alloc = allocationCourante();
@@ -3066,6 +3222,8 @@ function rendreRapport() {
       (Etat.journal.length ? '<p>Revues déjà réalisées : ' + Etat.journal.length +
         ', dernière le ' + dateFr(Etat.journal[0].date) + '.</p>' : '') +
     '</div>' +
+
+    (Etat.rapport && Etat.rapport.annexeMethode === false ? '' : annexeMethode(++nSection)) +
 
     '<div class="carte mentions"><h3>Mentions</h3>' +
       '<h4>Nature du document</h4>' +
@@ -3390,6 +3548,10 @@ function brancher() {
     if (t.dataset.serieSource) {
       Etat.historique[t.dataset.serieSource].source = t.checked ? 'source' : 'estime';
       sauver(true); rendreBacktest(); return;
+    }
+    if (t.id === 'opt-annexe-methode') {
+      Etat.rapport.annexeMethode = t.checked;
+      sauver(true); rendreRapport(); return;
     }
     if (t.id === 'bt-allocation') { Etat.backtest.allocation = t.value; sauver(true); rendreBacktest(); return; }
     if (t.id === 'f-etoiles') { Etat.filtres.etoilesMin = Number(t.value); sauver(true); }

@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608190900">
+<link rel="stylesheet" href="css/app.css?v=202608191100">
 </head>
 <body>
 
@@ -76,6 +76,7 @@
 
     <div class="bloc-titre secondaire">Données</div>
     <button data-vue="univers" class="secondaire"><span class="num"></span> Univers ETF</button>
+    <button data-vue="methode" class="secondaire"><span class="num"></span> Méthode &amp; limites</button>
   </nav>
 
   <!-- Ruban segmenté : les vues du groupe courant. Mobile seulement ;
@@ -459,11 +460,26 @@
       <div id="journal-contenu"></div>
     </section>
 
+    <!-- ============ MÉTHODE & LIMITES ============
+         Écran de travail du conseiller : tout y est dit, y compris ce qui
+         n'a pas sa place devant un client. L'annexe jointe au rapport en
+         reprend trois sections sur cinq. -->
+    <section class="vue" id="vue-methode">
+      <h2>Méthode &amp; limites</h2>
+      <p class="intro">Ce que l'outil calcule, comment, et ce qu'il ne fait pas. Écrit pour vous, pas
+      pour le client : l'annexe jointe au rapport en reprend une version courte.</p>
+      <div id="methode-contenu"></div>
+    </section>
+
     <!-- ============ 14. RAPPORT ============ -->
     <section class="vue" id="vue-rapport">
       <h2>Rapport de préconisation</h2>
       <div class="barre-actions sans-impression">
         <button class="bouton" id="btn-imprimer">Imprimer / enregistrer en PDF</button>
+        <label style="display:flex;align-items:center;gap:8px;font-weight:normal;margin:0">
+          <input type="checkbox" id="opt-annexe-methode" checked>
+          Joindre l'annexe « Méthode »
+        </label>
       </div>
       <div id="rapport-contenu"></div>
     </section>
@@ -502,24 +518,24 @@
   en investissement.</span>
 </footer>
 
-<script src="js/data/questionnaire.js?v=202608190900"></script>
-<script src="js/data/allocations.js?v=202608190900"></script>
-<script src="js/data/macro.js?v=202608190900"></script>
-<script src="js/data/etf-univers.js?v=202608190900"></script>
-<script src="js/data/fiscalite.js?v=202608190900"></script>
-<script src="js/data/historique.js?v=202608190900"></script>
-<script src="js/data/note-marche.js?v=202608190900"></script>
-<script src="js/data/cours-historique.js?v=202608190900"></script>
-<script src="js/data/cours-marche.js?v=202608190900"></script>
-<script src="js/engine/profil.js?v=202608190900"></script>
-<script src="js/engine/allocation.js?v=202608190900"></script>
-<script src="js/engine/selection.js?v=202608190900"></script>
-<script src="js/engine/arbitrage.js?v=202608190900"></script>
-<script src="js/engine/revenus.js?v=202608190900"></script>
-<script src="js/engine/situation.js?v=202608190900"></script>
-<script src="js/engine/contrat.js?v=202608190900"></script>
-<script src="js/engine/univers.js?v=202608190900"></script>
-<script src="js/engine/backtest.js?v=202608190900"></script>
-<script src="js/app.js?v=202608190900"></script>
+<script src="js/data/questionnaire.js?v=202608191100"></script>
+<script src="js/data/allocations.js?v=202608191100"></script>
+<script src="js/data/macro.js?v=202608191100"></script>
+<script src="js/data/etf-univers.js?v=202608191100"></script>
+<script src="js/data/fiscalite.js?v=202608191100"></script>
+<script src="js/data/historique.js?v=202608191100"></script>
+<script src="js/data/note-marche.js?v=202608191100"></script>
+<script src="js/data/cours-historique.js?v=202608191100"></script>
+<script src="js/data/cours-marche.js?v=202608191100"></script>
+<script src="js/engine/profil.js?v=202608191100"></script>
+<script src="js/engine/allocation.js?v=202608191100"></script>
+<script src="js/engine/selection.js?v=202608191100"></script>
+<script src="js/engine/arbitrage.js?v=202608191100"></script>
+<script src="js/engine/revenus.js?v=202608191100"></script>
+<script src="js/engine/situation.js?v=202608191100"></script>
+<script src="js/engine/contrat.js?v=202608191100"></script>
+<script src="js/engine/univers.js?v=202608191100"></script>
+<script src="js/engine/backtest.js?v=202608191100"></script>
+<script src="js/app.js?v=202608191100"></script>
 </body>
 </html>

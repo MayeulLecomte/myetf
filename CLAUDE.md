@@ -21,7 +21,7 @@ Répartition :
 | Profil | client, questionnaire, profil |
 | Allocation | note, macro, allocation, portefeuille, arbitrages, backtest |
 | Suivi | situation, revenus, journal, rapport |
-| Données *(secondaire)* | univers |
+| Données *(secondaire)* | univers, methode |
 
 ## Note de marché et contexte macro — deux sous-vues d'un même bloc
 
@@ -74,7 +74,9 @@ L'allocation stratégique seule est une réponse complète, pas un pis-aller : l
 vue s'affiche normalement et dit simplement qu'aucune vue de marché n'y est
 mêlée.
 
-**À reprendre dans « Méthode & limites » (chantier 5).**
+Consigné dans la vue **Méthode & limites**, section 2, et dans l'**annexe
+« Méthode »** du rapport client — qui dit explicitement, quand c'est le cas,
+qu'aucune déviation n'est appliquée dans le document remis.
 
 ## Ce qui ne doit jamais casser
 

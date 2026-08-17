@@ -150,6 +150,27 @@ combinent — recherche libre, poche, places — et la saisie est temporisée, s
 quoi filtrer quatre mille cinq cents lignes à chaque lettre rend la frappe
 poisseuse.
 
+## Méthode & limites
+
+Une vue dédiée, dans le registre secondaire, en cinq sections : d'où viennent
+les allocations stratégiques, comment sont calculées les déviations tactiques,
+ce que le backtest mesure et ne mesure pas, où sont stockées les données, et ce
+que l'outil ne fait pas. Elle est écrite **pour le conseiller** : elle dit que
+les pondérations sont calibrées à la main, que la majorité des séries du
+backtest sont estimées — la part exacte est calculée en direct sur le profil
+courant, jamais écrite en dur —, et qu'un dossier non exporté est perdu avec
+son navigateur.
+
+Le rapport client reçoit une **annexe « Méthode »** d'une demi-page, tirée des
+seules sections 1, 2 et 5 : d'où vient l'allocation, ce qu'est une déviation
+tactique et quand elle s'applique, ce que l'outil ne fait pas. Ni le détail du
+backtest, ni le stockage — ce sont des sujets d'outil, pas de conseil.
+L'annexe se décoche avant impression.
+
+**La règle du contexte non renseigné figure dans les deux**, et l'annexe le dit
+au client quand c'est le cas : « Aucune déviation n'est appliquée dans le
+présent document. »
+
 ## Accéder à l'application
 
 En ligne : **https://mayeullecomte.github.io/myetf/**
@@ -170,7 +191,7 @@ Quinze vues réparties en quatre blocs, plus les données en registre secondaire
 | **Profil** | Client & enveloppe · Questionnaire · Profil de risque |
 | **Allocation** | Note du jour · Contexte · Allocation cible · Sélection des supports · Arbitrages · Backtest |
 | **Suivi** | Situation · Revenus & rachats · Journal · Rapport |
-| **Données** *(secondaire)* | Univers ETF |
+| **Données** *(secondaire)* | Univers ETF · Méthode & limites |
 
 **Aucun numéro d'onglet.** Un rang laisserait croire à un ordre obligatoire,
 alors qu'on peut très bien saisir un portefeuille avant de remplir le
