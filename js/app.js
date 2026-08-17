@@ -15,9 +15,15 @@ const Etat = {
      doit pas déformer l'allocation issue du profil de risque. Il écarte donc
      ce qui est franchement mauvais ; le choix du meilleur revient au score. */
   /* `contratSeulement` reste à faux tant que le rapprochement n'a pas été
-     fait : à vrai sur un univers non validé, la sélection ne rendrait rien. */
+     fait : à vrai sur un univers non validé, la sélection ne rendrait rien.
+
+     `sourceUnivers` vaut « catalogue » d'emblée : sélectionner dans deux
+     mille supports plutôt que dans quarante-deux abaisse les frais du
+     portefeuille et remplit toutes les poches. L'univers de travail reste
+     joint à la sélection, et l'onglet Sélection dit en toutes lettres ce
+     que le catalogue ne sait pas — à commencer par l'éligibilité PEA. */
   filtres: { etoilesMin: 3, encoursMin: 500, terMax: 0.60, exclureSynthetique: false,
-             contratSeulement: false, sourceUnivers: 'travail', intensite: 0.6 },
+             contratSeulement: false, sourceUnivers: 'catalogue', intensite: 0.6 },
   reponses: {},
   macroChoix: {},
   scenariosManuels: null,
@@ -2024,7 +2030,13 @@ function rendreSeriesHistorique() {
    file:// qu'en ligne, là où un fetch échouerait sur un double-clic.
    ============================================================ */
 
-const Catalogue = { etat: 'absent', recherche: '', euronextSeul: false };
+/* `montre` est le nombre de lignes affichées : il grandit à mesure qu'on
+   descend, et repart à sa valeur de départ dès que la recherche change.
+   Deux mille lignes posées d'un coup dans le document tiennent la page
+   bloquée une seconde entière sur un téléphone. */
+const PAS_CATALOGUE = 60;
+const Catalogue = { etat: 'absent', recherche: '', euronextSeul: false,
+                    pocheSeule: '', montre: PAS_CATALOGUE };
 
 function chargerCatalogue() {
   if (Catalogue.etat !== 'absent') return;
@@ -2046,7 +2058,7 @@ function chargerCatalogue() {
   document.head.appendChild(s);
 }
 
-/** Lignes du catalogue correspondant à la recherche, limitées à l'affichable. */
+/** Lignes du catalogue correspondant à la recherche, jusqu'au rang demandé. */
 function chercherCatalogue(limite) {
   const c = CATALOGUE_ETF;
   const mots = Catalogue.recherche.trim().toLowerCase().split(/\s+/).filter(Boolean);
@@ -2056,6 +2068,7 @@ function chercherCatalogue(limite) {
 
   for (const l of c.lignes) {
     if (Catalogue.euronextSeul && !/XPAR|XAMS|XBRU|XLIS/.test(l[8])) continue;
+    if (Catalogue.pocheSeule && l[9] !== Catalogue.pocheSeule) continue;
     if (mots.length) {
       const foin = (l[0] + ' ' + l[1] + ' ' + l[2] + ' ' +
                     c.emetteurs[l[3]] + ' ' + c.categories[l[4]]).toLowerCase();
@@ -2066,7 +2079,8 @@ function chercherCatalogue(limite) {
       resultats.push({
         isin: l[0], nom: l[1], ticker: l[2], emetteur: c.emetteurs[l[3]],
         categorie: c.categories[l[4]], ter: l[5], note: l[6], devise: l[7],
-        places: l[8].split(','), poche: l[9], deja: dansUnivers.has(l[0])
+        places: l[8].split(','), poche: l[9], encours: l[10], srri: l[11],
+        creation: l[12], deja: dansUnivers.has(l[0])
       });
     }
   }
@@ -2092,50 +2106,116 @@ function rendreCatalogue() {
     return;
   }
 
-  const { resultats, total } = chercherCatalogue(40);
+  const { resultats, total } = chercherCatalogue(Catalogue.montre);
+  const poches = Object.keys(LIBELLES_POCHES);
 
   c.innerHTML =
     '<div class="filtres">' +
-      '<div class="champ" style="flex:1;min-width:240px"><label for="catalogue-q">Rechercher</label>' +
+      '<div class="champ" style="flex:1;min-width:220px"><label for="catalogue-q">Rechercher</label>' +
         '<input type="search" id="catalogue-q" placeholder="nom, ISIN, émetteur, catégorie" value="' +
         echapper(Catalogue.recherche) + '"></div>' +
+      '<div class="champ"><label for="catalogue-poche">Poche</label>' +
+        '<select id="catalogue-poche"><option value="">Toutes</option>' +
+        poches.map(p => '<option value="' + p + '"' + (Catalogue.pocheSeule === p ? ' selected' : '') + '>' +
+          echapper(LIBELLES_POCHES[p]) + '</option>').join('') + '</select></div>' +
       '<div class="champ"><label for="catalogue-euronext">Places</label>' +
         '<select id="catalogue-euronext">' +
           '<option value="0"' + (Catalogue.euronextSeul ? '' : ' selected') + '>Toutes</option>' +
           '<option value="1"' + (Catalogue.euronextSeul ? ' selected' : '') + '>Euronext seulement</option>' +
         '</select></div>' +
-      '<div class="champ" style="align-self:flex-end;padding-bottom:8px;font-size:12px;color:var(--gris-doux)">' +
-        total.toLocaleString('fr-FR') + ' support(s) · ' + CATALOGUE_ETF.lignes.length.toLocaleString('fr-FR') +
-        ' au catalogue du ' + dateFr(CATALOGUE_ETF.genere) + '</div>' +
     '</div>' +
 
+    '<div class="catalogue-compte">' +
+      '<strong>' + total.toLocaleString('fr-FR') + '</strong> support(s) · ' +
+      CATALOGUE_ETF.lignes.length.toLocaleString('fr-FR') + ' au catalogue du ' +
+      dateFr(CATALOGUE_ETF.genere) + '</div>' +
+
     (resultats.length
-      ? '<div class="tableau-defilant"><table><thead><tr>' +
-        '<th>Support</th><th>ISIN</th><th>Catégorie</th><th class="num">Frais</th>' +
-        '<th class="num">Note</th><th>Places</th><th></th></tr></thead><tbody>' +
-        resultats.map(r =>
-          '<tr><td>' + echapper(r.nom) + '<div style="font-size:11px;color:var(--gris-doux)">' +
-            echapper(r.emetteur) + (r.ticker ? ' · ' + echapper(r.ticker) : '') +
-            (r.devise ? ' · ' + echapper(r.devise) : '') + '</div></td>' +
-          '<td style="font-family:monospace;font-size:12px">' + echapper(r.isin) + '</td>' +
-          '<td style="font-size:12px">' + echapper(r.categorie) +
-            (r.poche ? '' : ' <span class="badge orange">poche à choisir</span>') + '</td>' +
-          '<td class="num">' + (r.ter == null ? '—' : pct(r.ter, 2)) + '</td>' +
-          '<td class="num">' + etoiles(r.note) + '</td>' +
-          '<td style="font-size:11px;color:var(--gris-doux)">' + echapper(r.places.join(' ')) + '</td>' +
-          '<td>' + (r.deja
-            ? '<span class="badge vert">dans l\'univers</span>'
-            : '<button class="bouton secondaire" data-catalogue-ajout="' + echapper(r.isin) + '">Ajouter</button>') +
-          '</td></tr>').join('') +
-        '</tbody></table></div>' +
+      ? '<div class="catalogue-liste">' + resultats.map(r => ligneCatalogue(r)).join('') + '</div>' +
         (total > resultats.length
-          ? '<p class="intro" style="font-size:11px">' + resultats.length + ' premiers résultats sur ' +
-            total.toLocaleString('fr-FR') + ' : affinez la recherche.</p>' : '')
+          ? '<div class="catalogue-suite" id="catalogue-suite">' +
+              '<button class="bouton secondaire" id="btn-catalogue-plus">Afficher ' +
+                Math.min(PAS_CATALOGUE, total - resultats.length) + ' supports de plus</button>' +
+              '<span>' + resultats.length.toLocaleString('fr-FR') + ' sur ' +
+                total.toLocaleString('fr-FR') + '</span>' +
+            '</div>'
+          : '<div class="catalogue-suite"><span>Fin de la liste — ' +
+              total.toLocaleString('fr-FR') + ' support(s).</span></div>')
       : '<div class="message info">Aucun support ne correspond à cette recherche.</div>');
 
   const q = $('#catalogue-q');
-  q.oninput = () => { Catalogue.recherche = q.value; rendreCatalogue(); $('#catalogue-q').focus(); };
-  $('#catalogue-euronext').onchange = e => { Catalogue.euronextSeul = e.target.value === '1'; rendreCatalogue(); };
+  /* La saisie est temporisée : filtrer quatre mille cinq cents lignes à
+     chaque lettre rend la frappe poisseuse sur un téléphone. */
+  q.oninput = () => {
+    clearTimeout(window.__catTimer);
+    window.__catTimer = setTimeout(() => {
+      Catalogue.recherche = q.value;
+      Catalogue.montre = PAS_CATALOGUE;
+      rendreCatalogue();
+      const n = $('#catalogue-q');
+      n.focus();
+      n.setSelectionRange(n.value.length, n.value.length);
+    }, 220);
+  };
+  $('#catalogue-poche').onchange = e => {
+    Catalogue.pocheSeule = e.target.value; Catalogue.montre = PAS_CATALOGUE; rendreCatalogue();
+  };
+  $('#catalogue-euronext').onchange = e => {
+    Catalogue.euronextSeul = e.target.value === '1'; Catalogue.montre = PAS_CATALOGUE; rendreCatalogue();
+  };
+
+  const plus = $('#btn-catalogue-plus');
+  if (plus) {
+    plus.onclick = () => { Catalogue.montre += PAS_CATALOGUE; rendreCatalogue(); };
+    /* Et sans attendre le bouton : dès que le pied de liste approche du
+       bas de l'écran, la tranche suivante s'ajoute. Le bouton reste pour
+       ceux qui n'utilisent pas la molette, et quand l'observateur manque. */
+    if (typeof IntersectionObserver !== 'undefined') {
+      if (Catalogue.veilleur) Catalogue.veilleur.disconnect();
+      Catalogue.veilleur = new IntersectionObserver(entrees => {
+        if (entrees.some(x => x.isIntersecting)) {
+          Catalogue.veilleur.disconnect();
+          Catalogue.montre += PAS_CATALOGUE;
+          rendreCatalogue();
+        }
+      }, { rootMargin: '600px 0px' });
+      Catalogue.veilleur.observe($('#catalogue-suite'));
+    }
+  }
+}
+
+/* Une ligne de catalogue : une carte, pas une rangée de tableau. Sur un
+   téléphone, sept colonnes se réduisent à des colonnes illisibles ; empilées,
+   les mêmes données se lisent d'un regard et le doigt trouve son bouton. */
+function ligneCatalogue(r) {
+  const menu = [
+    r.ter == null ? null : pct(r.ter, 2) + ' de frais',
+    r.encours == null ? null : (r.encours >= 1000
+      ? (r.encours / 1000).toFixed(1).replace('.', ',') + ' Md€'
+      : r.encours.toLocaleString('fr-FR') + ' M€'),
+    r.devise || null,
+    r.creation ? 'créé en ' + r.creation.slice(0, 4) : null
+  ].filter(Boolean);
+
+  return '<div class="catalogue-ligne' + (r.deja ? ' deja' : '') + '">' +
+    '<div class="catalogue-corps">' +
+      '<div class="catalogue-nom">' + echapper(r.nom) + '</div>' +
+      '<div class="catalogue-meta">' + echapper(r.emetteur) +
+        (r.ticker ? ' · ' + echapper(r.ticker) : '') +
+        ' · <span style="font-family:monospace">' + echapper(r.isin) + '</span></div>' +
+      '<div class="catalogue-marques">' +
+        (r.poche
+          ? '<span class="badge">' + echapper(LIBELLES_POCHES[r.poche] || r.poche) + '</span>'
+          : '<span class="badge orange">poche à choisir</span>') +
+        (r.note == null ? '' : '<span class="badge gris">' + etoiles(r.note) + '</span>') +
+        menu.map(x => '<span class="catalogue-fait">' + echapper(x) + '</span>').join('') +
+      '</div>' +
+    '</div>' +
+    '<div class="catalogue-action">' + (r.deja
+      ? '<span class="badge vert">dans l\'univers</span>'
+      : '<button class="bouton secondaire" data-catalogue-ajout="' + echapper(r.isin) + '">Ajouter</button>') +
+    '</div>' +
+  '</div>';
 }
 
 /** Verse un support du catalogue dans l'univers de travail. */

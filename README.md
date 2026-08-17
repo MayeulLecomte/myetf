@@ -135,6 +135,21 @@ Trois partis pris :
 `maj-cours.mjs` sait relever les cours, et donc les seuls qui se revalorisent
 et se situent à une date passée sans saisie manuelle.
 
+### Parcourir le catalogue
+
+L'onglet *Univers ETF* affiche le catalogue en **liste à défilement** : une
+carte par support — nom, émetteur, ISIN, poche, note, frais, encours, devise,
+année de création — plutôt qu'une rangée de tableau, illisible sur un
+téléphone une fois réduite à sept colonnes.
+
+La liste s'allonge par tranches de soixante à mesure qu'on descend : quatre
+mille cinq cents lignes posées d'un coup dans le document tiennent la page
+bloquée une seconde entière sur un téléphone. Un bouton « Afficher soixante de
+plus » reste pour ceux qui n'utilisent pas la molette. Trois filtres se
+combinent — recherche libre, poche, places — et la saisie est temporisée, sans
+quoi filtrer quatre mille cinq cents lignes à chaque lettre rend la frappe
+poisseuse.
+
 ## Accéder à l'application
 
 En ligne : **https://mayeullecomte.github.io/myetf/**
@@ -568,13 +583,14 @@ quoi porte la sélection :
 
 | | |
 |---|---|
+| **Catalogue européen** *(par défaut)* | **2 086 supports** sélectionnables, sur les 4 533 recensés. |
 | **Univers de travail** | 42 supports relevés un à un, cochables au contrat. Le seul univers opposable. |
-| **Catalogue européen** | **2 086 supports** sélectionnables, sur les 4 533 recensés. |
 
-Le catalogue n'est chargé qu'au moment où il devient la source — un
-demi-mégaoctet ne se télécharge pas sans qu'on l'ait demandé. L'univers de
-travail reste présent : ses lignes y sont mieux renseignées que leur homologue
-du catalogue, et les supports détenus doivent rester reconnus.
+Le catalogue est la source par défaut : sélectionner dans deux mille supports
+plutôt que dans quarante-deux abaisse les frais du portefeuille et remplit
+toutes les poches. L'univers de travail reste joint à la sélection — ses lignes
+sont mieux renseignées que leur homologue du catalogue, et les supports détenus
+doivent rester reconnus.
 
 **Trois exigences pour être sélectionnable** : une poche, des frais courants,
 un encours. Elles écartent 2 447 des 4 533 lignes — 1 930 sans poche du modèle
