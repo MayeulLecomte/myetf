@@ -1,5 +1,5 @@
 {
-  "genere": "2026-08-14",
+  "genere": "2026-08-17",
   "source": "Euronext",
   "poches": {
     "act-emergents": {
@@ -9,7 +9,7 @@
       "perfs": {
         "2025": 22.47
       },
-      "points": 509
+      "points": 510
     },
     "act-europe": {
       "isin": "IE00B4K48X80",
@@ -18,7 +18,7 @@
       "perfs": {
         "2025": 19.74
       },
-      "points": 509
+      "points": 510
     },
     "act-japon": {
       "isin": "IE00B4L5YX21",
@@ -27,7 +27,7 @@
       "perfs": {
         "2025": 12.35
       },
-      "points": 509
+      "points": 510
     },
     "act-monde": {
       "isin": "IE00B4L5Y983",
@@ -36,7 +36,7 @@
       "perfs": {
         "2025": 7.08
       },
-      "points": 509
+      "points": 510
     },
     "act-small": {
       "isin": "LU1681038672",
@@ -45,7 +45,7 @@
       "perfs": {
         "2025": -0.58
       },
-      "points": 509
+      "points": 510
     },
     "act-tech": {
       "isin": "FR0011871110",
@@ -54,7 +54,7 @@
       "perfs": {
         "2025": 5.71
       },
-      "points": 509
+      "points": 510
     },
     "act-us": {
       "isin": "FR0011871128",
@@ -63,7 +63,7 @@
       "perfs": {
         "2025": 3.67
       },
-      "points": 509
+      "points": 510
     },
     "div-immobilier": {
       "isin": "LU1437018838",
@@ -72,7 +72,7 @@
       "perfs": {
         "2025": -2.32
       },
-      "points": 509
+      "points": 510
     },
     "div-matieres": {
       "isin": "LU1829218749",
@@ -81,7 +81,7 @@
       "perfs": {
         "2025": 15.19
       },
-      "points": 509
+      "points": 510
     },
     "div-or": {
       "isin": "FR0013416716",
@@ -90,7 +90,7 @@
       "perfs": {
         "2025": 45.71
       },
-      "points": 509
+      "points": 510
     },
     "mon-euro": {
       "isin": "FR0010510800",
@@ -99,7 +99,7 @@
       "perfs": {
         "2025": 2.25
       },
-      "points": 509
+      "points": 510
     },
     "obl-globale-hedge": {
       "isin": "IE00BDBRDM35",
@@ -108,7 +108,7 @@
       "perfs": {
         "2025": 2.43
       },
-      "points": 509
+      "points": 510
     },
     "obl-inflation": {
       "isin": "IE00B0M62X26",
@@ -117,7 +117,7 @@
       "perfs": {
         "2025": 0.67
       },
-      "points": 509
+      "points": 510
     },
     "obl-souv-euro-ct": {
       "isin": "LU1650487413",
@@ -126,7 +126,7 @@
       "perfs": {
         "2025": 1.98
       },
-      "points": 509
+      "points": 510
     }
   }
 }
