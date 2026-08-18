@@ -205,23 +205,68 @@ pas leurs dossiers — l'échange se fait par « Exporter le dossier » puis
 
 ## Deux modes de lecture
 
-L'application se lit de deux façons, choisies sur un écran d'entrée à la
-première ouverture : **« Je suis conseiller »** — un dossier construit et suivi
-pour un client — ou **« J'investis pour moi-même »**.
+L'application se lit de deux façons, et **les deux coexistent le temps de
+trancher** : l'une des deux sera vraisemblablement retirée.
 
-Le choix ne touche **ni les calculs, ni le format du dossier** : c'est un
-réglage du dossier (`mode`), exporté avec lui et modifiable ensuite dans
-« Client & enveloppe ». Il ne change que trois choses : les vues montrées, le
-vocabulaire, et le rapport.
+### L'écran d'entrée
+
+À la toute première ouverture, l'accueil ne montre pas le dossier mais deux
+choix de même poids :
+
+| | |
+|---|---|
+| **Je suis conseiller** | Je construis et suis un dossier pour un client |
+| **J'investis pour moi-même** | Je construis mon allocation seul, sans conseiller |
+
+Il ne paraît **que sur un dossier vierge dont le mode n'est pas choisi**. Un
+dossier déjà commencé ne le voit jamais : il s'ouvre en mode conseiller, sans
+rien demander. C'est aussi ce qui arrive à un dossier enregistré ou exporté
+avant que le champ existe.
+
+« Nouveau dossier », dans l'en-tête, efface tout et fait donc réapparaître
+l'écran d'entrée.
+
+### La bascule, ensuite
+
+Elle est dans **« Client & enveloppe »** — « Mon enveloppe » en mode
+particulier — sous l'intitulé **Mode de lecture**, au bas des champs du
+dossier. Elle prend effet en place : le vocabulaire et la navigation changent
+sans rechargement et **sans rien perdre de la saisie**.
+
+Elle n'est pas dans un réglage d'application, et c'est délibéré : le mode est
+une propriété **du dossier**, pas du navigateur.
+
+### Le mode est un champ du dossier
+
+`mode` vaut `"conseiller"` ou `"particulier"`, à côté de l'identité, des
+réponses et des lignes détenues. Il est **enregistré avec le dossier et voyage
+avec lui à l'export** : un dossier transmis à quelqu'un d'autre s'ouvre dans le
+mode où il a été construit. Deux dossiers sur le même navigateur peuvent donc
+être lus dans deux modes différents.
+
+### Ce que le mode change — et ce qu'il ne change pas
+
+Il ne touche **ni les calculs, ni les moteurs, ni le format du dossier**. Le
+harnais de fumée le vérifie explicitement : sans contexte, le même dossier rend
+la même allocation cible dans les deux modes.
+
+Trois choses seulement changent :
+
+| | Conseiller | Particulier |
+|---|---|---|
+| **Vues montrées** | les seize | treize — Note du jour, Contexte et Revenus & rachats quittent la navigation |
+| **Vocabulaire** | « Rapport de préconisation », « Âge du client » | « Ma synthèse », « Votre âge » |
+| **Rapport** | adéquation, signatures conseiller et client | avertissement en tête, ni adéquation ni signature |
+
+Les vues masquées **restent atteignables par leur ancre** : `#note` ouvre
+toujours la note du jour dans les deux modes. Masquer porte sur la navigation,
+jamais sur le routage — c'est ce qui garde le widget iOS vivant.
 
 Le vocabulaire vit dans `js/data/libelles.js`, en une table de défauts — celle
-du conseiller — et une table d'écarts, qui ne porte que ce que le mode
-particulier change. **Les deux modes coexistent le temps de trancher** : l'un
-des deux sera vraisemblablement retiré, et la structure est faite pour que ce
-retrait tienne en une suppression.
-
-**Un dossier enregistré ou exporté avant l'existence du champ s'ouvre en mode
-conseiller**, sans rien demander.
+du conseiller — et une table d'écarts qui ne porte que ce que le mode
+particulier change. Cette seconde table se lit donc comme la définition du
+mode, et le jour où l'un des deux l'emporte, il y a un littéral à supprimer ou
+des écarts à replier.
 
 ## Navigation
 
