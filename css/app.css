@@ -1448,8 +1448,15 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
    leur définition ferait un libellé bavard et moins précis. Le repère les
    lève au survol pour qui hésite, et s'efface pour qui les connaît.
    `tabindex` le rend atteignable au clavier : une aide qu'on ne peut pas
-   atteindre sans souris n'aide pas tout le monde. */
-.aide {
+   atteindre sans souris n'aide pas tout le monde.
+
+   Elle s'est d'abord appelée `.aide`, et c'était une collision : `.aide`
+   désignait déjà, depuis l'origine, les textes d'aide du questionnaire et
+   des indicateurs macro. Les règles de ces textes ne fixant ni `display`
+   ni dimensions, la pastille les leur imposait — six phrases entières
+   écrasées dans un carré de quatorze pixels, débordant par-dessus leur
+   propre libellé. La dernière arrivée change donc de nom. */
+.infobulle {
   display: inline-flex; align-items: center; justify-content: center;
   width: 14px; height: 14px; border-radius: var(--r-pilule);
   font-size: 9.5px; font-weight: 700; line-height: 1;
@@ -1459,13 +1466,13 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
   text-transform: none; letter-spacing: 0;
   transition: color .18s var(--ressort), box-shadow .18s var(--ressort);
 }
-.aide:hover, .aide:focus-visible {
+.infobulle:hover, .infobulle:focus-visible {
   color: var(--bleu); box-shadow: inset 0 0 0 1.5px var(--bleu); outline: none;
 }
-.kpi .libelle .aide { width: 13px; height: 13px; font-size: 9px; }
+.kpi .libelle .infobulle { width: 13px; height: 13px; font-size: 9px; }
 
 /* Une aide au survol n'a pas de sens sur du papier. */
-@media print { .aide { display: none !important; } }
+@media print { .infobulle { display: none !important; } }
 
 /* ---------- Rappels de contexte ----------
    Deux phrases qui auraient pu vivre dans « Méthode & limites » et qui

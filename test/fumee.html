@@ -338,6 +338,38 @@ async function lancer() {
   ok(/questionnaire/i.test(texteProfil), 'l\'état vide nomme l\'étape manquante');
   Etat.reponses = vide;
 
+  /* --- Les textes d'aide ne sont pas écrasés ---
+     Une pastille d'infobulle a un jour pris le nom de classe des textes
+     d'aide. Les règles de ces textes ne fixant ni `display` ni dimensions,
+     elle leur imposait les siennes : six phrases entières pliées dans un
+     carré de quatorze pixels, débordant par-dessus leur propre libellé. Rien
+     ne levait d'erreur, aucune vue n'était blanche — seul l'œil voyait. Un
+     texte d'aide plus étroit que sa pastille est le signe qu'une règle est
+     retombée dessus. */
+  /* Chaque vue est mesurée PENDANT qu'elle est affichée : une vue inactive
+     est en `display: none`, et tout y mesure zéro. Le premier jet de ce
+     contrôle mesurait la macro après avoir ouvert le questionnaire, et
+     signalait trois textes écrasés qui allaient parfaitement bien.
+
+     Le cadre doit aussi avoir une largeur pour que la mesure veuille dire
+     quelque chose — replié, le contrôle échouerait pour une raison étrangère
+     à ce qu'il surveille. */
+  const largeurCadre = cadre.getBoundingClientRect().width;
+  const aides = [];
+  const ecrases = [];
+  [['macro', '#indicateurs .aide'], ['questionnaire', '#questions .aide']].forEach(([vue, selecteur]) => {
+    try { w.afficher(vue); } catch (e) { return; }
+    [...d.querySelectorAll(selecteur)].forEach(a => {
+      aides.push(a);
+      if (largeurCadre >= 200 && a.textContent.trim().length > 20 &&
+          a.getBoundingClientRect().width < 60) ecrases.push(a);
+    });
+  });
+  ok(aides.length > 0 && ecrases.length === 0,
+     'les ' + aides.length + ' textes d\'aide se déploient sur leur largeur' +
+     (ecrases.length ? ' — ' + ecrases.length + ' écrasé(s) : « ' +
+      ecrases[0].textContent.trim().slice(0, 40) + '… »' : ''));
+
   /* --- 9. Le second mode ---
      L'application se lit de deux façons, et jusqu'ici le harnais n'en
      parcourait qu'une. Un mode qui masque des vues, renomme la moitié des

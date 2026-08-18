@@ -1534,7 +1534,7 @@ const INFOBULLES = {
 
 /** Le repère qui porte l'infobulle. Discret, et jamais dans un lien. */
 function aide(cle) {
-  return '<span class="aide" tabindex="0" role="note" aria-label="' + echapper(INFOBULLES[cle]) +
+  return '<span class="infobulle" tabindex="0" role="note" aria-label="' + echapper(INFOBULLES[cle]) +
     '" title="' + echapper(INFOBULLES[cle]) + '">?</span>';
 }
 
