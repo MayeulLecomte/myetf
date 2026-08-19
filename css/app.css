@@ -2063,3 +2063,50 @@ td .bouton.petit:hover { background: var(--bleu-pale); border-color: var(--bleu)
   .avertissement-rapport strong { color: #000 !important; font-weight: 800 !important; }
   img.illustration, .illustration { display: none !important; }
 }
+
+/* ---------- (d) LES ILLUSTRATIONS ---------- */
+
+/* Fond transparent : elles se posent aussi bien sur une carte blanche que
+   sur le fond de page, sans mélange de calque à prévoir. */
+.illustration { display: block; object-fit: contain; flex: none; }
+
+/* En tête de vue : le dessin précède le titre, aligné sur sa ligne de base
+   optique plutôt que sur le bas de la boîte. */
+h2 .illustration {
+  display: inline-block; vertical-align: -6px; margin-right: 10px;
+}
+
+/* Dans une bannière : le dessin est seul, et il est grand. */
+.banniere { display: flex; justify-content: flex-start; margin: 0 0 6px; }
+.banniere .illustration { width: 150px; height: 150px; }
+.banniere-entree { margin-bottom: 10px; }
+
+/* Dans un état vide : au-dessus du texte, centré avec lui. */
+.etat-vide-dessin { display: flex; justify-content: center; margin-bottom: 4px; }
+
+/* Dans un bandeau d'avis : petit, à gauche du texte, comme une vignette
+   de marge. Le texte l'enveloppe plutôt que de s'aligner en colonne —
+   quarante-quatre pixels ne méritent pas une grille. */
+.message .illustration { float: left; margin: 2px 14px 6px 0; width: 44px; height: 44px; }
+.message::after { content: ''; display: block; clear: both; }
+
+/* Le signe de l'en-tête. */
+.entete .marque .logo { width: 28px; height: 28px; border-radius: 7px; }
+
+/* JAMAIS dans un tableau, jamais sur le papier. */
+table .illustration { display: none !important; }
+@media print { .illustration, .banniere, .etat-vide-dessin { display: none !important; } }
+
+/* ---------- Les tableaux larges défilent, ils ne s'écrasent pas ----------
+   Sur un téléphone, le tableau des positions se compressait au lieu de
+   déborder : les noms de support tombaient à un mot par ligne, et un
+   badge de trois lignes dans une cellule étroite devenait une ellipse.
+   Le conteneur défile déjà — encore faut-il que le tableau refuse de
+   rétrécir en dessous de sa largeur naturelle. */
+.tableau-defilant { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tableau-defilant > table { min-width: max-content; }
+.tableau-defilant td, .tableau-defilant th { white-space: nowrap; }
+/* Le nom du support est la seule colonne qui a le droit de respirer, et
+   on lui donne une largeur plutôt qu'un retour à la ligne sauvage. */
+.tableau-defilant td:first-child { white-space: normal; min-width: 200px; max-width: 320px; }
+.badge { white-space: nowrap; }

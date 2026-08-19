@@ -335,7 +335,14 @@ function etatVide(vue) {
   const manques = manquePour(vue);
   if (!manques.length) return '';
 
-  return '<div class="etat-vide">' +
+  /* Le dessin dit ce qui manque avant qu'on ait lu : un carnet quand c'est
+     le questionnaire, un port quand c'est le portefeuille. Le premier
+     manque commande — deux dessins pour deux manques se disputeraient. */
+  const DESSIN_MANQUE = { questionnaire: 'carnet', detention: 'port', macro: 'boussole' };
+  const dessin = DESSIN_MANQUE[manques[0]]
+    ? '<div class="etat-vide-dessin">' + illustration(DESSIN_MANQUE[manques[0]], 140) + '</div>' : '';
+
+  return '<div class="etat-vide">' + dessin +
     '<h3>' + (manques.length > 1
       ? 'Deux étapes manquent avant de pouvoir afficher cette section'
       : 'Une étape manque avant de pouvoir afficher cette section') + '</h3>' +

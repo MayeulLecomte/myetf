@@ -155,6 +155,16 @@ function ouvrirPoche(poche) {
    fonctionner sans avoir rien à saisir.
    ------------------------------------------------------------ */
 
+/* La bannière d'accueil : un café pour le conseiller — deux tasses, on
+   travaille à deux —, une pousse pour le particulier, qui fait pousser
+   son épargne. Elle ne paraît QUE sur un dossier neuf : tous les jours,
+   elle cesserait d'être vue. */
+function banniereAccueil() {
+  if (dossierEntame()) return '';
+  return '<div class="banniere">' +
+    illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe', 150) + '</div>';
+}
+
 function accroche() {
   /* Deux phrases pour qui découvre, une ligne pour qui revient : la même
      accroche tous les jours cesse d'être lue et ne fait plus qu'occuper le
@@ -247,7 +257,8 @@ function remplirExemple(complet) {
    voit donc jamais et s'ouvre en conseiller, comme avant.
    ------------------------------------------------------------ */
 function ecranEntree() {
-  return '<div class="accroche">' +
+  return '<div class="banniere banniere-entree">' + illustration('logo', 160) + '</div>' +
+    '<div class="accroche">' +
       '<p><strong>myetf construit et suit une allocation d\'ETF</strong> — du questionnaire de ' +
       'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +
       fraicheurDonnees() +
@@ -283,6 +294,7 @@ function rendreAccueil() {
   if (aFaire.length) {
     c.innerHTML =
       accroche() +
+      banniereAccueil() +
       filPoches() +
       '<h2>' + titreSouligne('Remplissez le dossier') + '</h2>' +
       '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont ' +

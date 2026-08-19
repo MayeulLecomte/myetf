@@ -108,6 +108,46 @@ function etoiles(n) {
 
    Rend du HTML : le texte est échappé, le balisage ne l'est pas.
    ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   LES ILLUSTRATIONS
+   ------------------------------------------------------------
+   Huit dessins au trait, une tache bleue, fond transparent. Ce
+   sont les seuls éléments dessinés de l'interface.
+
+   Trois règles, et elles tiennent ici :
+
+   • UN SEUL par carte. Deux dessins sur un même écran se
+     disputent l'attention et n'en donnent aucune au contenu.
+   • JAMAIS dans un tableau. Une ligne de tableau se lit en
+     balayant une colonne ; une vignette par ligne casse ce
+     balayage.
+   • JAMAIS sur le papier. La feuille d'impression les masque, et
+     le rapport reste de l'encre noire.
+
+   `alt` vide et `aria-hidden` : ce sont des ornements. Le titre
+   qu'ils accompagnent dit déjà ce que dit le dessin, et un
+   lecteur d'écran qui annonce « balance » avant « Allocation
+   cible » ne fait que répéter.
+   ------------------------------------------------------------ */
+function illustration(nom, taille) {
+  return '<img class="illustration" src="img/' + nom + '.png" alt="" aria-hidden="true" ' +
+    'width="' + taille + '" height="' + taille + '" style="width:' + taille + 'px;height:' + taille + 'px">';
+}
+
+/* Le dessin qui accompagne le titre de chaque vue. Les vues absentes de
+   cette table n'en reçoivent aucun : mieux vaut une vue nue qu'un dessin
+   qui ne dit rien. */
+const ILLUSTRATIONS_VUES = {
+  note:         'boussole',
+  macro:        'boussole',
+  allocation:   'balance',
+  portefeuille: 'fiches',
+  univers:      'fiches',
+  journal:      'carnet',
+  backtest:     'longue-vue',
+  methode:      'longue-vue'
+};
+
 function titreSouligne(texte) {
   const t = String(texte || '').trim();
   const i = t.lastIndexOf(' ');

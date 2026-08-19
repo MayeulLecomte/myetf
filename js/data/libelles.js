@@ -123,6 +123,7 @@ const LIBELLES = {
        conseiller peut y remédier — un bouton l'y mène ; le particulier non,
        le contexte n'existe pas dans son mode. */
     'phrase.sansContexte.allocation':
+      '<img class="illustration" src="img/boussole.png" alt="" aria-hidden="true" width="44" height="44">' +
       '<strong>Allocation stratégique seule.</strong> Aucun indicateur de contexte n\'étant ' +
       'renseigné, aucune déviation tactique n\'est appliquée : la répartition ci-dessous découle ' +
       'du seul profil de risque. ' +
@@ -201,6 +202,7 @@ const LIBELLES = {
     /* Sans bouton : le contexte n'existe pas dans ce mode, et proposer d'y
        aller enverrait vers un écran que la navigation ne montre pas. */
     'phrase.sansContexte.allocation':
+      '<img class="illustration" src="img/boussole.png" alt="" aria-hidden="true" width="44" height="44">' +
       '<strong>Allocation issue de votre seul profil.</strong> Aucune vue de marché n\'est appliquée : ' +
       'la répartition ci-dessous découle uniquement de vos réponses au questionnaire.',
     'phrase.sansContexte.arbitrages':
