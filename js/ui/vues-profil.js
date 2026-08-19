@@ -370,12 +370,14 @@ function rendreAccueil() {
            de téléphone. La cible tactile est maintenant la ligne entière,
            et le chevron dit qu'elle mène quelque part.
 
-           Le bouton plein ne demeure que sur la PREMIÈRE étape à faire :
-           c'est la seule qu'on veuille désigner. Il est en `<span>` et non
-           en `<button>` — un bouton dans un bouton n'est pas du HTML. */
+           Et il n'en reste AUCUN. Un dernier « Ouvrir » avait été gardé sur
+           la première étape à faire, pour la désigner : sur une ligne déjà
+           cliquable, il n'ajoutait qu'un doute — on se demande alors ce que
+           fait le reste de la ligne. C'est le chevron, appuyé, qui dit par
+           où commencer. */
         etapes.map(e =>
           '<button type="button" class="etape' + (e.fait ? ' faite' : '') +
-            '" data-aller="' + e.vue + '">' +
+            (e === aFaire[0] ? ' prochaine' : '') + '" data-aller="' + e.vue + '">' +
             /* Ni numéro, ni rang : une puce pleine pour ce qui est fait, un
                anneau creux pour ce qui reste. L'ordre se lit dans la liste. */
             '<span class="etape-marque">' + (e.fait ? '✓' : '') + '</span>' +
@@ -383,7 +385,6 @@ function rendreAccueil() {
               '<span class="etape-detail">' + (e.fait ? 'Renseigné.' : echapper(e.reste)) +
                 (e.duree && !e.fait ? ' <span class="etape-duree">' + echapper(e.duree) + '</span>' : '') +
               '</span>' +
-              (e === aFaire[0] ? '<span class="bouton">Ouvrir</span>' : '') +
             '</span>' +
             '<span class="etape-chevron" aria-hidden="true">' +
               '<svg viewBox="0 0 24 24"><path d="M9.5 6 15.5 12 9.5 18"/></svg></span>' +

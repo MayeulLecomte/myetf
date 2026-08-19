@@ -2822,9 +2822,12 @@ table .illustration { display: none !important; }
 }
 .etape-corps strong { font-size: 15px; line-height: 1.3; }
 .etape-detail { margin-top: 0; line-height: 1.45; }
-/* Le bouton n'est plus un bouton : c'est la ligne qui l'est. Il n'a donc
-   ni survol propre ni cible tactile à lui — il désigne, il ne reçoit pas. */
-.etape .bouton { margin: 6px 0 0; pointer-events: none; }
+/* Aucun bouton dans la ligne : la ligne EST le bouton. Un « Ouvrir » y
+   avait survécu sur la première étape, pour la désigner — sur une ligne
+   déjà cliquable il n'ajoutait qu'un doute. C'est le chevron de l'étape
+   à faire qui prend l'accent, et lui seul. */
+.etape.prochaine .etape-chevron { color: var(--bleu); }
+.etape.prochaine strong { color: var(--bleu-encre); }
 
 /* L'anneau s'aligne sur la PREMIÈRE LIGNE du titre, pas sur le bloc. */
 .etape-marque { flex: none; margin-top: 1px; }
@@ -2844,5 +2847,5 @@ table .illustration { display: none !important; }
 
 @media print {
   .etape { border-top: 1px solid #ccc; }
-  .etape-chevron, .etape .bouton { display: none !important; }
+  .etape-chevron { display: none !important; }
 }

@@ -606,10 +606,11 @@ boutons identiques l'un sous l'autre, et 245 px de hauteur par étape — on
 n'en voyait que deux par écran de téléphone.
 
 La **ligne entière** est la cible, et le chevron dit qu'elle mène quelque
-part. Le bouton plein ne demeure que sur la **première étape à faire** :
-c'est la seule qu'on veuille désigner du doigt. Il est en `<span>` et non
-en `<button>` — un bouton dans un bouton n'est pas du HTML —, et
-`pointer-events: none` le laisse traverser jusqu'à la ligne.
+part. **Il ne reste aucun bouton dans la liste.** Un dernier « Ouvrir »
+avait été gardé sur la première étape à faire, pour la désigner : sur une
+ligne déjà cliquable il n'ajoutait qu'un doute — on se demande alors ce
+que fait le reste de la ligne. C'est le chevron de l'étape à faire qui
+prend l'accent, avec son titre, et rien d'autre (`.etape.prochaine`).
 
 Une étape faite reste ouvrable, on y retourne pour corriger ; elle ne se
 signale simplement plus.
