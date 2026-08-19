@@ -2233,6 +2233,43 @@ const LIBELLES_STATUT = {
 
 /* `actions` n'est vrai que sur le relevé vivant : un relevé figé est un
    constat passé, on n'y confirme plus rien. */
+/* ------------------------------------------------------------
+   D'OÙ VIENNENT LES COURS DE CE TOTAL
+   ------------------------------------------------------------
+   Depuis que la clôture du catalogue sert de repli, un même total
+   peut mêler des cours du jour relevés sur Euronext et une
+   clôture datée d'un relevé fait à la main. Qui lit une valeur la
+   croit du jour : il faut donc dire, sous le total, ce qui a
+   valorisé quoi.
+
+   Une seule définition, reprise à l'écran et dans le rapport
+   imprimé — deux phrases finiraient par se contredire, et c'est
+   celle du document remis qui compterait.
+   ------------------------------------------------------------ */
+function origineDesCours(s) {
+  if (!s || !s.lignes.length) return '';
+  const compte = f => s.lignes.filter(f).length;
+  const duJour = compte(l => l.statut === 'seance' || l.statut === 'anterieur');
+  const posterieur = s.alertes.horsPeriode;
+  const auRepli = s.alertes.repli;
+  const sansCours = s.alertes.enMontant + s.alertes.sansCours +
+                    s.alertes.deviseAutre + s.alertes.tropAncien;
+
+  const dateRepli = auRepli ? s.lignes.filter(l => l.statut === 'repli')
+                                      .map(l => l.dateCours).filter(Boolean).sort().slice(-1)[0] : null;
+
+  /* « 2 lignes aux cours du jour, 12 au relevé du 18 août » — le mot ne se
+     répète que sur le premier terme, comme on l'écrirait à la main. */
+  const bouts = [];
+  const ajouter = (x, quoi) =>
+    bouts.push(x + (bouts.length ? '' : ' ligne' + (x > 1 ? 's' : '')) + ' ' + quoi);
+  if (duJour) ajouter(duJour, 'aux cours du jour');
+  if (auRepli) ajouter(auRepli, 'au relevé du ' + (dateRepli ? dateFr(dateRepli) : 'catalogue'));
+  if (posterieur) ajouter(posterieur, 'au dernier cours connu');
+  if (sansCours) ajouter(sansCours, 'au montant saisi, sans cours');
+  return bouts.join(', ') + '.';
+}
+
 function tableauSituation(s, actions) {
   const cible = new Set(); /* les ISIN encore proposés par la sélection */
   if (actions) {
@@ -2376,14 +2413,7 @@ function rendreSituation() {
         '</ul></div>' : '') +
 
     '<div class="grille quatre">' +
-      /* La valeur d'un portefeuille se lit avec la date de ce qui l'a
-         valorisée. Quand une partie vient du catalogue — relevé à la main,
-         donc pas d'aujourd'hui —, c'est cette date-là qu'il faut donner. */
-      kpi(euro(s.total), 'Valeur du portefeuille',
-        s.alertes.repli && repliCatalogue()
-          ? dateFr(date) + ' · ' + s.alertes.repli + ' ligne(s) au relevé du ' +
-            dateFr(repliCatalogue().genere)
-          : dateFr(date)) +
+      kpi(euro(s.total), 'Valeur du portefeuille', dateFr(date)) +
       kpi(String(s.lignes.length - aInvestir.length), 'Lignes détenues',
         aInvestir.length ? aInvestir.length + ' encore à investir'
                          : enQuantites + ' suivie(s) en quantités') +
@@ -2392,6 +2422,10 @@ function rendreSituation() {
         s.fiable ? 'toutes les lignes valorisées à la date'
                  : (s.alertes.horsPeriode + s.alertes.sansCours) + ' ligne(s) sans cours de la période') +
     '</div>' +
+
+    /* Sous le total, et pas dans un sous-titre d'indicateur : c'est une
+       réserve sur le chiffre au-dessus, elle doit se lire avec lui. */
+    '<p class="intro origine-cours">' + echapper(origineDesCours(s)) + '</p>' +
 
     '<div class="carte"><h3>Détail des positions</h3>' + tableauSituation(s, !figee) +
       '<div class="barre-actions">' +
@@ -3579,6 +3613,10 @@ function blocSituationRapport(numero) {
   return '<div class="carte"><h3>' + numero + '. Situation de départ</h3>' +
     '<p>Portefeuille détenu au ' + dateFr(aujourd) + ', valorisé ' + euro(s.total) +
     (dateCours && dateCours !== aujourd ? ' sur les cours de clôture du ' + dateFr(dateCours) : '') + '.</p>' +
+    /* Le document remis dit d'où viennent ses chiffres. Sans cette ligne, un
+       client lisant « valorisé au 19 août » croirait tout le portefeuille
+       coté ce jour-là, alors qu'une partie vient d'un relevé antérieur. */
+    '<p style="font-size:11.5px;color:#444">' + echapper(origineDesCours(s)) + '</p>' +
 
     '<table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Valorisation</th>' +
     '<th class="num">Poids</th></tr></thead><tbody>' +
@@ -3598,10 +3636,14 @@ function blocSituationRapport(numero) {
       (arrete.total ? ', soit une évolution de ' + signe(100 * (s.total - arrete.total) / arrete.total) +
         ' depuis cette date' : '') + '.</p>' : '') +
 
-    (s.alertes.horsPeriode || s.alertes.sansCours
+    (s.alertes.horsPeriode || s.alertes.sansCours || s.alertes.deviseAutre || s.alertes.tropAncien
       ? '<p style="font-size:11px;color:var(--gris-doux)">' +
         (s.alertes.sansCours ? s.alertes.sansCours + ' ligne(s) sans cours de marché : la valeur retenue est celle saisie. ' : '') +
         (s.alertes.horsPeriode ? s.alertes.horsPeriode + ' ligne(s) valorisée(s) au dernier cours connu. ' : '') +
+        (s.alertes.deviseAutre ? s.alertes.deviseAutre + ' ligne(s) dont le cours est publié dans une autre ' +
+          'devise : la valeur retenue est celle saisie. ' : '') +
+        (s.alertes.tropAncien ? s.alertes.tropAncien + ' ligne(s) dont le dernier cours connu est trop ancien ' +
+          'pour être retenu : la valeur retenue est celle saisie. ' : '') +
         '</p>' : '') +
     '</div>';
 }

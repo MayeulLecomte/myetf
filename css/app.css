@@ -1663,3 +1663,8 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 .fiche-source {
   margin: 14px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--texte-doux);
 }
+
+/* La provenance des cours se lit sous le total, pas à côté : c'est une
+   réserve sur le chiffre au-dessus. Elle s'imprime — le rapport la porte
+   aussi, et pour la même raison. */
+.origine-cours { margin: -6px 0 16px; font-size: 12px; }
