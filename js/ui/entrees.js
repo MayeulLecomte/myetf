@@ -16,6 +16,12 @@ function brancher() {
   poserTitres(); poserOuvertures();
   poserBarresParcours();
 
+  /* La hauteur de l'en-tête change avec la largeur, et avec l'encoche du
+     téléphone quand on le tourne : elle se remesure, elle ne se retient pas. */
+  mesurerEntete();
+  window.addEventListener('resize', mesurerEntete);
+  window.addEventListener('orientationchange', mesurerEntete);
+
   /* Le repère de section se recalcule au défilement — et au redimensionnement,
      qui déplace le repère collant autant que les cartes. */
   window.addEventListener('scroll', majSectionCourante, { passive: true });

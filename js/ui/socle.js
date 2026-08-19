@@ -211,6 +211,10 @@ const ILLUSTRATIONS_VUES = {
    sous-titre à l'ouverture. Ces cinq-là en reçoivent une ici — ce sont
    les seules phrases neuves du chantier. */
 const SOUS_TITRES_VUES = {
+  /* L'accueil n'a pas de `h2[data-titre]` dans la page — son contenu est
+     monté à l'exécution —, mais son ouverture se construit de la même
+     matière : `ouvertureAccueil()` lit cette phrase-ci. */
+  accueil:      "Ce qui a bougé, ce qu'il y a à faire, et de quand datent les données.",
   profil:       'Ce que les réponses déterminent, et ce que cela veut dire pour le portefeuille.',
   allocation:   "Ce que le profil commande, poche par poche — et ce qui l'en écarte.",
   portefeuille: "Les supports retenus dans le catalogue, poche par poche, sur des critères qu'on peut relire.",

@@ -169,10 +169,25 @@ function ouvrirPoche(poche) {
    courte, seule et sans dessin — c'est la même règle qu'avant. */
 function ouvertureAccueil() {
   if (dossierEntame()) return accroche();
-  return '<div class="ouverture">' +
-    illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe', TAILLE_ILLUSTRATION_BANNIERE) +
-    '<div class="ouverture-texte">' + accroche() + '</div>' +
-  '</div>';
+
+  /* Un dossier neuf s'ouvre comme les quinze autres vues : le dessin et le
+     titre tiennent le premier écran, le reste vient au défilement. C'était
+     la seule vue à faire autrement — dessin à gauche, texte à droite —, et
+     l'on arrivait sur l'application par un écran qui ne ressemblait à aucun
+     de ceux qui suivent.
+
+     La construction est celle de `poserOuvertures()`, à la main : celle-là
+     travaille sur les `h2[data-titre]` écrits dans la page, et l'accueil
+     n'en a pas — son contenu est monté à l'exécution. */
+  return '<div class="ouverture-vue sans-impression">' +
+      illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe',
+                   tailleOuverture(Etat.mode === 'particulier' ? 'logo' : 'cafe')) +
+      '<h2>' + titreSouligne(T('vue.accueil.nav')) + '</h2>' +
+      '<p class="intro">' + echapper(SOUS_TITRES_VUES.accueil) + '</p>' +
+      '<div class="ouverture-suite" aria-hidden="true"><span>Faites défiler</span>' +
+        '<svg viewBox="0 0 24 24"><path d="M6 9.5 12 15.5 18 9.5"/></svg></div>' +
+    '</div>' +
+    accroche();
 }
 
 function accroche() {

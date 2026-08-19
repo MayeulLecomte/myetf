@@ -425,6 +425,61 @@ comme si la règle n'existait pas. Un contrôle mené dans un panneau replié
 conclut donc que la révélation ne marche pas, alors qu'elle n'a simplement
 jamais tourné. Vérifier ces règles-là **fenêtre ouverte**, ou pas du tout.
 
+## Rien ne se règle sur une hauteur d'en-tête écrite à la main
+
+Le ruban collait sous l'en-tête à `top: 52px`. **L'en-tête ne fait 52 px
+nulle part** : 53 sur écran large, 66 sur iPhone, davantage sur un modèle
+à encoche — il porte `env(safe-area-inset-top)`. Quatorze pixels de ruban
+passaient donc sous l'en-tête dès qu'on descendait, et les pastilles
+paraissaient se raccourcir. Aucun harnais ne pouvait le voir : la hauteur
+ne se connaît qu'à l'exécution, et elle change quand on tourne l'appareil.
+
+`mesurerEntete()` (js/ui/navigation.js) la mesure et la pose en
+`--h-entete`, au démarrage puis à chaque redimensionnement et rotation.
+**Tout ce qui doit se ranger sous l'en-tête lit cette variable.** Le repli
+`var(--h-entete, 52px)` ne sert qu'au cas où la fonction ne tournerait pas.
+
+## L'invitation à descendre suit le texte, elle ne l'attend pas en bas
+
+« Faites défiler » était posée en absolu au pied de l'ouverture. Le pied
+ne bouge pas avec le texte : **un sous-titre de trois lignes sur un
+téléphone passait dessous**, et les deux se lisaient l'un au travers de
+l'autre. La colonne de l'ouverture est centrée — la flèche redevient son
+dernier élément de flux et suit le sous-titre, quelle que soit sa longueur.
+
+L'écran d'entrée garde la sienne en absolu : il ne porte qu'un signe et un
+nom, rien qui puisse la heurter.
+
+## Une plage de révélation se compte en pixels, pas en pourcentage
+
+`entry 2% → cover 26%` semblait raisonnable et ne l'était pas : **un
+pourcentage de la phase d'entrée est proportionnel à la hauteur du bloc**.
+Une grande carte — le tableau du rapport, la grille des indicateurs —
+restait à demi effacée pendant tout un écran de défilement ; on la lisait
+en gris pâle et l'on croyait à un texte désactivé.
+
+La plage se compte donc en pixels de défilement, la même pour tous :
+`entry 0px → entry 170px` pour les blocs, `entry 40px → entry 190px` pour
+les items d'une liste, qui doivent être entrés avant de paraître. Le temps
+de voir la chose venir, jamais celui de se demander si elle est éteinte.
+
+## L'accueil s'ouvre comme les quinze autres vues
+
+Sur un **dossier neuf**, l'accueil pose son dessin, son titre et sa phrase
+en pleine page, comme toutes les autres. C'était la seule vue à faire
+autrement — dessin à gauche, texte à droite —, et l'on arrivait dans
+l'application par un écran qui ne ressemblait à aucun de ceux qui suivent.
+
+`ouvertureAccueil()` construit à la main ce que `poserOuvertures()` pose
+ailleurs : cette dernière travaille sur les `h2[data-titre]` écrits dans
+`index.html`, et l'accueil n'en a pas — son contenu est monté à
+l'exécution. Sa phrase vit dans `SOUS_TITRES_VUES.accueil`, avec les
+autres.
+
+**Sur un dossier entamé, rien de tout cela ne paraît** : l'accueil ouvre
+sur le fil des poches, et sur un dossier complet sur le verdict du jour.
+La règle n'a pas changé — un dessin vu tous les jours cesse d'être vu.
+
 ## L'air se mesure entre les blocs, jamais dans un titre
 
 Un titre appartient à ce qui le SUIT. « Les poches aujourd'hui » est posé

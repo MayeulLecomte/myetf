@@ -2434,7 +2434,16 @@ h2 .illustration {
 .vue.actif > div[id$="-contenu"] > * {
   animation: paraitre linear both;
   animation-timeline: view();
-  animation-range: entry 2% cover 26%;
+  /* Une PLAGE EN PIXELS, et non en pourcentage : un pourcentage de la
+     phase d'entrée est proportionnel à la HAUTEUR DU BLOC, si bien qu'une
+     grande carte — le tableau du rapport, la grille des indicateurs —
+     restait à demi effacée pendant tout un écran de défilement. On la
+     lisait en gris pâle, et l'on croyait à un texte désactivé.
+
+     170 px de défilement, quelle que soit la taille du bloc : le temps de
+     voir la chose paraître, jamais celui de se demander si elle est
+     éteinte. */
+  animation-range: entry 0px entry 170px;
 }
 @supports not (animation-timeline: view()) {
   .vue.actif > *, .vue.actif > div[id$="-contenu"] > * {
@@ -2647,15 +2656,18 @@ table .illustration { display: none !important; }
 }
 
 /* ---------- Un item à la fois ----------
-   `entry 15% → entry 85%` : l'item commence à paraître dès qu'il
-   entre par le bas, et il est entier avant de l'être tout à fait.
-   Une plage bornée à `entry` ne peut pas laisser un item pâle au
-   milieu de l'écran — ce qui arriverait avec une plage qui court
-   sur `cover`. */
+   `entry 40px → entry 190px` : l'item est entré de quarante pixels
+   quand il commence à paraître, et il est entier cent cinquante
+   plus loin. En PIXELS et non en pourcentage — un pourcentage de
+   la phase d'entrée vaut une fraction de la hauteur de l'item, et
+   les grands seraient les plus lents à venir alors qu'ils sont
+   les plus visibles. */
 .question, .groupe-macro .indicateur, #scenarios .scenario {
   animation: paraitre linear both;
   animation-timeline: view();
-  animation-range: entry 15% entry 85%;
+  /* Même barème en pixels que les blocs, décalé de 40 px : l'item est
+     entré dans l'écran avant de commencer à paraître. */
+  animation-range: entry 40px entry 190px;
 }
 
 /* Le conteneur, lui, cesse de paraître d'un bloc : deux opacités
@@ -2683,3 +2695,63 @@ table .illustration { display: none !important; }
     animation: none !important; opacity: 1 !important; transform: none !important;
   }
 }
+
+/* ============================================================
+   CE QUI COLLE SOUS L'EN-TÊTE, ET CE QUI NE DOIT RIEN HEURTER
+   ============================================================ */
+
+/* ---------- Le ruban se range sous l'en-tête, mesuré ----------
+   Il collait à `top: 52px`, un nombre écrit à la main. L'en-tête ne fait
+   52 px nulle part : 53 sur écran large, 66 sur iPhone, davantage sur un
+   modèle à encoche — il porte `env(safe-area-inset-top)`. Quatorze pixels
+   de ruban passaient donc sous l'en-tête dès qu'on descendait, et les
+   pastilles paraissaient se raccourcir.
+
+   `--h-entete` est posée par `mesurerEntete()`, au démarrage et à chaque
+   redimensionnement. Le repli à 52 px ne sert qu'au cas où elle ne
+   tournerait pas. La règle vient APRÈS les deux qui posaient 52 et 56. */
+.sous-nav { top: var(--h-entete, 52px); }
+@media (min-width: 821px) { .sous-nav { top: var(--h-entete, 56px); } }
+
+/* ---------- L'invitation à descendre ne chevauche plus rien ----------
+   Elle était posée en absolu au pied de l'ouverture, et le pied ne bouge
+   pas avec le texte : un sous-titre de trois lignes sur un téléphone
+   passait dessous, et « FAITES DÉFILER » se lisait au travers des mots.
+
+   Elle redevient le dernier élément du flux. La colonne est centrée : la
+   flèche suit donc le sous-titre au lieu de le heurter, et l'espace qui
+   lui était réservé en bas n'a plus lieu d'être.
+
+   L'écran d'entrée garde la sienne en absolu — il ne porte qu'un signe et
+   un nom, rien qui puisse la heurter. */
+.ouverture-vue { padding-bottom: calc(var(--marge-barre) + 24px); }
+.ouverture-vue > .ouverture-suite {
+  position: static; margin-top: 10px;
+}
+
+/* ============================================================
+   L'ACCUEIL — DE L'AIR, ET SUR TÉLÉPHONE AUSSI
+   ------------------------------------------------------------
+   Le chantier précédent n'avait desserré que l'écran d'ordinateur.
+   Sur téléphone, l'accroche, ses pastilles, son bouton et sa note
+   se touchaient encore — ils vivent dans un seul bloc, et l'air
+   posé ENTRE les blocs ne les voyait pas.
+   ============================================================ */
+
+/* Entre le verdict et les indicateurs : l'écran d'ouverture n'était pas
+   dans la liste des blocs qui prennent de l'air, faute d'être une carte. */
+.ecran-aujourdhui { margin-bottom: 64px; }
+@media (min-width: 821px) { .ecran-aujourdhui { margin-bottom: 130px; } }
+
+/* L'intérieur de l'accroche : quatre éléments, quatre respirations. */
+.accroche .fraicheur { margin-top: 20px; }
+.accroche .barre-actions { margin-top: 26px !important; }
+.accroche-note { margin-top: 16px; }
+.accroche p + p { margin-top: 12px; }
+
+/* Les étapes du dossier, une liste qu'on lit ligne à ligne. */
+.etape { padding: 22px 4px; gap: 16px; }
+@media (min-width: 821px) { .etape { padding: 28px 4px; } }
+
+/* Et le pied de l'accueil se détache davantage de ce qui le précède. */
+.pied-accueil { margin-top: 72px; }

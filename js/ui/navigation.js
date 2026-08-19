@@ -183,6 +183,29 @@ function poserEcranOuverture() {
   setTimeout(retirer, 3000);
 }
 
+/* ------------------------------------------------------------
+   LA HAUTEUR DE L'EN-TÊTE, MESURÉE ET NON DEVINÉE
+   ------------------------------------------------------------
+   Le ruban colle sous l'en-tête, et il collait à `top: 52px` —
+   un nombre écrit à la main. L'en-tête ne fait 52 px NULLE PART :
+   53 sur écran large, 66 sur iPhone, davantage encore sur un
+   modèle à encoche, puisqu'il porte `env(safe-area-inset-top)`.
+   Quatorze pixels de ruban passaient donc SOUS l'en-tête dès
+   qu'on descendait : les pastilles paraissaient se raccourcir,
+   et rien ne pouvait le signaler — la hauteur ne se connaît
+   qu'à l'exécution.
+
+   Elle est mesurée et posée en variable. Tout ce qui doit se
+   ranger sous l'en-tête lit `--h-entete` ; le repli à 52 px ne
+   sert qu'au cas où cette fonction ne tournerait pas.
+   ------------------------------------------------------------ */
+function mesurerEntete() {
+  const entete = $('.entete');
+  if (!entete) return;
+  const h = Math.round(entete.getBoundingClientRect().height);
+  if (h > 0) document.documentElement.style.setProperty('--h-entete', h + 'px');
+}
+
 function poserOuvertures() {
   $$('h2[data-titre]').forEach(h => {
     const vue = h.dataset.titre;
