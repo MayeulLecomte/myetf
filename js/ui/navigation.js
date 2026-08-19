@@ -115,7 +115,7 @@ function poserNav() {
 function poserTitres() {
   $$('h2[data-titre]').forEach(h => {
     const vue = h.dataset.titre;
-    const dessin = ILLUSTRATIONS_VUES[vue] ? illustration(ILLUSTRATIONS_VUES[vue], 30) : '';
+    const dessin = ILLUSTRATIONS_VUES[vue] ? illustration(ILLUSTRATIONS_VUES[vue], TAILLE_ILLUSTRATION_TITRE) : '';
     h.innerHTML = dessin + titreSouligne(T('vue.' + vue + '.titre'));
   });
 }

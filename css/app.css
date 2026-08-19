@@ -2073,12 +2073,16 @@ td .bouton.petit:hover { background: var(--bleu-pale); border-color: var(--bleu)
 /* En tête de vue : le dessin précède le titre, aligné sur sa ligne de base
    optique plutôt que sur le bas de la boîte. */
 h2 .illustration {
-  display: inline-block; vertical-align: -6px; margin-right: 10px;
+  display: inline-block; vertical-align: -9px; margin-right: 10px;
 }
 
 /* Dans une bannière : le dessin est seul, et il est grand. */
 .banniere { display: flex; justify-content: flex-start; margin: 0 0 6px; }
-.banniere .illustration { width: 150px; height: 150px; }
+/* La taille vient de `illustration()` (TAILLE_ILLUSTRATION_BANNIERE), posée
+   en style d'attribut : cette règle ne fait que dire la même chose pour le
+   jour où le style en ligne disparaîtrait. La garder d'accord avec la
+   constante — un 150 oublié ici rétrécirait la bannière sans bruit. */
+.banniere .illustration { width: 180px; height: 180px; }
 .banniere-entree { margin-bottom: 10px; }
 
 /* Dans un état vide : au-dessus du texte, centré avec lui. */

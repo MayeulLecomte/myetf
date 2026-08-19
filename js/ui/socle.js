@@ -128,7 +128,16 @@ function etoiles(n) {
    qu'ils accompagnent dit déjà ce que dit le dessin, et un
    lecteur d'écran qui annonce « balance » avant « Allocation
    cible » ne fait que répéter.
+   DEUX TAILLES, et deux seulement. Elles vivaient en cinq
+   littéraux dispersés — 30 en tête de vue, 140 en état vide, 150
+   et 160 en bannière —, et la règle « même taille partout » ne se
+   lisait alors dans aucun fichier. Une troisième existe, à part :
+   les 44 px du bandeau d'avis, qui est une vignette de marge et
+   non une illustration de tête.
    ------------------------------------------------------------ */
+const TAILLE_ILLUSTRATION_TITRE = 38;
+const TAILLE_ILLUSTRATION_BANNIERE = 180;
+
 function illustration(nom, taille) {
   return '<img class="illustration" src="img/' + nom + '.png" alt="" aria-hidden="true" ' +
     'width="' + taille + '" height="' + taille + '" style="width:' + taille + 'px;height:' + taille + 'px">';

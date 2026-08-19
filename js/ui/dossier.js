@@ -340,7 +340,7 @@ function etatVide(vue) {
      manque commande — deux dessins pour deux manques se disputeraient. */
   const DESSIN_MANQUE = { questionnaire: 'carnet', detention: 'port', macro: 'boussole' };
   const dessin = DESSIN_MANQUE[manques[0]]
-    ? '<div class="etat-vide-dessin">' + illustration(DESSIN_MANQUE[manques[0]], 140) + '</div>' : '';
+    ? '<div class="etat-vide-dessin">' + illustration(DESSIN_MANQUE[manques[0]], TAILLE_ILLUSTRATION_BANNIERE) + '</div>' : '';
 
   return '<div class="etat-vide">' + dessin +
     '<h3>' + (manques.length > 1

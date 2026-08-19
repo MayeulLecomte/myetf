@@ -162,7 +162,7 @@ function ouvrirPoche(poche) {
 function banniereAccueil() {
   if (dossierEntame()) return '';
   return '<div class="banniere">' +
-    illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe', 150) + '</div>';
+    illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe', TAILLE_ILLUSTRATION_BANNIERE) + '</div>';
 }
 
 function accroche() {
@@ -257,7 +257,7 @@ function remplirExemple(complet) {
    voit donc jamais et s'ouvre en conseiller, comme avant.
    ------------------------------------------------------------ */
 function ecranEntree() {
-  return '<div class="banniere banniere-entree">' + illustration('logo', 160) + '</div>' +
+  return '<div class="banniere banniere-entree">' + illustration('logo', TAILLE_ILLUSTRATION_BANNIERE) + '</div>' +
     '<div class="accroche">' +
       '<p><strong>myetf construit et suit une allocation d\'ETF</strong> — du questionnaire de ' +
       'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +

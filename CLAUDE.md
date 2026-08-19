@@ -157,7 +157,7 @@ Huit dessins au trait dans `img/`, fond transparent, 320 px de côté.
 
 | Dessin | Où |
 |---|---|
-| `logo` | en-tête (28 px) · écran d'entrée et accueil particulier (150-160 px) |
+| `logo` | en-tête (28 px) · écran d'entrée et accueil particulier |
 | `cafe` | bannière d'accueil, mode conseiller |
 | `boussole` | note du jour, contexte · bandeau « allocation stratégique seule » (44 px) |
 | `balance` | allocation cible |
@@ -165,6 +165,21 @@ Huit dessins au trait dans `img/`, fond transparent, 320 px de côté.
 | `carnet` | journal · état vide du questionnaire |
 | `port` | état vide du suivi |
 | `longue-vue` | backtest, méthode & limites |
+
+**Deux tailles, et deux seulement**, tenues par `TAILLE_ILLUSTRATION_TITRE`
+(38 px) et `TAILLE_ILLUSTRATION_BANNIERE` (180 px) dans `js/ui/socle.js`. Elles
+vivaient en cinq littéraux dispersés — 30, 140, 150, 160 — et la règle « même
+taille partout » ne se lisait dans aucun fichier. Une troisième existe, à part :
+les 44 px du bandeau d'avis, une vignette de marge et non une illustration de
+tête. `.banniere .illustration` en CSS répète la seconde et doit rester d'accord
+avec elle : le style en ligne posé par `illustration()` la couvre, un 150 oublié
+là ne se verrait donc que le jour où ce style disparaîtrait.
+
+**La bannière d'accueil ne paraît que sur un dossier neuf.** `banniereAccueil()`
+rend une chaîne vide dès que `dossierEntame()`, et la branche « Aujourd'hui » du
+dossier complet ne l'appelle pas du tout. L'accueil d'un dossier en cours n'a
+donc aucun dessin, et c'est voulu — vue tous les jours, une bannière cesse
+d'être vue. Ne pas le relire comme une illustration manquante.
 
 **Trois règles, à ne pas relâcher :** un seul dessin par carte · jamais dans un
 tableau · jamais sur le papier. Les têtes de vue sont posées par
