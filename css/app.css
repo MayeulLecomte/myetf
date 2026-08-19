@@ -23,199 +23,24 @@
 
 /* ---------- Jetons de couleur ---------- */
 
+/* ---------- Jetons ----------
+   Ils ont quitté ce fichier pour css/tokens.css, chargé après lui : la
+   palette, la typographie, les rayons et les ombres y vivent seuls, et
+   les composants ci-dessous n'écrivent plus une couleur en dur.
+
+   Le mode sombre est parti avec eux. La direction « trait bleu » donne
+   une palette exacte, et une seule ; un second jeu de teintes serait une
+   invention. À rouvrir un jour comme une palette à arrêter, pas comme
+   une bascule à rétablir.
+
+   Trois alias survivent ici, employés par de vieilles règles. */
 :root {
-  color-scheme: light dark;
-
-  --bleu:        #1f5aa8;      /* accent principal, plus vif qu'un bleu marine */
-  --bleu-clair:  #3b82e0;
-  --bleu-pale:   #eaf2fd;
-  --indigo:      #4f46c8;
-  --or:          #c08a2e;
-  --vert:        #1f8a4c;
-  --rouge:       #d0342c;
-  --orange:      #d2761c;
-  --violet:      #7c3aed;
-
-  --texte:       #0f1419;
-  --texte-doux:  #5b6673;
-  --ligne:       rgba(0, 0, 0, .09);
-  --ligne-forte: rgba(0, 0, 0, .16);
-
-  --fond:        #f2f3f7;      /* le « groupé » d'iOS : le fond recule, les cartes avancent */
-  --surface:     #ffffff;
-  --surface-2:   #f7f8fa;
-  --voile:       rgba(255, 255, 255, .72);
-
-  --r-s:  10px;
-  --r-m:  16px;
-  --r-l:  22px;
-  --r-pilule: 999px;
-
-  --ombre-1: 0 1px 2px rgba(15, 20, 25, .06), 0 1px 1px rgba(15, 20, 25, .04);
-  --ombre-2: 0 4px 16px rgba(15, 20, 25, .08), 0 1px 3px rgba(15, 20, 25, .05);
-  --ombre-3: 0 12px 32px rgba(15, 20, 25, .12), 0 2px 8px rgba(15, 20, 25, .06);
-
-  --ressort: cubic-bezier(.32, .72, 0, 1);   /* la courbe des transitions iOS */
-
-  /* ---- Verre ----
-     Les surfaces ne sont plus peintes : elles sont dépolies, et la
-     couleur leur vient du halo posé derrière la page. Un seul jeu de
-     jetons décrit le matériau, pour que toutes les surfaces vieillissent
-     ensemble le jour où on le retouche.
-
-     Le flou est coûteux. Il va sur les CONTENEURS — cartes, barres,
-     panneaux, feuille — et jamais sur les éléments répétés d'une liste :
-     soixante lignes de catalogue floutées rendent le défilement
-     inutilisable sur un téléphone. */
-  --verre:        rgba(255, 255, 255, .72);
-  --verre-fort:   rgba(255, 255, 255, .84);
-  --verre-bord:   rgba(255, 255, 255, .55);
-  --verre-flou:   blur(22px) saturate(180%);
-  --verre-ombre:  0 8px 32px rgba(15, 20, 25, .10), 0 1px 2px rgba(15, 20, 25, .05);
-
-  /* Le halo : trois taches de couleur, très étalées, posées derrière
-     toute la page. C'est lui qui donne aux surfaces dépolies quelque
-     chose à filtrer — sans lui, du verre sur du gris reste du gris.
-     Des dégradés radiaux à décroissance douce, sans `filter: blur()` :
-     le rendu est le même et ne crée pas de calque plein écran à
-     recomposer à chaque défilement. */
-  --halo-1: rgba(79, 107, 240, .16);
-  --halo-2: rgba(224, 66, 154, .13);
-  --halo-3: rgba(41, 182, 164, .13);
-
-  /* SF Pro Rounded est la voix ludique d'Apple — Forme, Maison, watchOS.
-     `ui-rounded` la charge vraiment sur un appareil Apple, et retombe
-     proprement ailleurs. Aucune police n'est demandée au réseau. */
-  --ronde: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
-           "Segoe UI", system-ui, sans-serif;
-
-  /* ---- Signe ----
-     Le logo ne suit pas le thème : c'est un badge, et il doit être
-     identique dans l'en-tête, l'onglet, l'icône iOS et le widget —
-     or l'icône d'un écran d'accueil, elle, ne peut pas s'inverser.
-     Ces trois jetons ne sont donc jamais redéfinis en mode sombre. */
-  --logo-fond:   #1f5aa8;
-  --logo-barre:  #ffffff;
-  --logo-accent: #c08a2e;
-
-  /* ---- Palette des graphiques ----
-     Validée par le contrôleur de la méthode de visualisation :
-     bande de clarté, plancher de chroma, séparation en vision
-     déficiente et contraste sur la surface, dans les deux modes.
-     Ne pas retoucher une seule valeur sans relancer le contrôle. */
-  --serie-actions:       #2a78d6;
-  --serie-obligations:   #1baf7a;
-  --serie-monetaire:     #4a3aa7;
-  --serie-diversifiants: #eda100;
-
-  --scenario-atterrissage: #1baf7a;
-  --scenario-recession:    #2a78d6;
-  --scenario-stagflation:  #eda100;
-  --scenario-reflation:    #e87ba4;
-
-  /* Les profils forment une échelle ordonnée du froid au chaud.
-     Un seul jeu pour les deux modes : chaque teinte porte du texte
-     blanc (contraste ≥ 5) tout en restant visible sur fond sombre
-     (≥ 3) — les alléger en mode sombre casserait la première
-     contrainte. */
-  --profil-securitaire: #1f6fb2;
-  --profil-prudent:     #15737f;
-  --profil-equilibre:   #1f7d4e;
-  --profil-dynamique:   #8a6414;
-  --profil-offensif:    #ad5119;
-  --profil-agressif:    #bb4038;
-
-  /* Trois axes du score : jeu de trois teintes validé séparément. */
-  --axe-capacite:     #2a78d6;
-  --axe-tolerance:    #eda100;
-  --axe-connaissance: #1baf7a;
-
-  /* ---- Bulles ----
-     Cinq dégradés vifs, posés sur les tuiles de chiffres et sur le
-     verdict. Ils ne portent aucune information : ce sont des surfaces,
-     et c'est le chiffre qu'elles encadrent qui parle. Les teintes
-     porteuses de sens — classes d'actifs, scénarios, profils — restent
-     celles de la palette validée, plus haut, et ne sont pas touchées.
-
-     Chacun se termine plus sombre qu'il ne commence : le texte blanc
-     passe alors le contraste sur le bas de la tuile, là où se logent
-     le libellé et le détail. */
-  --bulle-1: linear-gradient(150deg, #e0429a 0%, #b32a86 45%, #5b1250 100%);
-  --bulle-2: linear-gradient(150deg, #4f6bf0 0%, #3a3fb8 48%, #1a1a5c 100%);
-  --bulle-3: linear-gradient(150deg, #f0783c 0%, #d84331 46%, #6d1420 100%);
-  --bulle-4: linear-gradient(150deg, #29b6a4 0%, #1a7f8e 48%, #0d2f4a 100%);
-  --bulle-5: linear-gradient(150deg, #9b6bf0 0%, #6c3fd0 46%, #2a1358 100%);
-
-  /* Fonds de cellule signalant la provenance d'une donnée. */
-  --fond-marche: color-mix(in srgb, var(--serie-obligations) 14%, transparent);
-  --fond-source: color-mix(in srgb, var(--serie-actions) 12%, transparent);
-  --fond-estime: color-mix(in srgb, var(--orange) 14%, transparent);
-
-  /* Compatibilité : des styles en ligne, écrits dans js/app.js,
-     référencent encore ces noms. Les conserver évite de devoir
-     réécrire le rendu à chaque évolution de la palette. */
-  --gris-texte: var(--texte);
   --gris-doux:  var(--texte-doux);
   --gris-ligne: var(--ligne);
   --gris-fond:  var(--fond);
   --blanc:      var(--surface);
   --radius:     var(--r-m);
   --ombre:      var(--ombre-1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bleu:        #5c9dff;
-    --bleu-clair:  #7fb4ff;
-    --bleu-pale:   rgba(92, 157, 255, .16);
-    --indigo:      #8b83f0;
-    --or:          #e0ac4e;
-    --vert:        #45c96f;
-    --rouge:       #ff6961;
-    --orange:      #ff9f3f;
-    --violet:      #b490ff;
-
-    --texte:       #f2f4f7;
-    --texte-doux:  #98a2b0;
-    --ligne:       rgba(255, 255, 255, .12);
-    --ligne-forte: rgba(255, 255, 255, .22);
-
-    --fond:        #0b0d12;
-    --surface:     #171a21;
-    --surface-2:   #1f232c;
-    --voile:       rgba(23, 26, 33, .74);
-
-    --ombre-1: 0 1px 2px rgba(0, 0, 0, .4);
-    --ombre-2: 0 4px 16px rgba(0, 0, 0, .45);
-    --ombre-3: 0 12px 32px rgba(0, 0, 0, .55);
-
-    /* Sur fond sombre le verre s'éclaircit au lieu de s'assombrir :
-       c'est de la lumière piégée dans une plaque, pas une teinture. */
-    --verre:       rgba(255, 255, 255, .085);
-    --verre-fort:  rgba(255, 255, 255, .13);
-    --verre-bord:  rgba(255, 255, 255, .16);
-    --verre-ombre: 0 8px 32px rgba(0, 0, 0, .45), 0 1px 2px rgba(0, 0, 0, .3);
-
-    --halo-1: rgba(79, 107, 240, .30);
-    --halo-2: rgba(224, 66, 154, .22);
-    --halo-3: rgba(41, 182, 164, .20);
-
-    /* Mêmes teintes réétagées pour la surface sombre — pas une autre
-       palette, la même repositionnée. Les profils, eux, ne bougent pas. */
-    --serie-actions:       #3987e5;
-    --serie-obligations:   #199e70;
-    --serie-monetaire:     #9085e9;
-    --serie-diversifiants: #c98500;
-
-    --scenario-atterrissage: #199e70;
-    --scenario-recession:    #3987e5;
-    --scenario-stagflation:  #c98500;
-    --scenario-reflation:    #d55181;
-
-    --axe-capacite:     #3987e5;
-    --axe-tolerance:    #c98500;
-    --axe-connaissance: #199e70;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -1676,3 +1501,198 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
    les trois paliers — catalogue, exploitables, retenus — se lisent seuls. */
 .entonnoir-ligne { margin-top: -6px; }
 .entonnoir-retrait td:first-child { padding-left: 18px; color: var(--texte-doux); }
+
+/* ============================================================
+   COMPOSANTS — trait bleu
+   ------------------------------------------------------------
+   Reprises de style posées après tout le reste : elles recouvrent
+   les règles héritées du registre « verre » sans qu'il faille les
+   traquer une à une. Ce qui reste au-dessus finira par tomber
+   de lui-même, vue après vue.
+   ============================================================ */
+
+/* ---------- La page ---------- */
+body { background: var(--fond); }
+.halo { display: none; }
+
+h1, h2, h3, h4 { font-family: var(--police); font-weight: 800; letter-spacing: -.025em; }
+h2 { font-size: 30px; line-height: 1.08; }
+h3 { font-size: 16px; letter-spacing: -.01em; }
+
+/* Le trait bleu sous un mot du titre. Il passe SOUS la ligne de base et
+   s'arrête avant les jambages : un surlignage plein barrerait le mot. */
+.souligne {
+  background: linear-gradient(transparent 62%, var(--bleu) 62%, var(--bleu) 90%, transparent 90%);
+}
+
+/* ---------- Cartes ---------- */
+.carte {
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: var(--r-m);
+  box-shadow: var(--ombre-2);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  padding: 22px 24px;
+}
+.carte:hover { background: var(--surface); }
+.carte.compacte { padding: 14px 18px; border-radius: var(--r-s); }
+
+/* ---------- Indicateurs ----------
+   Le chiffre est l'objet de la carte : 34 px, 800, chasse fixe. Le
+   dégradé et le texte blanc du registre précédent disparaissent. */
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--ligne);
+  border-radius: var(--r-m);
+  box-shadow: none;
+  color: var(--texte);
+  padding: 18px 20px;
+}
+.kpi::after, .kpi::before { display: none; }
+.kpi .valeur, .kpi .val {
+  font-family: var(--police); font-weight: 800; font-size: 34px;
+  letter-spacing: -.03em; line-height: 1.1; color: var(--texte);
+}
+.kpi .libelle {
+  font-size: 11px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--texte-doux);
+}
+.kpi .detail, .kpi .sous { font-size: 12px; color: var(--texte-doux); font-weight: 400; }
+
+/* ---------- Boutons ---------- */
+.bouton {
+  font-family: var(--police); font-weight: 800; font-size: 14px;
+  padding: 11px 20px; border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--bleu); color: #fff;
+  box-shadow: none;
+  transition: filter .12s, transform .08s;
+}
+.bouton:hover { filter: brightness(.94); background: var(--bleu); }
+.bouton:active { transform: translateY(1px); }
+.bouton.secondaire, .bouton.discret {
+  background: var(--surface); color: var(--texte); border-color: var(--ligne);
+}
+.bouton.secondaire:hover, .bouton.discret:hover { background: var(--fond); }
+.bouton.petit { padding: 6px 12px; font-size: 12px; border-radius: var(--r-pilule); }
+
+.lien, .lien-support { color: var(--bleu-encre); }
+.lien-support { text-decoration-color: var(--ligne-forte); font-weight: 600; }
+.lien-support:hover, .lien-support:focus-visible { color: var(--bleu-encre); }
+
+/* ---------- Badges ----------
+   Une seule pastille, bleu pâle. Les variantes de couleur héritées
+   pointent toutes ici : rien ne doit ressortir en vert ni en rouge. */
+.badge {
+  background: var(--bleu-pale); color: var(--bleu-encre);
+  font-weight: 800; font-size: 11px; padding: 3px 9px;
+  border-radius: var(--r-pilule);
+}
+.badge.gris { background: var(--fond); color: var(--texte-doux); border: 1px solid var(--ligne); }
+.badge.vert, .badge.rouge, .badge.orange { background: var(--bleu-pale); color: var(--bleu-encre); }
+
+/* Une performance se lit à son signe et à sa graisse, pas à sa teinte. */
+.positif, .negatif { color: var(--texte); font-weight: 700; }
+
+/* ---------- Tableaux ---------- */
+table { font-size: 14px; }
+th {
+  font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--texte-doux); border-bottom: 1px solid var(--ligne); padding: 0 8px 10px;
+}
+td { padding: 10px 8px; border-bottom: 1px solid var(--ligne); }
+tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* ---------- Messages et états vides ---------- */
+.message {
+  background: var(--surface); border: 1px solid var(--ligne);
+  border-radius: var(--r-m); color: var(--texte);
+}
+.message.info, .message.succes { background: var(--bleu-pale); border-color: transparent; }
+.message.alerte, .message.erreur { background: var(--surface); border-color: var(--bleu); }
+.etat-vide {
+  background: var(--surface); border: 1px dashed var(--ligne);
+  border-radius: var(--r-m);
+}
+.etat-vide-marque { background: var(--bleu-pale); color: var(--bleu-encre); font-weight: 800; }
+
+/* ---------- En-tête et navigation ---------- */
+.entete {
+  background: var(--surface); border-bottom: 1px solid var(--ligne);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.entete .marque strong { font-family: var(--police); font-weight: 800; letter-spacing: -.02em; }
+
+.nav button {
+  font-family: var(--police); font-weight: 600; font-size: 14px;
+  border-radius: 10px; padding: 8px 10px;
+}
+.nav button:hover { background: var(--fond); }
+.nav button.actif { background: var(--bleu-pale); color: var(--texte); font-weight: 800; }
+.nav .bloc-titre {
+  font-size: 11px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--texte-doux);
+}
+/* La pastille d'avancement : pleine quand c'est fait, un anneau sinon. */
+.nav button .num { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ligne-forte); }
+.nav button.complet .num { background: var(--bleu); box-shadow: none; }
+.nav button.encours .num { background: var(--bleu-clair); box-shadow: none; }
+
+.sous-nav, .tabbar {
+  background: var(--surface); border-color: var(--ligne);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.sous-nav button { font-family: var(--police); font-weight: 700; }
+.sous-nav button.actif { background: var(--bleu-pale); color: var(--texte); border-color: transparent; }
+.tabbar { box-shadow: var(--ombre-3); border-radius: 16px; }
+.tabbar button { font-weight: 800; font-size: 12px; color: var(--texte-doux); border-radius: 10px; }
+.tabbar button.actif { background: var(--bleu-pale); color: var(--texte); }
+.tabbar button.actif svg { color: var(--bleu); }
+
+/* ---------- Champs ---------- */
+input, select, textarea {
+  font-family: var(--police);
+  border-radius: 10px; border: 1px solid var(--ligne);
+  background: var(--surface); color: var(--texte);
+}
+label { font-weight: 600; }
+
+/* ---------- Verdict ----------
+   Il portait un dégradé chaud ou froid selon la réponse. Il redevient
+   une carte : c'est le mot qui parle, pas la couleur du fond. */
+.verdict {
+  background: var(--surface); border: 1px solid var(--ligne);
+  border-radius: var(--r-m); box-shadow: var(--ombre-2); color: var(--texte);
+}
+.verdict::after, .verdict::before { display: none; }
+.verdict-titre { font-family: var(--police); font-weight: 800; letter-spacing: -.03em; }
+.verdict.action { border-color: var(--bleu); }
+.verdict.action .verdict-titre { color: var(--bleu-encre); }
+
+/* ---------- Le fil des poches ---------- */
+.fil-item { background: var(--surface); border: 1px solid var(--ligne); border-radius: var(--r-m); }
+.fil-anneau { box-shadow: inset 0 0 0 3px var(--ligne); }
+.fil-nom { font-weight: 700; }
+.fil-var { font-weight: 800; color: var(--texte-doux); }
+
+/* ---------- La feuille de détail ---------- */
+.feuille { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+/* ---------- L'écran d'entrée ---------- */
+.entree-choix {
+  background: var(--surface); border: 1px solid var(--ligne);
+  border-radius: var(--r-m); box-shadow: var(--ombre-2);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.entree-choix:hover { background: var(--fond); border-color: var(--bleu); }
+.entree-choix strong { font-family: var(--police); font-weight: 800; }
+
+/* ---------- Le rapport imprimé ne change pas ----------
+   Encre noire sur papier blanc, sans illustration ni aplat bleu. */
+@media print {
+  .carte, .kpi, .verdict { box-shadow: none !important; border-color: #ccc !important; }
+  .badge { background: transparent !important; color: #000 !important; border: 1px solid #999 !important; }
+  .souligne { background: none !important; }
+  img.illustration { display: none !important; }
+}

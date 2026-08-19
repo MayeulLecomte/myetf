@@ -4,10 +4,9 @@
    La palette, la typographie, les rayons et les ombres. Un seul
    endroit : les composants n'écrivent plus une couleur en dur.
 
-   Chargé APRÈS app.css et le redéfinit. C'est provisoire et
-   assumé le temps du chantier : le bloc `:root` d'app.css et son
-   mode sombre seront retirés à l'étape des composants, et ce
-   fichier passera devant.
+   Chargé AVANT app.css : c'est la base, et les composants s'y
+   réfèrent. Le bloc de jetons d'app.css et son mode sombre ont
+   été retirés — il n'y a plus qu'une seule définition.
 
    PAS DE MODE SOMBRE. La direction donne une palette exacte, et
    une seule. Un mode sombre demanderait une seconde palette que
