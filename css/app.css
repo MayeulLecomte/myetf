@@ -2780,3 +2780,69 @@ table .illustration { display: none !important; }
   .vue > h2:not(:first-child),
   .vue > div[id$="-contenu"] > h2:not(:first-child) { margin-top: 124px; }
 }
+
+/* ============================================================
+   LES ÉTAPES DU DOSSIER — LA LIGNE EST LE BOUTON
+   ------------------------------------------------------------
+   Chaque étape portait le sien, « Ouvrir », posé sous son texte :
+   trois boutons identiques l'un sous l'autre, et 245 px de hauteur
+   par étape — deux étapes par écran de téléphone.
+
+   La ligne entière devient la cible, et le chevron dit qu'elle mène
+   quelque part. Le bouton plein ne demeure que sur la PREMIÈRE étape
+   à faire : c'est la seule qu'on veuille désigner du doigt.
+
+   Au passage, un défaut que ce remaniement supprime par construction :
+   l'écart de la ligne était passé à 16 px alors que la largeur du corps
+   était écrite `calc(100% - 40px)`, calibrée pour 14. La somme dépassait
+   100 %, le texte passait à la ligne suivante, et l'ANNEAU RESTAIT SEUL
+   EN HAUT d'un grand vide. Plus de `flex-basis` : le corps prend ce qui
+   reste, quel que soit l'écart.
+   ============================================================ */
+
+.etape {
+  display: flex; align-items: flex-start; flex-wrap: nowrap;
+  gap: 14px; width: 100%;
+  padding: 20px 6px;
+  text-align: left; font: inherit; color: var(--texte);
+  background: none; border: 0; border-top: 1px solid var(--ligne);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .15s var(--ressort);
+}
+@media (min-width: 821px) { .etape { padding: 24px 10px; } }
+.etape:first-child { border-top: 0; }
+.etape:hover { background: var(--bleu-pale); }
+.etape:active { transform: scale(.995); }
+
+/* Le corps porte le titre, le détail, et le seul bouton qui reste. */
+.etape-corps {
+  flex: 1 1 auto; flex-basis: auto; min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+}
+.etape-corps strong { font-size: 15px; line-height: 1.3; }
+.etape-detail { margin-top: 0; line-height: 1.45; }
+/* Le bouton n'est plus un bouton : c'est la ligne qui l'est. Il n'a donc
+   ni survol propre ni cible tactile à lui — il désigne, il ne reçoit pas. */
+.etape .bouton { margin: 6px 0 0; pointer-events: none; }
+
+/* L'anneau s'aligne sur la PREMIÈRE LIGNE du titre, pas sur le bloc. */
+.etape-marque { flex: none; margin-top: 1px; }
+
+.etape-chevron {
+  flex: none; align-self: center; display: flex;
+  color: var(--ligne-forte);
+}
+.etape-chevron svg {
+  width: 20px; height: 20px; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.etape:hover .etape-chevron { color: var(--bleu); }
+/* Une étape faite reste ouvrable — on y retourne pour corriger —, mais
+   elle ne se signale plus : ni chevron appuyé, ni titre en gras. */
+.etape.faite .etape-chevron { color: var(--ligne); }
+
+@media print {
+  .etape { border-top: 1px solid #ccc; }
+  .etape-chevron, .etape .bouton { display: none !important; }
+}

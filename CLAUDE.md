@@ -599,6 +599,29 @@ porte sur ce qui a servi à se convaincre, pas sur ce qui est remis.
 Si cet état change — un support de plus, un contexte saisi, un nom corrigé —,
 la coche tombe d'elle-même. Une relecture porte sur ce qui a été relu.
 
+## Une étape du dossier est une ligne, et la ligne est le bouton
+
+Chaque étape portait le sien, « Ouvrir », posé sous son texte : trois
+boutons identiques l'un sous l'autre, et 245 px de hauteur par étape — on
+n'en voyait que deux par écran de téléphone.
+
+La **ligne entière** est la cible, et le chevron dit qu'elle mène quelque
+part. Le bouton plein ne demeure que sur la **première étape à faire** :
+c'est la seule qu'on veuille désigner du doigt. Il est en `<span>` et non
+en `<button>` — un bouton dans un bouton n'est pas du HTML —, et
+`pointer-events: none` le laisse traverser jusqu'à la ligne.
+
+Une étape faite reste ouvrable, on y retourne pour corriger ; elle ne se
+signale simplement plus.
+
+**Le défaut que ce remaniement supprime par construction :** l'écart de la
+ligne avait été porté à 16 px alors que la largeur du corps était écrite
+`flex-basis: calc(100% - 40px)`, calibrée pour 14. La somme dépassait
+100 %, le texte passait à la ligne suivante, et **l'anneau restait seul en
+haut d'un grand vide**. Une largeur qui répète l'arithmétique de son
+voisin se désaccorde au premier réglage : le corps prend maintenant ce qui
+reste, quel que soit l'écart.
+
 ## L'ordre du parcours n'a qu'une seule définition
 
 Les treize vues du parcours portent une barre « ← précédent / suivant → » posée
