@@ -161,6 +161,7 @@ const LIBELLES = {
     'vue.arbitrages.nav':       'Mes arbitrages',
     'vue.arbitrages.titre':     'Mes arbitrages',
     'vue.situation.nav':        'Mes placements',
+    'vue.situation.titre':      'Mes placements',
     'vue.journal.nav':          'Mon suivi',
     'vue.journal.titre':        'Mon suivi',
     'vue.rapport.nav':          'Ma synthèse',

@@ -338,6 +338,55 @@ async function lancer() {
   ok(/questionnaire/i.test(texteProfil), 'l\'état vide nomme l\'étape manquante');
   Etat.reponses = vide;
 
+  /* --- Le portefeuille suivi ---
+     Le suivi se remplit tout seul dès qu'une sélection existe, et chaque
+     ligne porte « à investir » jusqu'à confirmation. Deux propriétés doivent
+     tenir, et elles tirent en sens contraire : un dossier PARTI DE ZÉRO
+     reçoit la cible, un dossier où des positions ont été SAISIES À LA MAIN
+     n'en reçoit aucune. Confondre les deux ajouterait treize lignes
+     fantômes au portefeuille réel d'un client. */
+  groupe('Portefeuille suivi');
+  {
+    const sauvegarde = JSON.parse(JSON.stringify(Etat.detention));
+    const amorceInitiale = Etat.suiviAmorce;
+
+    /* Parti de zéro : la cible se pose, et rien n'est réputé acheté. */
+    Etat.detention = [];
+    Etat.suiviAmorce = false;
+    w.afficher('situation');
+    const aInvestir = Etat.detention.filter(l => l.possession === 'a-investir').length;
+    ok(Etat.detention.length > 0 && aInvestir === Etat.detention.length,
+       'sur un dossier vierge, le portefeuille recommandé se pose seul — ' +
+       Etat.detention.length + ' lignes, toutes à investir');
+
+    /* Un relevé daté n'enregistre que ce qui est détenu. */
+    w.figerSituation(w.aujourdhuiISO(), 'manuelle');
+    const fige = Etat.situations.find(x => x.date === w.aujourdhuiISO());
+    ok(fige && fige.lignes.length === 0,
+       'un relevé figé n\'enregistre aucune ligne encore à investir' +
+       (fige ? ' — ' + fige.lignes.length + ' ligne(s) figée(s)' : ''));
+    Etat.situations = Etat.situations.filter(x => x.date !== w.aujourdhuiISO());
+
+    /* Format d'avant : aucune ligne ne porte de possession, aucun drapeau.
+       Le suivi doit rester exactement ce qu'il était. */
+    Etat.detention = [
+      { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World', montant: 120000, pvLatente: 20000 },
+      { isin: 'LU0290358497', libelle: 'Xtrackers Overnight', montant: 30000, pvLatente: 0 }
+    ];
+    Etat.suiviAmorce = false;
+    let leveAncien = null;
+    try { ['accueil', 'portefeuille', 'arbitrages', 'situation', 'rapport'].forEach(v => w.afficher(v)); }
+    catch (e) { leveAncien = e.message; }
+    ok(!leveAncien && Etat.detention.length === 2 && Etat.suiviAmorce === false,
+       'un dossier au format d\'avant garde ses lignes et n\'en reçoit aucune — ' +
+       (leveAncien || Etat.detention.length + ' ligne(s), amorce ' + Etat.suiviAmorce));
+    ok(Etat.detention.every(l => w.possessionDe(l) === 'detenu'),
+       'une ligne sans mention de possession est lue « détenue »');
+
+    Etat.detention = sauvegarde;
+    Etat.suiviAmorce = amorceInitiale;
+  }
+
   /* --- Les textes d'aide ne sont pas écrasés ---
      Une pastille d'infobulle a un jour pris le nom de classe des textes
      d'aide. Les règles de ces textes ne fixant ni `display` ni dimensions,

@@ -66,7 +66,14 @@ const MoteurSituation = (function () {
         poche: ref ? ref.poche : (l.poche || null),
         classe: ref ? ref.classe : (l.classe || null),
         quantite,
-        pvLatente: Number(l.pvLatente) || 0
+        pvLatente: Number(l.pvLatente) || 0,
+        /* Détenu, ou seulement recommandé et pas encore acheté. Une ligne
+           d'un dossier antérieur n'en porte pas : elle a été saisie à la
+           main, elle décrit donc une position réelle.
+
+           À ne pas confondre avec `statut`, posé plus bas, qui dit d'où
+           vient le COURS de la ligne. Deux notions, deux noms. */
+        possession: l.possession === 'a-investir' ? 'a-investir' : 'detenu'
       };
 
       if (quantite <= 0) {

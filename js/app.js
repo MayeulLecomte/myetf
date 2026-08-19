@@ -41,6 +41,13 @@ const Etat = {
      avant impression, l'état exact qui a été relu — pas un simple oui. */
   rapport: { annexeMethode: true, controles: {} },
   filtreUnivers: { classe: '', enveloppe: '', texte: '' },
+  /* Le suivi a-t-il été amorcé sur l'allocation cible ? Ce drapeau sépare
+     deux histoires que rien d'autre ne distingue : un dossier parti de zéro,
+     dont le portefeuille suivi DESCEND de la cible et doit la suivre quand
+     elle bouge ; et un dossier où quelqu'un a saisi des positions réelles à
+     la main, auquel on n'a rien à ajouter. Absent d'un dossier antérieur,
+     donc faux : aucune ligne n'y sera jamais poussée sans qu'on le demande. */
+  suiviAmorce: false,
   /* Le mode de lecture — « conseiller » ou « particulier ». `null` signifie
      « pas encore choisi » et fait paraître l'écran d'entrée ; un dossier
      enregistré avant ce champ s'ouvre donc en conseiller, par le repli de
@@ -133,6 +140,7 @@ function sauver(silencieux) {
       revenus: Etat.revenus, backtest: Etat.backtest, historique: Etat.historique,
       situations: Etat.situations, situationDate: Etat.situationDate,
       avisTactiqueLu: Etat.avisTactiqueLu, rapport: Etat.rapport, mode: Etat.mode,
+      suiviAmorce: Etat.suiviAmorce,
       dernierAcces: Etat.dernierAcces
     }));
     if (!silencieux) notifier('Dossier enregistré dans ce navigateur.');
@@ -538,7 +546,14 @@ function rendreNavMobile(vue) {
   if (actif) actif.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
 }
 
+/* Les vues qui montrent le portefeuille suivi, et donc celles où il doit
+   être à jour. Ailleurs, y toucher serait une écriture d'état déclenchée par
+   un simple affichage — et la sélection coûte un parcours de deux mille
+   supports qu'il est inutile de refaire pour rendre le journal. */
+const VUES_SUIVI = ['accueil', 'portefeuille', 'arbitrages', 'situation', 'rapport'];
+
 function rendre(vue) {
+  if (VUES_SUIVI.indexOf(vue) >= 0 && synchroniserSuivi()) sauver(true);
   switch (vue) {
     case 'accueil':       rendreAccueil(); break;
     case 'client':        rendreIdentite(); break;
@@ -1016,21 +1031,36 @@ function rendreAccueil() {
   const derniere = Etat.journal.length
     ? Etat.journal.map(j => j.date).sort().slice(-1)[0] : null;
   const rien = analyse.aucunMouvement;
+  const aInvestir = lignesAInvestir();
 
   c.innerHTML =
     accroche() +
     filPoches() +
     '<h2>Aujourd\'hui</h2>' +
 
-    '<div class="verdict ' + (rien ? 'calme' : 'action') + '">' +
-      '<div class="verdict-titre">' + (rien ? 'Rien à faire' : analyse.ordres.length + ' mouvement' +
-        (analyse.ordres.length > 1 ? 's' : '') + ' à passer') + '</div>' +
-      '<p class="verdict-texte">' + (rien
-        ? 'Chaque ligne reste dans sa bande de tolérance : aucun écart n\'atteint le seuil de déclenchement de ' +
-          euro(analyse.seuilMontant) + '. Laisser le portefeuille en l\'état est la décision par défaut.'
-        : 'Écart le plus fort : ' + pct(derive) + ' de l\'encours. Rotation ' + pct(analyse.rotation) +
-          ', fiscalité estimée ' + euro(analyse.fiscalite.impotEstime) + '.') + '</p>' +
-    '</div>' +
+    /* Tant que des achats n'ont pas été passés, ils passent avant le verdict
+       d'arbitrage : dire « rien à faire » à quelqu'un qui n'a rien acheté
+       serait faux, et l'arbitrage ne mesure une dérive que sur un
+       portefeuille constitué. */
+    (aInvestir.length
+      ? '<div class="verdict action">' +
+          '<div class="verdict-titre">' + aInvestir.length + ' ligne' +
+            (aInvestir.length > 1 ? 's à investir' : ' à investir') + '</div>' +
+          '<p class="verdict-texte">Le portefeuille recommandé vous attend dans « ' +
+            echapper(T('vue.situation.nav')) + ' », pour ' +
+            euro(aInvestir.reduce((a, l) => a + (Number(l.montant) || 0), 0)) +
+            '. Confirmez chaque achat une fois passé.</p>' +
+          '<div class="barre-actions"><button class="bouton" data-aller="situation">Ouvrir le suivi</button></div>' +
+        '</div>'
+      : '<div class="verdict ' + (rien ? 'calme' : 'action') + '">' +
+        '<div class="verdict-titre">' + (rien ? 'Rien à faire' : analyse.ordres.length + ' mouvement' +
+          (analyse.ordres.length > 1 ? 's' : '') + ' à passer') + '</div>' +
+        '<p class="verdict-texte">' + (rien
+          ? 'Chaque ligne reste dans sa bande de tolérance : aucun écart n\'atteint le seuil de déclenchement de ' +
+            euro(analyse.seuilMontant) + '. Laisser le portefeuille en l\'état est la décision par défaut.'
+          : 'Écart le plus fort : ' + pct(derive) + ' de l\'encours. Rotation ' + pct(analyse.rotation) +
+            ', fiscalité estimée ' + euro(analyse.fiscalite.impotEstime) + '.') + '</p>' +
+      '</div>') +
 
     '<div class="grille quatre">' +
       kpi(euro(analyse.total), 'Encours', r.profil.nom) +
@@ -1953,13 +1983,93 @@ function debutHistorique() {
     ? COURS_HISTORIQUE.dates[0] : null;
 }
 
+/* ------------------------------------------------------------
+   LE PORTEFEUILLE SUIVI
+   ------------------------------------------------------------
+   Une ligne du suivi est soit DÉTENUE, soit À INVESTIR — proposée
+   par la sélection, pas encore achetée. Une ligne d'un dossier
+   antérieur ne porte pas la mention : elle a été saisie à la main,
+   elle décrit une position réelle, elle est donc détenue.
+   ------------------------------------------------------------ */
+function possessionDe(ligne) {
+  return ligne && ligne.possession === 'a-investir' ? 'a-investir' : 'detenu';
+}
+function lignesDetenues()   { return Etat.detention.filter(l => possessionDe(l) === 'detenu'); }
+function lignesAInvestir()  { return Etat.detention.filter(l => possessionDe(l) === 'a-investir'); }
+
+/* ------------------------------------------------------------
+   LA SYNCHRONISATION DU SUIVI SUR LA CIBLE
+   ------------------------------------------------------------
+   Dès qu'une sélection existe, le portefeuille recommandé se pose
+   dans le suivi — sans bouton, sans passer par les arbitrages.
+
+   Quatre cas, et le quatrième est le seul dangereux :
+
+     détenu, toujours dans la cible ...... reste, inchangé
+     nouveau dans la cible ............... arrive « à investir »
+     à investir, sorti de la cible ....... disparaît, rien n'a été acheté
+     DÉTENU, SORTI DE LA CIBLE ........... RESTE, et l'arbitrage
+                                           proposera de le céder
+
+   Faire disparaître du suivi une ligne réellement détenue parce que
+   le moteur ne la retient plus effacerait une position réelle de
+   l'écran. Elle reste.
+
+   L'amorçage n'a lieu que sur un suivi VIDE. Un dossier où des
+   positions ont été saisies à la main ne reçoit jamais de lignes :
+   pour lui, la cible est un objet de comparaison, pas un contenu.
+   Il peut la demander explicitement, depuis le suivi.
+   ------------------------------------------------------------ */
+function synchroniserSuivi() {
+  const sel = selectionCourante();
+  if (!sel || !sel.lignes.length) return false;
+  if (!Etat.suiviAmorce && Etat.detention.length) return false;
+  if (!Etat.suiviAmorce && !Etat.detention.length) Etat.suiviAmorce = true;
+
+  const avant = JSON.stringify(Etat.detention);
+  const cible = {};
+  sel.lignes.forEach(l => { cible[l.etf.isin] = l; });
+
+  const gardees = Etat.detention.filter(l =>
+    possessionDe(l) === 'detenu' || cible[l.isin]);
+
+  /* Une ligne pas encore achetée suit la cible : son montant est une
+     recommandation, pas un fait. Une ligne détenue, elle, ne bouge pas. */
+  gardees.forEach(l => {
+    if (possessionDe(l) !== 'a-investir' || !cible[l.isin]) return;
+    const c = cible[l.isin];
+    const cot = cotation(l.isin);
+    l.libelle = c.etf.nom;
+    l.montant = c.montant;
+    l.quantite = cot ? Math.round(c.montant / cot.cours) : undefined;
+  });
+
+  const presents = {};
+  gardees.forEach(l => { presents[l.isin] = true; });
+  sel.lignes.forEach(c => {
+    if (presents[c.etf.isin]) return;
+    const cot = cotation(c.etf.isin);
+    gardees.push({
+      isin: c.etf.isin, libelle: c.etf.nom, montant: c.montant, pvLatente: 0,
+      quantite: cot ? Math.round(c.montant / cot.cours) : undefined,
+      possession: 'a-investir'
+    });
+  });
+
+  Etat.detention = gardees;
+  return JSON.stringify(Etat.detention) !== avant;
+}
+
 function situationCourante(dateISO) {
   return MoteurSituation.valoriser(Etat.detention, dateISO, { univers: Etat.univers });
 }
 
 /** Enregistre le relevé du jour demandé. */
 function figerSituation(dateISO, origine) {
-  const s = situationCourante(dateISO);
+  /* Un relevé daté enregistre ce qui est DÉTENU. Y figer une ligne encore
+     à investir lui prêterait une existence qu'elle n'a pas, et ce relevé
+     est ensuite lu comme un fait. */
+  const s = MoteurSituation.valoriser(lignesDetenues(), dateISO, { univers: Etat.univers });
   Etat.situations = Etat.situations.filter(x => x.date !== dateISO);
   Etat.situations.push({
     date: dateISO,
@@ -2005,10 +2115,18 @@ const LIBELLES_STATUT = {
   absent:    { texte: 'sans cours', classe: 'rouge' }
 };
 
-function tableauSituation(s) {
+/* `actions` n'est vrai que sur le relevé vivant : un relevé figé est un
+   constat passé, on n'y confirme plus rien. */
+function tableauSituation(s, actions) {
+  const cible = new Set(); /* les ISIN encore proposés par la sélection */
+  if (actions) {
+    const sel = selectionCourante();
+    if (sel) sel.lignes.forEach(l => cible.add(l.etf.isin));
+  }
   return '<div class="tableau-defilant"><table><thead><tr>' +
     '<th>Support</th><th>ISIN</th><th class="num">Quantité</th><th class="num">Cours</th>' +
     '<th>Cours du</th><th class="num">Valorisation</th><th class="num">Poids</th>' +
+    (actions ? '<th>Suivi</th>' : '') +
     '</tr></thead><tbody>' +
     s.lignes.map(l => {
       let st = LIBELLES_STATUT[l.statut] || LIBELLES_STATUT.seance;
@@ -2027,10 +2145,27 @@ function tableauSituation(s) {
         '<td class="num">' + (l.cours ? l.cours.toFixed(2).replace('.', ',') + ' €' : '—') + '</td>' +
         '<td style="font-size:12px;color:var(--gris-doux)">' + (l.dateCours ? dateFr(l.dateCours) : '—') + '</td>' +
         '<td class="num">' + euro(l.montant) + '</td>' +
-        '<td class="num">' + pct(l.poids) + '</td></tr>';
+        '<td class="num">' + pct(l.poids) + '</td>' +
+        (actions ? '<td>' + celluleSuivi(l, cible) + '</td>' : '') +
+        '</tr>';
     }).join('') +
     '</tbody><tfoot><tr><td colspan="5">Total</td>' +
-    '<td class="num">' + euro(s.total) + '</td><td class="num">100,0 %</td></tr></tfoot></table></div>';
+    '<td class="num">' + euro(s.total) + '</td><td class="num">100,0 %</td>' +
+    (actions ? '<td></td>' : '') + '</tr></tfoot></table></div>';
+}
+
+/* Trois états possibles pour une ligne du suivi vivant. « Hors cible » n'est
+   pas une alerte : c'est une position réelle que la sélection ne retient
+   plus, et c'est l'arbitrage qui dira quoi en faire. */
+function celluleSuivi(l, cible) {
+  if (l.possession === 'a-investir') {
+    return '<button class="bouton petit" data-confirmer="' + echapper(l.isin) + '">Confirmer l\'achat</button>';
+  }
+  if (!cible.has(l.isin)) {
+    return '<span class="badge orange" title="Détenu, mais la sélection ne le retient plus. ' +
+      'Les arbitrages proposeront de le céder.">hors cible</span>';
+  }
+  return '<span class="badge vert">détenu</span>';
 }
 
 function repartitionSituation(s) {
@@ -2060,8 +2195,20 @@ function rendreSituation() {
   const debut = debutHistorique();
   const arretes = MoteurSituation.datesReference(aujourd, debut, 4);
   const enQuantites = Etat.detention.filter(l => Number(l.quantite) > 0).length;
+  const aInvestir = lignesAInvestir();
+  const montantAInvestir = aInvestir.reduce((a, l) => a + (Number(l.montant) || 0), 0);
 
   c.innerHTML =
+    /* Le portefeuille arrive ici dès que la sélection existe. Tant que rien
+       n'est confirmé, le total affiché n'est pas une valeur détenue : il faut
+       le dire au-dessus du tableau, pas en note de bas de page. */
+    (aInvestir.length
+      ? '<div class="message info"><strong>' + aInvestir.length + ' ligne' +
+        (aInvestir.length > 1 ? 's restent' : ' reste') + ' à investir</strong>, pour ' +
+        euro(montantAInvestir) + '. Elles figurent ci-dessous au montant de l\'allocation cible : ' +
+        'ce sont des recommandations, pas des positions. Confirmez chaque achat une fois passé — ' +
+        'les arbitrages ne se déclencheront qu\'ensuite, sur la dérive.</div>'
+      : '') +
     /* --- Choix de la date --- */
     '<div class="carte"><div class="filtres">' +
       '<div class="champ"><label for="situation-date">Situation au</label>' +
@@ -2092,25 +2239,41 @@ function rendreSituation() {
         (s.alertes.horsPeriode ? '<li>' + s.alertes.horsPeriode + ' ligne(s) valorisée(s) au dernier cours connu, ' +
           'postérieur à la date demandée : ces supports ne sont pas cotés sur Euronext et n\'ont pas d\'historique.</li>' : '') +
         (s.alertes.sansCours ? '<li>' + s.alertes.sansCours + ' ligne(s) sans aucun cours : le montant saisi est repris tel quel.</li>' : '') +
-        (s.alertes.enMontant ? '<li>' + s.alertes.enMontant + ' ligne(s) saisie(s) en montant et non en quantité : ' +
-          'leur valeur ne suit pas les cours. Saisissez la quantité dans « Arbitrages » pour qu\'elles se revalorisent.</li>' : '') +
+        /* Une ligne encore à investir n'a pas été « saisie en montant » : elle
+           porte le montant de l'allocation cible, faute de cours connu pour
+           son ISIN. Envoyer l'utilisateur saisir une quantité pour un support
+           qu'il n'a pas acheté n'a aucun sens — on dit ce qui est. */
+        (s.alertes.enMontant ? '<li>' + s.alertes.enMontant + ' ligne(s) sans quantité : leur valeur ne suit ' +
+          'pas les cours. ' + (aInvestir.length
+            ? 'Pour les lignes encore à investir, c\'est le montant de l\'allocation cible qui est repris ; '
+              + 'la quantité se saisit une fois l\'achat passé.'
+            : 'Saisissez la quantité dans « ' + echapper(T('vue.arbitrages.nav')) +
+              ' » pour qu\'elles se revalorisent.') + '</li>' : '') +
         '</ul></div>' : '') +
 
     '<div class="grille quatre">' +
       kpi(euro(s.total), 'Valeur du portefeuille', dateFr(date)) +
-      kpi(String(s.lignes.length), 'Lignes détenues', enQuantites + ' suivie(s) en quantités') +
+      kpi(String(s.lignes.length - aInvestir.length), 'Lignes détenues',
+        aInvestir.length ? aInvestir.length + ' encore à investir'
+                         : enQuantites + ' suivie(s) en quantités') +
       kpi(euro(s.pvLatente), 'Plus-value latente', 'saisie dans le portefeuille') +
       kpi(s.fiable ? 'Complète' : 'Partielle', 'Couverture des cours',
         s.fiable ? 'toutes les lignes valorisées à la date'
                  : (s.alertes.horsPeriode + s.alertes.sansCours) + ' ligne(s) sans cours de la période') +
     '</div>' +
 
-    '<div class="carte"><h3>Détail des positions</h3>' + tableauSituation(s) +
+    '<div class="carte"><h3>Détail des positions</h3>' + tableauSituation(s, !figee) +
       '<div class="barre-actions">' +
+        (aInvestir.length
+          ? '<button class="bouton" id="btn-tout-confirmer">Confirmer les ' + aInvestir.length +
+            ' achat' + (aInvestir.length > 1 ? 's' : '') + '</button>'
+          : '') +
         (figee
           ? '<button class="bouton secondaire" data-degeler="' + date + '">Supprimer ce relevé figé</button>'
-          : '<button class="bouton" data-figer="' + date + '">Figer cette situation</button>') +
+          : '<button class="bouton' + (aInvestir.length ? ' secondaire' : '') +
+            '" data-figer="' + date + '">Figer cette situation</button>') +
         '<button class="bouton secondaire" id="btn-imprimer-situation">Imprimer / enregistrer en PDF</button>' +
+        '<button class="bouton secondaire" id="btn-reinit-suivi">Réinitialiser le suivi sur l\'allocation cible</button>' +
       '</div>' +
       '<p class="intro" style="font-size:11px;margin-top:6px">Figer un relevé l\'enregistre dans ce navigateur ' +
       'avec ses quantités et ses cours : il ne bougera plus, même si le portefeuille change ensuite. ' +
@@ -3755,12 +3918,56 @@ function brancher() {
       notifier('Situation au ' + dateFr(d) + ' figée.');
       return;
     }
+    /* Confirmer un achat ne change QUE la possession. Le montant et la
+       quantité restent ceux de la recommandation : c'est ce qui a été passé.
+       La plus-value latente part de zéro, l'achat vient d'avoir lieu. */
+    const conf = e.target.closest('[data-confirmer]');
+    if (conf) {
+      const ligne = Etat.detention.find(l => l.isin === conf.dataset.confirmer);
+      if (ligne) {
+        ligne.possession = 'detenu';
+        sauver(true); rendreSituation();
+        notifier('Achat confirmé : ' + ligne.libelle + '.', 'succes');
+      }
+      return;
+    }
+
     const degeler = e.target.closest('[data-degeler]');
     if (degeler) {
       const d = degeler.dataset.degeler;
       Etat.situations = Etat.situations.filter(s => s.date !== d);
       sauver(true); rendreSituation();
       notifier('Relevé du ' + dateFr(d) + ' supprimé.', 'info');
+      return;
+    }
+
+    if (e.target.closest('#btn-tout-confirmer')) {
+      const n = lignesAInvestir().length;
+      Etat.detention.forEach(l => { if (possessionDe(l) === 'a-investir') l.possession = 'detenu'; });
+      sauver(true); rendreSituation();
+      notifier(n + ' achat' + (n > 1 ? 's confirmés' : ' confirmé') + '.', 'succes');
+      return;
+    }
+
+    /* La confirmation nomme ce qui va être écrasé. « Êtes-vous sûr ? » ne dit
+       rien ; « 8 lignes détenues seront remplacées » se lit et se refuse. */
+    if (e.target.closest('#btn-reinit-suivi')) {
+      const sel = selectionCourante();
+      if (!sel || !sel.lignes.length) {
+        notifier('Aucune allocation cible : complétez le questionnaire.', 'alerte'); return;
+      }
+      const detenues = lignesDetenues().length;
+      const avertissement = detenues
+        ? detenues + ' ligne' + (detenues > 1 ? 's détenues seront remplacées' : ' détenue sera remplacée') +
+          ' par les ' + sel.lignes.length + ' supports de l\'allocation cible, à investir. ' +
+          'Les quantités et plus-values latentes saisies seront perdues.'
+        : 'Le suivi sera reconstruit sur les ' + sel.lignes.length + ' supports de l\'allocation cible.';
+      if (!confirm('Réinitialiser le suivi ?\n\n' + avertissement)) return;
+      Etat.detention = [];
+      Etat.suiviAmorce = true;
+      synchroniserSuivi();
+      sauver(true); rendreSituation();
+      notifier('Suivi réinitialisé sur l\'allocation cible.', 'info');
       return;
     }
 
@@ -4028,20 +4235,6 @@ function brancher() {
     sauver(true); rendre('arbitrages');
     notifier(r.lignes + ' ligne(s) revalorisée(s)' +
       (r.sansCours.length ? ' · sans cours : ' + r.sansCours.join(', ') : '') + '.');
-  };
-
-  $('#btn-charger-cible').onclick = () => {
-    const sel = selectionCourante();
-    if (!sel) { notifier('Complétez d\'abord le questionnaire.', 'alerte'); return; }
-    Etat.detention = sel.lignes.map(l => {
-      const c = cotation(l.etf.isin);
-      return {
-        isin: l.etf.isin, libelle: l.etf.nom, montant: l.montant, pvLatente: 0,
-        quantite: c ? Math.round(l.montant / c.cours) : undefined
-      };
-    });
-    revaloriser();
-    sauver(true); rendre('arbitrages'); notifier('Détention initialisée sur l\'allocation cible.');
   };
 
   $('#btn-rapprocher').onclick = () => {

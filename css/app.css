@@ -1627,3 +1627,11 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
     font-size: 10.5px; color: #000 !important;
   }
 }
+
+/* ---------- Le suivi : confirmer un achat ----------
+   Un bouton par ligne de tableau, donc plus petit que les autres : il
+   doit tenir dans une cellule sans en imposer la hauteur. */
+.bouton.petit {
+  padding: 5px 11px; font-size: 12px; min-height: 0; border-radius: var(--r-pilule);
+  white-space: nowrap;
+}
