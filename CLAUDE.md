@@ -202,8 +202,12 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`8a87e0fb` · 1 303 613 octets · 68 empreintes**, relevée avec
-`test/empreinte.html` au terme du chantier 9.
+**`3491397b` · 1 303 613 octets · 68 empreintes**, relevée avec
+`test/empreinte.html` après l'agrandissement des dessins. Elle valait
+`8a87e0fb` au terme du chantier 9, **pour le même nombre d'octets** : passer de
+30 à 38, de 140/150/160 à 180 change des chiffres sans en ajouter un seul. Un
+total inchangé et une empreinte différente, c'est exactement la signature d'une
+substitution — rien n'a été ajouté ni retiré au balisage.
 
 Elle contient des dates du jour : elle **se relève avant, se compare après**, le
 même jour et sur le même catalogue. Ce n'est pas un fichier à versionner.
