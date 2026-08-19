@@ -1,0 +1,136 @@
+name: Mise à jour du catalogue ETF
+
+# Régénère js/data/catalogue-etf.js depuis le screener Morningstar.
+#
+# Pourquoi mensuel, et pas quotidien : le catalogue est un annuaire. Sa
+# composition bouge lentement — quelques créations et fermetures par mois —
+# et une requête complète coûte une vingtaine d'appels à une API tierce
+# qu'on ne veut pas solliciter tous les jours. Les cours, eux, sont relevés
+# chaque jour par le workflow voisin, chez Euronext.
+#
+# Ce que le catalogue porte et qui vieillit : les notations Morningstar
+# (recalculées chaque mois), les performances 12 mois et depuis janvier, et
+# la dernière clôture de chaque support. Cette dernière sert de valorisation
+# de repli, mais SEULEMENT si elle a moins de 45 jours — c'est ce seuil qui
+# fixe la cadence : au-delà d'un mois sans relevé, le repli cesse de
+# fonctionner et les lignes concernées retombent sur leur montant saisi.
+#
+# ⚠ GitHub désactive les tâches planifiées d'un dépôt public après 60 jours
+# sans activité. Le workflow des cours commite presque tous les jours et
+# entretient le compteur pour les deux.
+
+on:
+  schedule:
+    # 05h20 UTC le 1er de chaque mois. Volontairement AVANT le relevé des
+    # cours de 06h10 : si les deux tombent le même jour, celui-ci a fini et
+    # poussé quand l'autre démarre, et aucun ne rebase l'autre à chaud.
+    - cron: '20 5 1 * *'
+  workflow_dispatch:        # déclenchement manuel depuis l'onglet Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: catalogue
+  cancel-in-progress: false
+
+jobs:
+  catalogue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Le compte d'avant, relevé sur le fichier versionné : il sert de
+      # référence au garde-fou plus bas.
+      - name: Compter le catalogue en place
+        id: avant
+        run: |
+          node -e "
+            const vm=require('vm'),fs=require('fs');
+            const ctx=vm.createContext({});
+            vm.runInContext(fs.readFileSync('js/data/catalogue-etf.js','utf8'),ctx);
+            console.log(vm.runInContext('CATALOGUE_ETF.lignes.length',ctx));
+          " > /tmp/avant.txt
+          echo "lignes=$(cat /tmp/avant.txt)" >> "$GITHUB_OUTPUT"
+          echo "Catalogue en place : $(cat /tmp/avant.txt) supports"
+
+      - name: Régénérer le catalogue
+        run: node scripts/catalogue.mjs | tee /tmp/rapport.txt
+
+      # GARDE-FOU. Ce workflow écrase sans surveillance un fichier de 700 Ko
+      # dont dépend toute la sélection. Si Morningstar change son API, limite
+      # le débit ou répond à moitié, le script produit un catalogue tronqué
+      # sans lever d'erreur — et l'application se retrouverait à choisir
+      # parmi trois cents supports au lieu de quatre mille cinq cents.
+      # En dessous de 90 % du compte précédent, on ne publie pas.
+      - name: Refuser un catalogue tronqué
+        run: |
+          APRES=$(node -e "
+            const vm=require('vm'),fs=require('fs');
+            const ctx=vm.createContext({});
+            vm.runInContext(fs.readFileSync('js/data/catalogue-etf.js','utf8'),ctx);
+            console.log(vm.runInContext('CATALOGUE_ETF.lignes.length',ctx));
+          ")
+          AVANT=${{ steps.avant.outputs.lignes }}
+          SEUIL=$(( AVANT * 90 / 100 ))
+          echo "avant $AVANT · après $APRES · seuil $SEUIL"
+          if [ "$APRES" -lt "$SEUIL" ]; then
+            echo "::error::Catalogue tronqué : $APRES supports contre $AVANT attendus (seuil $SEUIL). Rien n'est publié."
+            git checkout -- js/data/catalogue-etf.js
+            exit 1
+          fi
+
+      # Le harnais moteur contrôle déjà le catalogue : ISIN bien formés,
+      # index résolus, poches existantes, aucun produit à levier, univers de
+      # travail retrouvé, entonnoir qui s'additionne. Un catalogue qui ne
+      # passe pas ces contrôles n'a rien à faire en production.
+      - name: Passer le harnais moteur
+        run: node test/runner.js
+
+      - name: Versionner les ressources si le catalogue a changé
+        run: |
+          if [ -n "$(git status --porcelain js/data/catalogue-etf.js)" ]; then
+            python3 - <<'PY'
+          import re, datetime, pathlib
+          p = pathlib.Path('index.html')
+          v = datetime.datetime.now().strftime('%Y%m%d%H%M')
+          p.write_text(re.sub(r'\?v=\d+', f'?v={v}', p.read_text()))
+          print('version', v)
+          PY
+            node scripts/version.mjs
+          fi
+
+      - name: Publier
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Catalogue identique — rien à publier."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Catalogue ETF du $(date -u +%Y-%m-%d)
+
+          $(grep -E 'supports retenus|rattachés à une poche|cotés sur Euronext|perf 12 mois|clôture' /tmp/rapport.txt || true)"
+          # Le relevé des cours écrit dans le même dépôt. Il ne tombe pas à la
+          # même heure, mais un déclenchement manuel peut se croiser : on se
+          # replace sur la pointe plutôt que d'échouer sur un push non
+          # « fast-forward ».
+          git pull --rebase origin main
+          git push
+
+      - name: Résumé
+        if: always()
+        run: |
+          {
+            echo '## Catalogue ETF'
+            echo '```'
+            cat /tmp/rapport.txt || echo 'Aucun rapport produit.'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
