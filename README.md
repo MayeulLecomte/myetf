@@ -152,17 +152,17 @@ poisseuse.
 
 ## Méthode & limites
 
-Une vue dédiée, dans le registre secondaire, en cinq sections : d'où viennent
+Une vue dédiée, dans le registre secondaire, en six sections : d'où viennent
 les allocations stratégiques, comment sont calculées les déviations tactiques,
-ce que le backtest mesure et ne mesure pas, où sont stockées les données, et ce
-que l'outil ne fait pas. Elle est écrite **pour le conseiller** : elle dit que
+**sur quels ETF l'outil choisit**, ce que le backtest mesure et ne mesure pas,
+où sont stockées les données, et ce que l'outil ne fait pas. Elle est écrite **pour le conseiller** : elle dit que
 les pondérations sont calibrées à la main, que la majorité des séries du
 backtest sont estimées — la part exacte est calculée en direct sur le profil
 courant, jamais écrite en dur —, et qu'un dossier non exporté est perdu avec
 son navigateur.
 
 Le rapport client reçoit une **annexe « Méthode »** d'une demi-page, tirée des
-seules sections 1, 2 et 5 : d'où vient l'allocation, ce qu'est une déviation
+seules sections 1, 2 et 6 : d'où vient l'allocation, ce qu'est une déviation
 tactique et quand elle s'applique, ce que l'outil ne fait pas. Ni le détail du
 backtest, ni le stockage — ce sont des sujets d'outil, pas de conseil.
 L'annexe se décoche avant impression.
@@ -731,6 +731,33 @@ cible ; le produit des ventes et l'apport éventuel sont ensuite répartis au
 prorata des déficits. En compte-titres, la plus-value latente saisie par ligne
 permet de chiffrer l'impôt (PFU 30 %) — en assurance-vie et en PEA, les
 arbitrages internes ne déclenchent aucune imposition.
+
+## Sur quels ETF l'outil choisit
+
+La sélection ne parcourt pas tout le catalogue européen, et c'est la question
+qu'un testeur a posée en premier — il croyait l'outil choisir parmi les
+quatre mille cinq cents.
+
+| Étape | Supports | Ce qu'elle écarte |
+|---|---:|---|
+| Catalogue européen | 4 530 | levier, inverses et actifs numériques déjà exclus |
+| − sans poche du modèle | 1 929 | catégorie ne correspondant à aucune des 19 poches |
+| − sans frais publiés | 445 | conseiller un fonds dont on ignore les frais n'est pas conseiller |
+| − sans encours publié | 69 | taille inconnue, donc liquidité inconnue |
+| **Exploitables** | **2 087** | ce qui porte poche, frais et encours |
+| + univers de travail | 2 094 | les 42 supports relevés à la main s'y ajoutent |
+| − les trois filtres | 866 | 3 étoiles, 500 M€, 0,60 % de frais — **modifiables** |
+| **Retenus pour un dossier** | **~14** | un support par poche, au meilleur score |
+
+**Ces chiffres ne sont écrits nulle part dans le code.** Ils sont calculés par
+`MoteurUnivers.entonnoir()`, que lisent à la fois la ligne en tête de l'onglet
+Univers et le tableau de « Méthode & limites » — deux comptes séparés
+finiraient par se contredire. Le harnais vérifie que la somme tombe juste.
+
+**Deux ensembles à ne pas confondre.** Le **catalogue** est un annuaire de
+recherche : rien n'y est vérifié, et c'est la source de la sélection
+automatique. L'**univers de travail** est la liste courte tenue à la main,
+seule à porter le référencement au contrat.
 
 ## Univers ETF — à vérifier avant toute utilisation en clientèle
 

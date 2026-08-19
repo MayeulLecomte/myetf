@@ -1671,3 +1671,8 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
    réserve sur le chiffre au-dessus. Elle s'imprime — le rapport la porte
    aussi, et pour la même raison. */
 .origine-cours { margin: -6px 0 16px; font-size: 12px; }
+
+/* L'entonnoir de sélection : les lignes de retrait sont en creux, pour que
+   les trois paliers — catalogue, exploitables, retenus — se lisent seuls. */
+.entonnoir-ligne { margin-top: -6px; }
+.entonnoir-retrait td:first-child { padding-left: 18px; color: var(--texte-doux); }

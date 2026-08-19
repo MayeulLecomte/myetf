@@ -131,5 +131,46 @@ const MoteurUnivers = (function () {
     return c;
   }
 
-  return { depuisCatalogue, ecartes };
+  /* ----------------------------------------------------------
+     L'ENTONNOIR DE SÉLECTION
+     ----------------------------------------------------------
+     Quatre mille cinq cents ETF au catalogue, et le moteur en
+     retient une douzaine. Entre les deux, quatre resserrements
+     que personne ne voyait — un testeur croyait l'outil choisir
+     parmi tout le catalogue européen.
+
+     Les chiffres sont calculés ici, en un seul endroit, pour que
+     la ligne de l'onglet Univers et le tableau de « Méthode &
+     limites » ne puissent pas raconter deux histoires.
+     ---------------------------------------------------------- */
+  function entonnoir(catalogue, univers, filtres) {
+    const e = ecartes(catalogue);
+    const brut = e.sansPoche + e.sansFrais + e.sansEncours + e.retenus;
+
+    /* L'univers de travail complète le catalogue : ses supports sont relevés
+       à la main, et quelques-uns n'y figurent pas. */
+    const derives = depuisCatalogue(catalogue);
+    const connus = {};
+    (univers || []).forEach(x => { connus[x.isin] = true; });
+    const offert = (univers || []).concat(derives.filter(s => !connus[s.isin]));
+
+    const f = filtres || {};
+    const passe = x =>
+      (f.etoilesMin == null || x.morningstar == null || x.morningstar >= f.etoilesMin) &&
+      (f.encoursMin == null || (x.encours != null && x.encours >= f.encoursMin)) &&
+      (f.terMax == null || (x.ter != null && x.ter <= f.terMax));
+
+    return {
+      genere: catalogue ? catalogue.genere : null,
+      brut,
+      sansPoche: e.sansPoche, sansFrais: e.sansFrais, sansEncours: e.sansEncours,
+      exploitables: e.retenus,
+      universTravail: (univers || []).length,
+      offert: offert.length,
+      candidats: offert.filter(passe).length,
+      filtres: { etoilesMin: f.etoilesMin, encoursMin: f.encoursMin, terMax: f.terMax }
+    };
+  }
+
+  return { depuisCatalogue, ecartes, entonnoir };
 })();

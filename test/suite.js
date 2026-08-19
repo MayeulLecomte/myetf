@@ -649,7 +649,44 @@ console.log('\n== Valorisation de repli ==');
   ok(devises.indexOf('GBX') >= 0, 'le catalogue contient bien des cours en pence — le cas n\'est pas théorique');
 }
 
-// --- 14. Un seul espace de noms
+// --- 14. L'entonnoir de sélection
+/* Les chiffres montrés à l'utilisateur — dans l'onglet Univers et dans
+   « Méthode & limites » — sortent de cette fonction. S'ils ne s'additionnent
+   pas, l'outil publie un compte faux sur sa propre méthode. */
+console.log('\n== Entonnoir de sélection ==');
+{
+  const F = { etoilesMin: 3, encoursMin: 500, terMax: 0.60 };
+  const e = MoteurUnivers.entonnoir(CATALOGUE_ETF, ETF_UNIVERS, F);
+  console.log('   ' + e.brut + ' bruts → ' + e.exploitables + ' exploitables → ' +
+              e.offert + ' offerts → ' + e.candidats + ' candidats');
+  console.log('   écartés : ' + e.sansPoche + ' sans poche · ' + e.sansFrais +
+              ' sans frais · ' + e.sansEncours + ' sans encours');
+
+  ok(e.brut === CATALOGUE_ETF.lignes.length,
+     'le brut de l\'entonnoir est le catalogue entier (' + e.brut + ')');
+  ok(e.sansPoche + e.sansFrais + e.sansEncours + e.exploitables === e.brut,
+     'les quatre premières étapes s\'additionnent au brut');
+  ok(e.offert >= e.exploitables && e.offert <= e.exploitables + e.universTravail,
+     'l\'univers offert vaut les exploitables plus au plus les ' + e.universTravail +
+     ' supports relevés à la main (' + e.offert + ')');
+  ok(e.candidats <= e.offert, 'les filtres ne peuvent pas élargir l\'univers (' +
+     e.candidats + ' ≤ ' + e.offert + ')');
+  ok(e.candidats > 0, 'les filtres par défaut laissent des candidats (' + e.candidats + ')');
+
+  /* Desserrer un filtre ne peut qu'élargir : c'est ce qui prouve que le
+     compte des candidats dépend bien des filtres, et non d'un chiffre figé. */
+  const large = MoteurUnivers.entonnoir(CATALOGUE_ETF, ETF_UNIVERS,
+    { etoilesMin: 0, encoursMin: 0, terMax: 99 });
+  ok(large.candidats >= e.candidats,
+     'desserrer les filtres élargit le vivier (' + e.candidats + ' → ' + large.candidats + ')');
+  const etroit = MoteurUnivers.entonnoir(CATALOGUE_ETF, ETF_UNIVERS,
+    { etoilesMin: 5, encoursMin: 5000, terMax: 0.10 });
+  ok(etroit.candidats <= e.candidats,
+     'les resserrer le réduit (' + e.candidats + ' → ' + etroit.candidats + ')');
+  ok(e.genere === CATALOGUE_ETF.genere, 'l\'entonnoir porte la date du relevé qu\'il décrit');
+}
+
+// --- 15. Un seul espace de noms
 /* L'application n'a pas de modules : tout ce que déclarent js/app.js et
    js/data/*.js vit dans la même portée, et la DERNIÈRE déclaration d'un nom
    écrase silencieusement les précédentes. Trois collisions en une seule

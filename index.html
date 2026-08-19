@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>Allocation ETF — Profilage, allocation et arbitrages</title>
-<link rel="stylesheet" href="css/app.css?v=202608192600">
+<link rel="stylesheet" href="css/app.css?v=202608192800">
 </head>
 <body>
 
@@ -332,6 +332,10 @@
       <p class="intro">Les supports que vous retenez, et le contrôle qui n'appartient qu'à vous :
       leur référencement dans le contrat du client.</p>
 
+      <!-- D'où sort la sélection. Calculée au rendu par `ligneEntonnoir()` :
+           un chiffre écrit ici vieillirait au premier relevé du catalogue. -->
+      <div id="entonnoir-univers"></div>
+
       <div class="carte">
         <h3>Rapprochement avec la liste des supports du contrat</h3>
         <p class="intro">Collez la liste des supports telle qu'elle sort de l'assureur — relevé PDF,
@@ -474,25 +478,25 @@
   en investissement.</span>
 </footer>
 
-<script src="js/data/libelles.js?v=202608192600"></script>
-<script src="js/data/questionnaire.js?v=202608192600"></script>
-<script src="js/data/allocations.js?v=202608192600"></script>
-<script src="js/data/macro.js?v=202608192600"></script>
-<script src="js/data/etf-univers.js?v=202608192600"></script>
-<script src="js/data/fiscalite.js?v=202608192600"></script>
-<script src="js/data/historique.js?v=202608192600"></script>
-<script src="js/data/note-marche.js?v=202608192600"></script>
-<script src="js/data/cours-historique.js?v=202608192600"></script>
-<script src="js/data/cours-marche.js?v=202608192600"></script>
-<script src="js/engine/profil.js?v=202608192600"></script>
-<script src="js/engine/allocation.js?v=202608192600"></script>
-<script src="js/engine/selection.js?v=202608192600"></script>
-<script src="js/engine/arbitrage.js?v=202608192600"></script>
-<script src="js/engine/revenus.js?v=202608192600"></script>
-<script src="js/engine/situation.js?v=202608192600"></script>
-<script src="js/engine/contrat.js?v=202608192600"></script>
-<script src="js/engine/univers.js?v=202608192600"></script>
-<script src="js/engine/backtest.js?v=202608192600"></script>
-<script src="js/app.js?v=202608192600"></script>
+<script src="js/data/libelles.js?v=202608192800"></script>
+<script src="js/data/questionnaire.js?v=202608192800"></script>
+<script src="js/data/allocations.js?v=202608192800"></script>
+<script src="js/data/macro.js?v=202608192800"></script>
+<script src="js/data/etf-univers.js?v=202608192800"></script>
+<script src="js/data/fiscalite.js?v=202608192800"></script>
+<script src="js/data/historique.js?v=202608192800"></script>
+<script src="js/data/note-marche.js?v=202608192800"></script>
+<script src="js/data/cours-historique.js?v=202608192800"></script>
+<script src="js/data/cours-marche.js?v=202608192800"></script>
+<script src="js/engine/profil.js?v=202608192800"></script>
+<script src="js/engine/allocation.js?v=202608192800"></script>
+<script src="js/engine/selection.js?v=202608192800"></script>
+<script src="js/engine/arbitrage.js?v=202608192800"></script>
+<script src="js/engine/revenus.js?v=202608192800"></script>
+<script src="js/engine/situation.js?v=202608192800"></script>
+<script src="js/engine/contrat.js?v=202608192800"></script>
+<script src="js/engine/univers.js?v=202608192800"></script>
+<script src="js/engine/backtest.js?v=202608192800"></script>
+<script src="js/app.js?v=202608192800"></script>
 </body>
 </html>

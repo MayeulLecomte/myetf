@@ -3372,6 +3372,51 @@ function universFiltre() {
   });
 }
 
+/* ------------------------------------------------------------
+   L'ENTONNOIR, POUR LES DEUX ÉCRANS
+   ------------------------------------------------------------
+   Un testeur croyait l'outil choisir parmi les 4 533 ETF du
+   catalogue. Il choisit parmi 866, et en retient une douzaine.
+   Les deux endroits qui l'expliquent — la ligne de l'onglet
+   Univers et le tableau de « Méthode & limites » — lisent la
+   MÊME fonction du moteur : deux comptes séparés finiraient par
+   se contredire, et c'est l'outil qui perdrait sa crédibilité
+   sur sa propre méthode.
+   ------------------------------------------------------------ */
+function entonnoirCourant() {
+  if (typeof CATALOGUE_ETF === 'undefined' || !CATALOGUE_ETF) return null;
+  const e = MoteurUnivers.entonnoir(CATALOGUE_ETF, Etat.univers, Etat.filtres);
+  /* Le dernier resserrement dépend du dossier : sans profil, il n'y a pas
+     encore de portefeuille retenu. */
+  const sel = selectionCourante();
+  e.retenus = sel ? sel.nbSupports : null;
+  return e;
+}
+
+/* Une ligne, en tête de l'univers. Elle dit d'où sort la sélection, et
+   distingue les deux ensembles que le testeur confondait. */
+function ligneEntonnoir() {
+  const e = entonnoirCourant();
+  const travail = Etat.filtres.sourceUnivers !== 'catalogue';
+  const lien = ' <button class="lien" data-aller="methode">comment ?</button>';
+
+  if (!e) {
+    return '<p class="intro entonnoir-ligne">Sélection parmi les ' + Etat.univers.length +
+      ' supports de l\'univers de travail, relevés à la main. Le catalogue européen n\'est pas ' +
+      'chargé.' + lien + '</p>';
+  }
+  if (travail) {
+    return '<p class="intro entonnoir-ligne">Sélection parmi les <strong>' + e.universTravail +
+      ' supports de l\'univers de travail</strong>, relevés à la main · catalogue européen ' +
+      'disponible : ' + e.brut.toLocaleString('fr-FR') + ' ETF, relevé du ' + dateFr(e.genere) +
+      lien + '</p>';
+  }
+  return '<p class="intro entonnoir-ligne">Sélection parmi <strong>' +
+    e.candidats.toLocaleString('fr-FR') + ' ETF du catalogue</strong> (sur ' +
+    e.brut.toLocaleString('fr-FR') + ', relevé du ' + dateFr(e.genere) +
+    ') · univers de travail : ' + e.universTravail + ' supports relevés à la main' + lien + '</p>';
+}
+
 function celluleAnnee(isin) {
   const ix = indexCatalogue();
   if (!ix) return '<span class="sourdine" title="Le catalogue n\'est pas chargé : ' +
@@ -3387,6 +3432,9 @@ function rendreUnivers() {
   const f = Etat.filtreUnivers;
   rendreCatalogue();
   rendreRapprochement();
+
+  const tete = $('#entonnoir-univers');
+  if (tete) tete.innerHTML = ligneEntonnoir();
 
   $('#filtres-univers').innerHTML =
     '<div class="champ"><label>Classe d\'actifs</label><select data-filtre-univers="classe">' +
@@ -3506,6 +3554,84 @@ function rendreJournal() {
    stockage — ce sont des sujets d'outil, pas de conseil.
    ============================================================ */
 
+/* Le détail de l'entonnoir, alimenté par la même fonction que la ligne de
+   l'onglet Univers. Une phrase par étape : un tableau de chiffres sans motif
+   se lit comme une justification, pas comme une explication. */
+function blocEntonnoirMethode() {
+  const e = entonnoirCourant();
+  if (!e) {
+    return '<div class="carte"><h3>3. Sur quels ETF l\'outil choisit</h3>' +
+      '<p>Le catalogue européen n\'est pas chargé : ouvrez « ' +
+      echapper(T('vue.univers.nav')) + ' » pour voir le détail du vivier.</p></div>';
+  }
+
+  const etape = (libelle, valeur, motif, retrait) =>
+    '<tr' + (retrait ? ' class="entonnoir-retrait"' : '') + '>' +
+      '<td>' + libelle + '</td>' +
+      '<td class="num"><strong>' + (valeur == null ? '—' : valeur.toLocaleString('fr-FR')) + '</strong></td>' +
+      '<td style="font-size:12px;color:var(--texte-doux)">' + motif + '</td></tr>';
+
+  return '<div class="carte"><h3>3. Sur quels ETF l\'outil choisit</h3>' +
+    '<p>La sélection ne parcourt pas tout le catalogue européen. Cinq resserrements la ramènent ' +
+    'de plusieurs milliers de lignes à une douzaine de supports. Les chiffres ci-dessous sont ' +
+    'calculés sur le relevé du <strong>' + dateFr(e.genere) + '</strong> et sur vos filtres ' +
+    'actuels — ils bougent avec les deux.</p>' +
+
+    '<div class="tableau-defilant"><table><thead><tr>' +
+    '<th>Étape</th><th class="num">Supports</th><th>Ce qu\'elle écarte, et pourquoi</th>' +
+    '</tr></thead><tbody>' +
+
+    etape('Catalogue européen', e.brut,
+      'Tous les ETF cotés sur les sept places suivies. Les produits à levier, inverses et les ' +
+      'actifs numériques en sont déjà exclus : ils n\'ont pas leur place dans une allocation ' +
+      'patrimoniale en unités de compte.') +
+
+    etape('− sans poche du modèle', e.sansPoche,
+      'Leur catégorie Morningstar ne correspond à aucune des dix-neuf poches du modèle — fonds ' +
+      'thématiques étroits, stratégies non couvertes. Ils restent cherchables et ajoutables à la ' +
+      'main dans l\'univers de travail.', true) +
+
+    etape('− sans frais courants publiés', e.sansFrais,
+      'Conseiller un fonds dont on ignore les frais n\'est pas conseiller. Un zéro y est traité ' +
+      'comme une absence : sur les supports affichés à 0 %, plusieurs facturent en réalité des ' +
+      'frais connus, et ce zéro leur donnait le meilleur score.', true) +
+
+    etape('− sans encours publié', e.sansEncours,
+      'La taille d\'un fonds conditionne sa liquidité et son risque de fermeture. Sans elle, le ' +
+      'support n\'est pas comparable aux autres.', true) +
+
+    etape('<strong>Exploitables</strong>', e.exploitables,
+      'Ce qui porte les trois données exigées : une poche, des frais, un encours.') +
+
+    etape('+ univers de travail', e.offert,
+      'Les ' + e.universTravail + ' supports relevés un à un à la main, avec leur réplication, leur ' +
+      'éligibilité PEA et leur notation vérifiée. Quelques-uns ne figurent pas au catalogue ; ils ' +
+      's\'ajoutent au vivier.') +
+
+    etape('− vos trois filtres', e.candidats,
+      'Notation minimale ' + (e.filtres.etoilesMin || 0) + ' étoile(s), encours minimum ' +
+      (e.filtres.encoursMin || 0).toLocaleString('fr-FR') + ' M€, frais maximum ' +
+      pct(e.filtres.terMax, 2) + '. <strong>Ces trois seuils se modifient</strong> dans « ' +
+      echapper(T('vue.client.nav')) + ' » : les élargir ouvre le vivier, les resserrer le referme. ' +
+      'Un support sans notation n\'est pas écarté par le filtre étoiles — Morningstar ne note ni ' +
+      'les monétaires, ni les ETC, ni les fonds de moins de trois ans.', true) +
+
+    etape('<strong>Retenus pour ce dossier</strong>', e.retenus,
+      e.retenus == null
+        ? 'Le questionnaire n\'est pas complété : sans profil, aucune allocation cible, donc aucun ' +
+          'support retenu.'
+        : 'Un support par poche de l\'allocation cible, choisi au meilleur score — frais, encours, ' +
+          'notation, adéquation à la poche. Les poches à poids nul ne reçoivent rien.') +
+
+    '</tbody></table></div>' +
+
+    '<p style="margin-top:12px">Deux ensembles à ne pas confondre. Le <strong>catalogue</strong> est ' +
+    'un annuaire de recherche : rien n\'y est vérifié, et c\'est la source de la sélection ' +
+    'automatique. L\'<strong>univers de travail</strong> est la liste courte que vous tenez, seule à ' +
+    'porter le référencement au contrat — le seul contrôle qui engage le conseil.</p>' +
+    '</div>';
+}
+
 function rendreMethode() {
   const c = $('#methode-contenu');
   if (!c) return;
@@ -3555,7 +3681,12 @@ function rendreMethode() {
       'elle est enregistrée telle quelle au journal.</p>' +
     '</div>' +
 
-    '<div class="carte"><h3>3. Ce que le backtest mesure, et ne mesure pas</h3>' +
+    /* Inséré en 3 : la question « sur quoi choisit-il ? » vient avant
+       « comment se comporte-t-il ? ». Les sections suivantes glissent d'un
+       rang, et le rapport les renumérote seul à l'assemblage. */
+    blocEntonnoirMethode() +
+
+    '<div class="carte"><h3>4. Ce que le backtest mesure, et ne mesure pas</h3>' +
       '<p>Il rejoue l\'allocation sur des <strong>performances annuelles calendaires</strong>, en euros, ' +
       'dividendes réinvestis, avec rééquilibrage en fin d\'année. Il mesure le comportement du <em>modèle ' +
       'd\'allocation</em> — pas celui des supports retenus, pas celui d\'un portefeuille réel.</p>' +
@@ -3576,7 +3707,7 @@ function rendreMethode() {
         : '<p class="intro">Complétez le questionnaire pour connaître la part estimée sur votre profil.</p>') +
     '</div>' +
 
-    '<div class="carte"><h3>4. Tout est stocké dans ce navigateur</h3>' +
+    '<div class="carte"><h3>5. Tout est stocké dans ce navigateur</h3>' +
       '<p>Aucun serveur, aucun compte, aucune transmission. Le dossier vit dans le stockage local de ' +
       '<strong>ce navigateur, sur cet appareil</strong>. C\'est ce qui garantit qu\'aucune donnée client ' +
       'ne circule — et c\'est aussi ce qui le rend fragile.</p>' +
@@ -3593,7 +3724,7 @@ function rendreMethode() {
       '</div>' +
     '</div>' +
 
-    '<div class="carte"><h3>5. Ce que l\'outil ne fait pas</h3>' +
+    '<div class="carte"><h3>6. Ce que l\'outil ne fait pas</h3>' +
       '<p><strong>Il ne conseille pas.</strong> Il produit un support de travail. La préconisation ' +
       'n\'existe qu\'une fois validée, complétée et signée par vous dans le rapport d\'adéquation.</p>' +
       '<p><strong>Il ne passe aucun ordre</strong> et n\'est connecté à aucun contrat. Les mouvements ' +
