@@ -2755,3 +2755,24 @@ table .illustration { display: none !important; }
 
 /* Et le pied de l'accueil se détache davantage de ce qui le précède. */
 .pied-accueil { margin-top: 72px; }
+
+/* ---------- Un titre de section a de l'air AU-DESSUS de lui ----------
+   « Remplissez le dossier » arrivait à quarante-huit pixels de la note qui
+   le précède : la marge de l'accroche, et rien d'autre — aucune règle ne
+   donnait de marge haute aux titres de vue. Le titre semblait appartenir
+   au paragraphe d'avant.
+
+   L'air se pose au-dessus, jamais entre le titre et ce qu'il annonce :
+   c'est la même règle que pour « Les poches aujourd'hui ». Un titre qui
+   ouvre sa vue n'en a pas besoin — d'où `:not(:first-child)`.
+
+   La valeur est celle qu'on VOIT, et non celle qui s'ajoute : deux marges
+   verticales voisines FUSIONNENT, elles ne se cumulent pas. Les 48 px que
+   le bloc d'avant porte sous lui disparaissent dans les 88 d'ici — poser
+   52 ne gagnait donc que quatre pixels, ce qui ne se voyait pas. */
+.vue > h2:not(:first-child),
+.vue > div[id$="-contenu"] > h2:not(:first-child) { margin-top: 88px; }
+@media (min-width: 821px) {
+  .vue > h2:not(:first-child),
+  .vue > div[id$="-contenu"] > h2:not(:first-child) { margin-top: 124px; }
+}

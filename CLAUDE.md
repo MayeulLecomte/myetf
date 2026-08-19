@@ -490,6 +490,20 @@ plutôt qu'une marge sous l'accroche.
 La même règle vaut pour les `h2` de vue, qui gardent une marge courte quand
 tout le reste est à 100 px.
 
+### Deux marges voisines fusionnent, elles ne s'ajoutent pas
+
+« Remplissez le dossier » arrivait à 48 px de la note qui le précède — la
+marge du bloc d'avant, et rien d'autre : **aucune règle ne donnait de marge
+haute aux titres de vue**. Le titre semblait appartenir au paragraphe
+d'au-dessus.
+
+L'air se pose donc au-dessus du titre, et **la valeur écrite est celle
+qu'on voit** : les 48 px du bloc précédent disparaissent dans les 88 du
+titre, ils ne s'y ajoutent pas. Poser 52 ne gagnait que quatre pixels, et
+l'on aurait cherché longtemps pourquoi rien ne bougeait.
+
+Un titre qui ouvre sa vue n'en a pas besoin — d'où `:not(:first-child)`.
+
 ## La vue courante se lit sur la vue, pas sur la navigation
 
 `vueCourante()` lisait `#nav button.actif`. **Une vue masquée dans le mode
