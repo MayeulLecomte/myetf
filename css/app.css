@@ -2003,3 +2003,63 @@ td .bouton.petit:hover { background: var(--bleu-pale); border-color: var(--bleu)
 /* Le tableau de l'entonnoir : les paliers en encre, les retraits en gris. */
 .entonnoir-retrait td:first-child { color: var(--texte-doux); }
 #methode-contenu td strong { font-weight: 800; }
+
+/* ---------- (c) RAPPORT ---------- */
+
+/* À l'écran, le rapport reste une suite de cartes. La liste de contrôle
+   qui le précède et la case de l'annexe doivent rester nettes : ce sont
+   les deux gestes qu'on fait avant d'imprimer. */
+.controles { border-color: var(--ligne); }
+.controles-tete .badge { font-weight: 800; }
+#vue-rapport .barre-actions label {
+  font-weight: 600; color: var(--texte); font-size: 13.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+#vue-rapport .barre-actions input[type="checkbox"] { width: 16px; height: 16px; }
+
+.carte.mentions h4 {
+  font-size: 11px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--texte-doux); margin: 14px 0 4px;
+}
+.carte.mentions p { font-size: 12px; color: var(--texte-doux); line-height: 1.55; }
+
+/* L'avertissement du mode particulier : le seul aplat bleu pâle du
+   document, et il s'imprime. */
+.avertissement-rapport { background: var(--bleu-pale); border-color: transparent; }
+
+/* ---------- LE DOCUMENT IMPRIMÉ ----------
+   Encre noire sur papier blanc. Le bleu n'y survit qu'en FILET — un
+   aplat coûte de l'encre, se photocopie mal, et un document remis à un
+   client ne gagne rien à être colorié. Ni illustration, ni trait
+   souligné, ni ombre. */
+@media print {
+  body { background: #fff !important; }
+  .carte, .kpi, .verdict, .controles {
+    background: #fff !important; border: 1px solid #9aa2ae !important;
+    box-shadow: none !important; border-radius: 8px !important;
+  }
+  .kpi .valeur, .kpi .val, .verdict-titre { color: #000 !important; }
+  .kpi .libelle, .message, .carte.mentions p { color: #333 !important; }
+  .message { background: #fff !important; border: 1px solid #9aa2ae !important; }
+  .badge { background: #fff !important; color: #000 !important; border: 1px solid #9aa2ae !important; }
+  .souligne { text-decoration: none !important; }
+  h1, h2, h3, h4 { color: #000 !important; }
+  a, .lien, .lien-support { color: #000 !important; text-decoration: none !important; }
+  table, th, td { color: #000 !important; }
+  th { border-bottom: 1px solid #9aa2ae !important; }
+  td { border-bottom: 1px solid #d4d8de !important; }
+  /* L'avertissement du mode particulier reste encadré et lisible : c'est
+     la seule chose du document qu'on ne doit pas pouvoir survoler. */
+  /* Sans professionnel entre l'outil et celui qui décide, c'est la seule
+     chose du document qu'on ne doit pas pouvoir survoler. Elle est donc
+     PLUS GROSSE que le corps du rapport, pas plus petite — un premier jet
+     l'avait posée à onze pixels, sous la taille des mentions. */
+  .avertissement-rapport {
+    background: #fff !important; border: 2px solid #000 !important;
+    color: #000 !important; border-radius: 0 !important;
+    font-size: 13.5px !important; line-height: 1.5 !important;
+    padding: 14px 16px !important;
+  }
+  .avertissement-rapport strong { color: #000 !important; font-weight: 800 !important; }
+  img.illustration, .illustration { display: none !important; }
+}
