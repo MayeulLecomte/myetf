@@ -1760,3 +1760,62 @@ label { font-weight: 600; }
 .entree-choix { padding: 24px; }
 .entree-choix strong { font-size: 17px; }
 .entree-choix span { color: var(--texte-doux); font-size: 13.5px; }
+
+/* ---------- (c) PROFIL ---------- */
+
+/* Les champs du dossier : une étiquette, un champ, un filet. */
+.champ label { font-size: 12.5px; font-weight: 700; color: var(--texte-doux);
+               display: block; margin-bottom: 5px; }
+.champ input, .champ select, .champ textarea { padding: 10px 12px; width: 100%; }
+.champ input:hover, .champ select:hover { border-color: var(--ligne-forte); }
+.champ .suffixe { color: var(--texte-doux); }
+
+/* Le repère du questionnaire : une carte collante, filetée, sans flou. */
+.repere-q {
+  background: var(--surface); border: 1px solid var(--ligne);
+  box-shadow: var(--ombre-2);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.repere-q-section { font-family: var(--police); font-weight: 800; color: var(--texte); }
+.repere-q-note { color: var(--texte-doux); }
+.progression { background: var(--ligne); height: 6px; }
+.progression > div { background: var(--bleu); }
+
+/* Les questions. L'énoncé porte le poids, l'aide est en retrait. */
+.question { border-top: 1px solid var(--ligne); padding: 20px 0; }
+.question .enonce { font-weight: 800; font-size: 15px; letter-spacing: -.01em; }
+.question .aide { color: var(--texte-doux); }
+
+/* Une réponse choisie se marque au bleu pâle et à la graisse, pas au
+   remplissage plein : douze options d'affilée en aplat vif fatiguent. */
+.options label {
+  border: 1px solid var(--ligne); border-radius: 10px;
+  background: var(--surface); font-weight: 500; padding: 12px 14px;
+}
+.options label:hover { background: var(--fond); border-color: var(--ligne-forte); }
+.options label.choisi {
+  border-color: var(--bleu); background: var(--bleu-pale);
+  color: var(--texte); font-weight: 800;
+}
+.options input { accent-color: var(--bleu); }
+
+/* Le bandeau du profil portait un dégradé et du texte blanc, avec un
+   disque clair en écho. Il redevient une carte : le nom du profil en
+   grand, le reste en gris. C'est le mot qui porte, pas l'aplat. */
+.bandeau-profil {
+  background: var(--surface); color: var(--texte);
+  border: 1px solid var(--ligne); border-radius: var(--r-m);
+  box-shadow: var(--ombre-2); padding: 24px 26px;
+}
+.bandeau-profil::after { display: none; }
+.bandeau-profil .nom { font-family: var(--police); font-weight: 800; font-size: 34px;
+                       letter-spacing: -.03em; }
+.bandeau-profil .meta { color: var(--texte-doux); opacity: 1; font-weight: 600; }
+
+/* Les trois axes du score. La piste est un filet, la barre est bleue —
+   les teintes par axe disparaissent : trois barres de trois couleurs
+   laissaient croire à trois natures de mesure. */
+.jauge .tete { font-size: 12.5px; color: var(--texte-doux); font-weight: 600; }
+.jauge .tete strong { color: var(--texte); font-weight: 800; }
+.jauge .piste { height: 8px; background: var(--ligne); }
+.jauge .piste > div { background: var(--bleu) !important; }
