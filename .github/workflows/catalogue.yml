@@ -1,6 +1,7 @@
 name: Mise à jour du catalogue ETF
 
-# Régénère js/data/catalogue-etf.js depuis le screener Morningstar.
+# Régénère js/data/catalogue-etf.js depuis le screener Morningstar, puis
+# relève les notations Morningstar de l'univers de travail.
 #
 # Pourquoi mensuel, et pas quotidien : le catalogue est un annuaire. Sa
 # composition bouge lentement — quelques créations et fermetures par mois —
@@ -93,9 +94,79 @@ jobs:
       - name: Passer le harnais moteur
         run: node test/runner.js
 
+      # ------------------------------------------------------------------
+      # LES NOTATIONS — étape séparée et NON BLOQUANTE
+      # ------------------------------------------------------------------
+      # Elles visent une autre source que le catalogue et n'ont pas la même
+      # criticité : le catalogue porte la sélection entière, les notations
+      # n'affectent qu'un filtre et un critère de score. Si elles échouent,
+      # le catalogue est publié quand même — les notes en place restent
+      # celles du dernier relevé réussi, avec leur date.
+      - name: Compter l'univers en place
+        id: universavant
+        run: |
+          node -e "
+            const vm=require('vm'),fs=require('fs');
+            const ctx=vm.createContext({});
+            vm.runInContext(fs.readFileSync('js/data/etf-univers.js','utf8'),ctx);
+            console.log(vm.runInContext('ETF_UNIVERS.length',ctx));
+          " > /tmp/univers-avant.txt
+          echo "supports=$(cat /tmp/univers-avant.txt)" >> "$GITHUB_OUTPUT"
+          echo "Univers en place : $(cat /tmp/univers-avant.txt) supports"
+
+      - name: Relever les notations Morningstar
+        id: notations
+        continue-on-error: true
+        run: node scripts/notations.mjs --ecrire | tee /tmp/notations.txt
+
+      # Garde-fou plus strict que celui du catalogue : l'univers est tenu à
+      # la main, le script n'y écrit QUE des notes et ne doit ni ajouter ni
+      # retirer un support. Le compte doit donc être EXACTEMENT le même. On
+      # repasse aussi le harnais — une note hors bornes ou une divergence
+      # avec le catalogue s'y verrait. Au moindre doute, le fichier est
+      # restauré et le catalogue publié seul.
+      - name: Contrôler l'univers après notations
+        if: always()
+        continue-on-error: true
+        run: |
+          set +e
+          echo "ok" > /tmp/notations-etat.txt
+
+          if [ "${{ steps.notations.outcome }}" != "success" ]; then
+            echo "echec-releve" > /tmp/notations-etat.txt
+            git checkout -- js/data/etf-univers.js
+            echo "::warning::Releve des notations en echec — univers restaure, le catalogue sera publie seul."
+            exit 0
+          fi
+
+          APRES=$(node -e "
+            const vm=require('vm'),fs=require('fs');
+            const ctx=vm.createContext({});
+            vm.runInContext(fs.readFileSync('js/data/etf-univers.js','utf8'),ctx);
+            console.log(vm.runInContext('ETF_UNIVERS.length',ctx));
+          " 2>/dev/null)
+          AVANT=${{ steps.universavant.outputs.supports }}
+
+          if [ -z "$APRES" ] || [ "$APRES" != "$AVANT" ]; then
+            echo "compte-different" > /tmp/notations-etat.txt
+            git checkout -- js/data/etf-univers.js
+            echo "::warning::Univers abime par les notations : ${APRES:-illisible} supports contre $AVANT. Restaure ; catalogue publie seul."
+            exit 0
+          fi
+
+          node test/runner.js > /tmp/harnais-notations.txt 2>&1
+          if [ $? -ne 0 ]; then
+            echo "harnais-rouge" > /tmp/notations-etat.txt
+            git checkout -- js/data/etf-univers.js
+            echo "::warning::Harnais rouge apres les notations — univers restaure, catalogue publie seul."
+            exit 0
+          fi
+
+          echo "Notations retenues : $AVANT supports, harnais vert."
+
       - name: Versionner les ressources si le catalogue a changé
         run: |
-          if [ -n "$(git status --porcelain js/data/catalogue-etf.js)" ]; then
+          if [ -n "$(git status --porcelain js/data/catalogue-etf.js js/data/etf-univers.js)" ]; then
             python3 - <<'PY'
           import re, datetime, pathlib
           p = pathlib.Path('index.html')
@@ -117,7 +188,9 @@ jobs:
           git add -A
           git commit -m "Catalogue ETF du $(date -u +%Y-%m-%d)
 
-          $(grep -E 'supports retenus|rattachés à une poche|cotés sur Euronext|perf 12 mois|clôture' /tmp/rapport.txt || true)"
+          $(grep -E 'supports retenus|rattachés à une poche|cotés sur Euronext|perf 12 mois|clôture' /tmp/rapport.txt || true)
+
+          $(if [ "$(cat /tmp/notations-etat.txt 2>/dev/null)" = 'ok' ]; then grep -E 'Notées :' /tmp/notations.txt || true; else echo 'Notations non retenues — voir le résumé du job.'; fi)"
           # Le relevé des cours écrit dans le même dépôt. Il ne tombe pas à la
           # même heure, mais un déclenchement manuel peut se croiser : on se
           # replace sur la pointe plutôt que d'échouer sur un push non
@@ -128,9 +201,28 @@ jobs:
       - name: Résumé
         if: always()
         run: |
+          ETAT=$(cat /tmp/notations-etat.txt 2>/dev/null || echo 'non-execute')
           {
             echo '## Catalogue ETF'
             echo '```'
             cat /tmp/rapport.txt || echo 'Aucun rapport produit.'
             echo '```'
+            echo
+            echo '## Notations Morningstar'
+            case "$ETAT" in
+              ok)               echo 'Relevées et retenues.' ;;
+              echec-releve)     echo '**Relevé en échec.** Les notes en place restent celles du dernier relevé réussi, avec leur date. Le catalogue, lui, a été publié.' ;;
+              compte-different) echo '**Univers abîmé** : le nombre de supports avait changé. Le fichier a été restauré et le catalogue publié seul.' ;;
+              harnais-rouge)    echo '**Harnais rouge après les notations.** Le fichier a été restauré et le catalogue publié seul.' ;;
+              *)                echo 'Étape non exécutée.' ;;
+            esac
+            echo '```'
+            cat /tmp/notations.txt 2>/dev/null || echo 'Aucun rapport de notations.'
+            echo '```'
+            if [ "$ETAT" = 'harnais-rouge' ] && [ -s /tmp/harnais-notations.txt ]; then
+              echo
+              echo '```'
+              tail -40 /tmp/harnais-notations.txt
+              echo '```'
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
