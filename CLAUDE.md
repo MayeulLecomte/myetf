@@ -388,6 +388,43 @@ Ces règles vivent en FIN de `css/app.css`, et pas près des autres règles de
 l'accueil : elles surchargent l'animation de défilement, et une media query
 n'ajoute aucune spécificité — c'est l'ordre du fichier qui tranche.
 
+## Les listes longues respirent, et paraissent une à une
+
+L'air posé au chantier 9 s'arrêtait aux blocs de premier niveau — « une
+carte reste dense à l'intérieur ». **Le questionnaire fait mentir la
+règle** : dix-huit questions dans cinq cartes, c'est un écran de
+formulaire, pas un bloc dense. Le contexte macro et ses onze indicateurs
+sont dans le même cas.
+
+Deux choses, et elles vont ensemble :
+
+- **de l'air entre les items** — question, indicateur, groupe — et pas
+  seulement entre les cartes ;
+- **chaque item paraît quand on y arrive**, au lieu que la carte entière
+  se pose d'un coup. Dix-huit questions offertes ensemble, c'est dix-huit
+  décisions à la fois.
+
+La révélation reste liée à la **position dans le défilement**, comme
+celle des blocs de premier niveau — mais sur une plage plus tardive,
+`entry 15% → entry 85%` au lieu de `entry 2% → cover 26%` : l'item est
+bien entré dans l'écran quand il achève de paraître. **Bornée à `entry`
+aux deux bouts**, et pas seulement au début : une plage qui court sur
+`cover` laisserait un item pâle au milieu de l'écran.
+
+Le conteneur `#questions` cesse de paraître d'un bloc — deux opacités
+emboîtées se multiplient.
+
+Mêmes garde-fous que la règle générale, et pour la même raison :
+`@supports not (animation-timeline: view())` et `prefers-reduced-motion`.
+Sans eux, `both` garderait ces items à zéro d'opacité pour toujours.
+
+**Un onglet caché n'anime rien.** Les animations de défilement ont une
+timeline INACTIVE tant que `document.visibilityState` vaut `hidden` — et
+une timeline inactive n'a aucun effet : tout se mesure à l'opacité pleine,
+comme si la règle n'existait pas. Un contrôle mené dans un panneau replié
+conclut donc que la révélation ne marche pas, alors qu'elle n'a simplement
+jamais tourné. Vérifier ces règles-là **fenêtre ouverte**, ou pas du tout.
+
 ## L'air se mesure entre les blocs, jamais dans un titre
 
 Un titre appartient à ce qui le SUIT. « Les poches aujourd'hui » est posé

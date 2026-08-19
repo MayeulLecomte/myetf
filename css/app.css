@@ -2596,3 +2596,90 @@ table .illustration { display: none !important; }
   }
   .pied-accueil { display: none !important; }
 }
+
+/* ============================================================
+   LES LISTES LONGUES RESPIRENT, ET PARAISSENT UNE À UNE
+   ------------------------------------------------------------
+   L'air posé au chantier précédent s'arrêtait aux blocs de
+   premier niveau : « une carte reste dense à l'intérieur ». Le
+   questionnaire fait mentir la règle — dix-huit questions dans
+   cinq cartes, c'est un écran de formulaire, pas un bloc dense.
+   Le contexte macro et ses onze indicateurs sont dans le même
+   cas.
+
+   Deux choses, donc, et elles vont ensemble :
+
+   • DE L'AIR entre les items, pas seulement entre les cartes ;
+   • CHAQUE ITEM PARAÎT QUAND ON Y ARRIVE, au lieu que la carte
+     entière se pose d'un coup. Dix-huit questions offertes
+     ensemble, c'est dix-huit décisions à la fois ; une par une,
+     c'est une question, puis la suivante.
+
+   La révélation reste liée à la POSITION dans le défilement et
+   non à une minuterie : on remonte, les items repartent en
+   arrière. La plage est plus tardive que celle des blocs de
+   premier niveau (`entry 2%`) — l'item est déjà bien entré dans
+   l'écran quand il achève de paraître, ce qui donne le temps de
+   lire celui d'avant.
+   ============================================================ */
+
+/* ---------- L'air ---------- */
+.question { padding: 26px 0; }
+.question .enonce { margin-bottom: 6px; }
+.question .aide { margin-bottom: 14px; }
+.options { gap: 10px; }
+
+.section-q { margin-bottom: 40px; }
+.section-q:last-child { margin-bottom: 0; }
+.section-q > h3 { margin-bottom: 22px; }
+
+.indicateur { margin-bottom: 26px; }
+.groupe-macro { margin-bottom: 40px; }
+.groupe-macro:last-child { margin-bottom: 0; }
+
+@media (min-width: 821px) {
+  .question { padding: 38px 0; }
+  .options { gap: 12px; }
+  .section-q { margin-bottom: 64px; }
+  .section-q > h3 { margin-bottom: 28px; }
+  .indicateur { margin-bottom: 36px; }
+  .groupe-macro { margin-bottom: 56px; }
+}
+
+/* ---------- Un item à la fois ----------
+   `entry 15% → entry 85%` : l'item commence à paraître dès qu'il
+   entre par le bas, et il est entier avant de l'être tout à fait.
+   Une plage bornée à `entry` ne peut pas laisser un item pâle au
+   milieu de l'écran — ce qui arriverait avec une plage qui court
+   sur `cover`. */
+.question, .groupe-macro .indicateur, #scenarios .scenario {
+  animation: paraitre linear both;
+  animation-timeline: view();
+  animation-range: entry 15% entry 85%;
+}
+
+/* Le conteneur, lui, cesse de paraître d'un bloc : deux opacités
+   emboîtées se multiplient, et la carte entière se poserait de toute
+   façon avant ce qu'elle contient. */
+.vue.actif > #questions,
+.vue.actif > div[id$="-contenu"] > #questions {
+  animation: none; opacity: 1; transform: none;
+}
+
+/* Les deux garde-fous, comme pour la règle générale : sans timeline de
+   défilement, `both` garderait ces items à zéro d'opacité POUR TOUJOURS. */
+@supports not (animation-timeline: view()) {
+  .question, .groupe-macro .indicateur, #scenarios .scenario {
+    animation: none; opacity: 1; transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .question, .groupe-macro .indicateur, #scenarios .scenario {
+    animation: none; opacity: 1; transform: none;
+  }
+}
+@media print {
+  .question, .groupe-macro .indicateur, #scenarios .scenario {
+    animation: none !important; opacity: 1 !important; transform: none !important;
+  }
+}
