@@ -529,6 +529,26 @@ investissement » passe **en tête du document**, pas seulement en annexe : il
 n'y a plus de professionnel entre l'outil et celui qui décide. C'est le seul
 endroit où le mode particulier est plus exigeant que l'autre.
 
+## La note dit d'où elle vient, et elle ne vient que des cours
+
+En pied de la note du jour : « Note calculée à partir des cours relevés
+le [date] — sans source d'actualité. »
+
+**Elle ne mentionne pas le contexte macro, et ce n'est pas un oubli.**
+`scripts/note-marche.mjs` ne reçoit que `data/variations.json` : les
+indicateurs saisis par le conseiller n'entrent pas dans la rédaction.
+Écrire « et du contexte renseigné » serait faux même un jour où le
+contexte est rempli.
+
+La phrase d'avant — « le modèle ne dispose d'aucune information
+d'actualité et n'a pas connaissance des dossiers clients » — disait ce
+que la note N'EST PAS. Celle-ci dit ce qu'elle est, et tient sur une
+ligne. Elle n'existe qu'à l'écran : le rapport client ne l'a jamais
+portée, et n'a pas à la porter — il ne reprend pas la note.
+
+L'état vide d'un contexte non renseigné ne change pas : voir
+« Un contexte non renseigné n'applique aucune déviation ».
+
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
 Section « Lecture du contexte de marché ». Sans contexte saisi,

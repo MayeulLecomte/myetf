@@ -76,9 +76,14 @@ function rendreNote() {
         'Ouvrir le contexte macro →</button></div></div>' : '') +
     '</div>' +
 
-    '<p class="intro" style="font-size:11px">Rédigée par ' + echapper(NOTE_MARCHE.modele) +
-    ' à partir des seules variations de cours relevées — le modèle ne dispose d\'aucune information ' +
-    'd\'actualité et n\'a pas connaissance des dossiers clients.</p>';
+    /* D'où vient la note, en une ligne. Elle est rédigée à partir du SEUL
+       relevé de cours : `scripts/note-marche.mjs` ne reçoit que
+       `data/variations.json`. Le contexte macro saisi par le conseiller
+       n'y entre pas, et la mention ne peut donc pas le dire — écrire
+       « et du contexte renseigné » serait faux même un jour où le
+       contexte est rempli. */
+    '<p class="intro" style="font-size:11px">Note calculée à partir des cours relevés le ' +
+    echapper(dateFr(NOTE_MARCHE.genere)) + ' — sans source d\'actualité.</p>';
 }
 
 /* ============================================================
