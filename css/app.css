@@ -1819,3 +1819,78 @@ label { font-weight: 600; }
 .jauge .tete strong { color: var(--texte); font-weight: 800; }
 .jauge .piste { height: 8px; background: var(--ligne); }
 .jauge .piste > div { background: var(--bleu) !important; }
+
+/* ---------- (c) ALLOCATION ---------- */
+
+/* LES BOUTONS, POUR DE BON.
+   Les reprises précédentes portaient « .bouton » ; la feuille d'origine
+   qualifie ses règles par l'élément — « button.bouton.secondaire », un
+   cran plus spécifique — et gagnait donc en silence. Un bouton secondaire
+   ressortait en aplat bleu pâle dans les bandeaux, et tous les boutons
+   gardaient leur rayon de pilule. On se met au même niveau. */
+button.bouton, a.bouton {
+  background: var(--bleu); color: #fff;
+  border: 1px solid transparent; border-radius: 12px;
+  padding: 11px 20px; font-weight: 800; font-size: 14px;
+  box-shadow: none;
+  transition: filter .12s, transform .08s;
+}
+button.bouton:hover, a.bouton:hover { filter: brightness(.94); box-shadow: none; }
+button.bouton:active, a.bouton:active { transform: translateY(1px); }
+button.bouton.secondaire, button.bouton.discret, a.bouton.secondaire {
+  background: var(--surface); color: var(--texte);
+  border: 1px solid var(--ligne); box-shadow: none; font-weight: 800;
+}
+button.bouton.secondaire:hover, button.bouton.discret:hover, a.bouton.secondaire:hover {
+  background: var(--fond); filter: none;
+}
+button.bouton.danger { background: var(--surface); color: var(--texte); border-color: var(--bleu); }
+button.bouton.petit { padding: 6px 12px; font-size: 12px; border-radius: var(--r-pilule); }
+
+/* Un bouton dans un bandeau reste un bouton : fond blanc, filet, pour se
+   détacher du bleu pâle sur lequel il est posé. */
+.message .bouton.secondaire { background: var(--surface); border-color: var(--ligne-forte); }
+
+/* ---------- Contexte : les scénarios ----------
+   Chaque scénario portait sa couleur — quatre teintes pour quatre
+   hypothèses. La probabilité est un nombre : elle se lit en grand, et
+   le filet de gauche suffit à séparer les blocs. */
+.scenario {
+  background: var(--surface); border: 1px solid var(--ligne);
+  border-left: 3px solid var(--bleu) !important;
+  border-radius: var(--r-s); padding: 14px 16px; margin-bottom: 10px;
+}
+.scenario .tete { display: flex; justify-content: space-between; align-items: baseline; }
+.scenario .nom { font-weight: 800; font-size: 14px; }
+.scenario .proba { font-family: var(--police); font-weight: 800; font-size: 22px;
+                   letter-spacing: -.02em; color: var(--texte) !important; }
+.scenario .desc { color: var(--texte-doux); font-size: 12.5px; }
+.scenario input[type="range"] { accent-color: var(--bleu); width: 100%; margin-top: 8px; }
+
+.groupe-macro h4 {
+  font-size: 11px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--texte-doux);
+}
+.indicateur > label { font-weight: 700; font-size: 14px; color: var(--texte); }
+
+/* ---------- Allocation cible : les barres de comparaison ----------
+   « .barre » est la LIGNE — libellé et piste —, pas la piste. Lui donner
+   une hauteur de dix pixels et un fond gris écrasait le libellé sous la
+   barre. La piste s'appelle « .piste », et c'est elle qu'on habille. */
+.barres .barre { background: none; height: auto; margin-bottom: 14px; }
+.barres .tete { font-size: 12.5px; color: var(--texte-doux); }
+.barres .tete > span:first-child { font-weight: 700; color: var(--texte); }
+.barres .piste { height: 10px; background: var(--ligne); }
+.barres .piste > .part { background: var(--bleu) !important; }
+.barres .piste > .cible { background: var(--texte); top: -4px; height: 18px; }
+.graphique { gap: 24px; }
+
+/* La pastille de classe d'actifs garde sa teinte : c'est une donnée. */
+.pastille { border-radius: 4px; }
+
+/* ---------- Sélection et arbitrages ---------- */
+.tableau-defilant { border-radius: var(--r-s); }
+td .badge { vertical-align: middle; }
+
+/* ---------- Backtest ---------- */
+#backtest-reglages .filtres { gap: 16px; }
