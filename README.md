@@ -300,30 +300,80 @@ les boutons écrits à la main dans `index.html` avaient fini par en dévier, et
 routage au démarrage, et `#note` comme `#accueil` sont ouvertes par le widget
 iOS. `test/fumee.html` vérifie que chacune résout et ouvre bien sa vue.
 
-## Interface
+## Interface — trait bleu
 
-Registre visuel inspiré des interfaces Apple : surfaces arrondies et
-superposées, matériaux translucides sur les barres fixes (`backdrop-filter`),
-typographie système, boutons en pilule qui s'enfoncent au clic, transitions sur
-la courbe de ressort d'iOS. Le **mode sombre suit le réglage de l'appareil** —
-rien à activer.
+Blanc et bleu, cartes filetées, illustrations au trait noir. Une seule couleur,
+une seule police, et des chiffres qui se lisent en colonne.
 
-Deux règles s'appliquent au-delà du goût :
+| | |
+|---|---|
+| Fond | `#F7F9FC` · cartes `#FFFFFF` · filets `#DFE5F0` |
+| Texte | `#15161A` · secondaire `#6B6E76` |
+| Accent | `#2F6BFF` · clair `#8FB3FF` · pâle `#E6EEFF` · liens `#1E4FCC` |
+| Formes | cartes à 14 px de rayon, boutons à 12 px, badges en pastille |
+| Typographie | **Manrope** — titres en 800, texte en 400/600, chiffres en `tabular-nums` |
 
-- **Le rapport client reste sobre.** La feuille d'impression repasse en
-  monochrome, sans ombre ni accent coloré : un document remis à un client n'est
-  pas une interface.
-- **La palette des graphiques est validée, pas choisie à l'œil.** Bande de
-  clarté, plancher de chroma, séparation en vision déficiente et contraste sur
-  la surface sont vérifiés par un contrôleur, dans les deux modes. Deux
-  combinaisons ont d'ailleurs été écartées à ce titre : violet et bleu étaient
-  indiscernables sur fond sombre (ΔE 9,8, sous le plancher de 15). **Ne
-  retouchez pas une couleur de série sans relancer ce contrôle.**
+Tout vit dans **`css/tokens.css`**, chargée avant `css/app.css` : les composants
+n'écrivent plus une couleur en dur.
 
-Toutes les couleurs sont des jetons CSS (`--serie-*`, `--scenario-*`,
-`--profil-*`) ; `js/data/` les référence par `var(--…)` plutôt que par des
-valeurs en dur, si bien que le basculement clair/sombre ne demande aucun
-JavaScript.
+**Manrope est servie depuis `css/polices/`, pas depuis Google Fonts.**
+L'application s'ouvre par double-clic, et une requête réseau en `file://` ne
+part pas : une police appelée en ligne serait retombée sur la police système à
+l'ouverture locale, sans que rien ne le signale. Deux sous-ensembles latins,
+40 Ko.
+
+### Le bleu est la seule couleur
+
+**Aucune performance n'est verte ou rouge.** Un signe et une graisse disent le
+sens ; douze pour cent d'hommes distinguent mal ces deux teintes-là. Les badges
+sont tous en pastille bleu pâle, l'onglet actif aussi.
+
+Une seule entorse, prévue : les **graphiques** ont quatre teintes, dont l'encre
+`#15161A` en quatrième.
+
+### Un trait sous un mot du titre
+
+Le **dernier** mot de chaque titre porte un trait bleu — « Allocation *cible* »,
+« Mes *placements* ». C'est celui qui distingue le titre de ses voisins, et une
+seule fonction le pose pour les quinze vues.
+
+C'est un vrai soulignement avec `text-decoration-skip-ink`, qui **contourne les
+descendantes** : une bande de fond traversait le bas du p, du g et du q, et
+laissait un moignon bleu devant le mot.
+
+### Les illustrations
+
+Huit dessins au trait noir avec une tache bleue, dans `img/`, fond transparent.
+
+| Dessin | Où |
+|---|---|
+| `logo` | en-tête · écran d'entrée et accueil particulier |
+| `cafe` | bannière d'accueil, mode conseiller |
+| `boussole` | note du jour, contexte, bandeau « allocation stratégique seule » |
+| `balance` | allocation cible |
+| `fiches` | sélection des supports, univers ETF |
+| `carnet` | journal, état vide du questionnaire |
+| `port` | état vide du suivi |
+| `longue-vue` | backtest, méthode & limites |
+
+30 px en tête de vue, 140-160 px dans les bannières et les états vides.
+**Un seul dessin par carte, jamais dans un tableau, jamais sur le papier.**
+
+### Pas de mode sombre
+
+La direction donne une palette exacte, et une seule. En inventer une seconde
+aurait produit un hybride que personne n'a validé.
+
+### Le rapport client échappe à tout cela
+
+Encre noire sur papier blanc. **Le bleu n'y survit qu'en filet** : ni aplat, ni
+ombre, ni illustration, ni trait sous les titres. Un aplat coûte de l'encre, se
+photocopie mal, et un document remis à un client ne gagne rien à être colorié.
+
+Une exception assumée : en mode particulier, l'avertissement « ne constitue pas
+un conseil » est **encadré de noir et plus gros que les mentions**. Sans
+professionnel entre l'outil et celui qui décide, c'est la seule chose du
+document qu'on ne doit pas pouvoir survoler.
 
 ## Sur iPhone
 
@@ -376,51 +426,29 @@ onze pastilles et leurs variations du jour ne disent rien à quelqu'un qui n'a
 pas encore de portefeuille, et elles repoussaient les étapes à remplir sous la
 ligne de flottaison.
 
-### Le verre
+### Le verre — retiré au chantier 9
 
-Les surfaces ne sont pas peintes : elles sont **dépolies**, et la couleur leur
-vient d'un halo posé derrière la page. Trois taches très étalées — indigo,
-magenta, turquoise — que les cartes, les barres et les tuiles filtrent en
-glissant par-dessus. Deux tuiles voisines ne rendent donc pas la même teinte
-sans qu'aucune couleur ait été assignée à l'une ou à l'autre, et la même tuile
-change en défilant. C'est ce mouvement relatif qui fait le matériau : un verre
-sur un fond uni n'est qu'un rectangle pâle.
+Les surfaces étaient **dépolies**, et leur couleur venait d'un halo de trois
+taches posé derrière la page : deux tuiles voisines ne rendaient pas la même
+teinte sans qu'aucune couleur leur ait été assignée. C'était joli et c'était
+coûteux — le flou devait rester sur les conteneurs, jamais sur les éléments
+répétés d'une liste, sous peine de rendre le défilement impraticable sur un
+téléphone.
 
-Le chiffre, lui, reste en **encre pleine**. C'est lui qu'on vient lire ; il ne
-doit rien à l'ambiance. Titres et chiffres passent en **SF Pro Rounded**
-(`ui-rounded`) — la voix d'Apple quand elle se détend, et qui contredit juste
-ce qu'il faut la froideur du verre. Le texte courant reste en SF Pro Text :
-une fonte arrondie sur dix lignes de paragraphe fatigue. Aucune police n'est
-demandée au réseau ; sur un appareil Apple ce sont les vraies.
+**Il n'en reste rien.** Les surfaces sont redevenues des surfaces : blanches,
+filetées, sans flou ni halo. Les jetons `--verre-*` existent encore et pointent
+vers du plein, le temps que les dernières règles qui les emploient disparaissent.
 
-Trois règles tiennent l'ensemble :
-
-- **Le flou va sur les conteneurs, jamais sur les lignes d'une liste.**
-  Soixante lignes de catalogue floutées rendent le défilement inutilisable sur
-  un téléphone. Vingt-trois éléments portent un `backdrop-filter` dans toute
-  l'application ; les lignes du catalogue sont simplement transparentes
-  au-dessus du verre de leur carte.
-- **Le halo est un vrai élément, à `z-index: 0`** — pas un pseudo-élément à
-  z-index négatif. Un calque en z-index négatif sort de l'ordre de peinture
-  normal, et le `backdrop-filter` de l'en-tête, qui échantillonne ce qui est
-  peint derrière lui, n'y trouve plus rien : il rend du noir sur toute sa
-  surface dès que la page défile. Le contenu passe au premier plan par l'ordre
-  du document.
-- **Sans `backdrop-filter`, le verre devient opaque.** Une règle `@supports`
-  donne aux navigateurs qui ne savent pas flouter une surface pleine : moins
-  belle, parfaitement lisible.
-
-Les teintes **porteuses de sens** — classes d'actifs, scénarios macro, profils
-de risque, axes du score — restent celles de la palette validée et ne sont pas
-touchées. Deux exceptions où la couleur dit quelque chose : le verdict est vert
-quand il n'y a rien à faire, chaud quand il y a des ordres à passer.
+La règle qu'il a laissée, elle, vaut toujours : **rien de coûteux sur un élément
+répété**. C'est pourquoi la liste du catalogue européen est faite de lignes et
+non de cartes.
 
 ### Ce qui reste sobre
 
 **Le rapport client ne bouge pas** : la règle d'impression le repasse en
-monochrome : ni halo, ni verre, ni fonte arrondie — de l'encre noire sur du
-papier blanc. Un document remis à un client ne
-gagne rien à être ludique.
+monochrome — ni aplat, ni ombre, ni illustration, ni trait sous les titres. De
+l'encre noire sur du papier blanc. Un document remis à un client ne gagne rien
+à être colorié.
 
 **Ajout à l'écran d'accueil** : ouvrir le site dans Safari, toucher le bouton
 Partager, puis « Sur l'écran d'accueil ». L'application s'ouvre alors en plein
@@ -430,17 +458,16 @@ de barre d'accueil sont gérées par `env(safe-area-inset-*)`.
 
 ## Le signe
 
-Trois barres croissantes sur fond bleu, la plus haute en or. Il ouvre l'en-tête
-à côté du lettrage **myetf**, et se retrouve à l'identique en favicon, en icône
-d'écran d'accueil et au pied de page. Le lettrage reste en encre pleine : le
-signe porte déjà l'accent coloré, et deux accents côte à côte se disputeraient
-l'attention.
+Une **pousse dans une pièce**, au trait noir avec une tache bleue — le même
+dessin que `img/logo.png`. Il ouvre l'en-tête à côté du lettrage **myetf**, en
+28 px, et se retrouve en grand sur l'écran d'entrée et sur l'accueil du mode
+particulier. Le lettrage reste en encre pleine : le signe porte déjà la tache
+colorée, et deux accents côte à côte se disputeraient l'attention.
 
-Le signe **ne suit pas le thème** : ses trois couleurs (`--logo-fond`,
-`--logo-barre`, `--logo-accent`) ne sont jamais redéfinies en mode sombre. Une
-icône d'écran d'accueil ne peut pas s'inverser selon les réglages du téléphone ;
-si l'en-tête s'inversait de son côté, le site et l'icône cesseraient d'être le
-même dessin. Le bleu foncé reste lisible sur les deux fonds.
+Il a remplacé au chantier 9 les trois barres croissantes sur fond bleu, qui
+étaient un SVG tracé dans la page. Le favicon et les icônes d'écran d'accueil
+portent **encore l'ancien signe** : ce sont des fichiers PNG générés à part, et
+les régénérer depuis le nouveau dessin reste à faire.
 
 ```bash
 python3 scripts/icones.py
@@ -931,7 +958,10 @@ et un avertissement invite à ouvrir une enveloppe complémentaire.
 
 ```
 index.html                    interface, ordre de chargement des scripts
+css/tokens.css                palette, typographie, rayons, ombres — chargée en premier
 css/app.css                   feuille de style, y compris règles d'impression
+css/polices/                  Manrope, deux sous-ensembles latins (40 Ko)
+img/                          les huit illustrations au trait, fond transparent
 js/data/questionnaire.js      questions, pondérations, plafonds de profil
 js/data/allocations.js        6 profils, allocations stratégiques, sous-allocations
 js/data/macro.js              indicateurs, scénarios, bornes tactiques, seuils

@@ -95,16 +95,108 @@ qu'aucune déviation n'est appliquée dans le document remis.
 Lancer les deux harnais **avant et après** tout remaniement d'interface, et
 comparer — pas seulement constater qu'ils passent à la fin.
 
-## Registre visuel
+## Registre visuel — trait bleu
 
-Verre dépoli sur halo, titres et chiffres en SF Pro Rounded (`ui-rounded`),
-texte courant en SF Pro Text. Aucune police chargée depuis le réseau.
+Blanc et bleu, cartes filetées, illustrations au trait noir. Le registre
+« verre » d'avant — surfaces dépolies sur halo, dégradés vifs, SF Pro Rounded —
+**n'existe plus**.
 
-Le flou (`backdrop-filter`) va sur les **conteneurs**, jamais sur les éléments
-répétés d'une liste.
+### Les jetons
 
-**Le rapport client échappe à tout cela** : à l'impression, ni halo, ni verre, ni
-fonte arrondie. Un document remis à un client ne gagne rien à être ludique.
+Tout vit dans **`css/tokens.css`**, chargé AVANT `css/app.css`. Les composants
+n'écrivent plus une couleur en dur.
+
+| | |
+|---|---|
+| Fond | `#F7F9FC` |
+| Cartes | `#FFFFFF` |
+| Filets | `#DFE5F0` |
+| Texte | `#15161A` · secondaire `#6B6E76` |
+| Accent | `#2F6BFF` · clair `#8FB3FF` · pâle `#E6EEFF` · liens `#1E4FCC` |
+
+**Le bleu est la seule couleur.** Pas de vert ni de rouge pour les
+performances : `.positif` et `.negatif` sont à l'encre, et c'est le signe qui
+dit le sens — douze pour cent d'hommes distinguent mal ces deux teintes-là. Les
+noms hérités d'une palette à sept couleurs (`--vert`, `--rouge`, `--orange`,
+`--or`, `--indigo`, `--violet`) pointent tous vers l'encre ou le bleu : rien ne
+peut ressortir en vert par mégarde.
+
+Une seule entorse, prévue : les **graphiques** ont quatre teintes, dont l'encre
+`#15161A` en quatrième.
+
+### Typographie
+
+**Manrope**, titres en 800, texte en 400/600, chiffres en `tabular-nums`.
+
+**Elle est servie depuis `css/polices/`, pas depuis Google Fonts.**
+L'application s'ouvre par double-clic : une police appelée sur le réseau aurait
+marché en ligne et serait retombée sur la police système à l'ouverture locale,
+sans que rien ne le signale. Deux sous-ensembles latins, 40 Ko.
+
+### Pas de mode sombre
+
+La direction donne une palette exacte, et une seule. En inventer une seconde
+produirait un hybride que personne n'a validé. `color-scheme: light` le dit au
+navigateur. **À rouvrir un jour comme une palette à arrêter, pas comme une
+bascule à rétablir.**
+
+### Le trait sous un mot du titre
+
+Le **dernier** mot de chaque titre porte un trait bleu, posé par
+`titreSouligne()` — un seul endroit pour quinze titres.
+
+C'est un `text-decoration: underline` avec `skip-ink`, **pas** le dégradé de
+fond de la maquette. Deux essais l'ont montré : à 62 % de la hauteur de ligne la
+bande mord le bas des lettres, à 78 % elle traverse encore les jambages du p, du
+g et du q, et le premier d'entre eux laisse un moignon bleu devant le mot. Seul
+`skip-ink` contourne les descendantes.
+
+### Les illustrations
+
+Huit dessins au trait dans `img/`, fond transparent, 320 px de côté.
+
+| Dessin | Où |
+|---|---|
+| `logo` | en-tête (28 px) · écran d'entrée et accueil particulier (150-160 px) |
+| `cafe` | bannière d'accueil, mode conseiller |
+| `boussole` | note du jour, contexte · bandeau « allocation stratégique seule » (44 px) |
+| `balance` | allocation cible |
+| `fiches` | sélection des supports, univers ETF |
+| `carnet` | journal · état vide du questionnaire |
+| `port` | état vide du suivi |
+| `longue-vue` | backtest, méthode & limites |
+
+**Trois règles, à ne pas relâcher :** un seul dessin par carte · jamais dans un
+tableau · jamais sur le papier. Les têtes de vue sont posées par
+`ILLUSTRATIONS_VUES` dans `js/ui/socle.js` ; une vue absente de cette table n'a
+pas de dessin, et c'est mieux qu'un dessin qui ne dit rien.
+
+`alt` vide et `aria-hidden` : ce sont des ornements, et le titre dit déjà ce
+qu'ils disent.
+
+### Le rapport imprimé échappe à tout cela
+
+Encre noire sur papier blanc. **Le bleu n'y survit qu'en filet** — pas d'aplat,
+pas d'ombre, pas d'illustration, pas de trait sous les titres. Un aplat coûte de
+l'encre, se photocopie mal, et un document remis à un client ne gagne rien à
+être colorié.
+
+Une exception : en mode particulier, l'avertissement « ne constitue pas un
+conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contre
+12). C'est la seule chose du document qu'on ne doit pas pouvoir survoler.
+
+## L'empreinte de référence
+
+**`8a87e0fb` · 1 303 613 octets · 68 empreintes**, relevée avec
+`test/empreinte.html` au terme du chantier 9.
+
+Elle contient des dates du jour : elle **se relève avant, se compare après**, le
+même jour et sur le même catalogue. Ce n'est pas un fichier à versionner.
+
+Quand elle doit bouger — un balisage ajouté —, **mesurer l'écart plutôt que
+l'accepter** : au chantier 9, le trait des titres valait exactement +30 octets
+sur 64 vues et 0 sur les colonnes de navigation ; les illustrations, 52 images
+pour 6 662 octets, et les 20 vues sans dessin n'ont pas bougé d'un octet.
 
 ## La liste de contrôle avant impression ne bloque rien
 
@@ -301,19 +393,16 @@ de sens, c'est le ruban qui navigue.
 
 ## Pistes — reportées, pas abandonnées
 
-**Un chantier de rangement est à faire AVANT le chantier 9 (design)** : on ne
-refond pas une feuille de style sur une base dont les noms se marchent dessus.
-Découpage des fichiers globaux, espace de noms, et passage en revue des noms
-de classes CSS. Le contrôle statique du harnais arrête les collisions
-nouvelles ; il ne range pas ce qui existe.
+État au terme du chantier 9. Rien de tout cela n'est engagé ; l'ordre viendra
+de la revue en cours avec un CGP.
 
-Relevées à la relecture « premier dossier », hors chantier à ce stade :
-
-| Piste | Ce qui accroche |
+| Piste | Ce qui reste à faire |
 |---|---|
-| **Cloisonnement — temps 2 du rangement** | le déménagement est fait ; reste à passer chaque fichier de `js/ui/` en IIFE exposant un objet, comme les moteurs. À décider **après** le chantier 9 |
-| **Refonte de l'univers ETF** | 3 482 mots et 42 lignes de tableau sur une vue, trois cartes empilées ; un premier visiteur n'y comprend pas ce qu'on attend de lui |
-| **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation |
-| **Note du jour en vitrine** | c'est le seul écran immédiatement lisible sans dossier, et il est rangé derrière deux niveaux de navigation |
-| **Nom du dossier obligatoire** | à traiter **dans le chantier 7**, pas avant : ce qu'on exige dépend du mode — un particulier n'a pas de « référence dossier » |
-| **Revalorisation du suivi sur tout le catalogue** | *en partie traitée* : la clôture du catalogue sert de repli en euros et à moins de 45 jours. Restent les **1 106 supports cotant hors zone euro**, qui demanderaient un taux de change, et la fraîcheur — le catalogue est relevé au mieux mensuellement, là où Euronext l'est chaque jour |
+| **Temps 2 du rangement — cloisonnement** | le déménagement d'`app.js` en neuf fichiers est fait ; reste à passer chacun en IIFE exposant un objet, comme les moteurs. **Les modules ES sont exclus** : l'application s'ouvre par double-clic. Le gain est réel mais le diff touche chaque appel entre fichiers — à ne lancer qu'avec l'empreinte et l'inventaire en main |
+| **Taux de change** | **1 106 clôtures du catalogue** sont hors zone euro, dont 166 en pence. La valorisation de repli les refuse, faute de taux. Y remédier veut dire une source de change de plus, quotidienne, et son garde-fou |
+| **Univers ETF dégrossi** | 3 482 mots et 42 lignes de tableau sur une vue, trois cartes empilées. Un premier visiteur n'y comprend pas ce qu'on attend de lui. La ligne d'entonnoir a réglé la question « sur quoi choisit-il ? », pas celle du volume |
+| **Note du jour en vitrine** | le seul écran immédiatement lisible sans dossier, rangé derrière deux niveaux de navigation. En mode particulier elle est carrément masquée |
+| **Position des actions (A/B/C/D)** | **à trancher après la revue.** Les quatre options ne sont pas encore écrites : les consigner ici dès qu'elles le seront, avec ce qui les départage |
+| **Favicon et icônes d'écran d'accueil** | l'en-tête porte la pousse depuis le chantier 9, mais `icone-180/192/512.png` et le favicon portent **encore les trois barres** de l'ancien signe. Deux dessins pour une même application. `scripts/icones.py` les régénère depuis une géométrie SVG qui n'existe plus |
+| **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation. Ne concerne que le mode conseiller |
+| **Mode sombre** | retiré au chantier 9, faute d'une seconde palette arrêtée. À rouvrir comme une palette à définir, pas comme une bascule à rétablir |
