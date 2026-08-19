@@ -147,7 +147,30 @@ const TAILLE_ILLUSTRATION_BANNIERE = 180;
    le journal en occupent 91 %. À taille de boîte égale il paraissait plus
    petit — ce n'était pas la boîte qu'il fallait changer, c'était le
    cadrage du fichier. */
-const TAILLE_ILLUSTRATION_OUVERTURE = 210;
+const TAILLE_ILLUSTRATION_OUVERTURE = 240;
+
+/* CERTAINS DESSINS SONT EN LARGEUR, et à boîte égale ils pèsent moins :
+   la boîte est carrée, eux ne le sont pas. Le port occupe 70 % de la
+   hauteur de la sienne quand la balance ou le journal en occupent 91 % —
+   posés côte à côte, l'un paraît deux tiers de l'autre alors que les deux
+   font 240 pixels.
+
+   Le facteur porte sur le DESSIN, jamais sur la vue. C'est une propriété
+   du fichier, pas une exception d'écran : le jour où l'un d'eux est
+   redessiné plus haut, on retire sa ligne et rien d'autre ne bouge. Une
+   taille par vue aurait rendu la règle « une seule taille » fausse pour
+   toujours. */
+const ECHELLE_DESSIN = {
+  port:     1.34,   /* 70 % de hauteur */
+  contexte: 1.34,   /* 48 %, deux pupitres posés côte à côte */
+  rapport:  1.28,   /* 64 % */
+  carnet:   1.30,   /* 61 % */
+  cafe:     1.34    /* 28 %, deux tasses et une soucoupe : le plus plat */
+};
+
+function tailleOuverture(dessin) {
+  return Math.round(TAILLE_ILLUSTRATION_OUVERTURE * (ECHELLE_DESSIN[dessin] || 1));
+}
 
 function illustration(nom, taille) {
   return '<img class="illustration" src="img/' + nom + '.png" alt="" aria-hidden="true" ' +
@@ -170,10 +193,7 @@ const ILLUSTRATIONS_VUES = {
   questionnaire:'carnet',
   profil:       'profil',
   note:         'boussole',
-  /* `macro` n'a pas encore son dessin : son ouverture se monte sans, plutôt
-     que de reprendre la boussole de la note du jour — le doublon qu'on
-     vient de lever. Ajouter 'contexte' ici le jour où img/contexte.png
-     arrive, et rien d'autre. */
+  macro:        'contexte',
   allocation:   'balance',
   portefeuille: 'fiches',
   arbitrages:   'arbitrages',

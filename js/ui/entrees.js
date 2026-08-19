@@ -43,7 +43,10 @@ function brancher() {
     const g = GROUPES.find(x => x.id === b.dataset.groupe);
     if (!g) return;
     if (groupeDeVue(vueCourante()).id === g.id) window.scrollTo({ top: 0, behavior: 'smooth' });
-    else afficher(g.vues[0]);
+    /* La PREMIÈRE VUE VISIBLE du bloc, pas la première tout court : en mode
+       particulier, « Allocation » menait à la note du jour, que ce mode
+       masque. On arrivait sur un écran absent de sa propre navigation. */
+    else afficher(g.vues.find(v => !vueMasquee(v)) || g.vues[0]);
   });
 
   /* --- Actions de dossier, sur téléphone ---

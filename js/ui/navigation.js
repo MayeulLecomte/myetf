@@ -196,7 +196,7 @@ function poserOuvertures() {
        dessin emprunté à la vue d'à côté — c'est le doublon qu'on vient de
        lever, et il reviendrait par la porte de service. */
     bloc.innerHTML = ILLUSTRATIONS_VUES[vue]
-      ? illustration(ILLUSTRATIONS_VUES[vue], TAILLE_ILLUSTRATION_OUVERTURE) : '';
+      ? illustration(ILLUSTRATIONS_VUES[vue], tailleOuverture(ILLUSTRATIONS_VUES[vue])) : '';
     h.parentNode.insertBefore(bloc, h);
     bloc.appendChild(h);
 
@@ -252,8 +252,17 @@ function afficher(vue) {
 
 /** Vue actuellement à l'écran, pour la rafraîchir sans changer d'onglet. */
 function vueCourante() {
-  const b = $('#nav button.actif');
-  return b ? b.dataset.vue : 'accueil';
+  /* LA VUE AFFICHÉE, pas l'entrée de navigation allumée. Elle se lisait sur
+     `#nav button.actif` — et une vue MASQUÉE dans le mode courant n'a pas
+     d'entrée : la classe ne se posait nulle part, la fonction retombait sur
+     « accueil », et la barre basse allumait Aujourd'hui pendant qu'on lisait
+     la note du jour. Le ruban, lui, disparaissait.
+
+     Le défaut existait avant que la navigation ne descende en bas ; il ne se
+     voyait que sur téléphone, où le ruban et la barre étaient seuls à s'y
+     fier. Ils le sont maintenant partout. */
+  const s = $('section.vue.actif');
+  return s ? s.id.replace('vue-', '') : 'accueil';
 }
 
 /* La barre basse et le ruban segmenté se déduisent entièrement de la

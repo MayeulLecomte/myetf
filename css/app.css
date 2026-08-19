@@ -2203,13 +2203,13 @@ h2 .illustration {
 .vue > div[id$="-contenu"] > .tableau-defilant,
 .vue > div[id$="-contenu"] > .etat-vide,
 .vue > div[id$="-contenu"] > .bandeau-profil {
-  margin-bottom: 34px;
+  margin-bottom: 48px;
 }
 .vue > div[id$="-contenu"] > *:last-child,
 .vue > *:last-child { margin-bottom: 0; }
 
 /* Et les grilles elles-mêmes desserrent. */
-.grille { gap: 24px; }
+.grille { gap: 28px; }
 
 @media (min-width: 821px) {
   .vue > .carte, .vue > .grille, .vue > .message, .vue > .verdict,
@@ -2221,9 +2221,9 @@ h2 .illustration {
   .vue > div[id$="-contenu"] > .tableau-defilant,
   .vue > div[id$="-contenu"] > .etat-vide,
   .vue > div[id$="-contenu"] > .bandeau-profil {
-    margin-bottom: 56px;
+    margin-bottom: 76px;
   }
-  .grille { gap: 32px; }
+  .grille { gap: 40px; }
   .carte { padding: 30px 32px; }
 }
 
@@ -2239,7 +2239,7 @@ h2 .illustration {
    Le harnais mesure ses témoins en mise en page téléphone : c'est
    d'ailleurs la seule raison pour laquelle il ne voit pas ce changement. */
 @media (min-width: 821px) {
-  .grille.quatre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px 88px; }
+  .grille.quatre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 76px 150px; }
   .grille.quatre > .kpi:nth-child(1) { grid-column: 2; grid-row: 1; }
   .grille.quatre > .kpi:nth-child(2) { grid-column: 1; grid-row: 2; }
   .grille.quatre > .kpi:nth-child(3) { grid-column: 2; grid-row: 3; }
@@ -2260,7 +2260,7 @@ h2 .illustration {
   box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 26px;
-  padding: 24px 0 calc(var(--marge-barre) + 52px);
+  padding: 24px 0 calc(var(--marge-barre) + 96px);
   position: relative;
 }
 .entree-ouverture > .illustration { width: 160px !important; height: 160px !important; }
@@ -2344,7 +2344,12 @@ h2 .illustration {
   box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 26px;
-  padding: 24px 0 calc(var(--marge-barre) + 52px);
+  /* Le pied doit loger l'invitation à descendre SANS la coller au
+     sous-titre : elle est posée en absolu à `--marge-barre + 4`, il lui
+     faut donc sa hauteur plus de l'air au-dessus. Les dessins ayant
+     grandi, le bloc atteint sa hauteur naturelle et il n'y a plus de mou
+     à prendre ailleurs. */
+  padding: 24px 0 calc(var(--marge-barre) + 108px);
   text-align: center;
   position: relative;
 }
@@ -2352,7 +2357,12 @@ h2 .illustration {
 .ouverture-vue .intro { max-width: 46ch; margin: 0; }
 /* La taille vient de la feuille et non de `illustration()`, qui la pose
    en style d'attribut : sans `!important` le style en ligne l'emporte. */
-.ouverture-vue > .illustration { width: 210px !important; height: 210px !important; }
+/* PAS DE TAILLE ICI. Elle est posée par `tailleOuverture()`, en style
+   d'attribut, et varie selon le dessin — les uns sont en largeur, les
+   autres carrés. Une règle de feuille avec `!important` les ramènerait
+   tous à la même boîte et annulerait l'ajustement. On borne seulement la
+   largeur, pour qu'un dessin large ne pousse jamais la page. */
+.ouverture-vue > .illustration { max-width: 100%; height: auto; }
 
 /* L'invitation à descendre, en pied d'écran. */
 .ouverture-suite {
@@ -2370,7 +2380,9 @@ h2 .illustration {
 
 @media (max-width: 820px) {
   .ouverture-vue { gap: 20px; padding-bottom: 84px; }
-  .ouverture-vue > .illustration { width: 160px !important; height: 160px !important; }
+  /* Sur téléphone les dessins reculent d'un tiers, sans perdre leur
+     ajustement relatif : c'est une remise à l'échelle, pas une taille fixe. */
+  .ouverture-vue > .illustration { zoom: .75; }
 }
 
 /* ---------- (f) LE CONTENU PARAÎT AU DÉFILEMENT ----------

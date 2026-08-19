@@ -192,7 +192,7 @@ reconnaître le premier. Huit dessins ont été ajoutés pour lever les doublons
 | `carnet` | Questionnaire |
 | `profil` | Profil de risque |
 | `boussole` | Note du jour |
-| — | Contexte — **`img/contexte.png` n'existe pas encore.** Son ouverture se monte sans dessin plutôt que de reprendre la boussole : le doublon qu'on vient de lever reviendrait par la porte de service |
+| `contexte` | Contexte |
 | `balance` | Allocation cible |
 | `fiches` | Sélection des supports |
 | `arbitrages` | Arbitrages |
@@ -313,12 +313,37 @@ téléphone. Les avoir aux deux endroits laissait croire à deux choses
 différentes. Les boutons restent dans la page, masqués : la feuille les relaie
 par leur identifiant, et les retirer casserait ce relais.
 
-**Un dessin en largeur pèse moins qu'un dessin carré.** Le port occupait 85 %
-de sa boîte quand la balance ou le journal en occupent 91 % : à taille égale il
-paraissait plus petit. Ce n'était pas la boîte qu'il fallait changer, c'était
-le cadrage du fichier — recadré au plus près, il en occupe 98 %. Le réflexe
-d'ajouter une taille par vue aurait rendu la règle « une seule taille » fausse
-pour toujours.
+**Un dessin en largeur pèse moins qu'un dessin carré.** La boîte est carrée,
+eux ne le sont pas : le port occupe 70 % de la hauteur de la sienne, le café
+28 %, quand la balance ou le journal en occupent 91 %. Posés côte à côte, l'un
+paraît deux tiers de l'autre alors que les deux font 240 pixels.
+
+`ECHELLE_DESSIN`, dans `js/ui/socle.js`, rattrape l'écart. **Le facteur porte
+sur le DESSIN, jamais sur la vue** : c'est une propriété du fichier, pas une
+exception d'écran. Le jour où l'un d'eux est redessiné plus haut, on retire sa
+ligne et rien d'autre ne bouge. Une taille par vue aurait rendu la règle « une
+seule taille » fausse pour toujours.
+
+Corollaire : **la feuille de style ne pose plus de taille d'ouverture.** Une
+règle `width: … !important` sur `.ouverture-vue > .illustration` ramènerait
+tous les dessins à la même boîte et annulerait l'ajustement. Elle ne borne que
+la largeur, pour qu'un dessin large ne pousse jamais la page ; le téléphone les
+recule d'un quart avec `zoom`, ce qui préserve les rapports.
+
+## La vue courante se lit sur la vue, pas sur la navigation
+
+`vueCourante()` lisait `#nav button.actif`. **Une vue masquée dans le mode
+courant n'a pas d'entrée de navigation** : la classe ne se posait nulle part,
+la fonction retombait sur « accueil », et la barre basse allumait Aujourd'hui
+pendant qu'on lisait la note du jour — le ruban, lui, disparaissait.
+
+Elle lit maintenant `section.vue.actif`. Et la barre basse mène à **la première
+vue VISIBLE d'un bloc**, pas à la première tout court : en mode particulier,
+« Allocation » menait à la note du jour, que ce mode masque.
+
+Le défaut existait avant que la navigation ne descende ; il ne se voyait que
+sur téléphone, où le ruban et la barre étaient seuls à s'y fier. Ils le sont
+maintenant partout, et c'est ce qui l'a fait sortir.
 
 ## L'écran d'ouverture — trois secondes
 
@@ -350,9 +375,7 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`fe9a6d86` · 1 318 021 octets · 68 empreintes**, relevée après le passage
-d'aération. Les −3 200 octets sur `54fbfd24` sont les dessins retirés des
-états vides.
+**`00fd6cb3` · 1 318 553 octets · 68 empreintes**, relevée après l'aération.
 
 Repère utile comme étalon : `3491397b`, **1 303 613 octets**. L'agrandissement
 des dessins avait alors changé l'empreinte **sans changer d'un octet** le
