@@ -228,6 +228,14 @@ a:hover { text-decoration: underline; }
 .grille.trois { grid-template-columns: repeat(3, 1fr); }
 .grille.quatre { grid-template-columns: repeat(4, 1fr); }
 @media (max-width: 980px) { .grille.deux, .grille.trois, .grille.quatre { grid-template-columns: 1fr; } }
+/* Un enfant de grille vaut `min-width: auto` par défaut : il refuse de
+   descendre sous la largeur naturelle de son contenu. Une colonne de
+   `1fr` contenant un `.tableau-defilant` grandissait donc jusqu'aux
+   931 px du tableau au lieu de le laisser défiler, et c'est la PAGE
+   ENTIÈRE qui débordait — sur « Mes placements », 901 px de document
+   pour 390 px d'écran. Le conteneur de défilement ne sert à rien tant
+   que son parent peut grandir à sa place. */
+.grille > * { min-width: 0; }
 
 .intro { color: var(--texte-doux); max-width: 760px; font-size: 14px; }
 
@@ -541,6 +549,18 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 
 .filtres { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
 .filtres .champ { margin: 0; min-width: 150px; }
+/* Sur téléphone, un champ par ligne. Deux champs de 150 px tenaient encore
+   côte à côte sur un écran de 390 px, et `align-items: flex-end` alignait
+   alors le bas de « Situation au » sur le bas d'une pile de cinq boutons
+   d'arrêté : le champ de date descendait à 200 px sous son propre libellé,
+   contre la colonne voisine. Un champ par ligne, et l'alignement ne se pose
+   plus. La règle vient APRÈS `.filtres .champ` et non dans le bloc 640 px
+   plus haut — une media query n'ajoute aucune spécificité, c'est l'ordre du
+   fichier qui tranche, et placée avant elle était muette. */
+@media (max-width: 640px) {
+  .filtres { align-items: stretch; }
+  .filtres .champ { min-width: 100%; }
+}
 #table-univers { min-width: 1250px; }
 #table-univers select { min-width: 118px; }
 #table-univers select[data-etf=poche] { min-width: 210px; }
@@ -2074,6 +2094,29 @@ td .bouton.petit:hover { background: var(--bleu-pale); border-color: var(--bleu)
    optique plutôt que sur le bas de la boîte. */
 h2 .illustration {
   display: inline-block; vertical-align: -9px; margin-right: 10px;
+}
+
+/* En ouverture d'accueil : le dessin et les mots qu'il accompagne sur une
+   même ligne, le texte centré sur la hauteur du dessin. Le dessin ne se
+   comprime jamais (`flex: none`) et le texte a le droit de rétrécir
+   (`min-width: 0`) — sans quoi une ligne longue pousserait la colonne et
+   la page déborderait. */
+.ouverture { display: flex; align-items: center; gap: 28px; margin: 0 0 22px; }
+.ouverture > .illustration { flex: none; }
+.ouverture-texte { min-width: 0; flex: 1; }
+.ouverture-texte .accroche { margin-bottom: 0; }
+/* L'écran d'entrée respire un peu plus : ce qui le suit est un choix à
+   faire, pas la suite d'une lecture. */
+.ouverture-entree { margin-bottom: 26px; }
+
+/* Sur téléphone, la colonne est trop étroite pour deux : le dessin passe
+   au-dessus, et il rapetisse — 180 px sur 390 px d'écran mangeraient la
+   moitié de ce qu'on voit en arrivant. `!important` parce que la taille
+   est posée en style d'attribut par `illustration()`, qui l'emporte
+   autrement sur toute règle de feuille. */
+@media (max-width: 640px) {
+  .ouverture { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .ouverture > .illustration { width: 132px !important; height: 132px !important; }
 }
 
 /* Dans une bannière : le dessin est seul, et il est grand. */

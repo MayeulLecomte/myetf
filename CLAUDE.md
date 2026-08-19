@@ -95,6 +95,29 @@ qu'aucune déviation n'est appliquée dans le document remis.
 Lancer les deux harnais **avant et après** tout remaniement d'interface, et
 comparer — pas seulement constater qu'ils passent à la fin.
 
+- **Aucune vue ne doit déborder horizontalement sur téléphone.** Les deux
+  harnais ne le voient pas : ils vérifient qu'une vue se rend, pas qu'elle
+  tient dans la largeur. Le contrôle se fait à la main —
+  `document.documentElement.scrollWidth` doit valoir `clientWidth`, sur les
+  seize vues, dans les deux modes, sur un dossier vide puis complet.
+
+  Deux causes, et une seule est celle qu'on soupçonne. La seconde surtout :
+  **un enfant de grille ou de flex vaut `min-width: auto`** et refuse de
+  descendre sous la largeur de son contenu. Un `.tableau-defilant` en colonne
+  de grille ne défilait donc jamais — c'est la colonne qui grandissait, et la
+  page entière avec elle : 901 px de document pour 390 px d'écran sur « Mes
+  placements ». Le conteneur de défilement ne sert à rien tant que son parent
+  peut grandir à sa place. D'où `.grille > * { min-width: 0 }`.
+
+  L'autre cause est banale : **un `<table>` sans `.tableau-defilant` autour**.
+  Quatre en portaient la trace, dans le rapport et le backtest.
+
+- **Une media query n'ajoute aucune spécificité.** `.filtres .champ` déclaré
+  après un `@media (max-width: 640px)` qui touche le même sélecteur gagne, et
+  la règle mobile est muette sans que rien ne le signale. Placer la surcharge
+  APRÈS ce qu'elle surcharge, pas dans le bloc de media query le plus proche
+  du haut du fichier.
+
 ## Registre visuel — trait bleu
 
 Blanc et bleu, cartes filetées, illustrations au trait noir. Le registre
@@ -175,11 +198,17 @@ tête. `.banniere .illustration` en CSS répète la seconde et doit rester d'acc
 avec elle : le style en ligne posé par `illustration()` la couvre, un 150 oublié
 là ne se verrait donc que le jour où ce style disparaîtrait.
 
-**La bannière d'accueil ne paraît que sur un dossier neuf.** `banniereAccueil()`
-rend une chaîne vide dès que `dossierEntame()`, et la branche « Aujourd'hui » du
-dossier complet ne l'appelle pas du tout. L'accueil d'un dossier en cours n'a
-donc aucun dessin, et c'est voulu — vue tous les jours, une bannière cesse
-d'être vue. Ne pas le relire comme une illustration manquante.
+**Le dessin d'accueil ne paraît que sur un dossier neuf.** `ouvertureAccueil()`
+retombe sur la seule accroche courte dès que `dossierEntame()`, et la branche
+« Aujourd'hui » du dossier complet ne l'appelle pas du tout. L'accueil d'un
+dossier en cours n'a donc aucun dessin, et c'est voulu — vu tous les jours, il
+cesserait d'être vu. Ne pas le relire comme une illustration manquante.
+
+**Le dessin et l'accroche vont ensemble**, dans `.ouverture` : dessin à gauche,
+mots à droite, empilés sur téléphone où le dessin retombe à 132 px. Posés l'un
+sous l'autre comme ils l'étaient, le dessin restait seul à gauche d'une
+demi-page vide, entre une accroche et un titre qu'il n'introduisait ni l'une ni
+l'autre.
 
 **Trois règles, à ne pas relâcher :** un seul dessin par carte · jamais dans un
 tableau · jamais sur le papier. Les têtes de vue sont posées par
@@ -202,12 +231,17 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`3491397b` · 1 303 613 octets · 68 empreintes**, relevée avec
-`test/empreinte.html` après l'agrandissement des dessins. Elle valait
-`8a87e0fb` au terme du chantier 9, **pour le même nombre d'octets** : passer de
-30 à 38, de 140/150/160 à 180 change des chiffres sans en ajouter un seul. Un
-total inchangé et une empreinte différente, c'est exactement la signature d'une
-substitution — rien n'a été ajouté ni retiré au balisage.
+**`8826d079` · 1 303 829 octets · 68 empreintes**, relevée avec
+`test/empreinte.html` après les correctifs de mise en page mobile. Les
++216 octets sur l'empreinte précédente sont les balises ajoutées : quatre
+`.tableau-defilant` et les deux colonnes de `.ouverture`.
+
+Repère intermédiaire, utile comme étalon : `3491397b`, **1 303 613 octets** —
+l'agrandissement des dessins (30 → 38, 140/150/160 → 180) avait changé
+l'empreinte **sans changer d'un octet** le total, puisqu'il ne substituait que
+des chiffres. Un total inchangé et une empreinte différente : la signature
+d'une substitution pure. Un total qui bouge veut dire que du balisage est
+apparu, et il faut alors savoir lequel.
 
 Elle contient des dates du jour : elle **se relève avant, se compare après**, le
 même jour et sur le même catalogue. Ce n'est pas un fichier à versionner.

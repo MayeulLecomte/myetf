@@ -155,14 +155,24 @@ function ouvrirPoche(poche) {
    fonctionner sans avoir rien à saisir.
    ------------------------------------------------------------ */
 
-/* La bannière d'accueil : un café pour le conseiller — deux tasses, on
-   travaille à deux —, une pousse pour le particulier, qui fait pousser
-   son épargne. Elle ne paraît QUE sur un dossier neuf : tous les jours,
-   elle cesserait d'être vue. */
-function banniereAccueil() {
-  if (dossierEntame()) return '';
-  return '<div class="banniere">' +
-    illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe', TAILLE_ILLUSTRATION_BANNIERE) + '</div>';
+/* L'ouverture de l'accueil : le dessin et les mots qu'il accompagne sur
+   une même ligne. Un café pour le conseiller — deux tasses, on travaille
+   à deux —, une pousse pour le particulier, qui fait pousser son épargne.
+
+   Ils étaient posés l'un SOUS l'autre, et sur un écran large le dessin
+   restait seul à gauche d'une demi-page vide, entre l'accroche et le
+   titre qu'il n'introduisait ni l'une ni l'autre. Côte à côte, il ouvre
+   le texte au lieu de l'interrompre.
+
+   Le dessin ne paraît QUE sur un dossier neuf : vu tous les jours, il
+   cesserait d'être vu. Sur un dossier entamé il ne reste que l'accroche
+   courte, seule et sans dessin — c'est la même règle qu'avant. */
+function ouvertureAccueil() {
+  if (dossierEntame()) return accroche();
+  return '<div class="ouverture">' +
+    illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe', TAILLE_ILLUSTRATION_BANNIERE) +
+    '<div class="ouverture-texte">' + accroche() + '</div>' +
+  '</div>';
 }
 
 function accroche() {
@@ -257,11 +267,13 @@ function remplirExemple(complet) {
    voit donc jamais et s'ouvre en conseiller, comme avant.
    ------------------------------------------------------------ */
 function ecranEntree() {
-  return '<div class="banniere banniere-entree">' + illustration('logo', TAILLE_ILLUSTRATION_BANNIERE) + '</div>' +
-    '<div class="accroche">' +
-      '<p><strong>myetf construit et suit une allocation d\'ETF</strong> — du questionnaire de ' +
-      'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +
-      fraicheurDonnees() +
+  return '<div class="ouverture ouverture-entree">' +
+      illustration('logo', TAILLE_ILLUSTRATION_BANNIERE) +
+      '<div class="ouverture-texte"><div class="accroche">' +
+        '<p><strong>myetf construit et suit une allocation d\'ETF</strong> — du questionnaire de ' +
+        'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +
+        fraicheurDonnees() +
+      '</div></div>' +
     '</div>' +
     '<h2>' + titreSouligne('Pour commencer') + '</h2>' +
     '<p class="intro">Ce choix ne change ni les calculs ni le dossier : seulement le vocabulaire et ' +
@@ -293,8 +305,7 @@ function rendreAccueil() {
   /* --- Dossier incomplet : dire ce qui manque, pas « complétez le dossier » --- */
   if (aFaire.length) {
     c.innerHTML =
-      accroche() +
-      banniereAccueil() +
+      ouvertureAccueil() +
       filPoches() +
       '<h2>' + titreSouligne('Remplissez le dossier') + '</h2>' +
       '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont ' +

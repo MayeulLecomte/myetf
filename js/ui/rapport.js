@@ -266,14 +266,14 @@ function blocSituationRapport(numero) {
        coté ce jour-là, alors qu'une partie vient d'un relevé antérieur. */
     '<p style="font-size:11.5px;color:#444">' + echapper(origineDesCours(s)) + '</p>' +
 
-    '<table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Valorisation</th>' +
+    '<div class="tableau-defilant"><table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Valorisation</th>' +
     '<th class="num">Poids</th></tr></thead><tbody>' +
     s.lignes.map(l => '<tr><td>' + echapper(l.libelle) + '</td>' +
       '<td style="font-family:monospace;font-size:11px">' + echapper(l.isin) + '</td>' +
       '<td class="num">' + euro(l.montant) + '</td>' +
       '<td class="num">' + pct(l.poids) + '</td></tr>').join('') +
     '</tbody><tfoot><tr><td colspan="2">Total</td><td class="num">' + euro(s.total) +
-    '</td><td class="num">100,0 %</td></tr></tfoot></table>' +
+    '</td><td class="num">100,0 %</td></tr></tfoot></table></div>' +
 
     (classes.length ? '<p style="margin-top:10px">Répartition par classe d\'actifs : ' +
       classes.map(cl => echapper(LIBELLES_CLASSES[cl] || cl) + ' ' + pct(s.parClasse[cl].poids)).join(' · ') +
@@ -521,7 +521,7 @@ function rendreRapport() {
     '</div>' +
 
     titre('Supports retenus') +
-      '<table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Note</th><th class="num">Frais</th>' +
+      '<div class="tableau-defilant"><table><thead><tr><th>Support</th><th>ISIN</th><th class="num">Note</th><th class="num">Frais</th>' +
       '<th class="num">Poids</th><th class="num">Montant</th></tr></thead><tbody>' +
       sel.lignes.map(l => '<tr><td>' + echapper(l.etf.nom) + '</td>' +
         '<td style="font-family:monospace;font-size:11px">' + echapper(l.etf.isin) + '</td>' +
@@ -529,7 +529,7 @@ function rendreRapport() {
         '<td class="num">' + pct(l.etf.ter, 2) + '</td>' +
         '<td class="num">' + pct(l.poids) + '</td><td class="num">' + euro(l.montant) + '</td></tr>').join('') +
       '</tbody><tfoot><tr><td colspan="3">Frais courants moyens pondérés</td><td class="num">' + pct(sel.terMoyen, 2) + '</td>' +
-      '<td class="num">100,0 %</td><td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td></tr></tfoot></table>' +
+      '<td class="num">100,0 %</td><td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td></tr></tfoot></table></div>' +
       '<p style="font-size:11px;color:var(--gris-doux);margin-top:8px">Ces frais s\'ajoutent aux frais de gestion du contrat ' +
       'et, le cas échéant, aux frais d\'arbitrage.</p>' +
     '</div>' +

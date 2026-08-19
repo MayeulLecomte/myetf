@@ -660,7 +660,7 @@ function rendreBacktest() {
       '</div>' +
 
       '<div class="carte"><h3>Comparaison</h3>' +
-        '<table><thead><tr><th>Allocation</th><th class="num">Cumul</th><th class="num">Par an</th>' +
+        '<div class="tableau-defilant"><table><thead><tr><th>Allocation</th><th class="num">Cumul</th><th class="num">Par an</th>' +
         '<th class="num">Volat.</th><th class="num">Pire année</th></tr></thead><tbody>' +
         profils.map(p => '<tr' + (p.profil.id === profil.id ? ' style="background:var(--bleu-pale);font-weight:600"' : '') + '>' +
           '<td><span class="pastille" style="background:' + p.profil.couleur + '"></span>' + p.profil.nom + '</td>' +
@@ -674,7 +674,7 @@ function rendreBacktest() {
           '<td class="num">' + signe(x.annualisee === null ? x.twrAnnualise : x.annualisee) + '</td>' +
           '<td class="num">' + x.volatilite.toFixed(1).replace('.', ',') + '</td>' +
           '<td class="num">' + signe(x.pireAnnee.rendement) + '</td></tr>').join('') +
-        '</tbody></table>' +
+        '</tbody></table></div>' +
         '<p class="intro" style="font-size:11px;margin-top:10px">Sur une période où les actions dominent, un profil ' +
         'prudent paraîtra toujours médiocre. Ce tableau mesure la cohérence du dispositif de risque, pas la qualité ' +
         'd\'un profil : le bon profil est celui que le client peut tenir dans la pire année, ici ' +
@@ -697,7 +697,7 @@ function rendreBacktest() {
     '</div>' +
 
     (reb ? '<div class="carte"><h3>Le rééquilibrage annuel a-t-il servi ?</h3>' +
-      '<table><thead><tr><th>Gestion</th><th class="num">Cumul</th><th class="num">Volatilité</th>' +
+      '<div class="tableau-defilant"><table><thead><tr><th>Gestion</th><th class="num">Cumul</th><th class="num">Volatilité</th>' +
       '<th class="num">Pire année</th><th class="num">Capital final</th></tr></thead><tbody>' +
       '<tr><td>Rééquilibrage annuel</td><td class="num">' + signe(reb.avec.perfCumulee) + '</td>' +
       '<td class="num">' + pct(reb.avec.volatilite) + '</td><td class="num negatif">' + signe(reb.avec.pireAnnee.rendement) + '</td>' +
@@ -705,7 +705,7 @@ function rendreBacktest() {
       '<tr><td>Aucun arbitrage (buy &amp; hold)</td><td class="num">' + signe(reb.sans.perfCumulee) + '</td>' +
       '<td class="num">' + pct(reb.sans.volatilite) + '</td><td class="num negatif">' + signe(reb.sans.pireAnnee.rendement) + '</td>' +
       '<td class="num">' + euro(reb.sans.capitalFinal) + '</td></tr>' +
-      '</tbody></table>' +
+      '</tbody></table></div>' +
       '<p class="intro" style="font-size:12px;margin-top:10px">' +
       (reb.gainPerf >= 0
         ? 'Sur cette période, le rééquilibrage a ajouté ' + signe(reb.gainPerf) + ' de performance cumulée.'
