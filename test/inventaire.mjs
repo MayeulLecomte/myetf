@@ -55,21 +55,44 @@ function empreinte(texte) {
 }
 
 /* Une déclaration commence AU-DESSUS de sa ligne `function` : les
-   commentaires qui la précèdent lui appartiennent. On remonte donc tant que
-   la ligne est un commentaire ou un blanc, et l'on s'arrête au premier
-   contenu qui n'en est pas un. */
+   commentaires qui la précèdent lui appartiennent et voyagent avec elle.
+
+   On remonte donc, en traitant un bloc /* … *\/ COMME UN TOUT. La première
+   version se contentait de reconnaître une ligne « qui ressemble à du
+   commentaire », et s'arrêtait au milieu des bandeaux de ce dépôt — dont les
+   lignes intérieures ne commencent ni par `*` ni par `//` mais par du texte
+   indenté. Elle emportait alors la seule ligne de fermeture, laissant un
+   `*\/` orphelin en tête du fichier d'arrivée. */
 function debutReel(lignes, i) {
   let d = i;
   while (d > 0) {
     const p = lignes[d - 1].trim();
-    const commentaire = p.startsWith('/*') || p.startsWith('*') || p.startsWith('//') ||
-                        p.endsWith('*/') || p === '';
-    if (!commentaire) break;
-    d--;
+    if (p === '') { d--; continue; }
+    if (p.startsWith('//')) { d--; continue; }
+    if (p.endsWith('*/')) {
+      /* Remonter jusqu'à l'ouverture du bloc, quoi qu'il y ait entre les deux. */
+      let o = d - 1;
+      while (o > 0 && lignes[o].indexOf('/*') < 0) o--;
+      if (lignes[o].indexOf('/*') < 0) break;
+      d = o;
+      continue;
+    }
+    break;
   }
   /* Les lignes blanches de tête ne sont pas du texte : on les rend. */
   while (d < i && lignes[d].trim() === '') d++;
-  return d;
+  return Math.max(d, plancher(lignes));
+}
+
+/* Le bandeau de tête d'un fichier le décrit, LUI. Il ne suit pas la première
+   déclaration venue quand elle déménage : aucune tranche ne commence
+   au-dessus de cette ligne. */
+function plancher(lignes) {
+  let i = 0;
+  while (i < lignes.length && lignes[i].trim() === '') i++;
+  if (i >= lignes.length || !lignes[i].trim().startsWith('/*')) return 0;
+  while (i < lignes.length && lignes[i].indexOf('*/') < 0) i++;
+  return Math.min(i + 1, lignes.length);
 }
 
 function relever(fichier) {
@@ -85,7 +108,13 @@ function relever(fichier) {
 
   return departs.map((d, k) => {
     const fin = k + 1 < departs.length ? departs[k + 1].debut : lignes.length;
-    const texte = lignes.slice(d.debut, fin).join('\n').replace(/\s+$/, '');
+    /* Les lignes blanches de tête et de queue ne font pas partie de la
+       déclaration : deux fichiers qui l'espacent différemment la portent
+       pourtant à l'identique, et l'empreinte doit le dire. */
+    const brut = lignes.slice(d.debut, fin);
+    while (brut.length && brut[0].trim() === '') brut.shift();
+    while (brut.length && brut[brut.length - 1].trim() === '') brut.pop();
+    const texte = brut.join('\n');
     return { nom: d.nom, fichier, lignes: fin - d.debut, somme: empreinte(texte) };
   });
 }
