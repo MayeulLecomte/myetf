@@ -276,6 +276,29 @@ montant saisi et la situation cesse d'être annoncée fiable.
 `cotation()` applique **la même règle, par le même code** : deux garde-fous
 finiraient par diverger.
 
+## Les témoins visuels, filet du style
+
+Une feuille de style n'a pas de compilateur, et rien n'y signale qu'une règle
+en écrase une autre. Un audit du **texte** de la feuille ne sert à rien ici :
+les classes sont assemblées à l'exécution, et une lecture statique rend une
+trentaine de faux positifs.
+
+Ce qui se vérifie, c'est le **résultat**. `test/fumee.html` mesure dix éléments
+témoins dans le navigateur — entrée du ruban, carte, bouton, anneau de poche,
+badge, tableau, nom de support cliquable, indicateur, texte d'aide, ligne de
+contrôle — plus la barre basse. Chacun porte une propriété qui doit tenir quoi
+qu'on fasse au style : **un anneau reste rond, un bouton reste cliquable, un
+badge reste une pastille.**
+
+Ce sont des **planchers, pas des maquettes** : un remaniement de style doit
+pouvoir tout redessiner sans les faire tomber. Si un témoin gêne une intention
+de dessin légitime, c'est le témoin qu'on rediscute — mais on le rediscute,
+on ne le supprime pas en passant.
+
+**Le cadre du harnais fait 430 px : les témoins sont mesurés en mise en page
+TÉLÉPHONE.** La colonne latérale y est en `display:none` — la mesurer n'a pas
+de sens, c'est le ruban qui navigue.
+
 ## Pistes — reportées, pas abandonnées
 
 **Un chantier de rangement est à faire AVANT le chantier 9 (design)** : on ne
@@ -288,7 +311,7 @@ Relevées à la relecture « premier dossier », hors chantier à ce stade :
 
 | Piste | Ce qui accroche |
 |---|---|
-| **Rangement — à faire avant le chantier 9** | un seul espace de noms pour `js/app.js` et `js/data/*.js`, 162 noms globaux, trois collisions en une séance |
+| **Cloisonnement — temps 2 du rangement** | le déménagement est fait ; reste à passer chaque fichier de `js/ui/` en IIFE exposant un objet, comme les moteurs. À décider **après** le chantier 9 |
 | **Refonte de l'univers ETF** | 3 482 mots et 42 lignes de tableau sur une vue, trois cartes empilées ; un premier visiteur n'y comprend pas ce qu'on attend de lui |
 | **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation |
 | **Note du jour en vitrine** | c'est le seul écran immédiatement lisible sans dossier, et il est rangé derrière deux niveaux de navigation |

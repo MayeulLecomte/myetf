@@ -387,6 +387,86 @@ async function lancer() {
     Etat.suiviAmorce = amorceInitiale;
   }
 
+  /* --- Les témoins visuels ---
+     Le filet du remaniement de style à venir.
+
+     Une feuille de style n'a pas de compilateur. Rien n'y signale qu'une
+     règle en écrase une autre : la pastille d'infobulle a pris le nom des
+     textes d'aide et les a pliés dans un carré de quatorze pixels, sans
+     qu'une seule erreur ne se lève. Un audit du TEXTE de la feuille ne
+     l'aurait pas vue non plus — les classes sont assemblées à l'exécution,
+     et une lecture statique rend une trentaine de faux positifs.
+
+     Ce qui se vérifie, c'est le RÉSULTAT : dix éléments témoins, mesurés
+     dans le navigateur. Chacun porte une propriété qui doit tenir quoi
+     qu'on fasse au style — une pastille reste ronde, un bouton reste
+     cliquable, un badge reste plus petit qu'un titre. Les valeurs sont des
+     planchers, pas des maquettes : le chantier de style doit pouvoir tout
+     redessiner sans les faire tomber. */
+  groupe('Témoins visuels');
+  {
+    const largeurCadre = cadre.getBoundingClientRect().width;
+    dossierComplet(w, Etat);
+
+    /* Un témoin nomme sa vue, son sélecteur, et ce qui doit tenir. */
+    const TEMOINS = [
+      /* Le cadre fait 430 px : c'est la mise en page TÉLÉPHONE. La colonne
+         latérale y est en display:none et n'a aucune géométrie — c'est le
+         ruban qui navigue, et c'est donc lui qu'on mesure. Le premier jet
+         visait la colonne et criait au loup sur une règle parfaitement
+         correcte. */
+      { vue: 'portefeuille', sel: '#sous-nav button[data-vue]', quoi: 'une entrée du ruban',
+        tient: e => e.h >= 24 && e.l >= 40, dit: 'reste cliquable — au moins 24 px de haut et 40 de large' },
+      { vue: 'accueil', sel: '.carte:not(.kpi)', quoi: 'une carte',
+        tient: e => e.l >= 200 && e.h >= 40, dit: 'occupe la largeur qu\'on lui donne' },
+      { vue: 'accueil', sel: '.bouton', quoi: 'un bouton',
+        tient: e => e.h >= 28 && e.l >= 40, dit: 'garde une surface tactile' },
+      { vue: 'accueil', sel: '.fil-anneau', quoi: 'l\'anneau d\'une poche',
+        tient: e => e.h > 20 && Math.abs(e.l - e.h) <= e.l * 0.15, dit: 'reste rond' },
+      /* Un badge s'enroule sur plusieurs lignes dans une colonne étroite :
+         c'est la mise en page qui veut ça, pas un défaut. On contrôle qu'il
+         reste un élément en ligne et qu'il ne prend pas toute la largeur. */
+      { vue: 'portefeuille', sel: '.badge', quoi: 'un badge',
+        tient: e => e.h > 10 && e.l >= 20 && e.l <= 200, dit: 'reste une pastille, pas un pavé' },
+      { vue: 'portefeuille', sel: 'table', quoi: 'un tableau',
+        tient: e => e.l >= 200 && e.h >= 40, dit: 'se déploie' },
+      { vue: 'portefeuille', sel: '.lien-support', quoi: 'un nom de support cliquable',
+        tient: e => e.l >= 40 && e.h >= 10, dit: 'reste atteignable' },
+      { vue: 'situation', sel: '.kpi', quoi: 'un indicateur',
+        tient: e => e.l >= 100 && e.h >= 50, dit: 'garde sa carte' },
+      { vue: 'macro', sel: '#indicateurs .aide', quoi: 'un texte d\'aide',
+        tient: e => e.l >= 60, dit: 'se déploie sur sa largeur' },
+      { vue: 'rapport', sel: '.controle', quoi: 'une ligne de contrôle',
+        tient: e => e.l >= 150 && e.h >= 20, dit: 'reste lisible' }
+    ];
+
+    const tombes = [], absents = [];
+    TEMOINS.forEach(t => {
+      try { w.afficher(t.vue); } catch (e) { absents.push(t.quoi + ' (vue en erreur)'); return; }
+      const el = d.querySelector('#vue-' + t.vue + ' ' + t.sel) || d.querySelector(t.sel);
+      if (!el) { absents.push(t.quoi + ' — ' + t.sel); return; }
+      const r = el.getBoundingClientRect();
+      const c = w.getComputedStyle(el);
+      const mesure = { l: r.width, h: r.height };
+      if (c.display === 'none' || c.visibility === 'hidden') { tombes.push(t.quoi + ' : invisible'); return; }
+      if (largeurCadre >= 200 && !t.tient(mesure))
+        tombes.push(t.quoi + ' ' + t.dit + ' — mesuré ' + Math.round(mesure.l) + '×' + Math.round(mesure.h));
+    });
+
+    ok(absents.length === 0, 'les ' + TEMOINS.length + ' témoins visuels sont présents dans la page' +
+       (absents.length ? ' — introuvables : ' + absents.join(', ') : ''));
+    ok(tombes.length === 0, 'chaque témoin garde sa géométrie et sa visibilité' +
+       (tombes.length ? ' — ' + tombes.join(' · ') : ''));
+
+    /* La barre basse ne paraît que sur un téléphone : elle se contrôle sur
+       sa règle, pas sur sa géométrie — le cadre du harnais est trop étroit
+       pour que la requête de média bascule de façon fiable. */
+    const tabbar = d.getElementById('tabbar');
+    ok(!!tabbar && tabbar.querySelectorAll('button[data-groupe]').length >= 3,
+       'la barre basse mobile porte ses destinations — ' +
+       (tabbar ? tabbar.querySelectorAll('button[data-groupe]').length : 0) + ' groupes');
+  }
+
   /* --- Les textes d'aide ne sont pas écrasés ---
      Une pastille d'infobulle a un jour pris le nom de classe des textes
      d'aide. Les règles de ces textes ne fixant ni `display` ni dimensions,
