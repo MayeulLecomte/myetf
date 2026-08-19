@@ -293,6 +293,33 @@ la colonne les portait. La colonne partie, un « ••• » est ajouté à la 
 basse — masqué sur téléphone, où l'en-tête fait déjà le travail. Il ouvre la
 même feuille : une seule feuille, deux portes, jamais deux contenus à tenir.
 
+## Un seul dessin par écran, et un seul « ••• » par largeur
+
+**Les états vides n'ont plus de dessin.** Ils en portaient un — un carnet
+quand le questionnaire manquait, un port quand c'était le portefeuille.
+Depuis que chaque vue s'ouvre sur le sien, cet état arrive juste dessous : on
+voyait la balance de l'allocation, puis un carnet, sur le même écran. Le
+second ne disait rien que le titre « Une étape manque » ne dise déjà.
+
+**Le « ••• » ne paraît qu'une fois.** Sur téléphone c'est celui de l'en-tête,
+sur écran large celui de la barre basse. La règle qui masque celui de la barre
+vit APRÈS `.tabbar button`, qui pose `display: flex` : placée avant, elle était
+muette — une media query n'ajoute aucune spécificité, c'est l'ordre du fichier
+qui tranche. Le piège s'est déjà refermé une fois, sur `.filtres .champ`.
+
+**Les quatre actions de dossier ont quitté l'en-tête.** Enregistrer, exporter,
+importer, nouveau dossier vivent derrière le « ••• », qui les portait déjà sur
+téléphone. Les avoir aux deux endroits laissait croire à deux choses
+différentes. Les boutons restent dans la page, masqués : la feuille les relaie
+par leur identifiant, et les retirer casserait ce relais.
+
+**Un dessin en largeur pèse moins qu'un dessin carré.** Le port occupait 85 %
+de sa boîte quand la balance ou le journal en occupent 91 % : à taille égale il
+paraissait plus petit. Ce n'était pas la boîte qu'il fallait changer, c'était
+le cadrage du fichier — recadré au plus près, il en occupe 98 %. Le réflexe
+d'ajouter une taille par vue aurait rendu la règle « une seule taille » fausse
+pour toujours.
+
 ## L'écran d'ouverture — trois secondes
 
 Le signe seul sur le fond de page, puis il s'efface en fondu. **Trois
@@ -323,16 +350,16 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`54fbfd24` · 1 321 221 octets · 68 empreintes**, relevée après le chantier
-des ouvertures. Les +17 392 octets sur l'empreinte précédente (`8826d079`,
-1 303 829) sont le balisage des seize ouvertures de vue — dessin, titre,
-sous-titre, invitation à descendre — et le « ••• » de la barre basse.
+**`fe9a6d86` · 1 318 021 octets · 68 empreintes**, relevée après le passage
+d'aération. Les −3 200 octets sur `54fbfd24` sont les dessins retirés des
+états vides.
 
 Repère utile comme étalon : `3491397b`, **1 303 613 octets**. L'agrandissement
 des dessins avait alors changé l'empreinte **sans changer d'un octet** le
 total, puisqu'il ne substituait que des chiffres. Un total inchangé et une
 empreinte différente : la signature d'une substitution pure. Un total qui bouge
-veut dire que du balisage est apparu, et il faut alors savoir lequel.
+veut dire que du balisage est apparu ou a disparu, et il faut alors savoir
+lequel.
 
 ## La liste de contrôle avant impression ne bloque rien
 

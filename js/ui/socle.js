@@ -139,10 +139,15 @@ const TAILLE_ILLUSTRATION_TITRE = 38;
 const TAILLE_ILLUSTRATION_BANNIERE = 180;
 /* En ouverture de vue : plus grand que dans un titre, plus petit qu'une
    bannière d'accueil — c'est le sujet du premier écran, pas sa décoration.
-   Il rapetisse à 132 px sur téléphone, où 168 px mangeraient la moitié de
-   ce qu'on voit en arrivant (feuille de style, pas ici : le style en ligne
-   posé par `illustration()` est surchargé en `!important`). */
-const TAILLE_ILLUSTRATION_OUVERTURE = 168;
+   Il rapetisse à 160 px sur téléphone (feuille de style, pas ici : le style
+   en ligne posé par `illustration()` y est surchargé en `!important`).
+
+   Le port a été recadré au passage : c'est un dessin EN LARGEUR, et centré
+   dans un carré il ne remplissait que 85 % de sa boîte quand la balance ou
+   le journal en occupent 91 %. À taille de boîte égale il paraissait plus
+   petit — ce n'était pas la boîte qu'il fallait changer, c'était le
+   cadrage du fichier. */
+const TAILLE_ILLUSTRATION_OUVERTURE = 210;
 
 function illustration(nom, taille) {
   return '<img class="illustration" src="img/' + nom + '.png" alt="" aria-hidden="true" ' +
