@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>myetf — empreinte des vues</title>
+<!--
+   ============================================================
+   EMPREINTE DES VUES
+   ------------------------------------------------------------
+   Un outil de déménagement, pas un test.
+
+   `test/fumee.html` vérifie qu'une vue ne lève pas d'erreur et
+   ne rend pas une page blanche. C'est beaucoup, et c'est très
+   loin de suffire quand on déplace quatre mille lignes d'un
+   fichier à l'autre : un attribut perdu, une espace en moins,
+   un ordre de concaténation inversé passent tous ces contrôles
+   sans broncher.
+
+   Cette page rend les seize vues dans les DEUX modes et sur
+   DEUX dossiers — un vide, un complet —, et calcule une
+   empreinte du HTML produit. Un déménagement pur doit rendre
+   exactement les mêmes octets. Une seule empreinte qui bouge, et
+   le déplacement a changé quelque chose.
+
+   Les deux dossiers ne sont pas un luxe. La première version de
+   cette page n'empreignait que le dossier complet : une espace
+   ajoutée dans « Remplissez le dossier » — un titre qui ne
+   s'affiche QUE sur un dossier vide — passait sans que l'empreinte
+   bouge d'un bit. La moitié de chaque vue, celle que voit un
+   utilisateur qui découvre l'outil, n'était pas couverte.
+
+   CE QU'ELLE NE PRÉTEND PAS ÊTRE. L'empreinte n'est pas un
+   fichier de référence à versionner : elle contient des dates
+   du jour, et changerait demain sans que rien n'ait bougé. Elle
+   se relève AVANT le déménagement et se compare APRÈS, le même
+   jour, sur la même machine, avec le même catalogue.
+
+   Elle a besoin d'un serveur, comme le test de fumée.
+
+       python3 -m http.server 8777 --directory .
+       puis ouvrir  http://localhost:8777/test/empreinte.html
+
+   ============================================================
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --fond: #f4f6fa; --surface: #fff; --texte: #0f1419; --doux: #5b6673;
+    --ligne: rgba(0,0,0,.1); --vert: #1a8a4c; --rouge: #cf3329;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fond: #0b0d12; --surface: #171a21; --texte: #f2f4f7; --doux: #98a2b0;
+            --ligne: rgba(255,255,255,.12); }
+  }
+  body { margin: 0; padding: 28px; background: var(--fond); color: var(--texte);
+         font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  h1 { font-size: 19px; margin: 0 0 4px; }
+  .intro { color: var(--doux); max-width: 78ch; margin: 0 0 20px; }
+  #bilan { font-weight: 650; padding: 12px 16px; border-radius: 12px; margin-bottom: 18px;
+           background: var(--surface); border: 1px solid var(--ligne); }
+  table { border-collapse: collapse; background: var(--surface); width: 100%;
+          border: 1px solid var(--ligne); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; padding: 7px 12px; border-top: 1px solid var(--ligne); font-size: 13px; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--doux); }
+  td.mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  iframe { position: absolute; left: -9999px; width: 430px; height: 900px; border: 0; }
+  textarea { width: 100%; height: 130px; margin-top: 16px; font-family: ui-monospace, Menlo, monospace;
+             font-size: 11px; background: var(--surface); color: var(--texte);
+             border: 1px solid var(--ligne); border-radius: 10px; padding: 10px; }
+</style>
+</head>
+<body>
+<h1>Empreinte des vues</h1>
+<p class="intro">Seize vues rendues dans les deux modes, sur un dossier vide puis sur un dossier
+complet. Un déménagement pur doit rendre exactement les mêmes octets. À relever avant, à comparer
+après — le même jour, l'empreinte contient des dates.</p>
+<div id="bilan">Rendu en cours…</div>
+<table><thead><tr><th>Dossier</th><th>Mode</th><th>Vue</th><th class="num">Octets</th><th>Empreinte</th></tr></thead>
+<tbody id="corps"></tbody></table>
+<textarea id="json" readonly spellcheck="false"></textarea>
+<iframe id="app" title="Application sous empreinte"></iframe>
+
+<script>
+/* Empreinte déterministe et lisible — djb2, en hexadécimal. Il ne s'agit pas
+   de résister à une collision volontaire, mais de repérer un octet qui a
+   bougé : n'importe quelle somme fait l'affaire, pourvu qu'elle soit stable
+   d'une exécution à l'autre. */
+function empreinte(texte) {
+  let h = 5381;
+  for (let i = 0; i < texte.length; i++) h = ((h * 33) ^ texte.charCodeAt(i)) >>> 0;
+  return ('00000000' + h.toString(16)).slice(-8);
+}
+
+/* Le même dossier que le test de fumée, pour que les deux outils parlent du
+   même cas. Rien n'y est tiré au hasard ni daté à l'exécution. */
+function dossierFige(w, Etat) {
+  const lien = w.document.getElementById('lien-remplir-demo');
+  if (lien) lien.click();
+  Etat.identite.nom = 'Dossier d\'empreinte';
+  Etat.identite.montant = 250000;
+  Etat.identite.enveloppe = 'AV';
+  Etat.identite.contratAV = 'av-large';
+  Etat.detention = [
+    { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World', montant: 120000, pvLatente: 20000, quantite: 900 },
+    { isin: 'IE00B4WXJJ64', libelle: 'iShares Core € Govt Bond', montant: 60000, pvLatente: 0, quantite: 500 },
+    { isin: 'IE00B4ND3602', libelle: 'iShares Physical Gold', montant: 20000, pvLatente: 5000, quantite: 400 }
+  ];
+  Etat.revenus.besoin = 12000;
+  Etat.macroChoix = { croissance: 'stabilisation', inflation: 'cible' };
+  /* Le suivi est réputé amorcé : sans ce drapeau, la synchronisation ne
+     toucherait pas à une détention saisie à la main, et la moitié des vues
+     du suivi ne montrerait pas ce qu'on veut empreindre. */
+  Etat.suiviAmorce = true;
+}
+
+async function lancer() {
+  const cadre = document.getElementById('app');
+  try { localStorage.removeItem('allocation-etf-dossier-v1'); } catch (e) { /* origine restreinte */ }
+
+  await new Promise((ok, ko) => {
+    cadre.onload = ok;
+    cadre.onerror = () => ko(new Error('cadre non chargé'));
+    cadre.src = '../index.html?empreinte=1';
+  });
+
+  const w = cadre.contentWindow, d = cadre.contentDocument;
+  const lire = nom => w.eval(nom);
+  const Etat = lire('Etat');
+
+  /* Le catalogue porte l'indice, les performances et les clôtures de repli :
+     sans lui, l'univers, la fiche et « Méthode & limites » rendraient un
+     autre HTML, et l'empreinte dépendrait de l'ordre d'arrivée du réseau. */
+  await new Promise(ok => { w.chargerCatalogue(ok); setTimeout(ok, 15000); });
+
+  const vues = [...d.querySelectorAll('.vue')].map(v => v.id.replace(/^vue-/, ''));
+  const modes = ['conseiller', 'particulier'];
+  const releve = {}, rangs = [];
+  let octets = 0, erreurs = [];
+
+  /* L'état vierge tel que le code le pose : on repart de la valeur d'usine
+     de chaque clé plutôt que d'en inventer une, pour empreindre ce que voit
+     réellement quelqu'un qui ouvre l'application pour la première fois. */
+  const vierge = JSON.parse(JSON.stringify({
+    identite: {}, reponses: {}, macroChoix: {}, scenariosManuels: null,
+    detention: [], apport: 0, journal: [], revenus: { besoin: 0, frequence: 'mensuelle' },
+    situations: [], situationDate: null, suiviAmorce: false
+  }));
+
+  for (const dossier of ['vide', 'complet']) {
+    for (const mode of modes) {
+      if (dossier === 'vide') {
+        Object.keys(vierge).forEach(k => { Etat[k] = JSON.parse(JSON.stringify(vierge[k])); });
+        /* `IDENTITE` est déclaré en `const` : il ne devient pas une propriété
+           de `window` et n'est visible que par une évaluation dans le cadre. */
+        lire('IDENTITE').forEach(f => { if (f.defaut !== undefined) Etat.identite[f.id] = f.defaut; });
+      } else {
+        dossierFige(w, Etat);
+      }
+      Etat.mode = mode;
+      w.poserNav(); w.poserTitres(); w.poserBarresParcours(); w.majNav();
+
+      /* La colonne de navigation change avec le mode ET avec l'avancement du
+         dossier — les pastilles d'état. Elle fait partie de ce qu'un
+         déménagement pourrait casser, elle entre donc dans l'empreinte. */
+      const cle = dossier + '/' + mode;
+      const nav = d.getElementById('nav').innerHTML;
+      releve[cle + '/#nav'] = { octets: nav.length, somme: empreinte(nav) };
+      rangs.push([dossier, mode, '#nav', nav.length, empreinte(nav)]);
+      octets += nav.length;
+
+      for (const vue of vues) {
+        let html;
+        try { w.afficher(vue); html = d.getElementById('vue-' + vue).innerHTML; }
+        catch (e) { erreurs.push(cle + '/' + vue + ' : ' + e.message); html = 'ERREUR ' + e.message; }
+        releve[cle + '/' + vue] = { octets: html.length, somme: empreinte(html) };
+        rangs.push([dossier, mode, vue, html.length, empreinte(html)]);
+        octets += html.length;
+      }
+    }
+  }
+
+  document.getElementById('corps').innerHTML = rangs.map(r =>
+    '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td class="num">' +
+    r[3].toLocaleString('fr-FR') + '</td><td class="mono">' + r[4] + '</td></tr>').join('');
+
+  const global = empreinte(rangs.map(r => r.join('|')).join('\n'));
+  document.getElementById('bilan').textContent = erreurs.length
+    ? erreurs.length + ' vue(s) en erreur : ' + erreurs.slice(0, 3).join(' · ')
+    : rangs.length + ' empreintes · ' + octets.toLocaleString('fr-FR') +
+      ' octets rendus · empreinte globale ' + global;
+
+  /* Exposée pour être relevée depuis l'extérieur et comparée d'un état à
+     l'autre du dépôt. */
+  window.EMPREINTE = { global: global, octets: octets, vues: releve, erreurs: erreurs };
+  document.getElementById('json').value = JSON.stringify(window.EMPREINTE);
+}
+
+lancer().catch(e => {
+  document.getElementById('bilan').textContent = 'Échec : ' + e.message +
+    ' — cette page a besoin d\'un serveur.';
+});
+</script>
+</body>
+</html>
