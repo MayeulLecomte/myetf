@@ -4,8 +4,12 @@ const base='/Users/Mayeul/APP ETF CGP';
    suite lit le texte des fichiers pour y repérer un nom global déclaré deux
    fois. À l'exécution il n'en resterait qu'un — seul le source le montre. */
 const SOURCES={};
-['js/app.js','js/data/libelles.js','js/data/questionnaire.js','js/data/allocations.js',
- 'js/data/macro.js','js/data/fiscalite.js'].forEach(f=>{
+['js/app.js',
+ 'js/ui/socle.js','js/ui/dossier.js','js/ui/navigation.js','js/ui/vues-profil.js',
+ 'js/ui/vues-allocation.js','js/ui/vues-suivi.js','js/ui/catalogue.js','js/ui/rapport.js',
+ 'js/ui/entrees.js',
+ 'js/data/libelles.js','js/data/questionnaire.js','js/data/allocations.js',
+ 'js/data/macro.js','js/data/fiscalite.js','js/data/etf-univers.js','js/data/historique.js'].forEach(f=>{
   try{SOURCES[f]=fs.readFileSync(path.join(base,f),'utf8');}catch(e){}
 });
 const ctx={console,process,SOURCES};vm.createContext(ctx);

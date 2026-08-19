@@ -195,6 +195,33 @@ document remis et signé.
 **Sans contexte, il n'y a pas de tableau : il y a une phrase qui dit qu'il n'y
 en a pas.** Le tableau revient dès qu'un indicateur est renseigné.
 
+## Où vit quoi
+
+`js/app.js` portait 4 894 lignes et 151 déclarations. Il est réparti en neuf
+fichiers, **chargés dans cet ordre** :
+
+| Fichier | Ce qu'il porte |
+|---|---|
+| `js/ui/socle.js` | l'état, la persistance, les formats, les petits dessins |
+| `js/ui/dossier.js` | ce que le dossier **vaut** — profil, allocation, sélection, suivi. Aucun HTML |
+| `js/ui/navigation.js` | blocs, colonne, ruban, barre basse, parcours, aiguillage, feuille |
+| `js/ui/vues-profil.js` | accueil et bloc Profil |
+| `js/ui/vues-allocation.js` | note, contexte, allocation, sélection, arbitrages, backtest |
+| `js/ui/vues-suivi.js` | situation, revenus, journal |
+| `js/ui/catalogue.js` | catalogue, rapprochement, entonnoir, fiche d'un support |
+| `js/ui/rapport.js` | rapport, méthode, annexe, contrôles avant impression |
+| `js/ui/entrees.js` | gestionnaires, import/export, version |
+| `js/app.js` | **l'amorçage, et rien d'autre** — chargé en dernier |
+
+**L'ordre compte.** Les `const` de premier niveau ne sont pas hissés : tout ce
+que l'amorçage appelle doit être déclaré avant lui. `app.js` reste donc le
+dernier fichier chargé, et n'importe quel fichier neuf se glisse **avant** lui.
+
+**Les modules ES sont exclus**, et pas par préférence : l'application s'ouvre
+par double-clic (`OUVRIR-L-APPLICATION.txt`), et `<script type="module">` est
+bloqué par CORS en `file://`. Le cloisonnement, s'il vient un jour, prendra la
+forme d'une IIFE par fichier exposant un objet — le patron des moteurs.
+
 ## Un seul espace de noms, et il est plein
 
 L'application n'a pas de modules : tout ce que déclarent `js/app.js` et
@@ -208,8 +235,8 @@ L'application n'a pas de modules : tout ce que déclarent `js/app.js` et
 | `ligneCatalogue` | le rendu d'une ligne de la liste de recherche | une fiche qui lisait du HTML comme un tableau |
 
 Aucune n'a levé d'erreur. **`node test/runner.js` les arrête maintenant** : il
-lit le SOURCE des six fichiers globaux et refuse un nom déclaré deux fois — à
-l'exécution il n'en resterait qu'un, seul le texte le montre.
+lit le SOURCE des **dix-sept** fichiers globaux et refuse un nom déclaré deux
+fois — à l'exécution il n'en resterait qu'un, seul le texte le montre.
 
 Avant de nommer une fonction ou une classe CSS, **chercher le nom dans le
 dépôt**. Il y est peut-être déjà.

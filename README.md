@@ -528,6 +528,22 @@ node scripts/version.mjs
 Le relevé quotidien s'en charge tout seul : il réécrit le marqueur d'`index.html`
 puis relance ce script dans la foulée.
 
+## Comment le code est réparti
+
+L'application se charge par dix balises `<script>`, **dans un ordre qui
+compte** : les neuf fichiers de `js/ui/`, puis `js/app.js` qui ne contient que
+l'amorçage. Les `const` de premier niveau ne sont pas hissés — tout ce que
+l'amorçage appelle doit exister avant lui.
+
+**Pas de modules ES**, et ce n'est pas un oubli : l'application s'ouvre par
+double-clic, et `<script type="module">` est bloqué par CORS en `file://`.
+Les moteurs de `js/engine/` montrent la voie s'il faut cloisonner un jour —
+une IIFE par fichier, un seul objet exposé.
+
+`test/inventaire.mjs` relève les déclarations globales des dix-sept fichiers
+et compare deux états du dépôt : il dit ce qui a été déplacé, et surtout ce
+qui a disparu, apparu ou changé.
+
 ## Lancer l'application en local
 
 Aucune installation, aucune dépendance, aucun accès réseau requis.
@@ -948,7 +964,16 @@ manifest.webmanifest          ajout à l'écran d'accueil
 icone-180/192/512.png         icônes, générées par encodeur PNG en Python
 .github/workflows/cours.yml   relevé automatique du mardi au samedi
 data/                         GÉNÉRÉ — archive des cours et rapports de couverture
-js/app.js                     état, rendu des onze vues, événements, persistance
+js/ui/socle.js                état, persistance, formats, petits dessins
+js/ui/dossier.js              ce que le dossier vaut — profil, allocation, suivi
+js/ui/navigation.js           blocs, colonne, ruban, parcours, aiguillage
+js/ui/vues-profil.js          accueil et bloc Profil
+js/ui/vues-allocation.js      note, contexte, allocation, sélection, arbitrages, backtest
+js/ui/vues-suivi.js           situation, revenus, journal
+js/ui/catalogue.js            catalogue, rapprochement, entonnoir, fiche d'un support
+js/ui/rapport.js              rapport, méthode, annexe, contrôles avant impression
+js/ui/entrees.js              gestionnaires, import/export, version
+js/app.js                     l'amorçage, chargé en dernier
 test/runner.js                harnais de tests des moteurs (Node, sans dépendance)
 test/suite.js                 assertions des moteurs
 test/fumee.html               test de fumée de l'interface (navigateur, sans dépendance)
@@ -964,9 +989,9 @@ node "/Users/Mayeul/APP ETF CGP/test/runner.js"
 ```
 
 **L'interface** — le rendu des quinze vues, la persistance, l'import/export, la
-navigation. `js/app.js` n'est couvert par aucun test Node : c'est là que les
-remaniements d'interface cassent quelque chose sans qu'une seule assertion ne
-bronche. `test/fumee.html` charge l'application réelle dans un cadre et la
+navigation. Les neuf fichiers de `js/ui/` ne sont couverts par aucun test
+Node : c'est là que les remaniements d'interface cassent quelque chose sans
+qu'une seule assertion ne bronche. `test/fumee.html` charge l'application réelle dans un cadre et la
 pilote : elle rend chaque vue sur un dossier vide puis sur un dossier complet,
 vérifie qu'aucune ne lève d'erreur ni ne rend une page blanche, contrôle
 l'aller-retour d'export et relit ce qui a été écrit dans le navigateur.
