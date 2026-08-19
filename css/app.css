@@ -1519,13 +1519,25 @@ h1, h2, h3, h4 { font-family: var(--police); font-weight: 800; letter-spacing: -
 h2 { font-size: 30px; line-height: 1.08; }
 h3 { font-size: 16px; letter-spacing: -.01em; }
 
-/* Le trait bleu sous un mot du titre. Il passe SOUS la ligne de base : à
-   62 % de la hauteur de ligne — la valeur de la maquette — il mordait le
-   bas des lettres, et un bleu saturé qui traverse un mot se lit comme une
-   rature. Descendu à 78 %, il redevient un trait. */
+/* Le trait bleu sous un mot du titre.
+
+   La maquette le fait avec un dégradé de fond, entre 62 % et 90 % de la
+   hauteur de ligne. Deux essais ont montré que cela ne tient pas ici. À
+   62 % la bande mord le bas des lettres — le jaune de la maquette
+   pardonnait, un bleu saturé qui traverse un mot se lit comme une rature.
+   Descendue à 78 %, elle traverse encore les jambages du p, du g et du q,
+   et le premier d'entre eux laisse à gauche du mot un moignon bleu qu'on
+   prend pour un défaut d'affichage.
+
+   Un vrai soulignement règle les deux : `text-decoration-skip-ink`
+   interrompt le trait autour de chaque descendante, ce qu'aucun dégradé
+   de fond ne sait faire. */
 .souligne {
-  background: linear-gradient(transparent 78%, var(--bleu) 78%, var(--bleu) 94%, transparent 94%);
-  padding: 0 .06em;
+  text-decoration: underline;
+  text-decoration-color: var(--bleu);
+  text-decoration-thickness: .13em;
+  text-underline-offset: .16em;
+  text-decoration-skip-ink: auto;
 }
 
 /* ---------- Cartes ---------- */
@@ -1894,3 +1906,44 @@ td .badge { vertical-align: middle; }
 
 /* ---------- Backtest ---------- */
 #backtest-reglages .filtres { gap: 16px; }
+
+/* ---------- (c) SUIVI ---------- */
+
+/* Les filtres en tête de vue : une rangée de champs, dans une carte. */
+.filtres { gap: 16px; align-items: flex-end; }
+.filtres .champ { margin-bottom: 0; }
+
+/* Les arrêtés proposés : des boutons secondaires, celui du jour marqué. */
+.filtres .barre-actions .bouton { padding: 8px 14px; font-size: 13px; }
+
+/* Le bandeau « n lignes restent à investir » est le seul de la vue à
+   demander une action : il porte le filet bleu, les autres restent en
+   bleu pâle. Rien ne clignote, rien n'est rouge. */
+#situation-contenu .message.info { background: var(--bleu-pale); border-color: transparent; }
+
+/* La colonne « Suivi » du tableau des positions. Le bouton de
+   confirmation reste discret : il y en a une par ligne, et quatorze
+   boutons bleus pleins feraient un mur. */
+.controle input[type="checkbox"], .options input, input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--bleu);
+}
+td .bouton.petit { background: var(--surface); color: var(--bleu-encre); border: 1px solid var(--ligne-forte); }
+td .bouton.petit:hover { background: var(--bleu-pale); border-color: var(--bleu); }
+
+/* La provenance des cours, sous le total. */
+.origine-cours { color: var(--texte-doux); }
+
+/* La liste de contrôle avant impression : des lignes, des filets, et
+   une case à cocher. Une ligne relue s'efface sans disparaître. */
+.controle { border-top: 1px solid var(--ligne); padding: 16px 2px; }
+.controle-corps strong { font-weight: 800; }
+.controles-tete h3 { margin: 0; }
+.controles-pied { border-top: 1px solid var(--ligne); color: var(--texte-doux); }
+.controle.relu strong { font-weight: 600; }
+
+/* ---------- Revenus programmés ---------- */
+.jauge + .jauge { margin-top: 12px; }
+
+/* ---------- Journal ---------- */
+#vue-journal table td { vertical-align: top; }
+#vue-journal .badge { white-space: nowrap; }
