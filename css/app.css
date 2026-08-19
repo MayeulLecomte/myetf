@@ -2490,3 +2490,109 @@ table .illustration { display: none !important; }
    on lui donne une largeur plutôt qu'un retour à la ligne sauvage. */
 .tableau-defilant td:first-child { white-space: normal; min-width: 200px; max-width: 320px; }
 .badge { white-space: nowrap; }
+
+/* ============================================================
+   L'ÉCRAN « AUJOURD'HUI »
+   ------------------------------------------------------------
+   Trois choses, dans cet ordre : ce qui a bougé (le fil des
+   poches), ce qu'il y a à faire (le verdict), et — tout en bas,
+   après le reste — à quoi sert l'outil et de quand datent ses
+   données.
+
+   L'accroche était en tête. Lue une fois le premier jour, elle
+   repoussait chaque matin le seul chiffre qu'on vient chercher.
+   Elle descend en pied : elle reste consultable, elle cesse
+   d'être traversée.
+
+   Ce bloc est en FIN DE FEUILLE, et pas près des règles de
+   l'accueil : il surcharge l'animation de défilement, et une
+   media query n'ajoute aucune spécificité — c'est l'ordre du
+   fichier qui tranche. Le piège s'est déjà refermé deux fois.
+   ============================================================ */
+
+/* Un enfant de flex vaut `min-width: auto` : sans ceci, le fil des
+   poches — qui défile — pousserait la page à sa largeur naturelle. */
+.ecran-aujourdhui > * { min-width: 0; }
+
+/* Les 88 px au-dessus de « Les poches aujourd'hui » séparaient le fil de
+   l'accroche qui le précédait. L'accroche partie en pied, ils ne séparent
+   plus rien : ils repoussent le premier mot de la page sous le pli, et
+   prennent au verdict la hauteur qu'il doit occuper. Le ruban et le
+   `padding-top` de `.contenu` suffisent à l'air du haut. */
+.ecran-aujourdhui > .fil-entete:first-child { margin-top: 0; }
+
+.ecran-aujourdhui-corps { display: flex; flex-direction: column; gap: 14px; }
+.ecran-aujourdhui-corps > h2 { margin: 0; }
+.ecran-aujourdhui-corps .verdict { margin-bottom: 0; }
+
+/* Le verdict paraît après le fil, d'une demi-seconde.
+   ------------------------------------------------------------
+   Une MINUTERIE, et non `animation-timeline: view()` : le bloc
+   est en haut de page, donc déjà couvert au chargement — la
+   timeline de défilement le rendrait sans transition. Une
+   animation de durée finie porte `both` sans risque : elle finit
+   toujours, là où une timeline sans support ne finit jamais.
+
+   La demi-seconde n'est pas décorative : le fil se lit d'abord,
+   le verdict ensuite, et l'œil ne reçoit pas les deux d'un coup. */
+@keyframes paraitre-differe {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+.ecran-aujourdhui-corps {
+  animation: paraitre-differe .7s var(--ressort) .5s both;
+}
+
+/* Le conteneur, lui, ne s'anime pas : il porte le fil des poches, qui
+   doit être là dès l'ouverture. La règle générale du défilement le
+   prendrait en charge — d'où cette annulation, placée après elle. */
+.vue.actif > div[id$="-contenu"] > .ecran-aujourdhui {
+  animation: none; opacity: 1; transform: none;
+}
+
+/* ---------- Sur ordinateur, le verdict tient l'écran ---------- */
+@media (min-width: 821px) {
+  /* La hauteur utile n'est PAS celle de l'ouverture d'une vue (152 px
+     retirés) : le bloc « Aujourd'hui » n'a qu'une vue, donc pas de ruban.
+     Ce qui est au-dessus, c'est l'en-tête collant (53 px) et le retrait
+     du haut de `.contenu` (56 px) ; la barre basse flotte au-dessous et
+     se retire par `--marge-barre`. Retirer 152 laissait la grille des
+     indicateurs à moitié visible sous le verdict. */
+  .ecran-aujourdhui {
+    /* Le fil monte d'un cran vers le ruban : c'est le premier mot de la
+       page, il n'a rien au-dessus de lui à quoi se rattacher. Ce qu'on
+       lui reprend en haut, l'écran le rend en hauteur utile — d'où 92
+       retirés et non 120. */
+    margin-top: -28px;
+    min-height: calc(100dvh - 92px - var(--marge-barre));
+    display: flex; flex-direction: column;
+    box-sizing: border-box;
+  }
+  .ecran-aujourdhui .fil { margin-bottom: 0; }
+  /* Le fil garde sa place en haut ; le verdict occupe tout le reste. */
+  .ecran-aujourdhui-corps {
+    flex: 1; justify-content: center; gap: 22px; padding-bottom: 48px;
+  }
+  .ecran-aujourdhui-corps .verdict { padding: 34px 34px 36px; }
+  .ecran-aujourdhui-corps .verdict-titre { font-size: 40px; }
+  .ecran-aujourdhui-corps .verdict-texte { font-size: 15px; margin-top: 14px; }
+}
+
+/* ---------- Le pied de l'accueil ---------- */
+.pied-accueil {
+  margin-top: 56px; padding-top: 22px;
+  border-top: 1px solid var(--ligne);
+}
+.pied-accueil .accroche { margin-bottom: 0; }
+
+/* ---------- Les deux garde-fous ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ecran-aujourdhui-corps { animation: none; opacity: 1; transform: none; }
+}
+@media print {
+  .ecran-aujourdhui { min-height: 0 !important; }
+  .ecran-aujourdhui-corps {
+    animation: none !important; opacity: 1 !important; transform: none !important;
+  }
+  .pied-accueil { display: none !important; }
+}

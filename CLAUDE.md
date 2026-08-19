@@ -346,6 +346,48 @@ Elles gardent leur boîte pleine sur téléphone, où deux colonnes serrées ont
 besoin d'une séparation — et c'est là que le harnais mesure ses témoins, ce
 qui explique qu'il ne voie pas ce changement.
 
+## L'accueil, dans l'ordre : ce qui a bougé, ce qu'il y a à faire, le reste
+
+Sur un dossier complet, « Aujourd'hui » se lit de haut en bas dans cet ordre,
+et il n'y a plus rien avant :
+
+1. **Les poches aujourd'hui** — le fil, en tête de page. C'est ce qui a bougé
+   depuis hier, et c'est la seule chose qui doive se lire sans attendre.
+2. **Aujourd'hui** et son verdict — sur ordinateur, ils tiennent le reste de
+   l'écran à eux seuls. On arrive sur une phrase, pas sur un tableau de bord.
+3. le détail — indicateurs, mouvements, note de marché.
+4. **le pied** : l'accroche et les dates de relevé.
+
+**L'accroche a quitté le haut de la page.** Lue une fois le premier jour, elle
+repoussait chaque matin le seul chiffre qu'on vient chercher. En pied elle
+reste consultable et cesse d'être traversée. Elle ne bouge que sur la branche
+« dossier complet » : sur un dossier neuf ou incomplet, l'ouverture — dessin,
+accroche longue, bouton de découverte — reste en tête, c'est elle qui accueille.
+
+**Le verdict paraît une demi-seconde après le fil**, par une MINUTERIE et non
+par `animation-timeline: view()`. Le bloc est en haut de page, donc déjà
+couvert au chargement : la timeline de défilement le rendrait sans transition.
+Une animation de durée finie porte `both` sans risque — elle finit toujours,
+là où une timeline sans support ne finit jamais. La demi-seconde n'est pas
+décorative : le fil se lit d'abord, le verdict ensuite.
+
+**Le plein écran est réservé à l'ordinateur** (`min-width: 821px`) : sur
+téléphone le même bloc garde sa hauteur naturelle, et l'écran est déjà plein.
+
+**Sa hauteur utile n'est pas celle de `.ouverture-vue`.** Celle-ci retire
+152 px pour l'en-tête ET le ruban ; le bloc « Aujourd'hui » n'a qu'une vue,
+donc pas de ruban — 120 px suffisent (en-tête 53, retrait du haut de
+`.contenu` 56). Retirer 152 laissait la grille des indicateurs à moitié
+visible sous le verdict.
+
+**Les 88 px au-dessus de « Les poches aujourd'hui » sont annulés quand le fil
+ouvre l'écran.** Ils le séparaient de l'accroche ; l'accroche partie, ils ne
+séparaient plus rien et repoussaient le premier mot de la page sous le pli.
+
+Ces règles vivent en FIN de `css/app.css`, et pas près des autres règles de
+l'accueil : elles surchargent l'animation de défilement, et une media query
+n'ajoute aucune spécificité — c'est l'ordre du fichier qui tranche.
+
 ## L'air se mesure entre les blocs, jamais dans un titre
 
 Un titre appartient à ce qui le SUIT. « Les poches aujourd'hui » est posé

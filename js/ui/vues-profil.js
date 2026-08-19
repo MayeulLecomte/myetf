@@ -381,11 +381,18 @@ function rendreAccueil() {
   const rien = analyse.aucunMouvement;
   const aInvestir = lignesAInvestir();
 
-  c.innerHTML =
-    accroche() +
-    filPoches() +
-    '<h2>' + titreSouligne('Aujourd\'hui') + '</h2>' +
+  /* ------------------------------------------------------------
+     L'ÉCRAN D'OUVERTURE D'AUJOURD'HUI
+     Le fil des poches en tête — c'est ce qui a bougé depuis hier,
+     et c'est la seule chose qui doive se lire sans rien attendre.
+     Sous lui, le verdict tient le reste de l'écran : sur ordinateur
+     on arrive sur UNE phrase, pas sur un tableau de bord.
 
+     L'accroche et les dates de relevé descendent en pied de page :
+     elles se lisent une fois, le premier jour, puis on les traverse
+     — elles n'ont rien à faire au-dessus du verdict du jour.
+     ------------------------------------------------------------ */
+  const verdict =
     /* Tant que des achats n'ont pas été passés, ils passent avant le verdict
        d'arbitrage : dire « rien à faire » à quelqu'un qui n'a rien acheté
        serait faux, et l'arbitrage ne mesure une dérive que sur un
@@ -408,7 +415,16 @@ function rendreAccueil() {
             euro(analyse.seuilMontant) + '. Laisser le portefeuille en l\'état est la décision par défaut.'
           : 'Écart le plus fort : ' + pct(derive) + ' de l\'encours. Rotation ' + pct(analyse.rotation) +
             ', fiscalité estimée ' + euro(analyse.fiscalite.impotEstime) + '.') + '</p>' +
-      '</div>') +
+      '</div>');
+
+  c.innerHTML =
+    '<div class="ecran-aujourdhui">' +
+      filPoches() +
+      '<div class="ecran-aujourdhui-corps">' +
+        '<h2>' + titreSouligne('Aujourd\'hui') + '</h2>' +
+        verdict +
+      '</div>' +
+    '</div>' +
 
     '<div class="grille quatre">' +
       kpi(euro(analyse.total), 'Encours', r.profil.nom) +
@@ -431,8 +447,10 @@ function rendreAccueil() {
         '<div class="barre-actions"><button class="bouton" data-aller="arbitrages">Ouvrir les arbitrages</button>' +
         '<button class="bouton secondaire" data-aller="rapport">Voir le rapport</button></div></div>') +
 
+    blocNoteAccueil() +
 
-    blocNoteAccueil();
+    /* Le pied : à quoi sert l'outil, et de quand datent ses données. */
+    '<div class="pied-accueil">' + accroche() + '</div>';
 }
 
 /* ============================================================
