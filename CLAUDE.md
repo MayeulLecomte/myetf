@@ -519,6 +519,21 @@ Le défaut existait avant que la navigation ne descende ; il ne se voyait que
 sur téléphone, où le ruban et la barre étaient seuls à s'y fier. Ils le sont
 maintenant partout, et c'est ce qui l'a fait sortir.
 
+## Le rechargement repart du haut, et ce n'est pas gratuit
+
+`afficher()` remonte la page à chaque ouverture de vue. Cela ne suffisait
+pas au rechargement : **le navigateur restaure la position d'avant, et il
+le fait après l'amorçage** — son geste écrasait le nôtre, et l'application
+se rouvrait au milieu d'une tuile. Safari sur iPhone comme les autres.
+
+`history.scrollRestoration = 'manual'`, posé en tête de l'amorçage, lui
+retire cette charge ; un `scrollTo(0, 0)` sur `load` couvre le cas où la
+restauration est déjà programmée quand cette ligne s'exécute.
+
+Une application qui s'ouvre sur « Aujourd'hui » doit s'ouvrir sur le HAUT
+d'Aujourd'hui : la position d'hier n'a aucun sens sur une vue dont le
+contenu a changé depuis.
+
 ## L'écran d'ouverture — trois secondes
 
 Le signe seul sur le fond de page, puis il s'efface en fondu. **Trois

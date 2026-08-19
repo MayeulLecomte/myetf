@@ -13,6 +13,25 @@
    ============================================================= */
 
 (function init() {
+  /* ------------------------------------------------------------
+     LE RECHARGEMENT REPART DU HAUT
+     ------------------------------------------------------------
+     `afficher()` remonte pourtant la page à chaque ouverture de vue.
+     Mais le navigateur REND la position d'avant après le chargement,
+     et il le fait APRÈS l'amorçage : son geste écrase le nôtre, et
+     l'on rouvrait l'application au milieu d'une tuile.
+
+     `scrollRestoration = 'manual'` lui retire cette charge. Le
+     rappel sur `load` couvre le cas où la restauration est déjà
+     programmée quand cette ligne s'exécute — Safari sur iPhone la
+     pose tôt, et c'est là qu'on la voyait le plus.
+
+     Une application qui s'ouvre sur « Aujourd'hui » doit s'ouvrir sur
+     le haut d'Aujourd'hui : la position d'hier n'a aucun sens sur une
+     vue dont le contenu a changé depuis. */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('load', () => window.scrollTo(0, 0));
+
   verifierVersion();
   const restaure = charger();
   const remplacees = injecterCoursMarche();
