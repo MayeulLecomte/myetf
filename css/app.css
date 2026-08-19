@@ -1947,3 +1947,59 @@ td .bouton.petit:hover { background: var(--bleu-pale); border-color: var(--bleu)
 /* ---------- Journal ---------- */
 #vue-journal table td { vertical-align: top; }
 #vue-journal .badge { white-space: nowrap; }
+
+/* ---------- (c) SECONDAIRES — UNIVERS ET MÉTHODE ---------- */
+
+/* La ligne d'entonnoir, en tête de l'univers : elle dit d'où sort la
+   sélection, et c'est le premier chiffre qu'on cherche. */
+.entonnoir-ligne { color: var(--texte-doux); }
+.entonnoir-ligne strong { color: var(--texte); font-weight: 800; }
+
+/* Le tableau de l'univers est un formulaire de quarante-deux lignes :
+   les champs y sont serrés, sans ombre, et ne se signalent qu'au
+   survol. Un filet par champ sur treize colonnes ferait une grille. */
+#vue-univers #corps-univers input,
+#vue-univers #corps-univers select {
+  border-color: transparent; background: transparent;
+  padding: 6px 8px; border-radius: 8px; font-size: 13px;
+}
+#vue-univers #corps-univers input:hover,
+#vue-univers #corps-univers select:hover { border-color: var(--ligne); background: var(--surface); }
+#vue-univers #corps-univers input:focus,
+#vue-univers #corps-univers select:focus { border-color: var(--bleu); background: var(--surface); }
+#vue-univers #corps-univers td { padding: 6px 8px; }
+
+/* La liste du catalogue européen : des lignes, pas des cartes — il y en
+   a des centaines, et chaque ombre coûte au défilement. */
+.catalogue-liste { border-top: 1px solid var(--ligne); }
+.catalogue-ligne {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 4px; border-bottom: 1px solid var(--ligne);
+}
+.catalogue-nom { font-weight: 700; font-size: 14px; }
+.catalogue-meta { font-size: 12px; color: var(--texte-doux); }
+.catalogue-marques { margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; }
+.catalogue-fait { color: var(--texte-doux); font-weight: 700; font-size: 12px; }
+.catalogue-compte { color: var(--texte-doux); font-size: 12.5px; }
+.catalogue-suite { margin-top: 14px; }
+
+/* La fiche d'un support, dans la feuille de détail. */
+.fiche-nom { font-family: var(--police); font-weight: 800; }
+.fiche-ligne { border-top: 1px solid var(--ligne); }
+.fiche-ligne > span { color: var(--texte-doux); font-weight: 600; }
+.fiche-ligne > strong { font-weight: 800; }
+.fiche-source { color: var(--texte-doux); }
+.sourdine { color: var(--texte-doux); font-weight: 400; }
+
+/* ---------- Méthode & limites ----------
+   Six sections de prose. Le corps de texte s'élargit un peu et se
+   colore en gris : on y lit des paragraphes, pas des chiffres. */
+#methode-contenu p { color: var(--texte-doux); max-width: 78ch; line-height: 1.6; }
+#methode-contenu p strong { color: var(--texte); font-weight: 800; }
+#methode-contenu code {
+  background: var(--fond); border: 1px solid var(--ligne);
+  border-radius: 6px; padding: 1px 5px; font-size: 12.5px;
+}
+/* Le tableau de l'entonnoir : les paliers en encre, les retraits en gris. */
+.entonnoir-retrait td:first-child { color: var(--texte-doux); }
+#methode-contenu td strong { font-weight: 800; }
