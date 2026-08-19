@@ -195,6 +195,25 @@ document remis et signé.
 **Sans contexte, il n'y a pas de tableau : il y a une phrase qui dit qu'il n'y
 en a pas.** Le tableau revient dès qu'un indicateur est renseigné.
 
+## Un seul espace de noms, et il est plein
+
+L'application n'a pas de modules : tout ce que déclarent `js/app.js` et
+`js/data/*.js` vit dans la même portée, et **la dernière déclaration d'un nom
+écrase silencieusement les précédentes**. Trois collisions en une seule séance :
+
+| Nom | Ce qu'il désignait déjà | Ce qui a cassé |
+|---|---|---|
+| `.aide` | les textes d'aide du questionnaire et de la macro | six phrases pliées dans un carré de 14 px |
+| `statut` | la provenance du cours d'une ligne de situation | évité de justesse, d'où `possession` |
+| `ligneCatalogue` | le rendu d'une ligne de la liste de recherche | une fiche qui lisait du HTML comme un tableau |
+
+Aucune n'a levé d'erreur. **`node test/runner.js` les arrête maintenant** : il
+lit le SOURCE des six fichiers globaux et refuse un nom déclaré deux fois — à
+l'exécution il n'en resterait qu'un, seul le texte le montre.
+
+Avant de nommer une fonction ou une classe CSS, **chercher le nom dans le
+dépôt**. Il y est peut-être déjà.
+
 ## Pistes — reportées, pas abandonnées
 
 Relevées à la relecture « premier dossier », hors chantier à ce stade :
@@ -205,3 +224,4 @@ Relevées à la relecture « premier dossier », hors chantier à ce stade :
 | **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation |
 | **Note du jour en vitrine** | c'est le seul écran immédiatement lisible sans dossier, et il est rangé derrière deux niveaux de navigation |
 | **Nom du dossier obligatoire** | à traiter **dans le chantier 7**, pas avant : ce qu'on exige dépend du mode — un particulier n'a pas de « référence dossier » |
+| **Revalorisation du suivi sur tout le catalogue** | seuls **34 ISIN** ont un historique de cours Euronext, sur 866 sélectionnables. Un portefeuille recommandé hors de ces 34 reste valorisé au montant cible tant qu'aucune quantité n'est saisie |

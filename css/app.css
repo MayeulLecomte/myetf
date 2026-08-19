@@ -1635,3 +1635,31 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
   padding: 5px 11px; font-size: 12px; min-height: 0; border-radius: var(--r-pilule);
   white-space: nowrap;
 }
+
+/* ---------- La fiche d'un support ---------- */
+.lien-support {
+  background: none; border: 0; padding: 0; margin: 0; text-align: left;
+  font: inherit; color: var(--texte); cursor: pointer;
+  text-decoration: underline; text-decoration-color: var(--ligne-forte);
+  text-underline-offset: 3px;
+}
+.lien-support:hover, .lien-support:focus-visible {
+  color: var(--bleu); text-decoration-color: var(--bleu); outline: none;
+}
+.fiche-nom {
+  margin: 0 0 14px; font-family: var(--ronde);
+  font-size: 16px; font-weight: 680; line-height: 1.35;
+}
+.fiche-ligne {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 16px; padding: 10px 2px;
+  border-top: 1px solid var(--ligne);
+  font-size: 13.5px;
+}
+.fiche-ligne:first-of-type { border-top: 0; }
+.fiche-ligne > span { color: var(--texte-doux); }
+.fiche-ligne > strong { font-weight: 650; text-align: right; }
+.fiche-ligne .sourdine { font-weight: 400; color: var(--texte-doux); }
+.fiche-source {
+  margin: 14px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--texte-doux);
+}

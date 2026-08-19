@@ -40,8 +40,17 @@ const API = 'https://lt.morningstar.com/api/rest.svc/klr5zyak8x/security/screene
    son SRRI vaut 6. Les deux sont sur 1 à 7 et se ressemblent assez pour
    être confondus, jamais assez pour se remplacer. Le SRI reste donc à
    relever sur chaque DIC ; le SRRI n'est publié qu'à titre indicatif. */
+/* `returnM12` et `returnM0` arrivent dans la MÊME réponse : ils ne coûtent
+   aucune requête de plus. Confrontés à nos propres clôtures Euronext sur
+   deux supports suivis des deux côtés, le douze mois tombe à 0,03 point.
+   Morningstar calcule en VL dividendes réinvestis là où nos cours sont des
+   prix nus : l'écart se voit sur un distribuant, et se dit dans la fiche.
+
+   `primaryBenchmarkName` porte l'indice répliqué. Il vaut « N/A » sur les
+   produits qui n'en suivent aucun. */
 const CHAMPS = 'SecId|Name|isin|Ticker|categoryName|OngoingCharge|starRating|exchangeCode|' +
-               'currencyCode|brandingCompanyName|FundTNAV|SRRI|inceptionDate';
+               'currencyCode|brandingCompanyName|FundTNAV|SRRI|inceptionDate|' +
+               'returnM12|returnM0|primaryBenchmarkName';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 const PAGE = 250;
@@ -223,6 +232,11 @@ async function principal() {
           encours: r.FundTNAV == null ? null : Math.round(Number(r.FundTNAV) / 1e6),
           srri: r.SRRI == null ? null : Number(r.SRRI),
           creation: (r.inceptionDate || '').slice(0, 10) || null,
+          perf1an: r.returnM12 == null ? null : Math.round(Number(r.returnM12) * 100) / 100,
+          perfAnnee: r.returnM0 == null ? null : Math.round(Number(r.returnM0) * 100) / 100,
+          /* « N/A » n'est pas un indice : on n'en garde rien plutôt que de
+             l'afficher tel quel dans une fiche. */
+          indice: (r.primaryBenchmarkName || '').trim().replace(/^N\/A$/i, '') || null,
           places: [place.mic]
         });
       }
@@ -241,10 +255,16 @@ async function principal() {
   const iEmetteur = new Map(emetteurs.map((e, i) => [e, i]));
   const iCategorie = new Map(categories.map((c, i) => [c, i]));
 
+  /* Les indices se répètent autant que les catégories — des centaines d'ETF
+     suivent le MSCI World. Ils sont déportés comme les émetteurs. */
+  const indices = [...new Set(lignes.map(l => l.indice).filter(Boolean))].sort();
+  const iIndice = new Map(indices.map((x, i) => [x, i]));
+
   const table = lignes.map(l => [
     l.isin, l.nom, l.ticker, iEmetteur.get(l.emetteur), iCategorie.get(l.categorie),
     l.ter, l.note, l.devise, l.places.join(','), poche(l.categorie, l.nom),
-    l.encours, l.srri, l.creation
+    l.encours, l.srri, l.creation,
+    l.perf1an, l.perfAnnee, l.indice == null ? null : iIndice.get(l.indice)
   ]);
 
   const rattachees = table.filter(t => t[9]).length;
@@ -265,7 +285,13 @@ async function principal() {
     '   (index), frais courants, note Morningstar, devise, places,',
     '   poche déduite de la catégorie — null si aucune ne convient —,',
     '   encours en M€, SRRI de l\'ancien DICI UCITS (1 à 7), date de',
-    '   création.',
+    '   création, performance 12 mois, performance depuis le 1er',
+    '   janvier, indice répliqué (index).',
+    '',
+    '   ⚠ Les deux performances sont calculées par Morningstar en VL,',
+    '   dividendes réinvestis. Nos propres cours Euronext sont des prix',
+    '   nus : les deux ne coïncident que sur un capitalisant. Elles',
+    '   datent du jour de génération ci-dessous, pas d\'aujourd\'hui.',
     '',
     '   ⚠ Le SRRI n\'est PAS le SRI du document d\'informations clés :',
     '   il ne mesure que la volatilité, sur une échelle qui place un',
@@ -283,9 +309,10 @@ async function principal() {
   writeFileSync(join(RACINE, 'js', 'data', 'catalogue-etf.js'),
     entete + JSON.stringify({
       genere: new Date().toISOString().slice(0, 10),
-      emetteurs, categories,
+      emetteurs, categories, indices,
       colonnes: ['isin', 'nom', 'ticker', 'emetteur', 'categorie', 'ter', 'note', 'devise',
-                 'places', 'poche', 'encours', 'srri', 'creation'],
+                 'places', 'poche', 'encours', 'srri', 'creation',
+                 'perf1an', 'perfAnnee', 'indice'],
       lignes: table
     }) + ';\n');
 
@@ -296,6 +323,8 @@ async function principal() {
   console.log(`${emetteurs.length} émetteurs · ${categories.length} catégories`);
   console.log(`renseignés : encours ${renseigne(10)} · frais ${renseigne(5)} · ` +
               `note ${renseigne(6)} · SRRI ${renseigne(11)} · création ${renseigne(12)}`);
+  console.log(`             perf 12 mois ${renseigne(13)} · perf depuis janvier ${renseigne(14)} · ` +
+              `indice ${renseigne(15)} (${indices.length} distincts)`);
 }
 
 principal().catch(e => { console.error(e); process.exit(1); });

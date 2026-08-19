@@ -829,6 +829,80 @@ function ouvrirFeuille(titre, contenu) {
   requestAnimationFrame(() => f.classList.add('ouverte'));
 }
 
+/* ------------------------------------------------------------
+   LA FICHE D'UN SUPPORT
+   ------------------------------------------------------------
+   Ouverte d'un clic sur le nom, dans la sélection comme dans le
+   suivi. Elle ne dit que ce qu'on sait, et d'où on le sait : une
+   fiche qui invente une donnée manquante est pire qu'une case
+   vide, parce qu'on la recopie.
+
+   Les deux performances viennent du catalogue Morningstar, qui
+   les calcule en VL DIVIDENDES RÉINVESTIS. Nos propres cours
+   Euronext sont des prix nus : sur un distribuant, les deux ne
+   coïncident pas, et c'est écrit dans la fiche. Elles datent du
+   jour où le catalogue a été relevé, pas d'aujourd'hui.
+   ------------------------------------------------------------ */
+function donneesCatalogue(isin) {
+  if (typeof CATALOGUE_ETF === 'undefined' || !CATALOGUE_ETF) return null;
+  return CATALOGUE_ETF.lignes.find(l => l[0] === isin) || null;
+}
+
+function ficheEtf(isin) {
+  const ref = universSelection().find(e => e.isin === isin) ||
+              Etat.univers.find(e => e.isin === isin) || null;
+  const cat = donneesCatalogue(isin);
+  const indices = (typeof CATALOGUE_ETF !== 'undefined' && CATALOGUE_ETF && CATALOGUE_ETF.indices) || [];
+
+  const nom = (ref && ref.nom) ||
+              (Etat.detention.find(l => l.isin === isin) || {}).libelle || isin;
+  const indice = cat && cat[15] != null ? indices[cat[15]] : null;
+  const ter = ref && ref.ter != null ? ref.ter : (cat ? cat[5] : null);
+  const perf1an = cat ? cat[13] : null;
+  const perfAnnee = cat ? cat[14] : null;
+  const genere = (typeof CATALOGUE_ETF !== 'undefined' && CATALOGUE_ETF) ? CATALOGUE_ETF.genere : null;
+
+  const ligne = (etiquette, valeur, sourdine) =>
+    '<div class="fiche-ligne"><span>' + echapper(etiquette) + '</span>' +
+    '<strong' + (sourdine ? ' class="sourdine"' : '') + '>' + valeur + '</strong></div>';
+
+  const perf = v => v == null ? '<span class="sourdine">non publiée</span>'
+                              : '<span class="' + (v >= 0 ? 'positif' : 'negatif') + '">' + signe(v, 2) + '</span>';
+
+  return '<div class="fiche">' +
+    '<p class="fiche-nom">' + echapper(nom) + '</p>' +
+    ligne('ISIN', '<span style="font-family:monospace">' + echapper(isin) + '</span>') +
+    ligne('Indice répliqué', indice ? echapper(indice) : '<span class="sourdine">non publié</span>', !indice) +
+    ligne('Frais courants', ter != null ? pct(ter, 2) : '<span class="sourdine">non publiés</span>', ter == null) +
+    ligne('Performance 12 mois', perf(perf1an)) +
+    ligne('Depuis le 1er janvier', perf(perfAnnee)) +
+    (cat
+      ? '<p class="fiche-source">Source : Morningstar, relevé le ' + (genere ? dateFr(genere) : '—') +
+        '. Performances calculées en valeur liquidative, <strong>dividendes réinvestis</strong> — elles ne ' +
+        'coïncident donc pas avec l\'évolution du seul cours pour un support distribuant. Elles datent du ' +
+        'relevé, pas d\'aujourd\'hui.</p>'
+      : '<p class="fiche-source">Le catalogue n\'est pas chargé : les performances et l\'indice en viennent. ' +
+        'Ouvrez « ' + echapper(T('vue.univers.nav')) + ' » pour le charger.</p>') +
+    '<div class="barre-actions">' +
+      '<a class="bouton secondaire" target="_blank" rel="noopener noreferrer" ' +
+      'href="https://www.justetf.com/fr/etf-profile.html?isin=' + encodeURIComponent(isin) + '">' +
+      'Fiche justETF ↗</a>' +
+    '</div>' +
+  '</div>';
+}
+
+function ouvrirFicheEtf(isin) {
+  /* Le catalogue porte l'indice et les performances : s'il n'est pas encore
+     là, on le demande et l'on rouvrira la fiche complète à son arrivée. */
+  if (typeof CATALOGUE_ETF === 'undefined') {
+    chargerCatalogue(() => {
+      const f = $('#feuille');
+      if (f && !f.hidden) $('#feuille-corps').innerHTML = ficheEtf(isin);
+    });
+  }
+  ouvrirFeuille('Fiche du support', ficheEtf(isin));
+}
+
 function fermerFeuille() {
   const f = $('#feuille');
   if (!f || f.hidden) return;
@@ -1753,7 +1827,9 @@ function rendrePortefeuille() {
       '</tr></thead><tbody>' +
       sel.lignes.map(l =>
         '<tr><td><span class="pastille" style="background:' + COULEURS_CLASSES[l.classe] + '"></span>' +
-          echapper(l.etf.nom) + (l.etf.isr ? ' <span class="badge vert">ISR</span>' : '') +
+          '<button class="lien-support" data-fiche="' + echapper(l.etf.isin) + '">' +
+          echapper(l.etf.nom) + '</button>' +
+          (l.etf.isr ? ' <span class="badge vert">ISR</span>' : '') +
           (l.etf.hedge ? ' <span class="badge gris">couvert €</span>' : '') +
           (!l.etf.verifie ? ' <span class="badge orange">contrat à vérifier</span>' : '') + '</td>' +
         '<td style="font-family:monospace;font-size:12px">' + echapper(l.etf.isin) + '</td>' +
@@ -2138,7 +2214,8 @@ function tableauSituation(s, actions) {
       }
       return '<tr><td>' + (l.classe ? '<span class="pastille" style="background:' +
           (COULEURS_CLASSES[l.classe] || 'var(--gris-doux)') + '"></span>' : '') +
-        echapper(l.libelle) +
+        '<button class="lien-support" data-fiche="' + echapper(l.isin) + '">' +
+        echapper(l.libelle) + '</button>' +
         (st.texte ? ' <span class="badge ' + st.classe + '">' + st.texte + '</span>' : '') + '</td>' +
         '<td style="font-family:monospace;font-size:12px">' + echapper(l.isin) + '</td>' +
         '<td class="num">' + (l.quantite ? l.quantite.toLocaleString('fr-FR') : '—') + '</td>' +
@@ -2803,9 +2880,17 @@ function rendreSeriesHistorique() {
    bloquée une seconde entière sur un téléphone. */
 const PAS_CATALOGUE = 60;
 const Catalogue = { etat: 'absent', recherche: '', euronextSeul: false,
-                    pocheSeule: '', montre: PAS_CATALOGUE };
+                    pocheSeule: '', montre: PAS_CATALOGUE,
+                    /* Ce que l'on veut refaire une fois le catalogue arrivé.
+                       Un demi-mégaoctet met un moment à descendre, et ce qui
+                       l'attend n'est pas toujours la vue à l'écran — la fiche
+                       d'un support en dépend aussi. */
+                    attentes: [] };
 
-function chargerCatalogue() {
+/** @param {Function} [apres] rappelé quand le catalogue est utilisable. */
+function chargerCatalogue(apres) {
+  if (Catalogue.etat === 'pret') { if (apres) apres(); return; }
+  if (apres) Catalogue.attentes.push(apres);
   if (Catalogue.etat !== 'absent') return;
   Catalogue.etat = 'chargement';
   rendreCatalogue();
@@ -2820,6 +2905,8 @@ function chargerCatalogue() {
        la liste de recherche. */
     if (Etat.filtres.sourceUnivers === 'catalogue') { majNav(); rendre(vueCourante()); }
     else rendreCatalogue();
+    const attentes = Catalogue.attentes.splice(0);
+    if (Catalogue.etat === 'pret') attentes.forEach(f => f());
   };
   s.onerror = () => { Catalogue.etat = 'erreur'; majLibelleSource(); rendreCatalogue(); };
   document.head.appendChild(s);
@@ -3894,6 +3981,9 @@ function brancher() {
 
     const pastille = e.target.closest('[data-poche]');
     if (pastille) { ouvrirPoche(pastille.dataset.poche); return; }
+
+    const fiche = e.target.closest('[data-fiche]');
+    if (fiche) { ouvrirFicheEtf(fiche.dataset.fiche); return; }
 
     const choix = e.target.closest('[data-mode]');
     if (choix) { choisirMode(choix.dataset.mode); return; }

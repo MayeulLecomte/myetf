@@ -600,5 +600,37 @@ const ecarts=connus.filter(e=>{const l=CAT.lignes.find(x=>x[0]===e.isin);
   return l[6]!==null&&e.morningstar!==null&&l[6]!==e.morningstar;});
 ok(ecarts.length===0,'notations concordantes entre univers et catalogue ('+ecarts.length+' écart(s))');
 
+// --- 13. Un seul espace de noms
+/* L'application n'a pas de modules : tout ce que déclarent js/app.js et
+   js/data/*.js vit dans la même portée, et la DERNIÈRE déclaration d'un nom
+   écrase silencieusement les précédentes. Trois collisions en une seule
+   séance de travail : la classe CSS « aide », prise par une pastille
+   d'infobulle aux textes d'aide ; le champ « statut », qui désignait déjà la
+   provenance d'un cours ; et « ligneCatalogue », rendu d'une ligne de la
+   liste de recherche, repris pour lire une ligne de données. Aucune des
+   trois n'a levé d'erreur — la première a écrasé six phrases dans un carré
+   de quatorze pixels, la troisième a rendu du HTML là où l'on attendait un
+   tableau. Un contrôle statique les arrête toutes.
+
+   Il lit le SOURCE, pas la portée : c'est le seul moyen de voir un nom
+   déclaré deux fois, puisqu'à l'exécution il n'en reste qu'un. */
+console.log('\n== Espace de noms ==');
+(function () {
+  const fichiers = Object.keys(typeof SOURCES !== 'undefined' ? SOURCES : {});
+  const vus = new Map(), doublons = [];
+  fichiers.forEach(f => {
+    const re = /^(?:function\s+|const\s+|let\s+)([A-Za-z_$][\w$]*)/gm;
+    let m;
+    while ((m = re.exec(SOURCES[f]))) {
+      const nom = m[1];
+      if (vus.has(nom)) doublons.push(nom + ' (' + vus.get(nom) + ' puis ' + f + ')');
+      else vus.set(nom, f);
+    }
+  });
+  console.log('   ' + vus.size + ' noms globaux déclarés sur ' + fichiers.length + ' fichiers');
+  ok(fichiers.length > 0 && doublons.length === 0, 'aucun nom global déclaré deux fois' +
+     (doublons.length ? ' — ' + doublons.slice(0, 4).join(' · ') : ''));
+})();
+
 console.log('\n'+(echecs?'❌ '+echecs+' échec(s)':'✅ tous les tests passent'));
 process.exit(echecs?1:0);
