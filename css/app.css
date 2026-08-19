@@ -2196,6 +2196,8 @@ h2 .illustration {
    manque. */
 .vue > .carte, .vue > .grille, .vue > .message, .vue > .verdict,
 .vue > .tableau-defilant, .vue > .etat-vide, .vue > .bandeau-profil,
+.vue > .accroche, .vue > .fil, .vue > div[id$="-contenu"] > .accroche,
+.vue > div[id$="-contenu"] > .fil,
 .vue > div[id$="-contenu"] > .carte,
 .vue > div[id$="-contenu"] > .grille,
 .vue > div[id$="-contenu"] > .message,
@@ -2214,6 +2216,8 @@ h2 .illustration {
 @media (min-width: 821px) {
   .vue > .carte, .vue > .grille, .vue > .message, .vue > .verdict,
   .vue > .tableau-defilant, .vue > .etat-vide, .vue > .bandeau-profil,
+  .vue > .accroche, .vue > .fil, .vue > div[id$="-contenu"] > .accroche,
+  .vue > div[id$="-contenu"] > .fil,
   .vue > div[id$="-contenu"] > .carte,
   .vue > div[id$="-contenu"] > .grille,
   .vue > div[id$="-contenu"] > .message,
@@ -2221,10 +2225,24 @@ h2 .illustration {
   .vue > div[id$="-contenu"] > .tableau-defilant,
   .vue > div[id$="-contenu"] > .etat-vide,
   .vue > div[id$="-contenu"] > .bandeau-profil {
-    margin-bottom: 76px;
+    margin-bottom: 100px;
   }
-  .grille { gap: 40px; }
+  .grille { gap: 44px; }
   .carte { padding: 30px 32px; }
+}
+
+/* « Les poches aujourd'hui » est un titre de section posé au-dessus du fil :
+   il appartient au fil, pas à l'accroche. C'est donc au-dessus de LUI qu'il
+   faut l'air, et non entre le titre et les pastilles qu'il annonce. */
+.fil-entete { margin-top: 48px; }
+@media (min-width: 821px) { .fil-entete { margin-top: 88px; } }
+
+/* Le haut d'une vue respire aussi : sur « Aujourd'hui », le premier
+   indicateur arrivait quasiment sous le ruban. */
+@media (min-width: 821px) {
+  .contenu { padding-top: 56px; }
+  .vue > div[id$="-contenu"] > .grille.quatre:first-child,
+  .vue > .grille.quatre:first-child { margin-top: 24px; }
 }
 
 /* ---------- (d ter) LES INDICATEURS EN ZIGZAG ----------
@@ -2239,16 +2257,29 @@ h2 .illustration {
    Le harnais mesure ses témoins en mise en page téléphone : c'est
    d'ailleurs la seule raison pour laquelle il ne voit pas ce changement. */
 @media (min-width: 821px) {
-  .grille.quatre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 76px 150px; }
+  .grille.quatre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 112px 170px; }
   .grille.quatre > .kpi:nth-child(1) { grid-column: 2; grid-row: 1; }
   .grille.quatre > .kpi:nth-child(2) { grid-column: 1; grid-row: 2; }
   .grille.quatre > .kpi:nth-child(3) { grid-column: 2; grid-row: 3; }
   .grille.quatre > .kpi:nth-child(4) { grid-column: 1; grid-row: 4; }
+  /* Une bulle au seul contour. Les tuiles avaient perdu leur boîte, et
+     quatre nombres espacés de cent pixels flottaient sans se rattacher à
+     rien. Un contour suffit à dire « ceci est un objet » ; un fond ou une
+     ombre en feraient un panneau, et il y en a déjà quatre à l'écran.
+
+     Le bleu clair et non le bleu vif : sur quatre tuiles, l'accent plein
+     crierait, alors qu'il doit rester à ce qu'on peut cliquer. */
   .grille.quatre > .kpi {
-    background: transparent; border: 0; box-shadow: none;
-    padding: 0; min-height: 0;
+    background: transparent;
+    border: 1.5px solid var(--bleu-clair);
+    border-radius: 28px;
+    box-shadow: none;
+    padding: 30px 34px 28px;
+    min-height: 0;
   }
-  .grille.quatre > .kpi:hover { background: transparent; transform: none; }
+  .grille.quatre > .kpi:hover {
+    background: var(--bleu-pale); border-color: var(--bleu); transform: none;
+  }
   .grille.quatre > .kpi .valeur { font-size: 38px; }
 }
 

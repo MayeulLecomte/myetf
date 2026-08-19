@@ -330,6 +330,32 @@ tous les dessins à la même boîte et annulerait l'ajustement. Elle ne borne qu
 la largeur, pour qu'un dessin large ne pousse jamais la page ; le téléphone les
 recule d'un quart avec `zoom`, ce qui préserve les rapports.
 
+## Les indicateurs sont des bulles au seul contour
+
+Les tuiles ont perdu leur boîte pleine sur écran large — un cadre plein autour
+d'un nombre n'ajoutait rien que le nombre ne dise déjà. Mais **sans rien
+autour, quatre nombres espacés de cent pixels flottaient** sans se rattacher à
+quoi que ce soit.
+
+Un contour, et rien d'autre : ni fond, ni ombre. C'est ce qu'il faut pour dire
+« ceci est un objet », pas assez pour peser. **Bleu clair et non bleu vif** —
+sur quatre tuiles, l'accent plein crierait, alors qu'il doit rester à ce qu'on
+peut cliquer. Le bleu vif ne revient qu'au survol.
+
+Elles gardent leur boîte pleine sur téléphone, où deux colonnes serrées ont
+besoin d'une séparation — et c'est là que le harnais mesure ses témoins, ce
+qui explique qu'il ne voie pas ce changement.
+
+## L'air se mesure entre les blocs, jamais dans un titre
+
+Un titre appartient à ce qui le SUIT. « Les poches aujourd'hui » est posé
+au-dessus du fil des pastilles : c'est au-dessus de LUI qu'il faut l'air, pas
+entre lui et les pastilles qu'il annonce. D'où `.fil-entete { margin-top }`
+plutôt qu'une marge sous l'accroche.
+
+La même règle vaut pour les `h2` de vue, qui gardent une marge courte quand
+tout le reste est à 100 px.
+
 ## La vue courante se lit sur la vue, pas sur la navigation
 
 `vueCourante()` lisait `#nav button.actif`. **Une vue masquée dans le mode
