@@ -850,9 +850,37 @@ function ouvrirFeuille(titre, contenu) {
    coïncident pas, et c'est écrit dans la fiche. Elles datent du
    jour où le catalogue a été relevé, pas d'aujourd'hui.
    ------------------------------------------------------------ */
-function donneesCatalogue(isin) {
+/* Quatre mille cinq cents lignes reparcourues à chaque appel, quarante-deux
+   fois par rendu de l'univers : l'index est construit une fois par version du
+   catalogue. */
+let _indexCatalogue = null;
+function indexCatalogue() {
   if (typeof CATALOGUE_ETF === 'undefined' || !CATALOGUE_ETF) return null;
-  return CATALOGUE_ETF.lignes.find(l => l[0] === isin) || null;
+  if (_indexCatalogue && _indexCatalogue.genere === CATALOGUE_ETF.genere) return _indexCatalogue;
+  const par = {};
+  CATALOGUE_ETF.lignes.forEach(l => { par[l[0]] = l; });
+  _indexCatalogue = {
+    genere: CATALOGUE_ETF.genere, par,
+    col: nom => CATALOGUE_ETF.colonnes.indexOf(nom)
+  };
+  return _indexCatalogue;
+}
+
+function donneesCatalogue(isin) {
+  const ix = indexCatalogue();
+  return ix ? (ix.par[isin] || null) : null;
+}
+
+/* La performance depuis le 1er janvier, telle que la fiche l'affiche — MÊME
+   source, même chiffre. Deux lectures du catalogue finiraient par diverger,
+   et l'on ne saurait plus laquelle croire. */
+function perfAnneeDe(isin) {
+  const ix = indexCatalogue();
+  if (!ix) return null;
+  const l = ix.par[isin];
+  if (!l) return null;
+  const v = l[ix.col('perfAnnee')];
+  return v == null ? null : v;
 }
 
 function ficheEtf(isin) {
@@ -3344,6 +3372,17 @@ function universFiltre() {
   });
 }
 
+function celluleAnnee(isin) {
+  const ix = indexCatalogue();
+  if (!ix) return '<span class="sourdine" title="Le catalogue n\'est pas chargé : ' +
+    'c\'est lui qui porte les performances.">—</span>';
+  const v = perfAnneeDe(isin);
+  if (v == null) return '<span class="sourdine" title="Non publiée par Morningstar pour ce support.">—</span>';
+  return '<span class="' + (v >= 0 ? 'positif' : 'negatif') + '" title="Depuis le 1er janvier, ' +
+    'en valeur liquidative dividendes réinvestis. Source : Morningstar, relevé le ' +
+    dateFr(CATALOGUE_ETF.genere) + '.">' + signe(v, 2) + '</span>';
+}
+
 function rendreUnivers() {
   const f = Etat.filtreUnivers;
   rendreCatalogue();
@@ -3365,10 +3404,14 @@ function rendreUnivers() {
 
   const liste = universFiltre();
 
-  $('#compteur-univers').textContent = liste.length + ' / ' + Etat.univers.length + ' supports · ' +
+  $('#compteur-univers').innerHTML = echapper(liste.length + ' / ' + Etat.univers.length + ' supports · ' +
     Etat.univers.filter(e => e.donneesLe).length + ' aux données contrôlées · ' +
     Etat.univers.filter(e => e.verifie).length + ' validés au contrat · ' +
-    Etat.univers.filter(e => e.morningstar == null).length + ' sans notation';
+    Etat.univers.filter(e => e.morningstar == null).length + ' sans notation') +
+    /* Un demi-mégaoctet ne se télécharge pas sans qu'on l'ait demandé : la
+       colonne reste vide et l'on propose, plutôt que d'imposer. */
+    (indexCatalogue() ? ''
+      : ' · <button class="lien" id="btn-charger-perfs">charger le catalogue pour les performances</button>');
 
   const options = Object.keys(LIBELLES_POCHES);
 
@@ -3381,6 +3424,10 @@ function rendreUnivers() {
           '<option value="' + p + '"' + (e.poche === p ? ' selected' : '') + '>' + LIBELLES_POCHES[p] + '</option>').join('') + '</select></td>' +
       '<td class="num"><input type="number" data-etf="ter" data-index="' + i + '" value="' + e.ter + '" step="0.01" style="width:70px"></td>' +
       '<td class="num"><input type="number" data-etf="encours" data-index="' + i + '" value="' + e.encours + '" step="100" style="width:90px"></td>' +
+      /* La seule colonne de ce tableau qui ne se saisit pas : elle est
+         SOURCÉE, comme la fiche, et une case modifiable laisserait croire
+         qu'on peut la corriger à la main. */
+      '<td class="num">' + celluleAnnee(e.isin) + '</td>' +
       '<td class="num"><select data-etf="morningstar" data-index="' + i + '" style="width:60px"' +
           (e.notationLe ? ' title="Note relevée le ' + dateFr(e.notationLe) + ' chez Morningstar"'
                         : ' title="Morningstar ne note pas ce support : monétaire, ETC, matières premières ou fonds de moins de trois ans"') + '>' +
@@ -4077,6 +4124,11 @@ function brancher() {
 
     const pastille = e.target.closest('[data-poche]');
     if (pastille) { ouvrirPoche(pastille.dataset.poche); return; }
+
+    if (e.target.closest('#btn-charger-perfs')) {
+      chargerCatalogue(() => rendreUnivers());
+      return;
+    }
 
     const fiche = e.target.closest('[data-fiche]');
     if (fiche) { ouvrirFicheEtf(fiche.dataset.fiche); return; }

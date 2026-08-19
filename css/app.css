@@ -1659,7 +1659,10 @@ input[type=range] { width: 100%; accent-color: var(--bleu); }
 .fiche-ligne:first-of-type { border-top: 0; }
 .fiche-ligne > span { color: var(--texte-doux); }
 .fiche-ligne > strong { font-weight: 650; text-align: right; }
-.fiche-ligne .sourdine { font-weight: 400; color: var(--texte-doux); }
+/* Une donnée qu'on n'a pas, dite sans crier : le tiret doit se voir comme
+   une absence, pas comme un zéro. Employée dans la fiche et dans l'univers. */
+.sourdine { color: var(--texte-doux); }
+.fiche-ligne .sourdine { font-weight: 400; }
 .fiche-source {
   margin: 14px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--texte-doux);
 }
