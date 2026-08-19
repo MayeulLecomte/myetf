@@ -51,11 +51,49 @@ const MoteurSituation = (function () {
   }
 
   /** Valorise une détention à une date donnée. */
+  /* ----------------------------------------------------------
+     LA VALORISATION DE REPLI
+     ----------------------------------------------------------
+     Seuls 34 ISIN ont un historique de cours Euronext, sur près
+     de neuf cents sélectionnables. Pour les autres, le catalogue
+     porte une dernière clôture — et deux pièges qui feraient
+     d'elle un chiffre faux plutôt qu'une valeur manquante.
+
+     LA DEVISE. Cent quarante-deux supports sélectionnables cotent
+     hors zone euro, dont quatorze en PENCE : un GBX pris pour un
+     euro vaut cent fois trop. Convertir demanderait un taux de
+     change que l'application n'a pas. Une clôture qui n'est pas
+     en euros n'est donc pas une valorisation, et le montant saisi
+     reste seul.
+
+     L'ÂGE. Le catalogue est relevé à la main, et ses clôtures ne
+     sont pas toutes fraîches : le relevé du 19 août 2026 en porte
+     qui datent de décembre 2022 — produits retirés de la cote ou
+     sans échange. Au-delà de 45 jours, la clôture n'est plus une
+     valeur, c'est un souvenir.
+
+     Ces deux refus ne sont pas des erreurs : ils sont RENDUS, pour
+     que la vue puisse dire pourquoi une ligne n'est pas valorisée.
+     ---------------------------------------------------------- */
+  const AGE_MAX_REPLI = 45;
+
+  function coursDeRepli(isin, dateISO, repli) {
+    if (!repli || !repli.prix) return null;
+    const p = repli.prix[isin];
+    if (!p || p.cours == null) return null;
+    if (p.devise !== 'EUR') return { refus: 'deviseAutre' };
+    if (!p.date) return { refus: 'tropAncien' };
+    const age = (Date.parse(dateISO) - Date.parse(p.date)) / 86400000;
+    if (age > AGE_MAX_REPLI) return { refus: 'tropAncien' };
+    return { cours: p.cours, date: p.date };
+  }
+
   function valoriser(detention, dateISO, options) {
     const opt = options || {};
     const univers = opt.univers || [];
     const histo = opt.historique;
     const derniers = opt.derniers || (typeof DERNIERS_COURS !== 'undefined' ? DERNIERS_COURS : {});
+    const repli = opt.repli || null;
 
     const lignes = (detention || []).map(l => {
       const ref = univers.find(e => e.isin === l.isin) || null;
@@ -105,8 +143,18 @@ const MoteurSituation = (function () {
         });
       }
 
+      /* Ni historique, ni dernier cours relevé : le catalogue peut porter
+         une clôture, si elle est en euros et si elle n'est pas trop vieille. */
+      const r = coursDeRepli(l.isin, dateISO, repli);
+      if (r && r.cours != null) {
+        return Object.assign(base, {
+          cours: r.cours, dateCours: r.date, statut: 'repli',
+          montant: Math.round(quantite * r.cours)
+        });
+      }
+
       return Object.assign(base, {
-        cours: null, dateCours: null, statut: 'absent',
+        cours: null, dateCours: null, statut: r && r.refus ? r.refus : 'absent',
         montant: Math.round(Number(l.montant) || 0)
       });
     });
@@ -135,12 +183,20 @@ const MoteurSituation = (function () {
       pvLatente: lignes.reduce((a, l) => a + l.pvLatente, 0),
       /* Une situation n'est fiable que si chaque ligne a un cours de la
          période. Les statuts « actuel » et « absent » la dégradent. */
-      fiable: lignes.length > 0 && !lignes.some(l => l.statut === 'actuel' || l.statut === 'absent'),
+      /* « repli » ne dégrade pas : c'est un vrai cours, en euros, daté.
+         « deviseAutre » et « tropAncien » si, comme « absent » : dans les
+         trois cas la ligne vaut son montant saisi, pas une valeur de marché. */
+      fiable: lignes.length > 0 && !lignes.some(l =>
+        l.statut === 'actuel' || l.statut === 'absent' ||
+        l.statut === 'deviseAutre' || l.statut === 'tropAncien'),
       alertes: {
         horsPeriode: compte('actuel'),
         sansCours: compte('absent'),
         enMontant: compte('montant'),
-        reportees: compte('anterieur')
+        reportees: compte('anterieur'),
+        repli: compte('repli'),
+        deviseAutre: compte('deviseAutre'),
+        tropAncien: compte('tropAncien')
       }
     };
   }
@@ -209,5 +265,6 @@ const MoteurSituation = (function () {
     return dateISO.slice(5) === '12-31' ? 'Arrêté annuel' : 'Arrêté semestriel';
   }
 
-  return { coursALaDate, valoriser, apresArbitrage, datesReference, libelleReference };
+  return { coursALaDate, valoriser, apresArbitrage, datesReference, libelleReference,
+           coursDeRepli, AGE_MAX_REPLI };
 })();

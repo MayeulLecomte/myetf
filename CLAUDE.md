@@ -214,14 +214,56 @@ l'exécution il n'en resterait qu'un, seul le texte le montre.
 Avant de nommer une fonction ou une classe CSS, **chercher le nom dans le
 dépôt**. Il y est peut-être déjà.
 
+## Après un rebase avec conflit, relire le diff ENTIER
+
+Un relevé de cours automatique tourne du mardi au samedi et touche
+`index.html` pour y porter le marqueur de version. Tout travail en cours
+entre donc en conflit avec lui, sur ces lignes-là.
+
+**`git checkout --ours <fichier>` pendant un rebase reprend le fichier de la
+branche d'accueil EN ENTIER** — pas seulement la zone marquée. Résoudre ainsi
+un conflit portant sur trois lignes de version a silencieusement rendu au
+fichier un bouton supprimé quinze minutes plus tôt. Rien ne l'a signalé : ni
+git, ni les harnais, qui ne savent pas qu'un bouton devait disparaître.
+
+**Après tout rebase avec conflit : relire `git diff` du commit entier, fichier
+par fichier**, et vérifier que chaque changement voulu y est encore. Les zones
+en conflit ne sont pas les seules à bouger.
+
+## La valorisation de repli n'invente pas de cours
+
+Le catalogue porte une dernière clôture pour 4 525 supports. Elle ne sert de
+valorisation que sous **deux conditions, tenues dans le moteur** et non dans
+la vue :
+
+- **en euros**. 1 106 clôtures du catalogue sont dans une autre devise, dont
+  166 en **pence** — un support y cote 29 527 GBX, soit 87 fois sa valeur en
+  euros. Convertir demanderait un taux de change que l'application n'a pas.
+- **de moins de 45 jours**. Le catalogue est relevé à la main : celui du
+  19 août 2026 porte des clôtures de décembre 2022.
+
+Un refus n'est pas une erreur : il est **rendu** (`deviseAutre`, `tropAncien`)
+pour que la vue dise pourquoi la ligne n'est pas valorisée. La ligne garde son
+montant saisi et la situation cesse d'être annoncée fiable.
+
+`cotation()` applique **la même règle, par le même code** : deux garde-fous
+finiraient par diverger.
+
 ## Pistes — reportées, pas abandonnées
+
+**Un chantier de rangement est à faire AVANT le chantier 9 (design)** : on ne
+refond pas une feuille de style sur une base dont les noms se marchent dessus.
+Découpage des fichiers globaux, espace de noms, et passage en revue des noms
+de classes CSS. Le contrôle statique du harnais arrête les collisions
+nouvelles ; il ne range pas ce qui existe.
 
 Relevées à la relecture « premier dossier », hors chantier à ce stade :
 
 | Piste | Ce qui accroche |
 |---|---|
+| **Rangement — à faire avant le chantier 9** | un seul espace de noms pour `js/app.js` et `js/data/*.js`, 162 noms globaux, trois collisions en une séance |
 | **Refonte de l'univers ETF** | 3 482 mots et 42 lignes de tableau sur une vue, trois cartes empilées ; un premier visiteur n'y comprend pas ce qu'on attend de lui |
 | **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation |
 | **Note du jour en vitrine** | c'est le seul écran immédiatement lisible sans dossier, et il est rangé derrière deux niveaux de navigation |
 | **Nom du dossier obligatoire** | à traiter **dans le chantier 7**, pas avant : ce qu'on exige dépend du mode — un particulier n'a pas de « référence dossier » |
-| **Revalorisation du suivi sur tout le catalogue** | seuls **34 ISIN** ont un historique de cours Euronext, sur 866 sélectionnables. Un portefeuille recommandé hors de ces 34 reste valorisé au montant cible tant qu'aucune quantité n'est saisie |
+| **Revalorisation du suivi sur tout le catalogue** | *en partie traitée* : la clôture du catalogue sert de repli en euros et à moins de 45 jours. Restent les **1 106 supports cotant hors zone euro**, qui demanderaient un taux de change, et la fraîcheur — le catalogue est relevé au mieux mensuellement, là où Euronext l'est chaque jour |

@@ -50,7 +50,8 @@ const API = 'https://lt.morningstar.com/api/rest.svc/klr5zyak8x/security/screene
    produits qui n'en suivent aucun. */
 const CHAMPS = 'SecId|Name|isin|Ticker|categoryName|OngoingCharge|starRating|exchangeCode|' +
                'currencyCode|brandingCompanyName|FundTNAV|SRRI|inceptionDate|' +
-               'returnM12|returnM0|primaryBenchmarkName';
+               'returnM12|returnM0|primaryBenchmarkName|' +
+               'closePrice|closePriceDate|priceCurrency';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 const PAGE = 250;
@@ -237,6 +238,14 @@ async function principal() {
           /* « N/A » n'est pas un indice : on n'en garde rien plutôt que de
              l'afficher tel quel dans une fiche. */
           indice: (r.primaryBenchmarkName || '').trim().replace(/^N\/A$/i, '') || null,
+          /* Dernière clôture connue, sa date et SA devise — qui n'est pas
+             toujours celle du fonds. 142 des supports sélectionnables cotent
+             hors zone euro, dont quatorze en pence : un GBX pris pour un
+             euro vaut cent fois trop. La devise voyage donc avec le prix, et
+             c'est elle qui décide s'il est utilisable. */
+          prix: r.closePrice == null ? null : Number(r.closePrice),
+          prixDate: (r.closePriceDate || '').slice(0, 10) || null,
+          prixDevise: (r.priceCurrency || '').trim() || null,
           places: [place.mic]
         });
       }
@@ -260,11 +269,21 @@ async function principal() {
   const indices = [...new Set(lignes.map(l => l.indice).filter(Boolean))].sort();
   const iIndice = new Map(indices.map((x, i) => [x, i]));
 
+  /* Les dates de cotation se comptent sur les doigts d'une main : elles sont
+     déportées, comme le reste. Les devises aussi. */
+  const datesPrix = [...new Set(lignes.map(l => l.prixDate).filter(Boolean))].sort();
+  const iDatePrix = new Map(datesPrix.map((x, i) => [x, i]));
+  const devisesPrix = [...new Set(lignes.map(l => l.prixDevise).filter(Boolean))].sort();
+  const iDevisePrix = new Map(devisesPrix.map((x, i) => [x, i]));
+
   const table = lignes.map(l => [
     l.isin, l.nom, l.ticker, iEmetteur.get(l.emetteur), iCategorie.get(l.categorie),
     l.ter, l.note, l.devise, l.places.join(','), poche(l.categorie, l.nom),
     l.encours, l.srri, l.creation,
-    l.perf1an, l.perfAnnee, l.indice == null ? null : iIndice.get(l.indice)
+    l.perf1an, l.perfAnnee, l.indice == null ? null : iIndice.get(l.indice),
+    l.prix,
+    l.prixDate == null ? null : iDatePrix.get(l.prixDate),
+    l.prixDevise == null ? null : iDevisePrix.get(l.prixDevise)
   ]);
 
   const rattachees = table.filter(t => t[9]).length;
@@ -286,7 +305,14 @@ async function principal() {
     '   poche déduite de la catégorie — null si aucune ne convient —,',
     '   encours en M€, SRRI de l\'ancien DICI UCITS (1 à 7), date de',
     '   création, performance 12 mois, performance depuis le 1er',
-    '   janvier, indice répliqué (index).',
+    '   janvier, indice répliqué (index), dernière clôture, sa date',
+    '   (index), sa devise (index).',
+    '',
+    '   ⚠ La devise du PRIX n\'est pas toujours celle du fonds, et n\'est',
+    '   pas toujours l\'euro : cent six supports sélectionnables cotent en',
+    '   dollars, quatorze en pence — où un cours pris pour un euro vaut',
+    '   cent fois trop. Rien ne doit valoriser un portefeuille avec ces',
+    '   prix-là sans avoir lu la devise.',
     '',
     '   ⚠ Les deux performances sont calculées par Morningstar en VL,',
     '   dividendes réinvestis. Nos propres cours Euronext sont des prix',
@@ -309,10 +335,10 @@ async function principal() {
   writeFileSync(join(RACINE, 'js', 'data', 'catalogue-etf.js'),
     entete + JSON.stringify({
       genere: new Date().toISOString().slice(0, 10),
-      emetteurs, categories, indices,
+      emetteurs, categories, indices, datesPrix, devisesPrix,
       colonnes: ['isin', 'nom', 'ticker', 'emetteur', 'categorie', 'ter', 'note', 'devise',
                  'places', 'poche', 'encours', 'srri', 'creation',
-                 'perf1an', 'perfAnnee', 'indice'],
+                 'perf1an', 'perfAnnee', 'indice', 'prix', 'prixDate', 'prixDevise'],
       lignes: table
     }) + ';\n');
 
@@ -325,6 +351,9 @@ async function principal() {
               `note ${renseigne(6)} · SRRI ${renseigne(11)} · création ${renseigne(12)}`);
   console.log(`             perf 12 mois ${renseigne(13)} · perf depuis janvier ${renseigne(14)} · ` +
               `indice ${renseigne(15)} (${indices.length} distincts)`);
+  const enEuro = table.filter(t => t[18] != null && devisesPrix[t[18]] === 'EUR').length;
+  console.log(`             clôture ${renseigne(16)} · dont ${enEuro} en euros · ` +
+              `devises ${devisesPrix.join(', ')} · dates ${datesPrix.join(', ')}`);
 }
 
 principal().catch(e => { console.error(e); process.exit(1); });

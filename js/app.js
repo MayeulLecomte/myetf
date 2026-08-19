@@ -275,9 +275,16 @@ function besoinDeRevenu() {
 }
 
 /** Dernier cours connu pour un ISIN, relevé par la tâche planifiée. */
+/* Le cours du jour, s'il existe. Les cours relevés sur Euronext viennent en
+   premier — ils sont quotidiens et gratuits, mais ne couvrent que 34 ISIN.
+   À défaut, la dernière clôture du catalogue, sous LA MÊME règle que la
+   valorisation : en euros, et de moins de 45 jours. Une seule règle, tenue
+   au même endroit — deux garde-fous divergeraient. */
 function cotation(isin) {
-  if (!isin || typeof DERNIERS_COURS === 'undefined') return null;
-  return DERNIERS_COURS[isin] || null;
+  if (!isin) return null;
+  if (typeof DERNIERS_COURS !== 'undefined' && DERNIERS_COURS[isin]) return DERNIERS_COURS[isin];
+  const r = MoteurSituation.coursDeRepli(isin, aujourdhuiISO(), repliCatalogue());
+  return r && r.cours != null ? { cours: r.cours, date: r.date } : null;
 }
 
 /** Recalcule les montants des lignes saisies en quantités. */
@@ -2136,8 +2143,34 @@ function synchroniserSuivi() {
   return JSON.stringify(Etat.detention) !== avant;
 }
 
+/* Le catalogue porte une clôture par support. On la met en forme une fois
+   par chargement : quatre mille cinq cents lignes à reparcourir pour chaque
+   rendu de situation seraient du gaspillage. */
+let _repli = null;
+function repliCatalogue() {
+  if (typeof CATALOGUE_ETF === 'undefined' || !CATALOGUE_ETF) return null;
+  if (_repli && _repli.genere === CATALOGUE_ETF.genere) return _repli;
+  const C = CATALOGUE_ETF;
+  const iPrix = C.colonnes.indexOf('prix');
+  const iDate = C.colonnes.indexOf('prixDate');
+  const iDev = C.colonnes.indexOf('prixDevise');
+  if (iPrix < 0) return null;
+  const prix = {};
+  C.lignes.forEach(l => {
+    if (l[iPrix] == null) return;
+    prix[l[0]] = {
+      cours: l[iPrix],
+      date: l[iDate] == null ? null : (C.datesPrix || [])[l[iDate]],
+      devise: l[iDev] == null ? null : (C.devisesPrix || [])[l[iDev]]
+    };
+  });
+  _repli = { genere: C.genere, prix };
+  return _repli;
+}
+
 function situationCourante(dateISO) {
-  return MoteurSituation.valoriser(Etat.detention, dateISO, { univers: Etat.univers });
+  return MoteurSituation.valoriser(Etat.detention, dateISO,
+    { univers: Etat.univers, repli: repliCatalogue() });
 }
 
 /** Enregistre le relevé du jour demandé. */
@@ -2145,7 +2178,8 @@ function figerSituation(dateISO, origine) {
   /* Un relevé daté enregistre ce qui est DÉTENU. Y figer une ligne encore
      à investir lui prêterait une existence qu'elle n'a pas, et ce relevé
      est ensuite lu comme un fait. */
-  const s = MoteurSituation.valoriser(lignesDetenues(), dateISO, { univers: Etat.univers });
+  const s = MoteurSituation.valoriser(lignesDetenues(), dateISO,
+    { univers: Etat.univers, repli: repliCatalogue() });
   Etat.situations = Etat.situations.filter(x => x.date !== dateISO);
   Etat.situations.push({
     date: dateISO,
@@ -2184,11 +2218,17 @@ function figerArretesFranchis() {
 }
 
 const LIBELLES_STATUT = {
-  seance:    { texte: '', classe: '' },
-  anterieur: { texte: 'séance antérieure', classe: 'gris' },
-  actuel:    { texte: 'hors période', classe: 'orange' },
-  montant:   { texte: 'montant saisi', classe: 'gris' },
-  absent:    { texte: 'sans cours', classe: 'rouge' }
+  seance:      { texte: '', classe: '' },
+  anterieur:   { texte: 'séance antérieure', classe: 'gris' },
+  actuel:      { texte: 'hors période', classe: 'orange' },
+  montant:     { texte: 'montant saisi', classe: 'gris' },
+  absent:      { texte: 'sans cours', classe: 'rouge' },
+  /* Les trois états de la valorisation de repli. Les deux refus disent
+     POURQUOI la ligne n'est pas valorisée : « sans cours » ne suffirait pas,
+     puisqu'un cours existe — il est seulement inutilisable. */
+  repli:       { texte: 'dernière clôture connue', classe: 'gris' },
+  deviseAutre: { texte: 'cours dans une autre devise', classe: 'orange' },
+  tropAncien:  { texte: 'relevé trop ancien', classe: 'orange' }
 };
 
 /* `actions` n'est vrai que sur le relevé vivant : un relevé figé est un
@@ -2311,11 +2351,18 @@ function rendreSituation() {
         '</div>') +
 
     /* --- Réserves de calcul --- */
-    ((s.alertes.horsPeriode || s.alertes.sansCours || s.alertes.enMontant)
+    ((s.alertes.horsPeriode || s.alertes.sansCours || s.alertes.enMontant ||
+      s.alertes.deviseAutre || s.alertes.tropAncien)
       ? '<div class="message alerte"><strong>Réserves sur ce relevé.</strong><ul>' +
         (s.alertes.horsPeriode ? '<li>' + s.alertes.horsPeriode + ' ligne(s) valorisée(s) au dernier cours connu, ' +
           'postérieur à la date demandée : ces supports ne sont pas cotés sur Euronext et n\'ont pas d\'historique.</li>' : '') +
         (s.alertes.sansCours ? '<li>' + s.alertes.sansCours + ' ligne(s) sans aucun cours : le montant saisi est repris tel quel.</li>' : '') +
+        /* Un cours existe, mais il est inutilisable : le dire, plutôt que de
+           laisser croire qu'il n'y en a pas. */
+        (s.alertes.deviseAutre ? '<li>' + s.alertes.deviseAutre + ' ligne(s) valorisée(s) au montant cible — ' +
+          'cours dans une autre devise. L\'application ne convertit pas : elle n\'a pas de taux de change.</li>' : '') +
+        (s.alertes.tropAncien ? '<li>' + s.alertes.tropAncien + ' ligne(s) valorisée(s) au montant cible — ' +
+          'relevé trop ancien (plus de ' + MoteurSituation.AGE_MAX_REPLI + ' jours).</li>' : '') +
         /* Une ligne encore à investir n'a pas été « saisie en montant » : elle
            porte le montant de l'allocation cible, faute de cours connu pour
            son ISIN. Envoyer l'utilisateur saisir une quantité pour un support
@@ -2329,7 +2376,14 @@ function rendreSituation() {
         '</ul></div>' : '') +
 
     '<div class="grille quatre">' +
-      kpi(euro(s.total), 'Valeur du portefeuille', dateFr(date)) +
+      /* La valeur d'un portefeuille se lit avec la date de ce qui l'a
+         valorisée. Quand une partie vient du catalogue — relevé à la main,
+         donc pas d'aujourd'hui —, c'est cette date-là qu'il faut donner. */
+      kpi(euro(s.total), 'Valeur du portefeuille',
+        s.alertes.repli && repliCatalogue()
+          ? dateFr(date) + ' · ' + s.alertes.repli + ' ligne(s) au relevé du ' +
+            dateFr(repliCatalogue().genere)
+          : dateFr(date)) +
       kpi(String(s.lignes.length - aInvestir.length), 'Lignes détenues',
         aInvestir.length ? aInvestir.length + ' encore à investir'
                          : enQuantites + ' suivie(s) en quantités') +

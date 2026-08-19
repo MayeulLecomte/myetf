@@ -600,7 +600,56 @@ const ecarts=connus.filter(e=>{const l=CAT.lignes.find(x=>x[0]===e.isin);
   return l[6]!==null&&e.morningstar!==null&&l[6]!==e.morningstar;});
 ok(ecarts.length===0,'notations concordantes entre univers et catalogue ('+ecarts.length+' écart(s))');
 
-// --- 13. Un seul espace de noms
+// --- 13. La valorisation de repli
+/* Deux refus, et le second est celui qui coûterait le plus cher : une
+   clôture en pence vaut le centième d'une livre. Un GBX pris pour un euro
+   multiplie un portefeuille par cent sans qu'aucune erreur ne se lève. */
+console.log('\n== Valorisation de repli ==');
+{
+  const AUJ = '2026-08-19';
+  const repli = { prix: {
+    EUROK:  { cours: 100, devise: 'EUR', date: '2026-08-18' },
+    EURVIEUX:{ cours: 100, devise: 'EUR', date: '2026-05-01' },
+    ENGBX:  { cours: 100, devise: 'GBX', date: '2026-08-18' },
+    ENUSD:  { cours: 100, devise: 'USD', date: '2026-08-18' },
+    SANSDATE:{ cours: 100, devise: 'EUR', date: null }
+  } };
+  const r = i => MoteurSituation.coursDeRepli(i, AUJ, repli);
+  ok(r('EUROK') && r('EUROK').cours === 100, 'une clôture en euros et récente est retenue');
+  ok(r('ENGBX') && r('ENGBX').refus === 'deviseAutre',
+     'une clôture en PENCE est refusée — elle vaudrait cent fois trop');
+  ok(r('ENUSD') && r('ENUSD').refus === 'deviseAutre', 'une clôture en dollars est refusée');
+  ok(r('EURVIEUX') && r('EURVIEUX').refus === 'tropAncien',
+     'une clôture de plus de ' + MoteurSituation.AGE_MAX_REPLI + ' jours est refusée');
+  ok(r('SANSDATE') && r('SANSDATE').refus === 'tropAncien', 'une clôture sans date est refusée');
+  ok(r('INCONNU') === null, 'un ISIN absent du catalogue ne produit aucun repli');
+
+  /* Et le refus doit se voir jusque dans la valorisation : la ligne garde son
+     montant saisi, et la situation cesse d'être annoncée fiable. */
+  const det = [{ isin: 'ENGBX', libelle: 'Fonds en pence', montant: 5000, quantite: 40 }];
+  const s1 = MoteurSituation.valoriser(det, AUJ, { univers: [], derniers: {}, repli });
+  ok(s1.total === 5000, 'une ligne refusée garde son montant saisi (' + s1.total + ' €)');
+  ok(s1.alertes.deviseAutre === 1, 'le refus de devise est compté dans les alertes');
+  ok(s1.fiable === false, 'une situation contenant un refus n\'est pas annoncée fiable');
+
+  const det2 = [{ isin: 'EUROK', libelle: 'Fonds en euros', montant: 5000, quantite: 40 }];
+  const s2 = MoteurSituation.valoriser(det2, AUJ, { univers: [], derniers: {}, repli });
+  ok(s2.total === 4000, 'une ligne valorisée au repli vaut quantité × clôture (' + s2.total + ' €)');
+  ok(s2.alertes.repli === 1 && s2.fiable === true,
+     'le repli en euros ne dégrade pas la fiabilité');
+
+  /* Le catalogue livré ne doit contenir aucune surprise : on vérifie que la
+     règle tient sur les données réelles, pas seulement sur des cas forgés. */
+  const iPrix = CATALOGUE_ETF.colonnes.indexOf('prix');
+  const iDev = CATALOGUE_ETF.colonnes.indexOf('prixDevise');
+  const devises = CATALOGUE_ETF.devisesPrix || [];
+  const nonEuro = CATALOGUE_ETF.lignes.filter(l => l[iPrix] != null && devises[l[iDev]] !== 'EUR').length;
+  console.log('   ' + CATALOGUE_ETF.lignes.filter(l => l[iPrix] != null).length + ' clôtures au catalogue · ' +
+              nonEuro + ' hors euro · devises ' + devises.join(', '));
+  ok(devises.indexOf('GBX') >= 0, 'le catalogue contient bien des cours en pence — le cas n\'est pas théorique');
+}
+
+// --- 14. Un seul espace de noms
 /* L'application n'a pas de modules : tout ce que déclarent js/app.js et
    js/data/*.js vit dans la même portée, et la DERNIÈRE déclaration d'un nom
    écrase silencieusement les précédentes. Trois collisions en une seule
