@@ -113,7 +113,9 @@ function poserNav() {
 }
 
 function poserTitres() {
-  $$('h2[data-titre]').forEach(h => { h.textContent = T('vue.' + h.dataset.titre + '.titre'); });
+  $$('h2[data-titre]').forEach(h => {
+    h.innerHTML = titreSouligne(T('vue.' + h.dataset.titre + '.titre'));
+  });
 }
 
 function poserBarresParcours() {

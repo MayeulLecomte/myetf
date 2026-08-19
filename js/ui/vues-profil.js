@@ -252,7 +252,7 @@ function ecranEntree() {
       'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +
       fraicheurDonnees() +
     '</div>' +
-    '<h2>Pour commencer</h2>' +
+    '<h2>' + titreSouligne('Pour commencer') + '</h2>' +
     '<p class="intro">Ce choix ne change ni les calculs ni le dossier : seulement le vocabulaire et ' +
       'les écrans montrés. Il se modifie ensuite dans « ' + echapper(T('vue.client.nav')) + ' ».</p>' +
     '<div class="entree">' +
@@ -284,7 +284,7 @@ function rendreAccueil() {
     c.innerHTML =
       accroche() +
       filPoches() +
-      '<h2>Remplissez le dossier</h2>' +
+      '<h2>' + titreSouligne('Remplissez le dossier') + '</h2>' +
       '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont ' +
         'pas renseignées.</p>' +
       /* Cette phrase reste ici, et pas seulement dans « Méthode & limites » :
@@ -331,7 +331,7 @@ function rendreAccueil() {
   c.innerHTML =
     accroche() +
     filPoches() +
-    '<h2>Aujourd\'hui</h2>' +
+    '<h2>' + titreSouligne('Aujourd\'hui') + '</h2>' +
 
     /* Tant que des achats n'ont pas été passés, ils passent avant le verdict
        d'arbitrage : dire « rien à faire » à quelqu'un qui n'a rien acheté

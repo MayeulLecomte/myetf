@@ -94,6 +94,27 @@ function etoiles(n) {
     '★★★★★'.slice(0, n) + '<span style="color:var(--gris-ligne)">' + '★★★★★'.slice(0, 5 - n) + '</span></span>';
 }
 
+/* ------------------------------------------------------------
+   LE TRAIT BLEU SOUS UN MOT DU TITRE
+   ------------------------------------------------------------
+   Le dernier mot du titre reçoit un trait, posé sous la ligne de
+   base et arrêté avant les jambages. C'est le seul ornement de
+   l'interface, et il tient en une classe.
+
+   Le DERNIER mot, et non un mot choisi à la main : « Allocation
+   cible », « Mes placements », « Profil de risque » — c'est celui
+   qui distingue le titre de ses voisins. Une table de mots
+   soulignés par vue aurait été un second endroit à tenir à jour.
+
+   Rend du HTML : le texte est échappé, le balisage ne l'est pas.
+   ------------------------------------------------------------ */
+function titreSouligne(texte) {
+  const t = String(texte || '').trim();
+  const i = t.lastIndexOf(' ');
+  if (i < 0) return '<span class="souligne">' + echapper(t) + '</span>';
+  return echapper(t.slice(0, i + 1)) + '<span class="souligne">' + echapper(t.slice(i + 1)) + '</span>';
+}
+
 function echapper(s) {
   return String(s === undefined || s === null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

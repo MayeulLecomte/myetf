@@ -1519,10 +1519,13 @@ h1, h2, h3, h4 { font-family: var(--police); font-weight: 800; letter-spacing: -
 h2 { font-size: 30px; line-height: 1.08; }
 h3 { font-size: 16px; letter-spacing: -.01em; }
 
-/* Le trait bleu sous un mot du titre. Il passe SOUS la ligne de base et
-   s'arrête avant les jambages : un surlignage plein barrerait le mot. */
+/* Le trait bleu sous un mot du titre. Il passe SOUS la ligne de base : à
+   62 % de la hauteur de ligne — la valeur de la maquette — il mordait le
+   bas des lettres, et un bleu saturé qui traverse un mot se lit comme une
+   rature. Descendu à 78 %, il redevient un trait. */
 .souligne {
-  background: linear-gradient(transparent 62%, var(--bleu) 62%, var(--bleu) 90%, transparent 90%);
+  background: linear-gradient(transparent 78%, var(--bleu) 78%, var(--bleu) 94%, transparent 94%);
+  padding: 0 .06em;
 }
 
 /* ---------- Cartes ---------- */
@@ -1667,6 +1670,12 @@ label { font-weight: 600; }
 }
 .verdict::after, .verdict::before { display: none; }
 .verdict-titre { font-family: var(--police); font-weight: 800; letter-spacing: -.03em; }
+/* Les deux états portaient un fond teinté — vert quand il n'y a rien à
+   faire, or quand il y a des ordres. Deux classes valent plus qu'une : il
+   faut les nommer toutes deux pour les recouvrir. Le verdict redevient une
+   carte, et c'est le mot qui dit le sens. */
+.verdict.calme, .verdict.action { background: var(--surface); }
+.verdict.calme .verdict-titre { color: var(--texte); }
 .verdict.action { border-color: var(--bleu); }
 .verdict.action .verdict-titre { color: var(--bleu-encre); }
 
@@ -1696,3 +1705,58 @@ label { font-weight: 600; }
   .souligne { background: none !important; }
   img.illustration { display: none !important; }
 }
+
+/* ---------- (c) AUJOURD'HUI ET ÉCRAN D'ENTRÉE ---------- */
+
+/* L'accroche : une phrase, pas un bandeau. */
+.accroche p { font-size: 15px; color: var(--texte-doux); max-width: 74ch; }
+.accroche p strong { color: var(--texte); font-weight: 800; }
+.accroche-note { color: var(--texte-doux); }
+
+/* Les pastilles de fraîcheur des données. */
+.fraicheur span {
+  background: var(--surface); border: 1px solid var(--ligne);
+  color: var(--texte-doux); font-weight: 600;
+}
+.fraicheur span b, .fraicheur span strong { color: var(--texte); font-weight: 800; }
+
+/* Les étapes du dossier : une liste, des filets, et une marque
+   d'avancement qui se lit sans couleur — pleine ou creuse. */
+.etape { border-top: 1px solid var(--ligne); padding: 16px 4px; }
+.etape-marque {
+  background: transparent; color: var(--bleu-encre);
+  box-shadow: inset 0 0 0 1.5px var(--ligne-forte);
+  font-weight: 800;
+}
+.etape.faite .etape-marque { background: var(--bleu); color: #fff; box-shadow: none; }
+.etape-corps strong { font-weight: 800; }
+.etape.faite .etape-corps strong { color: var(--texte-doux); font-weight: 600; }
+.etape-detail { color: var(--texte-doux); }
+.etape-duree {
+  background: var(--bleu-pale); color: var(--bleu-encre);
+  font-weight: 800; border-radius: var(--r-pilule);
+}
+
+/* Le fil des poches. L'anneau garde la teinte de sa classe d'actifs —
+   c'est une donnée, pas un ornement — mais il perd son remplissage
+   dégradé : un cercle filet, et le chiffre dessous. */
+.fil { gap: 10px; }
+.fil-item { padding: 12px 10px; box-shadow: none; }
+.fil-item:hover { background: var(--fond); }
+.fil-nom { color: var(--texte); font-weight: 700; }
+.fil-var { font-weight: 800; }
+.fil-entete { font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+              font-size: 11px; color: var(--texte-doux); }
+
+/* Le verdict : le chiffre en grand, la phrase en dessous. */
+.verdict { padding: 26px 26px 28px; }
+.verdict-titre { font-size: 34px; letter-spacing: -.03em; }
+.verdict-texte { color: var(--texte-doux); font-size: 14px; }
+.verdict.calme .verdict-titre { color: var(--texte); }
+
+/* L'écran d'entrée : deux cartes de même poids, et rien qui pousse
+   vers l'une plutôt que l'autre. */
+.entree { gap: 16px; }
+.entree-choix { padding: 24px; }
+.entree-choix strong { font-size: 17px; }
+.entree-choix span { color: var(--texte-doux); font-size: 13.5px; }
