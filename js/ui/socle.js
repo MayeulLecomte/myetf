@@ -137,24 +137,60 @@ function etoiles(n) {
    ------------------------------------------------------------ */
 const TAILLE_ILLUSTRATION_TITRE = 38;
 const TAILLE_ILLUSTRATION_BANNIERE = 180;
+/* En ouverture de vue : plus grand que dans un titre, plus petit qu'une
+   bannière d'accueil — c'est le sujet du premier écran, pas sa décoration.
+   Il rapetisse à 132 px sur téléphone, où 168 px mangeraient la moitié de
+   ce qu'on voit en arrivant (feuille de style, pas ici : le style en ligne
+   posé par `illustration()` est surchargé en `!important`). */
+const TAILLE_ILLUSTRATION_OUVERTURE = 168;
 
 function illustration(nom, taille) {
   return '<img class="illustration" src="img/' + nom + '.png" alt="" aria-hidden="true" ' +
     'width="' + taille + '" height="' + taille + '" style="width:' + taille + 'px;height:' + taille + 'px">';
 }
 
-/* Le dessin qui accompagne le titre de chaque vue. Les vues absentes de
-   cette table n'en reçoivent aucun : mieux vaut une vue nue qu'un dessin
-   qui ne dit rien. */
+/* UNE VUE, UN DESSIN, ET AUCUN DOUBLON.
+
+   La table en portait huit pour seize vues : la boussole servait à la
+   note ET au contexte, les fiches aux supports ET à l'univers, la
+   longue-vue au backtest ET à la méthode. Un dessin qui désigne deux
+   écrans ne désigne plus rien — on arrive sur le second en croyant
+   reconnaître le premier.
+
+   Huit dessins ont été ajoutés pour lever les doublons. Chacun ouvre
+   sa vue en pleine page, et une seule. */
 const ILLUSTRATIONS_VUES = {
+  accueil:      'cafe',
+  client:       'enveloppe',
+  questionnaire:'carnet',
+  profil:       'profil',
   note:         'boussole',
-  macro:        'boussole',
+  /* `macro` n'a pas encore son dessin : son ouverture se monte sans, plutôt
+     que de reprendre la boussole de la note du jour — le doublon qu'on
+     vient de lever. Ajouter 'contexte' ici le jour où img/contexte.png
+     arrive, et rien d'autre. */
   allocation:   'balance',
   portefeuille: 'fiches',
-  univers:      'fiches',
-  journal:      'carnet',
+  arbitrages:   'arbitrages',
+  situation:    'port',
+  revenus:      'revenus',
+  journal:      'journal',
+  rapport:      'rapport',
   backtest:     'longue-vue',
-  methode:      'longue-vue'
+  univers:      'univers',
+  methode:      'methode'
+};
+
+/* Cinq vues n'ont pas de phrase d'introduction dans la page : les onze
+   autres en ont une, écrite de longue date, et c'est elle qui sert de
+   sous-titre à l'ouverture. Ces cinq-là en reçoivent une ici — ce sont
+   les seules phrases neuves du chantier. */
+const SOUS_TITRES_VUES = {
+  profil:       'Ce que les réponses déterminent, et ce que cela veut dire pour le portefeuille.',
+  allocation:   "Ce que le profil commande, poche par poche — et ce qui l'en écarte.",
+  portefeuille: "Les supports retenus dans le catalogue, poche par poche, sur des critères qu'on peut relire.",
+  backtest:     "Ce qu'aurait donné cette allocation sur les années passées — pour se convaincre, pas pour promettre.",
+  rapport:      "Le document remis et signé, et la relecture qui précède son impression."
 };
 
 function titreSouligne(texte) {

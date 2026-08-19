@@ -13,7 +13,7 @@ function brancher() {
   /* Dans cet ordre : la colonne porte les libellés que la barre de parcours
      y relit ensuite. */
   poserNav();
-  poserTitres();
+  poserTitres(); poserOuvertures();
   poserBarresParcours();
 
   /* Le repère de section se recalcule au défilement — et au redimensionnement,
@@ -35,6 +35,9 @@ function brancher() {
      Toucher le groupe où l'on se trouve déjà remonte en haut de la vue,
      comme partout ailleurs, plutôt que de rejouer un rendu identique. */
   $('#tabbar').addEventListener('click', e => {
+    /* Le « ••• » de la barre ouvre la même feuille que celui de l'en-tête :
+       une seule feuille, deux portes, et jamais deux contenus à tenir. */
+    if (e.target.closest('.tabbar-plus')) { $('#btn-dossier-mobile').click(); return; }
     const b = e.target.closest('button[data-groupe]');
     if (!b) return;
     const g = GROUPES.find(x => x.id === b.dataset.groupe);
@@ -355,7 +358,7 @@ function brancher() {
     if (t.id === 'f-mode') {
       Etat.mode = t.value;
       sauver(true);
-      poserNav(); poserTitres(); poserBarresParcours(); majNav();
+      poserNav(); poserTitres(); poserOuvertures(); poserBarresParcours(); majNav();
       rendre('client');
       notifier('Mode « ' + (MODES.find(m => m.id === t.value) || {}).bouton + ' ».', 'info');
       return;
@@ -404,7 +407,7 @@ function brancher() {
     /* Un dossier exporté avant que le mode existe n'en porte aucun : il a été
        construit par un conseiller, et s'ouvre comme tel. */
     if (!Etat.mode) Etat.mode = MODE_DEFAUT;
-    poserNav(); poserTitres();
+    poserNav(); poserTitres(); poserOuvertures();
     sauver(true); afficher('client'); notifier('Dossier importé.');
   });
 

@@ -114,9 +114,108 @@ function poserNav() {
 
 function poserTitres() {
   $$('h2[data-titre]').forEach(h => {
+    h.innerHTML = titreSouligne(T('vue.' + h.dataset.titre + '.titre'));
+  });
+}
+
+/* ------------------------------------------------------------
+   L'OUVERTURE D'UNE VUE
+   ------------------------------------------------------------
+   Le dessin ne se pose plus À CÔTÉ du titre, à trente-huit
+   pixels : il tient le premier écran avec lui, et le contenu
+   ne paraît qu'au défilement.
+
+   Ce qui change vraiment, c'est ce sur quoi on arrive. Avant,
+   une vue s'ouvrait sur un formulaire, un tableau ou un chiffre
+   — on était dedans avant d'avoir lu le titre. Maintenant on
+   arrive sur une image et un nom, et l'on descend quand on a
+   compris où l'on est.
+
+   LA PHRASE D'INTRODUCTION DEVIENT LE SOUS-TITRE. Onze vues en
+   avaient déjà une, écrite de longue date, posée juste sous le
+   titre ; elle est déplacée dans l'ouverture plutôt que
+   réécrite. Les cinq qui n'en avaient pas la reçoivent de
+   `SOUS_TITRES_VUES`.
+
+   Posée une fois à l'amorçage, et reposée à chaque changement
+   de mode — le vocabulaire des titres en dépend. La fonction
+   est idempotente : elle reconnaît une ouverture déjà montée et
+   ne la remonte pas.
+   ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   L'ÉCRAN D'OUVERTURE — trois secondes
+   ------------------------------------------------------------
+   Le signe seul sur le fond de page, puis il s'efface en fondu
+   et la présentation paraît.
+
+   TROIS GARDE-FOUS, et chacun répond à une façon de rester
+   coincé derrière :
+
+   • Il ne paraît que sur un dossier vierge dont le mode n'est
+     pas choisi — le même critère que l'écran d'entrée. Un
+     conseiller qui ouvre son dossier vingt fois par jour ne
+     traverse pas vingt fois un voile.
+   • Il se retire par une MINUTERIE, pas par la fin d'une
+     animation : `animationend` ne se déclenche pas si
+     l'animation est neutralisée, et `prefers-reduced-motion`
+     la neutralise. L'écran serait resté pour toujours chez qui
+     demande moins de mouvement.
+   • Un clic le retire aussi. Trois secondes, c'est long quand
+     on est pressé.
+   ------------------------------------------------------------ */
+function poserEcranOuverture() {
+  if (Etat.mode || dossierEntame()) return;
+
+  const voile = document.createElement('div');
+  voile.className = 'ecran-ouverture';
+  voile.setAttribute('aria-hidden', 'true');
+  voile.innerHTML = illustration('logo', 132);
+  document.body.appendChild(voile);
+
+  let parti = false;
+  const retirer = () => {
+    if (parti) return;
+    parti = true;
+    voile.classList.add('parti');
+    setTimeout(() => voile.remove(), 500);
+  };
+  voile.addEventListener('click', retirer);
+  setTimeout(retirer, 3000);
+}
+
+function poserOuvertures() {
+  $$('h2[data-titre]').forEach(h => {
     const vue = h.dataset.titre;
-    const dessin = ILLUSTRATIONS_VUES[vue] ? illustration(ILLUSTRATIONS_VUES[vue], TAILLE_ILLUSTRATION_TITRE) : '';
-    h.innerHTML = dessin + titreSouligne(T('vue.' + vue + '.titre'));
+    if (h.parentElement && h.parentElement.classList.contains('ouverture-vue')) return;
+
+    const bloc = document.createElement('div');
+    bloc.className = 'ouverture-vue sans-impression';
+
+    /* Une vue sans dessin reçoit quand même son ouverture : le titre et sa
+       phrase tiennent l'écran seuls. Mieux vaut une ouverture nue qu'un
+       dessin emprunté à la vue d'à côté — c'est le doublon qu'on vient de
+       lever, et il reviendrait par la porte de service. */
+    bloc.innerHTML = ILLUSTRATIONS_VUES[vue]
+      ? illustration(ILLUSTRATIONS_VUES[vue], TAILLE_ILLUSTRATION_OUVERTURE) : '';
+    h.parentNode.insertBefore(bloc, h);
+    bloc.appendChild(h);
+
+    /* La phrase qui suivait le titre le suit encore, un cran plus bas. */
+    const suivant = bloc.nextElementSibling;
+    if (suivant && suivant.tagName === 'P' && suivant.classList.contains('intro')) {
+      bloc.appendChild(suivant);
+    } else if (SOUS_TITRES_VUES[vue]) {
+      const p = document.createElement('p');
+      p.className = 'intro';
+      p.textContent = SOUS_TITRES_VUES[vue];
+      bloc.appendChild(p);
+    }
+
+    bloc.insertAdjacentHTML('beforeend',
+      '<div class="ouverture-suite" aria-hidden="true">' +
+        '<span>Faites défiler</span>' +
+        '<svg viewBox="0 0 24 24"><path d="M6 9.5 12 15.5 18 9.5"/></svg>' +
+      '</div>');
   });
 }
 
@@ -181,11 +280,17 @@ function rendreNavMobile(vue) {
     return '';
   };
 
+  /* Les quatre blocs, plus une porte vers les secondaires. Sur téléphone
+     l'en-tête porte déjà un « ••• » et celui-ci reste masqué ; sur écran
+     large, la colonne de gauche ayant disparu, c'est le seul chemin qui
+     mène encore à l'univers ETF et à Méthode & limites. */
   barre.innerHTML = GROUPES.filter(g => !g.secondaire).map(g =>
     '<button data-groupe="' + g.id + '"' + (g.id === groupe.id ? ' class="actif"' : '') + '>' +
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + g.icone + '"/></svg>' +
       '<span>' + echapper(g.libelle) + '</span>' +
-    '</button>').join('');
+    '</button>').join('') +
+    '<span class="tabbar-filet" aria-hidden="true"></span>' +
+    '<button class="tabbar-plus" id="btn-dossier-large" aria-label="Dossier et données">•••</button>';
 
   /* Un groupe d'une seule vue n'a pas de ruban : il n'y aurait qu'une
      pilule, qui ne dirait rien de plus que la barre basse. */

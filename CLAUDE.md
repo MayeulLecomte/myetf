@@ -178,16 +178,35 @@ g et du q, et le premier d'entre eux laisse un moignon bleu devant le mot. Seul
 
 Huit dessins au trait dans `img/`, fond transparent, 320 px de côté.
 
-| Dessin | Où |
+**UNE VUE, UN DESSIN, ET AUCUN DOUBLON.** Ils étaient huit pour seize vues :
+la boussole servait à la note ET au contexte, les fiches aux supports ET à
+l'univers, la longue-vue au backtest ET à la méthode. Un dessin qui désigne
+deux écrans ne désigne plus rien — on arrive sur le second en croyant
+reconnaître le premier. Huit dessins ont été ajoutés pour lever les doublons.
+
+| Dessin | Vue |
 |---|---|
-| `logo` | en-tête (28 px) · écran d'entrée et accueil particulier |
-| `cafe` | bannière d'accueil, mode conseiller |
-| `boussole` | note du jour, contexte · bandeau « allocation stratégique seule » (44 px) |
-| `balance` | allocation cible |
-| `fiches` | sélection des supports, univers ETF |
-| `carnet` | journal · état vide du questionnaire |
-| `port` | état vide du suivi |
-| `longue-vue` | backtest, méthode & limites |
+| `logo` | en-tête (28 px) · écran de présentation · écran d'ouverture |
+| `cafe` | Aujourd'hui |
+| `enveloppe` | Client & enveloppe |
+| `carnet` | Questionnaire |
+| `profil` | Profil de risque |
+| `boussole` | Note du jour |
+| — | Contexte — **`img/contexte.png` n'existe pas encore.** Son ouverture se monte sans dessin plutôt que de reprendre la boussole : le doublon qu'on vient de lever reviendrait par la porte de service |
+| `balance` | Allocation cible |
+| `fiches` | Sélection des supports |
+| `arbitrages` | Arbitrages |
+| `port` | Situation |
+| `revenus` | Revenus & rachats |
+| `journal` | Journal |
+| `rapport` | Rapport client |
+| `longue-vue` | Backtest |
+| `univers` | Univers ETF |
+| `methode` | Méthode & limites |
+
+La table qui fait foi est `ILLUSTRATIONS_VUES` dans `js/ui/socle.js`. Le
+bandeau « allocation stratégique seule » portait une boussole de 44 px : elle
+est retirée, l'allocation cible en montrait deux.
 
 **Deux tailles, et deux seulement**, tenues par `TAILLE_ILLUSTRATION_TITRE`
 (38 px) et `TAILLE_ILLUSTRATION_BANNIERE` (180 px) dans `js/ui/socle.js`. Elles
@@ -218,7 +237,80 @@ pas de dessin, et c'est mieux qu'un dessin qui ne dit rien.
 `alt` vide et `aria-hidden` : ce sont des ornements, et le titre dit déjà ce
 qu'ils disent.
 
-### Le rapport imprimé échappe à tout cela
+#### L'ouverture d'une vue
+
+Le dessin ne se pose plus à côté du titre : **il tient le premier écran avec
+lui**, et le contenu ne paraît qu'au défilement. Ce qui change, c'est ce sur
+quoi on arrive — avant, une vue s'ouvrait sur un formulaire, un tableau ou un
+chiffre, et l'on était dedans avant d'avoir lu le titre.
+
+Posée par `poserOuvertures()`, à partir de `ILLUSTRATIONS_VUES`. **La phrase
+d'introduction devient le sous-titre** : onze vues en avaient déjà une, écrite
+de longue date, juste sous le titre — elle est déplacée, pas réécrite. Les
+cinq qui n'en avaient pas la reçoivent de `SOUS_TITRES_VUES` ; ce sont les
+seules phrases neuves.
+
+`min-height` ne vaut pas `100dvh` mais `calc(100dvh - 152px - var(--marge-barre))` :
+l'en-tête et le ruban sont collants, la barre basse flotte par-dessus. Un plein
+écran nominal déborde de la somme des trois, et l'invitation à descendre — la
+seule chose qui doive se voir sans défiler — tombe juste sous le pli.
+
+### Le contenu paraît au défilement
+
+Lié à la **position dans le défilement** et non à une minuterie : on remonte,
+les blocs repartent en arrière. Pas une ligne de JavaScript — `animation-timeline: view()`
+fait tout.
+
+**Le garde-fou `@supports not (animation-timeline: view())` n'est pas une
+politesse.** L'animation porte `both`, qui garde l'état de départ avant
+l'entrée ; sans timeline de défilement, ce départ ne finit jamais et la page
+resterait à **zéro d'opacité pour toujours**. Ne jamais retirer ce bloc, ni
+son jumeau `prefers-reduced-motion`.
+
+## La navigation est en bas, à toutes les largeurs
+
+Il y avait deux navigations : la colonne à gauche sur écran large, les deux
+étages sur téléphone. Deux modèles à tenir, deux endroits à corriger, et un
+utilisateur qui change d'appareil devait réapprendre où sont les choses.
+
+Il n'en reste qu'un : **les quatre blocs dans la barre basse, les vues d'un
+même bloc dans le ruban du haut.** Le bloc de règles est passé de
+`@media (max-width: 820px)` à `@media all` ; les écarts de l'écran large — la
+barre ramassée en pastille au centre plutôt qu'étirée d'un bord à l'autre —
+vivent dans un `min-width: 821px` qui le suit.
+
+**`#nav` reste dans la page, seulement masquée.** Le ruban et la barre basse y
+lisent les libellés et l'avancement des étapes, et les deux harnais comptent
+ses entrées. La vider casserait la navigation sans qu'aucun test ne le dise.
+
+**`.corps` est passée en colonne.** C'était une rangée — navigation à gauche,
+contenu à droite. La colonne partie, le ruban posé là comme troisième enfant
+s'y dressait sur toute la hauteur, en pilules verticales de cinq cents pixels.
+
+**Les blocs secondaires ont besoin d'une porte.** « Données » n'a pas d'entrée
+dans la barre basse ; sur téléphone l'en-tête porte un « ••• », sur écran large
+la colonne les portait. La colonne partie, un « ••• » est ajouté à la barre
+basse — masqué sur téléphone, où l'en-tête fait déjà le travail. Il ouvre la
+même feuille : une seule feuille, deux portes, jamais deux contenus à tenir.
+
+## L'écran d'ouverture — trois secondes
+
+Le signe seul sur le fond de page, puis il s'efface en fondu. **Trois
+garde-fous, et chacun répond à une façon de rester coincé derrière :**
+
+- il ne paraît que sur un **dossier vierge dont le mode n'est pas choisi** — un
+  conseiller qui ouvre son dossier vingt fois par jour ne traverse pas vingt
+  fois un voile ;
+- il se retire par une **minuterie**, jamais par la fin d'une animation :
+  `animationend` ne se déclenche pas si l'animation est neutralisée, et
+  `prefers-reduced-motion` la neutralise ;
+- **un clic le retire aussi.**
+
+Il est monté par `poserEcranOuverture()` et non écrit dans `index.html` : écrit
+dans la page, il resterait à l'écran si un script échouait à se charger, et
+l'application entière serait derrière un voile qu'aucun clic ne lève.
+
+## Le rapport imprimé échappe à tout cela
 
 Encre noire sur papier blanc. **Le bleu n'y survit qu'en filet** — pas d'aplat,
 pas d'ombre, pas d'illustration, pas de trait sous les titres. Un aplat coûte de
@@ -231,25 +323,16 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`8826d079` · 1 303 829 octets · 68 empreintes**, relevée avec
-`test/empreinte.html` après les correctifs de mise en page mobile. Les
-+216 octets sur l'empreinte précédente sont les balises ajoutées : quatre
-`.tableau-defilant` et les deux colonnes de `.ouverture`.
+**`54fbfd24` · 1 321 221 octets · 68 empreintes**, relevée après le chantier
+des ouvertures. Les +17 392 octets sur l'empreinte précédente (`8826d079`,
+1 303 829) sont le balisage des seize ouvertures de vue — dessin, titre,
+sous-titre, invitation à descendre — et le « ••• » de la barre basse.
 
-Repère intermédiaire, utile comme étalon : `3491397b`, **1 303 613 octets** —
-l'agrandissement des dessins (30 → 38, 140/150/160 → 180) avait changé
-l'empreinte **sans changer d'un octet** le total, puisqu'il ne substituait que
-des chiffres. Un total inchangé et une empreinte différente : la signature
-d'une substitution pure. Un total qui bouge veut dire que du balisage est
-apparu, et il faut alors savoir lequel.
-
-Elle contient des dates du jour : elle **se relève avant, se compare après**, le
-même jour et sur le même catalogue. Ce n'est pas un fichier à versionner.
-
-Quand elle doit bouger — un balisage ajouté —, **mesurer l'écart plutôt que
-l'accepter** : au chantier 9, le trait des titres valait exactement +30 octets
-sur 64 vues et 0 sur les colonnes de navigation ; les illustrations, 52 images
-pour 6 662 octets, et les 20 vues sans dessin n'ont pas bougé d'un octet.
+Repère utile comme étalon : `3491397b`, **1 303 613 octets**. L'agrandissement
+des dessins avait alors changé l'empreinte **sans changer d'un octet** le
+total, puisqu'il ne substituait que des chiffres. Un total inchangé et une
+empreinte différente : la signature d'une substitution pure. Un total qui bouge
+veut dire que du balisage est apparu, et il faut alors savoir lequel.
 
 ## La liste de contrôle avant impression ne bloque rien
 

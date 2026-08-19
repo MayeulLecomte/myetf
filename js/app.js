@@ -21,6 +21,10 @@
   });
   brancher();
 
+  /* Après `brancher()`, qui a besoin de `Etat` chargé : l'écran
+     d'ouverture ne paraît que sur un dossier vierge. */
+  poserEcranOuverture();
+
   /* Les arrêtés du 30 juin et du 31 décembre franchis depuis la dernière
      ouverture sont enregistrés d'office : c'est le moment où les quantités
      connues sont encore celles de l'arrêté. */

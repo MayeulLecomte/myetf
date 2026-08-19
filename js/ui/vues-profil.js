@@ -267,23 +267,53 @@ function remplirExemple(complet) {
    voit donc jamais et s'ouvre en conseiller, comme avant.
    ------------------------------------------------------------ */
 function ecranEntree() {
-  return '<div class="ouverture ouverture-entree">' +
-      illustration('logo', TAILLE_ILLUSTRATION_BANNIERE) +
-      '<div class="ouverture-texte"><div class="accroche">' +
+  /* TROIS ÉCRANS QUI SE DÉROULENT, et non trois blocs empilés.
+
+     Le premier ne porte que le signe et le nom : on arrive quelque part
+     avant qu'on ne demande quoi que ce soit. Le deuxième dit ce que fait
+     l'outil, et par quels écrans. Le troisième seulement pose la
+     question du mode — largement détaché, pour qu'on sente qu'on passe
+     de « ce que c'est » à « ce que je fais ».
+
+     Les trois blocs du parcours sont lus dans GROUPES : les nommer ici
+     en ferait une seconde définition, qui finirait par en dévier. */
+  const parcours = GROUPES.filter(g => !g.secondaire && g.vues.length > 1).map(g =>
+    '<div class="entree-etape">' +
+      '<span class="entree-etape-signe" aria-hidden="true">' +
+        '<svg viewBox="0 0 24 24"><path d="' + g.icone + '"/></svg></span>' +
+      '<span class="entree-etape-corps">' +
+        '<strong>' + echapper(g.libelle) + '</strong>' +
+        '<span>' + echapper(g.vues.filter(v => !vueMasquee(v)).map(libelleVue).join(', ')) + '</span>' +
+      '</span>' +
+    '</div>').join('');
+
+  return '<div class="entree-ouverture">' +
+      illustration('logo', TAILLE_ILLUSTRATION_OUVERTURE) +
+      '<div class="entree-nom">myetf</div>' +
+      '<div class="ouverture-suite" aria-hidden="true"><span>Faites défiler</span>' +
+        '<svg viewBox="0 0 24 24"><path d="M6 9.5 12 15.5 18 9.5"/></svg></div>' +
+    '</div>' +
+
+    '<div class="entree-propos">' +
+      '<div class="accroche">' +
         '<p><strong>myetf construit et suit une allocation d\'ETF</strong> — du questionnaire de ' +
         'profilage aux ordres à passer, en assurance-vie, PEA ou compte-titres.</p>' +
-        fraicheurDonnees() +
-      '</div></div>' +
+      '</div>' +
+      '<div class="entree-parcours">' + parcours + '</div>' +
+      fraicheurDonnees() +
     '</div>' +
-    '<h2>' + titreSouligne('Pour commencer') + '</h2>' +
-    '<p class="intro">Ce choix ne change ni les calculs ni le dossier : seulement le vocabulaire et ' +
-      'les écrans montrés. Il se modifie ensuite dans « ' + echapper(T('vue.client.nav')) + ' ».</p>' +
-    '<div class="entree">' +
-      MODES.map(m =>
-        '<button class="entree-choix" data-mode="' + echapper(m.id) + '">' +
-          '<strong>' + echapper(m.bouton) + '</strong>' +
-          '<span>' + echapper(m.sous) + '</span>' +
-        '</button>').join('') +
+
+    '<div class="entree-choisir">' +
+      '<h2>' + titreSouligne('Pour commencer') + '</h2>' +
+      '<p class="intro">Ce choix ne change ni les calculs ni le dossier : seulement le vocabulaire et ' +
+        'les écrans montrés. Il se modifie ensuite dans « ' + echapper(T('vue.client.nav')) + ' ».</p>' +
+      '<div class="entree">' +
+        MODES.map(m =>
+          '<button class="entree-choix" data-mode="' + echapper(m.id) + '">' +
+            '<strong>' + echapper(m.bouton) + '</strong>' +
+            '<span>' + echapper(m.sous) + '</span>' +
+          '</button>').join('') +
+      '</div>' +
     '</div>';
 }
 
@@ -292,7 +322,7 @@ function choisirMode(id) {
   Etat.mode = id;
   sauver(true);
   /* Le vocabulaire change en place : ni rechargement, ni perte de saisie. */
-  poserNav(); poserTitres(); poserBarresParcours(); majNav();
+  poserNav(); poserTitres(); poserOuvertures(); poserBarresParcours(); majNav();
   rendre('accueil');
 }
 
