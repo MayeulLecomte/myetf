@@ -2771,7 +2771,11 @@ table .illustration { display: none !important; }
    le bloc d'avant porte sous lui disparaissent dans les 88 d'ici — poser
    52 ne gagnait donc que quatre pixels, ce qui ne se voyait pas. */
 .vue > h2:not(:first-child),
-.vue > div[id$="-contenu"] > h2:not(:first-child) { margin-top: 88px; }
+.vue > div[id$="-contenu"] > h2:not(:first-child) { margin-top: 144px; }
+/* Le téléphone en demande PLUS que l'écran large, et ce n'est pas une
+   erreur de sens : sur 390 px de large, un titre qui suit un paragraphe
+   n'a pas de colonne vide autour de lui pour dire qu'on change de sujet.
+   La seule séparation dont il dispose est verticale. */
 @media (min-width: 821px) {
   .vue > h2:not(:first-child),
   .vue > div[id$="-contenu"] > h2:not(:first-child) { margin-top: 124px; }

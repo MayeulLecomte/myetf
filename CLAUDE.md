@@ -504,6 +504,11 @@ l'on aurait cherché longtemps pourquoi rien ne bougeait.
 
 Un titre qui ouvre sa vue n'en a pas besoin — d'où `:not(:first-child)`.
 
+**Le téléphone en demande plus que l'écran large** — 144 px contre 124 —
+et ce n'est pas une inversion par distraction : sur 390 px de large, un
+titre qui suit un paragraphe n'a aucune colonne vide autour de lui pour
+dire qu'on change de sujet. Sa seule séparation est verticale.
+
 ## La vue courante se lit sur la vue, pas sur la navigation
 
 `vueCourante()` lisait `#nav button.actif`. **Une vue masquée dans le mode
