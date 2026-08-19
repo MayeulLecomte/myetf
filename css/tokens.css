@@ -1,0 +1,149 @@
+/* ============================================================
+   JETONS — trait bleu
+   ------------------------------------------------------------
+   La palette, la typographie, les rayons et les ombres. Un seul
+   endroit : les composants n'écrivent plus une couleur en dur.
+
+   Chargé APRÈS app.css et le redéfinit. C'est provisoire et
+   assumé le temps du chantier : le bloc `:root` d'app.css et son
+   mode sombre seront retirés à l'étape des composants, et ce
+   fichier passera devant.
+
+   PAS DE MODE SOMBRE. La direction donne une palette exacte, et
+   une seule. Un mode sombre demanderait une seconde palette que
+   personne n'a arrêtée — l'inventer produirait un hybride que
+   nul n'a validé. `color-scheme: light` le dit au navigateur,
+   pour que les champs de formulaire suivent.
+   ============================================================ */
+
+/* ---------- Manrope, servie depuis le dossier ----------
+   Chargée localement et non depuis Google Fonts : l'application
+   s'ouvre par double-clic, et une requête réseau en file:// ne
+   part pas. Deux sous-ensembles latins, 40 Ko en tout, une seule
+   fonte variable de 400 à 800. */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('polices/manrope-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+                 U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('polices/manrope-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+                 U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+                 U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  color-scheme: light;
+
+  /* ---------- La palette, et elle est courte ----------
+     Le bleu est la seule couleur. Pas de vert ni de rouge pour les
+     performances : un signe et une graisse suffisent à dire le sens, et
+     douze pour cent d'hommes distinguent mal ces deux teintes-là. */
+  --fond:        #F7F9FC;
+  --surface:     #FFFFFF;
+  --surface-2:   #F7F9FC;
+  --ligne:       #DFE5F0;
+  --ligne-forte: #C6D0E4;
+
+  --texte:       #15161A;
+  --texte-doux:  #6B6E76;
+
+  --bleu:        #2F6BFF;      /* accent : boutons, focus, trait des titres */
+  --bleu-clair:  #8FB3FF;
+  --bleu-pale:   #E6EEFF;      /* fonds de badge, onglet actif */
+  --bleu-encre:  #1E4FCC;      /* liens : plus sombre, pour le contraste sur blanc */
+
+  /* Les noms hérités d'une palette à sept couleurs pointent tous vers
+     l'encre ou le bleu. Ils disparaîtront avec les composants ; d'ici
+     là, rien ne peut ressortir en vert ou en rouge par mégarde. */
+  --vert:        #15161A;
+  --rouge:       #15161A;
+  --orange:      #6B6E76;
+  --or:          #6B6E76;
+  --indigo:      #2F6BFF;
+  --violet:      #2F6BFF;
+
+  --voile:       rgba(255, 255, 255, .92);
+
+  /* ---------- Formes ---------- */
+  --r-s:  10px;
+  --r-m:  14px;
+  --r-l:  14px;
+  --r-pilule: 999px;
+
+  /* ---------- Ombres, très douces ----------
+     Une carte se détache par son filet, pas par son ombre. */
+  --ombre-1: 0 1px 2px rgba(21, 22, 26, .04);
+  --ombre-2: 0 1px 2px rgba(21, 22, 26, .04), 0 8px 24px -16px rgba(21, 22, 26, .12);
+  --ombre-3: 0 10px 30px -12px rgba(21, 22, 26, .25);
+
+  --ressort: cubic-bezier(.32, .72, 0, 1);
+
+  /* ---------- Le verre s'éteint ----------
+     Les surfaces redeviennent des surfaces : blanches, filetées, sans
+     flou ni halo. Les jetons restent, pointant vers du plein, pour que
+     les composants qui les emploient encore ne se cassent pas d'ici
+     l'étape suivante. */
+  --verre:       #FFFFFF;
+  --verre-fort:  #FFFFFF;
+  --verre-bord:  #DFE5F0;
+  --verre-flou:  none;
+  --verre-ombre: 0 1px 2px rgba(21, 22, 26, .04), 0 8px 24px -16px rgba(21, 22, 26, .12);
+  --halo-1: transparent;
+  --halo-2: transparent;
+  --halo-3: transparent;
+
+  /* ---------- Typographie ----------
+     Une seule famille. « --ronde » gardait son nom d'une police
+     arrondie : il désigne maintenant la même Manrope, en 800. */
+  --police: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ronde:  var(--police);
+
+  /* ---------- Le signe ---------- */
+  --logo-fond:   #2F6BFF;
+  --logo-barre:  #FFFFFF;
+  --logo-accent: #15161A;
+
+  /* ---------- Graphiques ----------
+     Quatre teintes, et la quatrième est l'encre — c'est la seule
+     entorse au bleu, prévue par la direction. */
+  --serie-actions:       #2F6BFF;
+  --serie-obligations:   #8FB3FF;
+  --serie-monetaire:     #C9D9FF;
+  --serie-diversifiants: #15161A;
+}
+
+/* Le mode sombre d'origine est neutralisé : ses redéfinitions vivent
+   dans app.css, chargée avant, et ce bloc-ci les recouvre quel que soit
+   le réglage de l'appareil. */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: light; }
+}
+
+body { font-family: var(--police); }
+
+/* Les chiffres s'alignent en colonne : un montant qui danse d'une ligne
+   à l'autre se compare mal. */
+body, table, .num, .kpi, input, select { font-variant-numeric: tabular-nums; }
+
+/* Le focus se voit, et il est bleu. */
+:focus-visible { outline: 3px solid var(--bleu); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
