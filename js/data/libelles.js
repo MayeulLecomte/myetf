@@ -295,6 +295,38 @@ const LIBELLES = {
 
     'question.q_volatilite': 'Voir la valeur monter et descendre d\'une semaine à l\'autre, ça vous…',
 
+    /* ---------- La vue « Mon profil » ----------
+       Elle disait juste, et le disait au conseiller : SRI, décomposition du
+       score, chocs historiques. Rien n'y change de valeur — ni un chiffre,
+       ni un calcul, ni un plafond. Seuls les mots changent, et seulement
+       ici. */
+
+    /* Le SRI quitte l'en-tête. Il n'est pas retiré de l'application : le
+       rapport le porte toujours, et c'est là qu'il est réglementairement
+       utile. En tête d'écran, un chiffre de 1 à 7 que rien n'explique ne
+       dit rien à personne. */
+    'profil.entete': 'Profil {nom} — pensez à garder cet argent placé au moins {ans} ans',
+
+    'profil.axes.titre': 'Ce que vos réponses disent de vous',
+    'profil.axe.capacite': 'Ce que vos finances permettent',
+    'profil.axe.tolerance': 'Ce que vous êtes prêt à supporter',
+    'profil.axe.connaissance': 'Votre expérience des placements',
+    'phrase.profil.axes':
+      'Votre profil retient le plus prudent des deux premiers : on ne vous expose ni au-delà de ce ' +
+      'que vous pouvez perdre, ni au-delà de ce que vous acceptez.',
+
+    'profil.stress.titre': 'Et si une crise arrivait demain ?',
+    'stress.0': 'Crise financière (comme en 2008)',
+    'stress.1': 'Pandémie (comme en mars 2020)',
+    'stress.2': 'Remontée des taux (comme en 2022)',
+    'stress.3': 'Tensions géopolitiques',
+    'profil.stress.colonne': 'Scénario',
+
+    'profil.plafond.titre': 'Profil plafonné.',
+    'phrase.profil.plafond':
+      'Vos réponses pointaient vers un profil plus offensif ({theorique}), mais vous avez posé une ' +
+      'limite — le profil {retenu} la respecte :',
+
     'question.q_esg':
       'Souhaitez-vous privilégier des placements responsables (environnement, social) ?',
     'question.q_esg.aide':

@@ -748,27 +748,42 @@ function rendreProfil() {
   c.innerHTML =
     '<div class="bandeau-profil" style="background:' + r.profil.couleur + '">' +
       '<div><div class="meta">PROFIL RETENU</div><div class="nom">' + r.profil.nom + '</div>' +
-      '<div class="meta">Indicateur de risque SRI ' + r.profil.sri + ' · horizon minimum recommandé ' + r.profil.horizonMin + ' ans</div></div>' +
+      /* Une clé absente rend la clé : le mode conseiller garde donc sa ligne
+         mot pour mot, SRI compris, sans qu'elle ait à être recopiée. */
+      '<div class="meta">' + echapper(T('profil.entete') === 'profil.entete'
+        ? 'Indicateur de risque SRI ' + r.profil.sri + ' · horizon minimum recommandé ' +
+          r.profil.horizonMin + ' ans'
+        : T('profil.entete', { nom: r.profil.nom.toLowerCase(), ans: r.profil.horizonMin })) +
+      '</div></div>' +
       '<div style="margin-left:auto;text-align:right">' +
         '<div class="meta">Score retenu</div><div class="nom">' + r.scores.retenu + '<span style="font-size:16px">/100</span></div>' +
       '</div>' +
     '</div>' +
 
-    (r.declasse ? '<div class="message alerte"><strong>Profil plafonné.</strong> Le score brut situait le client en ' +
-      r.profilTheorique.nom + '. Les contraintes suivantes ont abaissé le profil :<ul>' +
-      r.plafondsAppliques.map(p => '<li>' + echapper(p) + '</li>').join('') + '</ul></div>' : '') +
+    (r.declasse ? '<div class="message alerte"><strong>Profil plafonné.</strong> ' +
+      echapper(T('phrase.profil.plafond') === 'phrase.profil.plafond'
+        ? 'Le score brut situait le client en ' + r.profilTheorique.nom +
+          '. Les contraintes suivantes ont abaissé le profil :'
+        : T('phrase.profil.plafond', { theorique: r.profilTheorique.nom, retenu: r.profil.nom })) +
+      '<ul>' + r.plafondsAppliques.map(p => '<li>' + echapper(p) + '</li>').join('') +
+      '</ul></div>' : '') +
 
     (r.alertes.length ? '<div class="message info"><strong>Points de vigilance à documenter.</strong><ul>' +
       r.alertes.map(a => '<li>' + echapper(a) + '</li>').join('') + '</ul></div>' : '') +
 
     '<div class="grille deux">' +
-      '<div class="carte"><h3>Décomposition du score</h3>' +
-        jauge('Capacité de perte', r.scores.capacite, 'var(--axe-capacite)') +
-        jauge('Tolérance au risque', r.scores.tolerance, 'var(--axe-tolerance)') +
-        jauge('Connaissance &amp; expérience', r.scores.connaissance, 'var(--axe-connaissance)') +
-        '<p class="intro" style="font-size:12px;margin-top:12px">Le score retenu est le <strong>minimum</strong> ' +
-        'entre capacité et tolérance : on ne peut exposer un client ni au-delà de ce qu\'il peut perdre, ni ' +
-        'au-delà de ce qu\'il accepte de perdre. La connaissance agit ensuite comme plafond.</p>' +
+      '<div class="carte"><h3>' +
+        echapper(mot('profil.axes.titre', 'Décomposition du score')) + '</h3>' +
+        jauge(mot('profil.axe.capacite', 'Capacité de perte'), r.scores.capacite, 'var(--axe-capacite)') +
+        jauge(mot('profil.axe.tolerance', 'Tolérance au risque'), r.scores.tolerance, 'var(--axe-tolerance)') +
+        jauge(mot('profil.axe.connaissance', 'Connaissance & expérience'), r.scores.connaissance,
+              'var(--axe-connaissance)') +
+        '<p class="intro" style="font-size:12px;margin-top:12px">' +
+        (T('phrase.profil.axes') === 'phrase.profil.axes'
+          ? 'Le score retenu est le <strong>minimum</strong> entre capacité et tolérance : on ne peut ' +
+            'exposer un client ni au-delà de ce qu\'il peut perdre, ni au-delà de ce qu\'il accepte de ' +
+            'perdre. La connaissance agit ensuite comme plafond.'
+          : echapper(T('phrase.profil.axes'))) + '</p>' +
       '</div>' +
       '<div class="carte"><h3>Caractéristiques du profil</h3>' +
         '<p>' + echapper(r.profil.description) + '</p>' +
@@ -785,10 +800,16 @@ function rendreProfil() {
       '</div>' +
     '</div>' +
 
-    '<div class="carte"><h3>Résistance du portefeuille cible aux chocs historiques</h3>' +
+    '<div class="carte"><h3>' +
+      echapper(mot('profil.stress.titre', 'Résistance du portefeuille cible aux chocs historiques')) +
+      '</h3>' +
       '<p class="intro" style="font-size:12px">Impact instantané estimé sur la valeur du portefeuille, chocs appliqués par classe d\'actifs.</p>' +
-      '<table><thead><tr><th>Scénario de stress</th><th class="num">Impact estimé</th><th class="num">Valeur résiduelle</th></tr></thead><tbody>' +
-      stress.map(s => '<tr><td>' + echapper(s.nom) + '</td>' +
+      '<table><thead><tr><th>' + echapper(mot('profil.stress.colonne', 'Scénario de stress')) +
+      '</th><th class="num">Impact estimé</th><th class="num">Valeur résiduelle</th></tr></thead><tbody>' +
+      /* Les scénarios sont nommés dans le moteur, et le moteur ne connaît
+         aucun mode : la traduction se fait ici, au RANG, comme pour les
+         options du questionnaire. */
+      stress.map((s, i) => '<tr><td>' + echapper(mot('stress.' + i, s.nom)) + '</td>' +
         '<td class="num negatif">' + pct(s.impact) + '</td>' +
         '<td class="num">' + euro((Number(Etat.identite.montant) || 0) * (1 + s.impact / 100)) + '</td></tr>').join('') +
       '</tbody></table>' +

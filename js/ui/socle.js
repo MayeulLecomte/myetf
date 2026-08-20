@@ -222,6 +222,14 @@ const SOUS_TITRES_VUES = {
   rapport:      "Le document remis et signé, et la relecture qui précède son impression."
 };
 
+/* Le mot du mode, ou celui d'origine. `T()` rend la clé quand elle n'existe
+   nulle part : c'est ce test qui sert d'aiguillage, et qui évite de recopier
+   dans la table tout ce que le mode ne change pas. */
+function mot(cle, defaut) {
+  const texte = T(cle);
+  return texte === cle ? defaut : texte;
+}
+
 function titreSouligne(texte) {
   const t = String(texte || '').trim();
   const i = t.lastIndexOf(' ');

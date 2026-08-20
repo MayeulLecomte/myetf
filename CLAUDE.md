@@ -613,8 +613,8 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`ed91c42b` · 1 330 119 octets · 68 empreintes**, relevée après le
-remaniement de l'accueil vide.
+**`bab8c6cd` · 1 333 220 octets · 68 empreintes**, relevée après la
+reformulation de « Mon profil ».
 
 Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
 contient des dates, elle ne se compare qu'entre deux relevés du même jour :
@@ -814,6 +814,30 @@ Une option porte déjà son écart de mode depuis longtemps —
 `option.arbitrages.conseillee`, « sur proposition de mon conseiller » contre
 « sur proposition de cet outil ». Elle reste d'accord avec la question
 reformulée, qui parle elle aussi de ce que « l'outil » propose.
+
+## « Mon profil » se lit sans conseiller à côté
+
+Quatre blocs reformulés en mode particulier — et **aucun chiffre, aucun
+calcul, aucun plafond n'a bougé** :
+
+- **l'en-tête** perd le SRI. Il n'est pas retiré de l'application : le
+  rapport le porte toujours, et c'est là qu'il est réglementairement utile.
+  En tête d'écran, un chiffre de 1 à 7 que rien n'explique ne dit rien ;
+- **« Décomposition du score »** devient « Ce que vos réponses disent de
+  vous », et ses trois axes des phrases plutôt que des termes ;
+- **les chocs historiques** sont nommés par ce qui s'est passé — « Crise
+  financière (comme en 2008) » —, pas par leur mécanisme ;
+- **le bandeau de plafonnement** dit ce que la limite a fait, au lieu de
+  parler d'un « score brut » et d'un « client ».
+
+**Les scénarios sont nommés dans le moteur, et le moteur ne connaît aucun
+mode** : la traduction se fait dans la vue, au RANG (`stress.<n>`), comme les
+options du questionnaire. Le harnais tient les rangs.
+
+`mot(cle, defaut)` (js/ui/socle.js) est le petit aiguillage commun : `T()`
+rend la clé quand elle n'existe nulle part, donc **le mode conseiller garde
+ses phrases sans qu'elles aient à être recopiées dans la table**. C'est ce
+qui permet de reformuler une vue entière sans dupliquer sa prose.
 
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
