@@ -2978,3 +2978,21 @@ table .illustration { display: none !important; }
   font-size: 10px; font-weight: 800; color: var(--texte-doux);
   cursor: help;
 }
+
+/* La carte des séries, repliée pour qui teste son propre profil. Le lien
+   ressemble à un lien : c'est une porte, pas un titre de section. */
+.repli-series { margin-bottom: 0; }
+.repli-series > summary {
+  cursor: pointer; list-style: none;
+  font-weight: 700; color: var(--bleu-encre);
+  text-decoration: underline; text-decoration-color: var(--bleu-clair);
+  text-underline-offset: 4px;
+  padding: 6px 0;
+}
+.repli-series > summary::-webkit-details-marker { display: none; }
+.repli-series > summary::before {
+  content: '▸'; display: inline-block; margin-right: 8px;
+  transition: transform .18s var(--ressort); color: var(--bleu);
+}
+.repli-series[open] > summary::before { transform: rotate(90deg); }
+.repli-series > .carte { margin-top: 16px; }

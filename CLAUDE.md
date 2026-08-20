@@ -613,8 +613,8 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`7c0cd21e` · 1 334 331 octets · 68 empreintes**, relevée après « Mes
-arbitrages ».
+**`7a4c5445` · 1 334 849 octets · 68 empreintes**, relevée après le
+« Backtest » — la dernière des quatre vues d'Allocation.
 
 Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
 contient des dates, elle ne se compare qu'entre deux relevés du même jour :
@@ -937,6 +937,29 @@ métier — seul le mot change, le reste de la phrase dit déjà tout.
 particulier explique le mécanisme : ce n'est pas l'arbitrage qui déclenche
 l'impôt, c'est le retrait. C'est le genre de phrase qu'un conseiller dit de
 vive voix et que personne n'écrit.
+
+## « Backtest » : ce qui se déplace, et ce qui ne se cache pas
+
+« Performance cumulée » devient « Gain total sur la période », « Volatilité
+annuelle » devient « Amplitude des variations », et « Plus forte baisse »
+devient « Pire passage » — avec la précision qui manquait le plus : **en cours
+d'année, ça a baissé davantage**. La mesure est de fin d'année à fin d'année,
+et personne ne le savait en lisant le chiffre.
+
+**Le ratio rendement / volatilité tombe en particulier.** 0,68 ne se compare à
+rien pour qui n'a pas l'habitude : c'est du bruit, pas une information. Il
+reste au conseiller, qui sait ce qu'il vaut.
+
+**L'encart des séries estimées raccourcit, il ne s'adoucit pas.** Les
+pourcentages détaillés restent au conseiller — ils lui disent quelles séries
+relever en premier. Ce qui compte pour l'autre lecteur tient en deux phrases :
+c'est un test du modèle, pas une performance, pas une promesse.
+
+**La carte des séries se replie, elle ne disparaît pas.** Dix-neuf lignes, cinq
+colonnes et deux boutons CSV s'adressent à qui source ses séries. Sous un
+`<details>`, elles restent modifiables et le lien dit ce qu'on y trouve. C'est
+la règle appliquée partout dans cette passe : **on déplace, on ne cache pas** —
+le SRI au rapport, les pourcentages au conseiller, les séries sous un pli.
 
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 

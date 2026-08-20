@@ -429,6 +429,23 @@ const LIBELLES = {
     'arbitrages.bouton.journal': 'Enregistrer cette revue dans mon suivi',
     'arbitrages.bouton.appliquer': 'Simuler ces mouvements sur mon portefeuille',
 
+    /* ---------- La vue « Backtest » ---------- */
+    'backtest.kpi.cumul': 'Gain total sur la période',
+    'backtest.kpi.paran': 'En moyenne par an',
+    /* Le détail disait « annualisée », qui répète le libellé sans rien
+       ajouter. Vide, la tuile ne dit plus qu'une chose — et c'est assez. */
+    'backtest.kpi.paran.detail': '',
+    'backtest.kpi.volatilite': 'Amplitude des variations',
+    'backtest.kpi.volatilite.detail': 'd\'une année à l\'autre',
+    'backtest.kpi.baisse': 'Pire passage',
+    'backtest.kpi.baisse.detail':
+      'mesuré de fin d\'année à fin d\'année — en cours d\'année, ça a baissé davantage',
+    'backtest.comparaison.intro': 'Votre profil, comparé aux autres et à des repères simples.',
+    'phrase.backtest.estime':
+      'Plus de la moitié de ces performances sont des estimations, pas des mesures. Ce test montre ' +
+      'comment le modèle se comporte ; ce n\'est ni une performance réelle ni une promesse.',
+    'backtest.series.repli': 'Voir ou modifier les données du test',
+
         'phrase.supports.choix':
       'Comment ils ont été choisis : note Morningstar, frais, taille, réplication, label ISR — parmi ' +
       'les ETF à {etoiles} étoiles et plus, {encours} M€ d\'encours minimum, {frais} de frais maximum.',

@@ -721,6 +721,48 @@ function kpiMontant(cle, libelleDefaut, detailDefaut, valeurPct, taux) {
              T(cle + '.detail', { gain: part, ecart: part, montant: euro(montant) }));
 }
 
+/* ------------------------------------------------------------
+   LA CARTE DES SÉRIES SE REPLIE, ELLE NE DISPARAÎT PAS
+   ------------------------------------------------------------
+   Elle s'adresse au conseiller qui source ses séries : dix-neuf
+   lignes, cinq colonnes, deux boutons CSV. Pour qui teste son
+   propre profil, c'est l'écran le moins utile de l'application —
+   et le plus intimidant.
+
+   Elle passe donc sous un `<details>` en mode particulier. Repliée,
+   pas supprimée : les données restent modifiables, et le lien dit
+   ce qu'on y trouve. C'est la même règle que pour le SRI ou les
+   pourcentages détaillés — on déplace, on ne cache pas.
+   ------------------------------------------------------------ */
+function replierSeries() {
+  const carte = $('#backtest-series');
+  if (!carte) return;
+  const libelle = T('backtest.series.repli');
+  const deja = carte.parentElement && carte.parentElement.tagName === 'DETAILS';
+
+  if (libelle === 'backtest.series.repli') {
+    /* Mode conseiller : la carte reprend sa place pleine si elle avait été
+       repliée par un passage en particulier. */
+    if (deja) {
+      const d = carte.parentElement;
+      d.parentNode.insertBefore(carte, d);
+      d.remove();
+    }
+    return;
+  }
+  if (deja) {
+    carte.parentElement.querySelector('summary').textContent = libelle;
+    return;
+  }
+  const details = document.createElement('details');
+  details.className = 'repli-series sans-impression';
+  const resume = document.createElement('summary');
+  resume.textContent = libelle;
+  details.appendChild(resume);
+  carte.parentNode.insertBefore(details, carte);
+  details.appendChild(carte);
+}
+
 function pastilleReleveSeries() {
   if (typeof HISTORIQUE_RELEVE === 'undefined' || !HISTORIQUE_RELEVE.le) return '';
   const SEUIL = 400;
@@ -744,6 +786,7 @@ function rendreBacktest() {
   $('#bt-allocation').value = Etat.backtest.allocation;
 
   rendreSeriesHistorique();
+  replierSeries();
 
   const poids = poidsTestes();
   const c = $('#backtest-contenu');
@@ -777,13 +820,16 @@ function rendreBacktest() {
     '<div class="fil-entete" style="margin-top:0"><h4 style="margin:0">Part sourcée du backtest</h4>' +
       pastilleReleveSeries() + '</div>' +
     (fiab.estime > 0
-      ? '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '"><strong>' + pct(fiab.estime) +
+      ? (T('phrase.backtest.estime') !== 'phrase.backtest.estime'
+          ? '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '">' +
+            echapper(T('phrase.backtest.estime')) + '</div>'
+          : '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '"><strong>' + pct(fiab.estime) +
         ' de l\'allocation testée repose encore sur des séries estimées, non vérifiées.</strong> ' +
         pct(fiab.marche) + ' proviennent des cours de marché relevés automatiquement et ' +
         pct(fiab.source) + ' d\'une source documentée. ' +
         'Ce backtest éprouve le comportement du modèle d\'allocation ; il ne constitue pas une mesure de performance ' +
         'et ne doit pas être présenté à un client. Remplacez les séries ci-dessous par vos extractions ' +
-        'Quantalys ou Morningstar pour obtenir un résultat exploitable.</div>'
+        'Quantalys ou Morningstar pour obtenir un résultat exploitable.</div>')
       : '<div class="message succes"><strong>Toutes les séries utilisées sont sourcées</strong> (' +
         pct(fiab.marche) + ' relevées sur les cours de marché). ' +
         'Vérifiez qu\'elles correspondent bien aux supports effectivement retenus, nets de frais et en euros.</div>') +
@@ -804,11 +850,16 @@ function rendreBacktest() {
 
   c.innerHTML =
     '<div class="grille quatre">' +
-      kpi(signe(r.perfCumulee), 'Performance cumulée', periode + ' · ' + r.nbAnnees + ' ans') +
-      kpi(r.annualisee === null ? signe(r.twrAnnualise) : signe(r.annualisee), 'Par an',
-          r.annualisee === null ? 'pondérée dans le temps (retraits)' : 'annualisée') +
-      kpi(pct(r.volatilite), 'Volatilité annuelle', 'écart-type des ' + r.nbAnnees + ' rendements') +
-      kpi(pct(r.maxDrawdown), 'Plus forte baisse', 'de fin d\'année à fin d\'année') +
+      kpi(signe(r.perfCumulee), mot('backtest.kpi.cumul', 'Performance cumulée'),
+          periode + ' · ' + r.nbAnnees + ' ans') +
+      kpi(r.annualisee === null ? signe(r.twrAnnualise) : signe(r.annualisee),
+          mot('backtest.kpi.paran', 'Par an'),
+          r.annualisee === null ? 'pondérée dans le temps (retraits)'
+            : mot('backtest.kpi.paran.detail', 'annualisée')) +
+      kpi(pct(r.volatilite), mot('backtest.kpi.volatilite', 'Volatilité annuelle'),
+          mot('backtest.kpi.volatilite.detail', 'écart-type des ' + r.nbAnnees + ' rendements')) +
+      kpi(pct(r.maxDrawdown), mot('backtest.kpi.baisse', 'Plus forte baisse'),
+          mot('backtest.kpi.baisse.detail', 'de fin d\'année à fin d\'année')) +
     '</div>' +
 
     '<div class="grille deux">' +
@@ -832,11 +883,18 @@ function rendreBacktest() {
         ligne('Années négatives', r.anneesNegatives + ' sur ' + r.nbAnnees) +
         ligne('Meilleure année', r.meilleureAnnee.annee + ' (' + signe(r.meilleureAnnee.rendement) + ')') +
         ligne('Pire année', r.pireAnnee.annee + ' (' + signe(r.pireAnnee.rendement) + ')') +
-        (r.ratioRendementRisque !== null ? ligne('Rendement / volatilité', r.ratioRendementRisque.toFixed(2).replace('.', ',')) : '') +
+        /* Un ratio sans échelle ni explication est du bruit : 0,68 ne se
+           compare à rien pour qui n'a pas l'habitude. Il reste au conseiller,
+           qui sait ce qu'il vaut. */
+        (r.ratioRendementRisque !== null && T('backtest.kpi.cumul') === 'backtest.kpi.cumul'
+          ? ligne('Rendement / volatilité', r.ratioRendementRisque.toFixed(2).replace('.', ',')) : '') +
         '</tbody></table>' +
       '</div>' +
 
       '<div class="carte"><h3>Comparaison</h3>' +
+        (T('backtest.comparaison.intro') === 'backtest.comparaison.intro' ? ''
+          : '<p class="intro" style="font-size:12px">' +
+            echapper(T('backtest.comparaison.intro')) + '</p>') +
         '<div class="tableau-defilant"><table><thead><tr><th>Allocation</th><th class="num">Cumul</th><th class="num">Par an</th>' +
         '<th class="num">Volat.</th><th class="num">Pire année</th></tr></thead><tbody>' +
         profils.map(p => '<tr' + (p.profil.id === profil.id ? ' style="background:var(--bleu-pale);font-weight:600"' : '') + '>' +
