@@ -3002,3 +3002,116 @@ table .illustration { display: none !important; }
 .arbitrages-intro { margin: 0 0 6px; font-size: 20px; }
 @media (min-width: 821px) { .arbitrages-intro { font-size: 23px; } }
 .arbitrages-intro + .intro { margin: 0 0 20px; max-width: 62ch; }
+
+/* ============================================================
+   PASTEL BULLES — LES COMPOSANTS
+   ------------------------------------------------------------
+   Les jetons portent la palette ; ce bloc-ci porte les FORMES :
+   des cartes très arrondies qui se détachent par leur ombre et
+   non par un filet, des boutons en pilule, et trois surfaces
+   translucides — la barre basse, le ruban, la feuille.
+
+   Il vient en FIN DE FEUILLE, après le bloc « trait bleu » qu'il
+   recouvre : une media query n'ajoute aucune spécificité, c'est
+   l'ordre du fichier qui tranche. Le piège s'est déjà refermé
+   trois fois dans ce projet.
+   ============================================================ */
+
+body { background: var(--fond); }
+
+/* ---------- Les cartes : arrondies, posées, sans filet ---------- */
+.carte {
+  border-radius: var(--r-l);
+  border: 0;
+  box-shadow: var(--ombre-2);
+  background: var(--surface);
+}
+.carte.compacte { border-radius: var(--r-m); }
+
+/* Le verdict et les tuiles suivent la même courbure. */
+.verdict { border-radius: var(--r-l); border: 0; box-shadow: var(--ombre-2); }
+.verdict.action { border: 0; box-shadow: 0 0 0 2px var(--bleu-pale), var(--ombre-2); }
+
+.kpi { border-radius: var(--r-m); }
+.message, .etat-vide { border-radius: var(--r-m); }
+
+/* ---------- Les boutons deviennent des pilules ---------- */
+.bouton, .bouton.secondaire, .bouton.discret {
+  border-radius: var(--r-pilule);
+  padding: 12px 22px;
+  box-shadow: none;
+}
+.bouton { background: var(--bleu); color: #fff; border: 0; }
+.bouton:hover { filter: brightness(1.06); }
+.bouton.secondaire {
+  background: var(--surface); color: var(--texte);
+  border: 1px solid var(--ligne);
+}
+.bouton.secondaire:hover { background: var(--bleu-pale); border-color: var(--bleu-clair); }
+.bouton.petit { padding: 6px 14px; }
+
+/* Les champs suivent, sans aller jusqu'à la pilule : un champ de saisie
+   arrondi comme un bouton se prend pour un bouton. */
+input, select, textarea { border-radius: var(--r-s); border-color: var(--ligne); }
+
+/* ---------- Les pastilles et badges ---------- */
+.badge { border-radius: var(--r-pilule); }
+.etape { border-radius: var(--r-m); }
+.fil-item { border-radius: var(--r-m); border-color: var(--ligne); }
+.fraicheur span { border-radius: var(--r-pilule); border-color: var(--ligne); }
+
+/* ---------- LE VERRE, ET SEULEMENT LÀ ----------
+   Trois surfaces, pas une de plus. Une carte translucide serait jolie et
+   coûterait une recomposition par défilement ; sur une liste de quarante
+   lignes, c'est la fluidité de la page entière qui tombe. */
+.tabbar, .sous-nav, .feuille {
+  background: var(--verre-fort);
+  -webkit-backdrop-filter: var(--verre-flou);
+  backdrop-filter: var(--verre-flou);
+  border: 1px solid var(--verre-bord);
+}
+.sous-nav { border-width: 0 0 1px; border-radius: 0; }
+.tabbar { border-radius: var(--r-l); box-shadow: var(--ombre-3); }
+.entete {
+  background: var(--verre-fort);
+  -webkit-backdrop-filter: var(--verre-flou);
+  backdrop-filter: var(--verre-flou);
+  border-bottom: 1px solid var(--ligne);
+}
+
+/* Le repli, et il n'est pas cosmétique : sans `backdrop-filter`, une
+   surface à .78 d'opacité laisse lire le texte qui passe DESSOUS. On
+   repasse donc à l'opaque — moins joli, lisible. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabbar, .sous-nav, .feuille, .entete {
+    background: #FFFFFF;
+    border-color: var(--ligne);
+  }
+}
+
+/* ---------- Le trait sous le dernier mot du titre ----------
+   Il passe au violet avec l'accent. C'est toujours un `text-decoration`
+   à `skip-ink` : seul lui contourne les jambages du p, du g et du q. */
+.souligne { text-decoration-color: var(--bleu-clair); }
+
+/* ---------- Ce qui NE change PAS ----------
+   Les performances restent à l'encre : douze pour cent d'hommes
+   distinguent mal le vert du rouge, et le signe dit déjà le sens. Les
+   pastels de la palette nomment des CLASSES D'ACTIFS, jamais une
+   variation. Ne pas « harmoniser » ces deux règles-là : elles ne
+   parlent pas de la même chose. */
+.positif, .negatif { color: var(--texte); }
+
+/* ---------- Le papier ignore tout cela ----------
+   Encre noire sur blanc, pas d'ombre, pas de fond coloré, pas de flou. */
+@media print {
+  body { background: #fff; }
+  .carte, .kpi, .verdict, .message, .etat-vide {
+    box-shadow: none !important; border: 1px solid #ccc !important;
+    border-radius: 6px !important; background: #fff !important;
+  }
+  .tabbar, .sous-nav, .feuille, .entete {
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  }
+  .bouton { border-radius: 6px !important; }
+}

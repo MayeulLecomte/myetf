@@ -1,18 +1,30 @@
 /* ============================================================
-   JETONS — trait bleu
+   JETONS — pastel bulles
    ------------------------------------------------------------
    La palette, la typographie, les rayons et les ombres. Un seul
    endroit : les composants n'écrivent plus une couleur en dur.
 
    Chargé AVANT app.css : c'est la base, et les composants s'y
-   réfèrent. Le bloc de jetons d'app.css et son mode sombre ont
-   été retirés — il n'y a plus qu'une seule définition.
+   réfèrent.
+
+   CE QUI CHANGE DEPUIS LE TRAIT BLEU : le fond passe au lavande
+   très clair, l'accent du bleu au violet, les cartes s'arrondissent
+   franchement et perdent leur filet au profit d'une ombre douce,
+   les boutons deviennent des pilules, et quatre pastels francs
+   entrent — menthe, corail, jaune, lavande.
+
+   CE QUI NE CHANGE PAS, ET NE DOIT PAS :
+
+   • LES PERFORMANCES RESTENT À L'ENCRE. `.positif` et `.negatif`
+     ne repassent ni au vert ni au rouge : douze pour cent
+     d'hommes distinguent mal ces deux teintes-là, et c'est le
+     SIGNE qui dit le sens. Le pastel s'exprime partout ailleurs.
+   • Le document imprimé reste noir sur blanc.
+   • Il n'y a toujours qu'une seule palette : pas de mode sombre.
 
    PAS DE MODE SOMBRE. La direction donne une palette exacte, et
-   une seule. Un mode sombre demanderait une seconde palette que
-   personne n'a arrêtée — l'inventer produirait un hybride que
-   nul n'a validé. `color-scheme: light` le dit au navigateur,
-   pour que les champs de formulaire suivent.
+   une seule. `color-scheme: light` le dit au navigateur, pour que
+   les champs de formulaire suivent.
    ============================================================ */
 
 /* ---------- Manrope, servie depuis le dossier ----------
@@ -44,60 +56,89 @@
 :root {
   color-scheme: light;
 
-  /* ---------- La palette, et elle est courte ----------
-     Le bleu est la seule couleur. Pas de vert ni de rouge pour les
-     performances : un signe et une graisse suffisent à dire le sens, et
-     douze pour cent d'hommes distinguent mal ces deux teintes-là. */
-  --fond:        #F7F9FC;
+  /* ---------- La palette pastel ----------
+     Un fond lavande, des cartes blanches, un accent violet, et quatre
+     pastels francs pour les classes d'actifs.
+
+     ⚠ AUCUN DE CES PASTELS NE SERT À DIRE UNE HAUSSE OU UNE BAISSE.
+     Le vert et le corail nomment des classes d'actifs — obligations,
+     diversifiants —, jamais un sens de variation. Voir `--vert` et
+     `--rouge` plus bas, qui restent à l'encre. */
+  --fond:        #F3F2FE;      /* lavande très clair : le fond de page */
   --surface:     #FFFFFF;
-  --surface-2:   #F7F9FC;
-  --ligne:       #DFE5F0;
-  --ligne-forte: #C6D0E4;
+  --surface-2:   #FAFAFE;
+  --ligne:       #E9E7FB;      /* un filet lavande, très discret */
+  --ligne-forte: #D6D2F5;
 
-  --texte:       #15161A;
-  --texte-doux:  #6B6E76;
+  --texte:       #1B1B2F;
+  --texte-doux:  #6E6B8A;
 
-  --bleu:        #2F6BFF;      /* accent : boutons, focus, trait des titres */
-  --bleu-clair:  #8FB3FF;
-  --bleu-pale:   #E6EEFF;      /* fonds de badge, onglet actif */
-  --bleu-encre:  #1E4FCC;      /* liens : plus sombre, pour le contraste sur blanc */
+  /* L'accent : le violet du camembert de l'allocation, déjà dessiné. */
+  --bleu:        #6C63FF;      /* le nom reste « bleu » — cent-vingt usages */
+  --bleu-clair:  #A9A3FF;
+  --bleu-pale:   #EDEBFF;      /* fonds de badge, onglet actif */
+  --bleu-encre:  #4F46E5;      /* liens : plus sombre, pour le contraste */
 
-  /* Les noms hérités d'une palette à sept couleurs pointent tous vers
-     l'encre ou le bleu. Ils disparaîtront avec les composants ; d'ici
-     là, rien ne peut ressortir en vert ou en rouge par mégarde. */
-  --vert:        #15161A;
-  --rouge:       #15161A;
-  --orange:      #6B6E76;
-  --or:          #6B6E76;
-  --indigo:      #2F6BFF;
-  --violet:      #2F6BFF;
+  /* ---------- Les quatre pastels ----------
+     Ils nomment des CATÉGORIES, jamais un sens. */
+  --menthe:      #3ED9A4;
+  --menthe-pale: #DEF7EE;
+  --corail:      #FF7A5C;
+  --corail-pale: #FFE6DE;
+  --jaune:       #FFC93C;
+  --jaune-pale:  #FFF3D4;
+
+  /* ⚠ LES PERFORMANCES RESTENT À L'ENCRE, et c'est une décision, pas un
+     reste de l'ancienne palette : douze pour cent d'hommes distinguent
+     mal le vert du rouge, et le signe dit déjà le sens. Ces deux jetons
+     pointent donc sur l'encre — les repeindre en menthe et en corail
+     casserait la seule règle d'accessibilité de la feuille. */
+  --vert:        #1B1B2F;
+  --rouge:       #1B1B2F;
+  /* Ceux-ci ne servent plus qu'à des fonds de badge neutres. */
+  --orange:      #6E6B8A;
+  --or:          #6E6B8A;
+  --indigo:      #6C63FF;
+  --violet:      #6C63FF;
 
   --voile:       rgba(255, 255, 255, .92);
 
-  /* ---------- Formes ---------- */
-  --r-s:  10px;
-  --r-m:  14px;
-  --r-l:  14px;
+  /* ---------- Formes ----------
+     Très arrondies. Les rayons montent en même temps que la taille de la
+     boîte : une pilule de badge et une carte de contenu n'ont pas la même
+     courbure apparente à rayon égal. */
+  --r-s:  14px;
+  --r-m:  22px;
+  --r-l:  28px;
   --r-pilule: 999px;
 
-  /* ---------- Ombres, très douces ----------
-     Une carte se détache par son filet, pas par son ombre. */
-  --ombre-1: 0 1px 2px rgba(21, 22, 26, .04);
-  --ombre-2: 0 1px 2px rgba(21, 22, 26, .04), 0 8px 24px -16px rgba(21, 22, 26, .12);
-  --ombre-3: 0 10px 30px -12px rgba(21, 22, 26, .25);
+  /* ---------- Ombres, douces et colorées ----------
+     Une carte se détache maintenant par son OMBRE et non par son filet —
+     et l'ombre est teintée de lavande, pas de gris : une ombre grise sur
+     un fond coloré paraît sale. */
+  --ombre-1: 0 2px 6px rgba(76, 70, 160, .06);
+  --ombre-2: 0 4px 12px rgba(76, 70, 160, .07), 0 18px 40px -24px rgba(76, 70, 160, .18);
+  --ombre-3: 0 12px 32px -10px rgba(76, 70, 160, .28);
 
   --ressort: cubic-bezier(.32, .72, 0, 1);
 
-  /* ---------- Le verre s'éteint ----------
-     Les surfaces redeviennent des surfaces : blanches, filetées, sans
-     flou ni halo. Les jetons restent, pointant vers du plein, pour que
-     les composants qui les emploient encore ne se cassent pas d'ici
-     l'étape suivante. */
-  --verre:       #FFFFFF;
-  --verre-fort:  #FFFFFF;
-  --verre-bord:  #DFE5F0;
-  --verre-flou:  none;
-  --verre-ombre: 0 1px 2px rgba(21, 22, 26, .04), 0 8px 24px -16px rgba(21, 22, 26, .12);
+  /* ---------- Le verre, et seulement là où il sert ----------
+     Trois surfaces deviennent translucides : la barre basse, le ruban
+     d'onglets et la feuille de confirmation. NULLE PART AILLEURS — les
+     cartes, les tableaux et les lignes répétées restent opaques.
+
+     Ce n'est pas une préférence de dessin, c'est une règle de
+     performance : un `backdrop-filter` par ligne d'un tableau de
+     quarante lignes fait recomposer la page à chaque défilement.
+
+     Le fond est calé sur le LAVANDE et non sur le blanc : à .72 de blanc
+     sur un fond lavande, la barre paraît grise. On monte à .78 et l'on
+     teinte le liseré. */
+  --verre:       rgba(255, 255, 255, .78);
+  --verre-fort:  rgba(255, 255, 255, .86);
+  --verre-bord:  rgba(255, 255, 255, .85);
+  --verre-flou:  blur(14px) saturate(1.4);
+  --verre-ombre: 0 4px 12px rgba(76, 70, 160, .07), 0 18px 40px -24px rgba(76, 70, 160, .18);
   --halo-1: transparent;
   --halo-2: transparent;
   --halo-3: transparent;
@@ -109,17 +150,20 @@
   --ronde:  var(--police);
 
   /* ---------- Le signe ---------- */
-  --logo-fond:   #2F6BFF;
+  --logo-fond:   #6C63FF;
   --logo-barre:  #FFFFFF;
-  --logo-accent: #15161A;
+  --logo-accent: #1B1B2F;
 
   /* ---------- Graphiques ----------
-     Quatre teintes, et la quatrième est l'encre — c'est la seule
-     entorse au bleu, prévue par la direction. */
-  --serie-actions:       #2F6BFF;
-  --serie-obligations:   #8FB3FF;
-  --serie-monetaire:     #C9D9FF;
-  --serie-diversifiants: #15161A;
+     Les quatre classes d'actifs, chacune sa teinte. Elles nomment une
+     CATÉGORIE et jamais un sens : le vert d'« obligations » ne veut pas
+     dire « ça monte », et le corail de « diversifiants » ne veut pas dire
+     « ça baisse ». C'est pourquoi les performances restent à l'encre —
+     sans quoi les deux lectures se mélangeraient sur le même écran. */
+  --serie-actions:       #6C63FF;
+  --serie-obligations:   #3ED9A4;
+  --serie-monetaire:     #FFC93C;
+  --serie-diversifiants: #FF7A5C;
 }
 
 /* Le mode sombre d'origine est neutralisé : ses redéfinitions vivent
@@ -136,7 +180,7 @@ body { font-family: var(--police); }
 body, table, .num, .kpi, input, select { font-variant-numeric: tabular-nums; }
 
 /* Le focus se voit, et il est bleu. */
-:focus-visible { outline: 3px solid var(--bleu); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--bleu); outline-offset: 2px; border-radius: 6px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -118,34 +118,65 @@ comparer — pas seulement constater qu'ils passent à la fin.
   APRÈS ce qu'elle surcharge, pas dans le bloc de media query le plus proche
   du haut du fichier.
 
-## Registre visuel — trait bleu
+## Registre visuel — pastel bulles
 
-Blanc et bleu, cartes filetées, illustrations au trait noir. Le registre
-« verre » d'avant — surfaces dépolies sur halo, dégradés vifs, SF Pro Rounded —
-**n'existe plus**.
+Fond lavande très clair, cartes blanches très arrondies qui se détachent par
+leur **ombre** et non par un filet, accent violet, boutons en pilule, et quatre
+pastels francs pour les classes d'actifs. Le registre « trait bleu » d'avant —
+blanc et bleu, cartes filetées — **n'existe plus**.
 
 ### Les jetons
 
 Tout vit dans **`css/tokens.css`**, chargé AVANT `css/app.css`. Les composants
-n'écrivent plus une couleur en dur.
+n'écrivent plus une couleur en dur — c'est ce qui a permis de repeindre la
+palette entière sans toucher une seule vue.
 
 | | |
 |---|---|
-| Fond | `#F7F9FC` |
-| Cartes | `#FFFFFF` |
-| Filets | `#DFE5F0` |
-| Texte | `#15161A` · secondaire `#6B6E76` |
-| Accent | `#2F6BFF` · clair `#8FB3FF` · pâle `#E6EEFF` · liens `#1E4FCC` |
+| Fond | `#F3F2FE` (lavande) |
+| Cartes | `#FFFFFF`, rayon 28 px, sans filet, ombre lavande |
+| Filets | `#E9E7FB` · fort `#D6D2F5` |
+| Texte | `#1B1B2F` · secondaire `#6E6B8A` |
+| Accent | `#6C63FF` · clair `#A9A3FF` · pâle `#EDEBFF` · liens `#4F46E5` |
+| Pastels | menthe `#3ED9A4` · corail `#FF7A5C` · jaune `#FFC93C` |
 
-**Le bleu est la seule couleur.** Pas de vert ni de rouge pour les
-performances : `.positif` et `.negatif` sont à l'encre, et c'est le signe qui
-dit le sens — douze pour cent d'hommes distinguent mal ces deux teintes-là. Les
-noms hérités d'une palette à sept couleurs (`--vert`, `--rouge`, `--orange`,
-`--or`, `--indigo`, `--violet`) pointent tous vers l'encre ou le bleu : rien ne
-peut ressortir en vert par mégarde.
+Les ombres sont **teintées de lavande** et non de gris : une ombre grise sur un
+fond coloré paraît sale.
 
-Une seule entorse, prévue : les **graphiques** ont quatre teintes, dont l'encre
-`#15161A` en quatrième.
+### ⚠ LES PERFORMANCES RESTENT À L'ENCRE
+
+C'est la seule règle de l'ancienne palette qui survit, et elle survit pour sa
+raison d'origine : **douze pour cent d'hommes distinguent mal le vert du
+rouge**, et c'est le SIGNE qui dit le sens. `.positif` et `.negatif` pointent
+sur `--texte`.
+
+**Les pastels nomment des CATÉGORIES, jamais une variation.** Le vert
+d'« obligations » ne veut pas dire « ça monte », le corail de
+« diversifiants » ne veut pas dire « ça baisse ». Repeindre les performances
+avec les couleurs du graphique mélangerait les deux lectures sur le même
+écran — et casserait la seule règle d'accessibilité de la feuille.
+
+### Le verre, et seulement à trois endroits
+
+**La barre basse, le ruban d'onglets et la feuille** sont translucides :
+`rgba(255,255,255,.86)` sur `blur(14px) saturate(1.4)`. Calé sur le LAVANDE et
+non sur le blanc — à .72 sur fond lavande, la barre paraît grise.
+
+**Nulle part ailleurs**, et ce n'est pas une préférence de dessin : un
+`backdrop-filter` par ligne d'un tableau de quarante lignes fait recomposer la
+page à chaque défilement. Les cartes, tableaux et lignes répétées restent
+opaques.
+
+**Le repli sans `backdrop-filter` n'est pas cosmétique** : à .86 d'opacité sans
+flou, on lit le texte qui passe dessous. Le `@supports not` repasse ces
+surfaces à l'opaque — moins joli, lisible.
+
+### Un style pur ne bouge pas l'empreinte
+
+Relevée avant et après la bascule pastel : **`f0eb99d0`, 1 369 400 octets, à
+l'octet près des deux côtés**. C'est la vérification qui dit qu'on n'a pas
+débordé sur le balisage. Une empreinte qui bouge pendant un chantier de style
+est un signal, pas un détail.
 
 ### Typographie
 
