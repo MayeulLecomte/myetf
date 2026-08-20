@@ -804,9 +804,11 @@ seule à porter le référencement au contrat.
 
 ## Univers ETF — à vérifier avant toute utilisation en clientèle
 
-L'univers compte **42 supports**, contrôlés à deux niveaux distincts.
+L'univers compte **44 supports**, contrôlés à deux niveaux distincts.
 
 **Niveau 1 — caractéristiques de marché : refait le 20 août 2026, sur justETF.**
+*(Deux supports PEA ont été ajoutés le même jour : iShares MSCI World Swap PEA
+et Amundi PEA Japon TOPIX.)*
 Les 42 lignes portent une date et une source (`donneesLe`, `donneesSource`,
 colonne « Données »). Ce contrôle a corrigé beaucoup : **neuf ISIN désignaient un
 autre fonds que celui annoncé** — deux fonds liquidés, un ETF classé en actions

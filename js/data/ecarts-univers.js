@@ -16,7 +16,7 @@
 const ECARTS_UNIVERS = {
   "genere": "2026-08-20",
   "catalogue": "2026-08-19",
-  "controles": 42,
+  "controles": 44,
   "lignes": [
     {
       "isin": "FR0011871128",

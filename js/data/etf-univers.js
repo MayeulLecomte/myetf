@@ -60,6 +60,30 @@ const ETF_UNIVERS = [
     donneesLe: '2026-08-20', donneesSource: 'justETF', notationLe: '2026-08-16',
     note: 'Remplace LU1781541179, liquidé ou fusionné.'
   },
+  /* Deuxième ligne Monde éligible au PEA, et la plus grosse du marché. La
+     poche n'était couverte que par l'Amundi PEA Monde : deux émetteurs valent
+     mieux qu'un pour une poche qui pèse un quart de l'allocation. */
+  {
+    isin: 'IE0002XZSHO1', ticker: 'WPEA', nom: 'iShares MSCI World Swap PEA UCITS ETF EUR (Acc)',
+    emetteur: 'BlackRock', classe: 'actions', poche: 'act-monde',
+    ter: 0.20, encours: 2000, morningstar: null, sri: 4, replication: 'Synthétique',
+    devise: 'EUR', hedge: false, capitalisation: true, isr: false,
+    pea: true, enveloppes: ['AV', 'CTO', 'PEA'], contratsAV: ['av-standard'], verifie: false,
+    donneesLe: '2026-08-20', donneesSource: 'justETF',
+    note: 'Réplique MSCI World par swap. Lancé en 2024 : historique court, pas encore noté.'
+  },
+  /* La seule façon de tenir la poche Japon dans un PEA. ⚠ 122 M€ : SOUS LE
+     FILTRE D'ENCOURS PAR DÉFAUT (500 M€). La ligne existe pour qui abaisse ce
+     filtre en connaissance de cause — sans quoi la poche reste vide en PEA. */
+  {
+    isin: 'FR0013411980', ticker: 'PTPXE', nom: 'Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc',
+    emetteur: 'Amundi', classe: 'actions', poche: 'act-japon',
+    ter: 0.20, encours: 122, morningstar: null, sri: 4, replication: 'Synthétique',
+    devise: 'EUR', hedge: false, capitalisation: true, isr: false,
+    pea: true, enveloppes: ['AV', 'CTO', 'PEA'], contratsAV: ['av-standard'], verifie: false,
+    donneesLe: '2026-08-20', donneesSource: 'justETF',
+    note: 'Encours 122 M€ : sous le filtre par défaut de 500 M€, donc écarté tant que ce filtre tient.'
+  },
   {
     isin: 'FR001400U5Q4', ticker: 'DCAM', nom: 'Amundi PEA Monde (MSCI World) UCITS ETF Acc',
     emetteur: 'Amundi', classe: 'actions', poche: 'act-monde',
