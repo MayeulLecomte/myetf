@@ -168,7 +168,10 @@ function ouvrirPoche(poche) {
    cesserait d'être vu. Sur un dossier entamé il ne reste que l'accroche
    courte, seule et sans dessin — c'est la même règle qu'avant. */
 function ouvertureAccueil() {
-  if (dossierEntame()) return accroche();
+  /* Un dossier entamé n'a pas d'ouverture : le dessin, vu tous les jours,
+     cesserait d'être vu. La phrase d'accroche, elle, est posée par l'appelant
+     — c'est lui qui tient l'ordre des blocs. */
+  if (dossierEntame()) return '';
 
   /* Un dossier neuf s'ouvre comme les quinze autres vues : le dessin et le
      titre tiennent le premier écran, le reste vient au défilement. C'était
@@ -186,8 +189,7 @@ function ouvertureAccueil() {
       '<p class="intro">' + echapper(SOUS_TITRES_VUES.accueil) + '</p>' +
       '<div class="ouverture-suite" aria-hidden="true"><span>Faites défiler</span>' +
         '<svg viewBox="0 0 24 24"><path d="M6 9.5 12 15.5 18 9.5"/></svg></div>' +
-    '</div>' +
-    accroche();
+    '</div>';
 }
 
 function accroche() {
@@ -372,17 +374,36 @@ function rendreAccueil() {
 
   /* --- Dossier incomplet : dire ce qui manque, pas « complétez le dossier » --- */
   if (aFaire.length) {
+    /* ------------------------------------------------------------
+       L'ACCUEIL D'UN DOSSIER À COMMENCER
+       ------------------------------------------------------------
+       Quatre blocs, dans cet ordre, et pas un de plus visible à la
+       fois : l'ouverture, une phrase, ce qu'il y a à faire, puis le
+       secondaire.
+
+       Ce qui a changé : « Remplissez le dossier » et sa carte
+       remontent AVANT le bouton de découverte et les dates de
+       relevé. Qui arrive ici a un dossier à commencer — le dossier
+       exemple et la fraîcheur des données sont utiles, mais à
+       personne tout de suite.
+
+       Le rythme vertical est tenu par `.accueil-vide` en CSS, une
+       seule valeur entre les quatre blocs : c'est ce qui fait qu'une
+       page respire au lieu d'avoir des trous.
+
+       `filPoches()` a disparu d'ici, et ce n'est pas un oubli : sur
+       un dossier vierge il rend une chaîne vide, et sa seule trace
+       était un nœud de texte vide entre deux blocs. */
     c.innerHTML =
+      '<div class="accueil-vide">' +
       ouvertureAccueil() +
-      filPoches() +
+
+      '<p class="accroche-ligne">' + T('phrase.accroche.ligne') + '</p>' +
+
+      '<section class="bloc-etapes">' +
       '<h2>' + titreSouligne('Remplissez le dossier') + '</h2>' +
       '<p class="intro">Ni allocation ni arbitrage ne peuvent être proposés tant que ces étapes ne sont ' +
         'pas renseignées.</p>' +
-      /* Cette phrase reste ici, et pas seulement dans « Méthode & limites » :
-         c'est le moment où l'on commence à saisir, donc le moment où il faut
-         le savoir. Une page de référence se lit après coup, ou jamais. */
-      '<p class="intro rappel-local">Vos données restent dans ce navigateur — exportez votre dossier ' +
-        'régulièrement. <button class="lien" data-aller="methode">Méthode &amp; limites</button></p>' +
 
       '<div class="carte"><h3>' + aFaire.length + ' étape' + (aFaire.length > 1 ? 's' : '') + ' à compléter</h3>' +
         '<div class="etapes-dossier">' +
@@ -413,8 +434,30 @@ function rendreAccueil() {
               '<svg viewBox="0 0 24 24"><path d="M9.5 6 15.5 12 9.5 18"/></svg></span>' +
           '</button>').join('') +
         '</div></div>' +
+      '</section>' +
 
-      blocNoteAccueil();
+      /* LE SECONDAIRE, ET IL SE VOIT COMME TEL.
+         Le dossier exemple, le rappel de conservation locale et les dates de
+         relevé sont utiles — à personne tout de suite. Ils passent sous la
+         carte des étapes, en retrait : un filet au-dessus, un bouton en
+         second rang, des pastilles plus discrètes.
+
+         Cette phrase-ci reste sur l'écran où l'on commence à saisir, et pas
+         seulement dans « Méthode & limites » : une page de référence se lit
+         après coup, ou jamais. */
+      '<div class="accueil-secondaire">' +
+        '<p class="intro rappel-local">Vos données restent dans ce navigateur — exportez votre dossier ' +
+          'régulièrement. <button class="lien" data-aller="methode">Méthode &amp; limites</button></p>' +
+        '<div class="barre-actions">' +
+          '<button class="bouton secondaire" id="btn-decouvrir">Découvrir avec un dossier exemple</button>' +
+        '</div>' +
+        '<p class="accroche-note">Un dossier complet se charge, pour parcourir l\'outil de bout en ' +
+          'bout. « Nouveau dossier », en haut de l\'écran, remet tout à zéro.</p>' +
+        fraicheurDonnees() +
+      '</div>' +
+
+      blocNoteAccueil() +
+      '</div>';
     return;
   }
 

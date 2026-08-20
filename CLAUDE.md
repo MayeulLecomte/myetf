@@ -539,6 +539,36 @@ Une application qui s'ouvre sur « Aujourd'hui » doit s'ouvrir sur le HAUT
 d'Aujourd'hui : la position d'hier n'a aucun sens sur une vue dont le
 contenu a changé depuis.
 
+## L'accueil d'un dossier vide — quatre blocs, un seul rythme
+
+Qui arrive sur un dossier vide a **un dossier à commencer**, rien d'autre.
+L'ordre suit cela, et rien qu'à moitié l'ancien :
+
+1. l'ouverture — dessin, titre, phrase — comme les quinze autres vues ;
+2. **une seule ligne** qui dit ce que fait l'outil (`phrase.accroche.ligne`) ;
+3. **« Remplissez le dossier » et sa carte d'étapes**, remontés en premier ;
+4. le **secondaire**, sous un filet : dossier exemple, conservation locale,
+   dates de relevé.
+
+Le dossier exemple et la fraîcheur des données étaient au-dessus des étapes.
+Ils sont utiles — **à personne tout de suite**.
+
+**Un seul espacement entre les quatre blocs**, tenu par `--rythme` sur
+`.accueil-vide` : 96 px sur téléphone, 120 sur écran large, et une seule
+demi-valeur, entre l'ouverture et la phrase qui la commente. Les marges
+générales entre blocs de premier niveau ne portent plus là — les enfants
+vivent dans `.accueil-vide` —, ce qui fait qu'il n'y a qu'un endroit à
+changer pour resserrer la page.
+
+**`filPoches()` a quitté cette branche**, et ce n'est pas un oubli : sur un
+dossier vierge il rendait une chaîne vide, dont la seule trace était un nœud
+de texte entre deux blocs. L'air doit venir des espacements choisis, jamais
+d'un bloc fantôme.
+
+**L'accueil REMPLI ne change pas** : fil des poches en tête, verdict, puis le
+détail. Les deux branches ont désormais des structures franchement
+différentes, et c'est voulu — elles ne répondent pas à la même question.
+
 ## L'écran d'entrée — le nom d'abord, le propos ensuite
 
 Le premier écran ne porte que le signe et le nom. La phrase qui dit ce que
@@ -583,7 +613,25 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`00fd6cb3` · 1 318 553 octets · 68 empreintes**, relevée après l'aération.
+**`ed91c42b` · 1 330 119 octets · 68 empreintes**, relevée après le
+remaniement de l'accueil vide.
+
+Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
+contient des dates, elle ne se compare qu'entre deux relevés du même jour :
+
+| | Empreinte | Octets |
+|---|---|---|
+| Avant | `0df8fe8d` | 1 330 233 |
+| Après | `ed91c42b` | 1 330 119 |
+
+**114 octets de moins pour un HTML entièrement réordonné** : le bouton de
+découverte et les pastilles ont changé de place, pas de contenu. Un écart de
+cet ordre est la signature d'un déménagement ; un écart de plusieurs milliers
+aurait voulu dire qu'un bloc était apparu ou avait disparu, et il aurait
+fallu savoir lequel.
+
+Repère plus ancien : **`00fd6cb3` · 1 318 553 octets**, relevée après
+l'aération du chantier 9.
 
 Repère utile comme étalon : `3491397b`, **1 303 613 octets**. L'agrandissement
 des dessins avait alors changé l'empreinte **sans changer d'un octet** le

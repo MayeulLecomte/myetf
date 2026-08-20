@@ -2888,3 +2888,81 @@ table .illustration { display: none !important; }
 
 /* ---------- Le signe du pied est une image, comme celui de l'en-tête ---------- */
 .pied img.logo-pied { border-radius: 5px; object-fit: contain; }
+
+/* ============================================================
+   L'ACCUEIL D'UN DOSSIER À COMMENCER — UN SEUL RYTHME
+   ------------------------------------------------------------
+   Quatre blocs : l'ouverture, une phrase, ce qu'il y a à faire,
+   le secondaire. Entre eux, UNE SEULE VALEUR d'espacement — c'est
+   ce qui fait qu'une page respire au lieu d'avoir des trous.
+
+   Le rythme est posé ici et nulle part ailleurs : les marges
+   générales entre blocs de premier niveau ne portent plus sur ces
+   enfants-là, qui vivent dans `.accueil-vide`. Une seule variable
+   à changer si l'on veut resserrer ou desserrer.
+
+   Ne concerne QUE le dossier vide. L'accueil rempli garde sa
+   structure — fil des poches, verdict, indicateurs.
+   ============================================================ */
+.accueil-vide {
+  --rythme: 96px;
+  display: flex; flex-direction: column;
+}
+@media (min-width: 821px) { .accueil-vide { --rythme: 120px; } }
+
+.accueil-vide > * { margin: 0; min-width: 0; }
+.accueil-vide > * + * { margin-top: var(--rythme); }
+
+/* L'ouverture tient déjà l'écran : elle n'a pas besoin qu'on l'espace
+   du haut, et la phrase qui la suit se pose à mi-rythme — elle commente
+   le titre autant qu'elle annonce la suite. */
+.accueil-vide > .ouverture-vue + .accroche-ligne { margin-top: calc(var(--rythme) / 2); }
+
+.accroche-ligne {
+  font-size: 17px; line-height: 1.5; color: var(--texte-doux); max-width: 62ch;
+}
+.accroche-ligne strong { color: var(--texte); font-weight: 800; }
+@media (min-width: 821px) { .accroche-ligne { font-size: 19px; } }
+
+/* Le bloc des étapes se tient serré : un titre appartient à ce qui le
+   suit, et sa carte ne doit pas s'en détacher. */
+.bloc-etapes > h2 { margin: 0 0 10px; }
+.bloc-etapes > .intro { margin: 0 0 26px; max-width: 62ch; }
+.bloc-etapes > .carte { margin: 0; }
+
+/* ---------- Le secondaire se voit comme tel ----------
+   Dossier exemple, conservation locale, dates de relevé : utiles, mais à
+   personne tout de suite. Un filet les sépare, et rien n'y a le premier
+   rang — le bouton passe en second, les pastilles rapetissent. */
+.accueil-secondaire {
+  display: flex; flex-direction: column; gap: 18px;
+  padding-top: 30px; border-top: 1px solid var(--ligne);
+}
+.accueil-secondaire .barre-actions { margin: 0 !important; }
+.accueil-secondaire .rappel-local,
+.accueil-secondaire .accroche-note { margin: 0; max-width: 62ch; }
+.accueil-secondaire .fraicheur { margin-top: 4px; }
+.accueil-secondaire .fraicheur span { font-size: 11px; }
+
+/* ---------- Le contenu paraît bloc par bloc ----------
+   Le conteneur cesse de paraître d'un coup — deux opacités emboîtées se
+   multiplient —, et ce sont les quatre blocs qui montent l'un après
+   l'autre. Mêmes garde-fous que la règle générale. */
+.vue.actif > div[id$="-contenu"] > .accueil-vide {
+  animation: none; opacity: 1; transform: none;
+}
+.accueil-vide > *:not(.ouverture-vue) {
+  animation: paraitre linear both;
+  animation-timeline: view();
+  animation-range: entry 0px entry 170px;
+}
+@supports not (animation-timeline: view()) {
+  .accueil-vide > * { animation: none; opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .accueil-vide > * { animation: none; opacity: 1; transform: none; }
+}
+@media print {
+  .accueil-vide > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .accueil-secondaire { display: none !important; }
+}

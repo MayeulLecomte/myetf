@@ -100,6 +100,13 @@ const LIBELLES = {
     'phrase.accroche.courte':
       '<strong>Allocation d\'ETF pour un client</strong> — outil de travail du conseiller.',
 
+    /* Une seule ligne, pour l'accueil d'un dossier vide. Qui arrive là n'a
+       rien à lire : il a un dossier à commencer. La version longue reste
+       pour l'écran d'entrée, où elle est à sa place. */
+    'phrase.accroche.ligne':
+      '<strong>myetf construit et suit une allocation d\'ETF pour un client</strong> — les ' +
+      'décisions sont les vôtres.',
+
     'phrase.mentions.nature':
       'Ce document est un support d\'aide à la décision produit par un outil interne. Il ne constitue ni un ' +
       'conseil en investissement personnalisé au sens de l\'article D. 321-1 du code monétaire et financier, ni une ' +
@@ -183,6 +190,9 @@ const LIBELLES = {
       'conseil : les décisions sont les vôtres.',
     'phrase.accroche.courte':
       '<strong>Votre allocation d\'ETF</strong> — vos décisions, votre suivi.',
+    'phrase.accroche.ligne':
+      '<strong>myetf construit et suit votre allocation d\'ETF</strong> — les décisions sont ' +
+      'les vôtres.',
 
     'phrase.mentions.nature':
       'Ce document est un support d\'aide à la décision que vous avez produit vous-même. Il ne ' +
