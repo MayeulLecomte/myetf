@@ -173,7 +173,17 @@ function tailleOuverture(dessin) {
 }
 
 function illustration(nom, taille) {
-  return '<img class="illustration" src="img/' + nom + '.png" alt="" aria-hidden="true" ' +
+  /* Le marqueur de version, comme sur les scripts et la feuille de style.
+     Sans lui, un navigateur qui a déjà ouvert l'application garde les
+     anciens dessins indéfiniment : on repeindrait une application que
+     personne ne verrait repeinte. Le logo de l'en-tête le portait déjà,
+     écrit en dur dans index.html ; les seize dessins de vue, non.
+
+     `versionChargee()` lit le `?v=` du `<script>` d'app.js — donc la
+     version RÉELLEMENT chargée, et non celle que le HTML annonce. */
+  const v = typeof versionChargee === 'function' ? versionChargee() : null;
+  return '<img class="illustration" src="img/' + nom + '.png' + (v ? '?v=' + v : '') +
+    '" alt="" aria-hidden="true" ' +
     'width="' + taille + '" height="' + taille + '" style="width:' + taille + 'px;height:' + taille + 'px">';
 }
 
@@ -199,11 +209,11 @@ const ILLUSTRATIONS_VUES = {
      arbitrages, où elle dit ce qu'elle sait dire — rééquilibrer deux
      plateaux.
 
-     ⚠ SA PART EST VIOLETTE (#6C63FF), et c'est voulu : le dessin est déjà
-     prêt pour la bascule pastel à venir. C'est aujourd'hui la seule entorse
-     au « bleu, seule couleur » — ne pas la « corriger » en croyant à un
-     oubli. */
-  allocation:   'repartition',
+     Sa part est violette, comme l'accent. Ce fut un temps la seule entorse
+     au « bleu, seule couleur » — le dessin avait pris l'avance sur la
+     bascule pastel. Depuis, c'est toute la feuille qui l'a rejoint, et
+     l'avertissement n'a plus lieu d'être. */
+  allocation:   'camembert',
   portefeuille: 'fiches',
   /* La balance : deux plateaux qu'on rééquilibre, c'est exactement un
      arbitrage. Elle ouvrait « Mon allocation », où elle disait un dosage
