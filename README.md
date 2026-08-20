@@ -1023,18 +1023,21 @@ propres frais, en euros, et c'est ce qu'on détient réellement.
 En août 2026, elle donne 2022, 2023, 2024 et 2025 — et l'année en cours, qui ne
 compte pas. **2021 n'y est pas, pour aucun support.**
 
-Trois façons de s'en sortir, par ordre de préférence :
+**Le relevé se fait donc à deux sources, et chaque ligne dit la sienne :**
 
-1. **Attendre janvier 2027.** La fenêtre du backtest glisse alors sur
-   2022-2026, entièrement couverte par justETF. Le problème disparaît de
-   lui-même, et c'est la seule option qui ne coûte rien.
-2. **Relever 2021 sur la page de l'émetteur** (iShares, Amundi, Xtrackers) :
-   leurs fiches produit publient dix années civiles. Notez alors la source dans
-   la colonne prévue — deux sources pour une même ligne, c'est acceptable tant
-   que chacune est écrite.
-3. **Se contenter de quatre années** en retirant 2021 de
-   `ANNEES_HISTORIQUE`. Un backtest de quatre ans sourcés vaut mieux qu'un de
-   cinq dont un cinquième est inventé.
+| Années | Où |
+|---|---|
+| **2022 à 2025** | la fiche justETF du support de référence |
+| **2021** | la fiche produit de l'émetteur — iShares, Amundi, Xtrackers —, qui publie dix années civiles |
+
+Notez la source dans `HISTORIQUE_RELEVE.source` sous la forme
+« justETF + émetteur ». Deux sources pour une même ligne sont acceptables tant
+que chacune est écrite ; une série dont on ne sait plus d'où elle vient ne vaut
+pas mieux qu'une estimation.
+
+**En janvier 2027, la fenêtre glisse sur 2022-2026 et justETF suffira pour
+tout** : l'année 2021 sortira du backtest, et le détour par l'émetteur avec
+elle. Ce relevé-ci est le dernier à en avoir besoin.
 
 ### Ce qu'on relève, et où l'écrire
 

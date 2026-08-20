@@ -298,12 +298,28 @@ function rendrePortefeuille() {
     .map(cl => ({ cl, ecart: (sel.classesObtenues[cl] || 0) - alloc.classes[cl] }))
     .filter(d => Math.abs(d.ecart) >= 2);
 
+  /* Les deux tuiles disaient le même nombre : « frais moyens » en taux et
+     « coût annuel » en euros. En mode particulier la première porte déjà le
+     montant — la seconde devient un doublon, et trois tuiles valent mieux que
+     quatre dont deux répètent. */
+  const fraisEnEuros = T('supports.kpi.frais') !== 'supports.kpi.frais' &&
+                       (Number(Etat.identite.montant) || 0) > 0;
+
   c.innerHTML =
-    '<div class="grille quatre">' +
+    '<div class="grille ' + (fraisEnEuros ? 'trois' : 'quatre') + '">' +
       kpi(String(sel.nbSupports), 'Supports retenus', 'sur ' + sel.universEligible + ' éligibles') +
-      kpi(pct(sel.terMoyen, 2), 'Frais courants moyens', 'pondérés par les encours cibles') +
+      /* Un taux de frais ne se sent pas ; un montant annuel, si. Le calcul est
+         celui de la tuile « Coût annuel » juste à côté — les deux disent la
+         même chose, l'une en taux, l'autre en euros. */
+      (fraisEnEuros
+        ? kpi(pct(sel.terMoyen, 2), T('supports.kpi.frais'),
+              T('supports.kpi.frais.detail',
+                { montant: euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100) }))
+        : kpi(pct(sel.terMoyen, 2), 'Frais courants moyens', 'pondérés par les encours cibles')) +
       kpi(euro(Number(Etat.identite.montant) || 0), 'Montant investi', libelleEnveloppe()) +
-      kpi(euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100), 'Coût annuel des supports', 'hors frais de contrat') +
+      (fraisEnEuros ? '' :
+        kpi(euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100), 'Coût annuel des supports',
+            'hors frais de contrat')) +
     '</div>' +
 
     (catalogueAttendu()
@@ -319,29 +335,34 @@ function rendrePortefeuille() {
       'Avant toute remise au client, versez les supports retenus dans l\'univers de travail depuis l\'onglet ' +
       '« Univers ETF » et contrôlez leur ligne.</div>' : '') +
 
-    (nonVerifies ? '<div class="message alerte"><strong>' + nonVerifies + ' support(s) non validé(s) au contrat.</strong> ' +
-      'Leurs caractéristiques de marché ont été relevées sur source publique, mais leur référencement effectif ' +
-      'dans le contrat reste à contrôler avant remise au client : collez la liste des supports de l\'assureur ' +
-      'le rapprochement avec la liste des supports coche la colonne « Contrat » pour vous.' +
-      '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">' +
-      'Ouvrir l\'univers ETF</button></div></div>' : '') +
+    (nonVerifies ? bandeauSupportsAVerifier(nonVerifies) : '') +
 
     (sansNotation ? '<div class="message info"><strong>' + sansNotation + ' support(s) sans notation Morningstar.</strong> ' +
       'Morningstar ne note ni les monétaires, ni les ETC, ni les fonds de moins de trois ans. Pour ces supports, ' +
       'la notation est retirée du barème du score et le filtre « étoiles minimum » ne s\'applique pas.</div>' : '') +
 
     (derives.length ? '<div class="message ' + (derives.some(d => d.cl === 'actions' && d.ecart > 0) ? 'erreur' : 'alerte') + '">' +
-      '<strong>Le portefeuille réalisable s\'écarte de l\'allocation cible.</strong> ' +
+      '<strong>' + echapper(mot('phrase.supports.derive',
+        'Le portefeuille réalisable s\'écarte de l\'allocation cible.')) + '</strong> ' +
       derives.map(d => LIBELLES_CLASSES[d.cl] + ' ' + signe(d.ecart)).join(' · ') +
       '. Cet écart provient des contraintes de l\'univers disponible' +
       (Object.keys(sel.classesNonImplementables).length ? ' (classes non représentées dans l\'enveloppe)' : '') +
-      '. Vérifiez que le portefeuille obtenu reste compatible avec le profil ' + r.profil.nom.toLowerCase() + '.</div>' : '') +
+      '. ' + echapper(mot('phrase.supports.derive.fin',
+        'Vérifiez que le portefeuille obtenu reste compatible avec le profil ' +
+        r.profil.nom.toLowerCase() + '.')) + '</div>' : '') +
 
-    (sel.residuel > 0 ? '<div class="message erreur"><strong>' + pct(sel.residuel) + ' non investis.</strong> ' +
-      'Aucun support de l\'univers ne couvre ces poches. Élargissez les filtres ou complétez l\'univers ETF.</div>' : '') +
+    (sel.residuel > 0 ? '<div class="message erreur">' +
+      (T('phrase.supports.residuel') === 'phrase.supports.residuel' || !(Number(Etat.identite.montant) || 0)
+        ? '<strong>' + pct(sel.residuel) + ' non investis.</strong> Aucun support de l\'univers ne couvre ' +
+          'ces poches. Élargissez les filtres ou complétez l\'univers ETF.'
+        : '<strong>' + echapper(T('phrase.supports.residuel', {
+            montant: euro((Number(Etat.identite.montant) || 0) * sel.residuel / 100),
+            enveloppe: T('vue.client.nav')
+          })) + '</strong>') + '</div>' : '') +
 
-    (sel.avertissements.length ? '<div class="message info"><strong>Adaptations à l\'univers disponible.</strong><ul>' +
-      sel.avertissements.map(a => '<li>' + echapper(a) + '</li>').join('') + '</ul></div>' : '') +
+    (sel.avertissements.length ? '<div class="message info"><strong>' +
+      echapper(mot('supports.adaptations.titre', 'Adaptations à l\'univers disponible.')) + '</strong><ul>' +
+      lignesAdaptations(sel) + '</ul></div>' : '') +
 
     '<div class="carte"><h3>Portefeuille proposé</h3>' +
       '<div class="tableau-defilant"><table><thead><tr>' +
@@ -369,13 +390,20 @@ function rendrePortefeuille() {
       '</tbody><tfoot><tr><td colspan="6">Total</td>' +
       '<td class="num">' + pct(sel.lignes.reduce((a, l) => a + l.poids, 0)) + '</td>' +
       '<td class="num">' + euro(sel.lignes.reduce((a, l) => a + l.montant, 0)) + '</td><td></td></tr></tfoot></table></div>' +
+      (T('phrase.supports.choix') !== 'phrase.supports.choix'
+        ? '<p class="intro" style="font-size:11px;margin-top:10px">' +
+          echapper(T('phrase.supports.choix', {
+            etoiles: ctx.etoilesMin, encours: ctx.encoursMin, frais: pct(ctx.terMax, 2)
+          })) + '</p>'
+        : '') +
+      (T('phrase.supports.choix') !== 'phrase.supports.choix' ? '' :
       '<p class="intro" style="font-size:11px;margin-top:10px">Score de sélection ramené sur 100 : notation Morningstar (40 pts, ' +
       'écartée du barème lorsqu\'elle n\'est pas renseignée), ' +
       'frais courants relatifs à la poche (20), encours (15), mode de réplication (10)' +
       (ctx.esg === 'aucune' ? '' : ', label ISR (' + (ctx.esg === 'prioritaire' ? 15 : 8) + ')') + '. ' +
       'Filtres appliqués : ' + ctx.etoilesMin + ' étoiles minimum, encours ≥ ' + ctx.encoursMin + ' M€, frais ≤ ' + pct(ctx.terMax, 2) +
       (ctx.exclureSynthetique ? ', réplication physique uniquement' : '') +
-      (ctx.contratSeulement ? ', supports validés au contrat uniquement' : '') + '.</p>' +
+      (ctx.contratSeulement ? ', supports validés au contrat uniquement' : '') + '.</p>') +
     '</div>';
 }
 
@@ -593,6 +621,65 @@ function poidsTestes() {
 /* Une tuile qui dit un taux au conseiller et un montant au particulier. Le
    calcul est le même des deux côtés — c'est l'affichage qui change, et
    seulement si un montant existe : sans lui, « 0 € » serait faux. */
+/* ------------------------------------------------------------
+   LES SUPPORTS À VÉRIFIER — TROIS BANDEAUX, PAS UN
+   ------------------------------------------------------------
+   Ce qu'il y a à vérifier n'est pas la même chose selon l'enveloppe.
+
+   • En ASSURANCE-VIE, c'est le contrat de l'assureur qui décide de ce
+     qui est accessible : la liste des supports se colle, et le
+     rapprochement coche la colonne « Contrat ».
+   • En PEA et en COMPTE-TITRES, il n'existe aucun contrat de ce
+     genre. C'est le courtier qui référence, et la question est de
+     savoir si l'ETF est négociable — avant de passer l'ordre, pas
+     avant de remettre un document.
+
+   Et surtout : ni l'un ni l'autre de ces deux derniers ne doit parler
+   de « remise au client ». Il n'y a pas de client.
+
+   Le mode conseiller garde son bandeau unique, mot pour mot : la
+   clé absente rend la clé, et c'est le repli. */
+function bandeauSupportsAVerifier(nombre) {
+  const enveloppe = Etat.identite.enveloppe || 'AV';
+  const cle = 'supports.contrat.' + enveloppe;
+
+  if (T(cle) === cle) {
+    return '<div class="message alerte"><strong>' + nombre + ' support(s) non validé(s) au contrat.</strong> ' +
+      'Leurs caractéristiques de marché ont été relevées sur source publique, mais leur référencement effectif ' +
+      'dans le contrat reste à contrôler avant remise au client : collez la liste des supports de l\'assureur ' +
+      'le rapprochement avec la liste des supports coche la colonne « Contrat » pour vous.' +
+      '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">' +
+      'Ouvrir l\'univers ETF</button></div></div>';
+  }
+
+  return '<div class="message alerte"><strong>' +
+    echapper(T(cle + '.titre', { n: nombre })) + '</strong> ' +
+    echapper(T(cle)) +
+    '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">' +
+    echapper(T('supports.contrat.bouton')) + '</button></div></div>';
+}
+
+/* Les adaptations, dites en euros quand une poche n'a pas de support. Le
+   moteur porte les morceaux (`pochesSansSupport`) : découper à l'expression
+   régulière une phrase déjà écrite casserait au premier mot changé. */
+function lignesAdaptations(sel) {
+  const montant = Number(Etat.identite.montant) || 0;
+  if (T('supports.adaptations.ligne') === 'supports.adaptations.ligne' || !montant ||
+      !sel.pochesSansSupport || !sel.pochesSansSupport.length) {
+    return sel.avertissements.map(a => '<li>' + echapper(a) + '</li>').join('');
+  }
+  const reformulees = sel.pochesSansSupport.map(x =>
+    '<li>' + echapper(T('supports.adaptations.ligne', {
+      poche: x.nom, montant: euro(montant * x.pct / 100)
+    })) + '</li>').join('');
+  /* Les autres avertissements — classe non implémentable, durabilité — ne
+     sont pas de cette forme : ils restent tels quels. */
+  const autres = sel.avertissements
+    .filter(a => a.indexOf('Aucun support disponible pour') !== 0)
+    .map(a => '<li>' + echapper(a) + '</li>').join('');
+  return reformulees + autres;
+}
+
 function kpiMontant(cle, libelleDefaut, detailDefaut, valeurPct, taux) {
   const montant = Number(Etat.identite.montant) || 0;
   if (T(cle) === cle || !montant) return kpi(valeurPct, libelleDefaut, detailDefaut);

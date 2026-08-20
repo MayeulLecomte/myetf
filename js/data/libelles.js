@@ -377,6 +377,44 @@ const LIBELLES = {
     'alloc.colonne.strategique': 'Base',
     'alloc.colonne.tactique': 'Ajustée',
 
+    /* ---------- La vue « Mes supports » ----------
+       Le bandeau des supports non validés a TROIS versions, parce que la
+       chose à vérifier n'est pas la même selon l'enveloppe. En assurance-vie,
+       le contrat de l'assureur décide de ce qui est accessible : la liste se
+       colle et se rapproche. En PEA et en compte-titres, il n'y a pas de
+       contrat de ce genre — c'est le courtier qui référence, et la question
+       est de savoir si l'ETF est négociable. Aucune de ces deux dernières ne
+       doit parler de « remise au client » : il n'y a pas de client. */
+    'supports.contrat.AV.titre': '{n} supports à vérifier dans votre contrat.',
+    'supports.contrat.AV':
+      'Leurs caractéristiques ont été relevées sur une source publique, mais il reste à vérifier ' +
+      'qu\'ils y sont bien proposés : collez la liste des supports de votre contrat pour vérifier ' +
+      'qu\'ils y sont référencés.',
+    'supports.contrat.PEA.titre': '{n} supports à vérifier chez votre courtier :',
+    'supports.contrat.PEA':
+      'assurez-vous qu\'ils sont bien négociables sur votre PEA avant de passer les ordres.',
+    'supports.contrat.CTO.titre': '{n} supports à vérifier chez votre courtier :',
+    'supports.contrat.CTO':
+      'assurez-vous qu\'ils sont bien négociables sur votre compte-titres avant de passer les ordres.',
+    'supports.contrat.bouton': 'Ouvrir la liste des supports',
+
+    'phrase.supports.derive': 'Ce qu\'on peut construire s\'écarte de la cible.',
+    'phrase.supports.derive.fin': 'Vérifiez que ça vous convient toujours.',
+
+    'phrase.supports.residuel':
+      '{montant} ne sont pas placés : la liste d\'ETF actuelle ne couvre pas ces catégories. ' +
+      'Élargissez l\'univers de sélection (dans « {enveloppe} ») ou ajoutez des ETF.',
+
+    'supports.adaptations.titre': 'Ce que l\'outil a dû adapter.',
+    'supports.adaptations.ligne': '« {poche} » : pas d\'ETF dans la liste actuelle — {montant} restent à placer vous-même.',
+
+    'supports.kpi.frais': 'Frais moyens de vos ETF',
+    'supports.kpi.frais.detail': 'soit ~{montant}/an',
+
+    'phrase.supports.choix':
+      'Comment ils ont été choisis : note Morningstar, frais, taille, réplication, label ISR — parmi ' +
+      'les ETF à {etoiles} étoiles et plus, {encours} M€ d\'encours minimum, {frais} de frais maximum.',
+
         'profil.plafond.titre': 'Profil plafonné.',
     'phrase.profil.plafond':
       'Vos réponses pointaient vers un profil plus offensif ({theorique}), mais vous avez posé une ' +

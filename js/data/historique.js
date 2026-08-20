@@ -37,7 +37,7 @@ const ANNEES_HISTORIQUE = [2021, 2022, 2023, 2024, 2025];
    qu'une fois la performance de l'année close et publiée — ce qui
    prend quelques semaines de plus qu'un anniversaire.
    ------------------------------------------------------------ */
-const HISTORIQUE_RELEVE = { le: '2026-08-20', source: 'justETF' };
+const HISTORIQUE_RELEVE = { le: '2026-08-20', source: 'justETF + émetteur' };
 
 const HISTORIQUE_POCHES = {
 

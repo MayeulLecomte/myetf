@@ -103,6 +103,9 @@ const MoteurSelection = (function () {
   function construire(poches, contexte, univers) {
     const eligibles = universEligible(univers, contexte);
     const avertissements = [];
+    /* Les mêmes avertissements, en pièces détachées : une vue qui les dit
+       autrement porte les morceaux plutôt que de découper la phrase. */
+    const pochesSansSupport = [];
     const cibles = Object.assign({}, poches);
     const classesNonImplementables = {};
     const pochesSansIsr = [];
@@ -135,10 +138,19 @@ const MoteurSelection = (function () {
         return;
       }
 
+      const cibleInitiale = cibles[poche];
       residuel += cibles[poche];
       cibles[poche] = 0;
       avertissements.push("Aucun support disponible pour « " + (LIBELLES_POCHES[poche] || poche) +
         " » ni pour sa classe : " + residuel.toFixed(1) + " % non investis, à placer manuellement.");
+      /* La même chose, en pièces détachées. La phrase ci-dessus s'adresse au
+         conseiller ; une autre vue la dira autrement, et en euros. Reformuler
+         une phrase déjà écrite à coups d'expressions régulières casserait au
+         premier mot changé — mieux vaut porter les morceaux.
+
+         AUCUN CALCUL N'EST AJOUTÉ ICI : ce sont les mêmes valeurs, dites deux
+         fois. */
+      pochesSansSupport.push({ poche, nom: LIBELLES_POCHES[poche] || poche, pct: cibleInitiale });
     });
 
     Object.keys(classesNonImplementables).forEach(cl => {
@@ -206,6 +218,9 @@ const MoteurSelection = (function () {
     return {
       lignes,
       avertissements,
+      /* Les mêmes avertissements, en pièces détachées, pour les vues qui les
+         disent autrement. */
+      pochesSansSupport,
       residuel: Math.round(residuel * 10) / 10,
       classesNonImplementables,
       classesObtenues,

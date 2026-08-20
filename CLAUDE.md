@@ -613,8 +613,8 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`78aca4f0` · 1 333 982 octets · 68 empreintes**, relevée après « Mon
-allocation ».
+**`d515e3c4` · 1 333 665 octets · 68 empreintes**, relevée après « Mes
+supports ».
 
 Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
 contient des dates, elle ne se compare qu'entre deux relevés du même jour :
@@ -879,6 +879,33 @@ devient « Votre répartition, et la cible », et les colonnes « Stratégique /
 Tactique » du détail par poche deviennent « Base / Ajustée ». **Le mot
 « poche » reste** : c'est l'un des trois termes de métier que l'application
 garde et explique, avec « dérive » et « rotation ».
+
+## « Mes supports » : le bandeau à vérifier a TROIS versions
+
+Ce qu'il y a à vérifier n'est pas la même chose selon l'enveloppe, et le
+bandeau unique disait faux dans deux cas sur trois :
+
+- **en assurance-vie**, c'est le contrat de l'assureur qui décide de ce qui
+  est accessible : la liste se colle, le rapprochement coche « Contrat » ;
+- **en PEA et en compte-titres**, il n'existe aucun contrat de ce genre.
+  C'est le **courtier** qui référence, et la question est de savoir si l'ETF
+  est négociable — avant de passer l'ordre.
+
+**Ni l'un ni l'autre de ces deux derniers ne parle de « remise au client ».**
+Il n'y a pas de client. Le mode conseiller garde son bandeau unique, mot pour
+mot : la clé absente rend la clé, et c'est le repli.
+
+**Le moteur porte les morceaux, pas seulement la phrase.** L'avertissement
+« Aucun support disponible pour X : Y % non investis » est écrit pour le
+conseiller ; le particulier le lit en euros. Plutôt que de découper une phrase
+déjà écrite à coups d'expressions régulières — ce qui casserait au premier mot
+changé —, `MoteurSelection` expose `pochesSansSupport` : la poche, son nom, sa
+part. **Aucun calcul n'est ajouté** : ce sont les mêmes valeurs, dites deux
+fois.
+
+**Deux tuiles fusionnent** : « frais moyens » en taux et « coût annuel » en
+euros disaient le même nombre. En particulier la première porte le montant, la
+seconde disparaît, et la grille passe de quatre à trois.
 
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
