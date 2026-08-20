@@ -938,6 +938,34 @@ git, ni les harnais, qui ne savent pas qu'un bouton devait disparaître.
 par fichier**, et vérifier que chaque changement voulu y est encore. Les zones
 en conflit ne sont pas les seules à bouger.
 
+## Les séries du backtest : une date, un seuil, et une référence relevable
+
+**Une seule date de relevé** — `HISTORIQUE_RELEVE` dans
+`js/data/historique.js` — et non une par série : le relevé se fait d'un bloc,
+en suivant la procédure du README. Dix-neuf dates à tenir pour un geste unique
+finiraient par diverger sans que personne ne s'en aperçoive.
+
+**Seuil de 400 jours, pas 365.** Une série gagne une année CIVILE par an, et
+l'on ne la relève qu'une fois la performance de l'année close et publiée — ce
+qui prend quelques semaines de plus qu'un anniversaire. La pastille se pose à
+côté de la part sourcée, et écrit son âge au-delà : même mécanique que les
+trois de l'accueil.
+
+**La référence d'une poche est un ETF, pas un indice.** Neuf poches portaient
+un nom d'indice ; les dix autres portaient une DESCRIPTION — « Obligations
+souveraines € 1-3 ans », « €STR capitalisé » — qui ne correspond à aucune
+fiche consultable. Elles pointent désormais sur l'ETF de l'univers qui couvre
+la poche : sa performance est nette de ses propres frais, en euros, et c'est
+ce qu'on détient réellement.
+
+**⚠ Une fiche justETF publie QUATRE années civiles closes, pas cinq.** En août
+2026 : 2022 à 2025, et rien pour 2021. La fenêtre du backtest en couvre cinq —
+2021 n'a donc aucune source publique sur justETF, pour aucun support. Trois
+issues, dans l'ordre : attendre janvier 2027, où la fenêtre glisse sur
+2022-2026 et le problème disparaît seul ; relever 2021 sur la fiche de
+l'émetteur, qui en publie dix ; ou retirer 2021 de `ANNEES_HISTORIQUE`, quatre
+années sourcées valant mieux que cinq dont une inventée.
+
 ## Chaque relevé a sa cadence, donc son seuil de péremption
 
 Les trois pastilles de fraîcheur portent des dates qui n'ont rien à voir

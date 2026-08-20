@@ -992,6 +992,96 @@ trouvé neuf.
 *Frais et encours au dernier relevé. Les liens ouvrent la fiche justETF du
 support.*
 
+## Procédure — relevé des séries de performances
+
+Le backtest s'appuie sur **dix-neuf séries de performances annuelles**, une par
+poche. Deux seulement sont sourcées ; les dix-sept autres sont des estimations,
+et l'application le dit en toutes lettres au-dessus du résultat. Un backtest
+fondé dessus n'a **aucune valeur probante** : il éprouve le comportement du
+modèle, il ne mesure pas une performance.
+
+Ce relevé-ci les remplace par des chiffres vérifiables. Comme les
+caractéristiques justETF, **rien ne le fait tout seul** : la pastille « Séries »
+de l'onglet *Backtest* réclame au-delà de **400 jours** — une série gagne une
+année civile par an, et l'on ne la relève qu'une fois l'année close et publiée.
+
+### La référence est l'ETF, pas l'indice
+
+Neuf poches portaient un nom d'indice (« MSCI World Index », « STOXX Europe 600
+NR »). **Les dix autres portaient une description** — « Obligations souveraines
+€ 1-3 ans », « €STR capitalisé », « Matières premières diversifiées, en euros ».
+Ce ne sont pas des noms de fiches : on ne les trouve dans aucun moteur de
+recherche.
+
+Pour celles-là, **la référence est désormais l'ETF de l'univers qui couvre la
+poche**. C'est plus honnête qu'un indice : sa performance est nette de ses
+propres frais, en euros, et c'est ce qu'on détient réellement.
+
+### ⚠ 2021 n'est pas sur justETF
+
+**Vérifié : une fiche justETF publie quatre années civiles closes, pas cinq.**
+En août 2026, elle donne 2022, 2023, 2024 et 2025 — et l'année en cours, qui ne
+compte pas. **2021 n'y est pas, pour aucun support.**
+
+Trois façons de s'en sortir, par ordre de préférence :
+
+1. **Attendre janvier 2027.** La fenêtre du backtest glisse alors sur
+   2022-2026, entièrement couverte par justETF. Le problème disparaît de
+   lui-même, et c'est la seule option qui ne coûte rien.
+2. **Relever 2021 sur la page de l'émetteur** (iShares, Amundi, Xtrackers) :
+   leurs fiches produit publient dix années civiles. Notez alors la source dans
+   la colonne prévue — deux sources pour une même ligne, c'est acceptable tant
+   que chacune est écrite.
+3. **Se contenter de quatre années** en retirant 2021 de
+   `ANNEES_HISTORIQUE`. Un backtest de quatre ans sourcés vaut mieux qu'un de
+   cinq dont un cinquième est inventé.
+
+### Ce qu'on relève, et où l'écrire
+
+Sur chaque fiche : **la performance par année civile**, nette de frais, **en
+euros**. C'est la convention de `js/data/historique.js`, et mélanger des séries
+brutes avec des séries nettes fausse la comparaison entre poches.
+
+La saisie se fait **dans l'application**, onglet *Backtest*, carte « Séries de
+performances » : une ligne par poche, une colonne par année, et une case
+**« sourcé »** à cocher une fois la ligne relevée. Un export CSV permet de
+préparer le travail dans un tableur.
+
+Après saisie, la **part sourcée** affichée en tête de l'onglet doit avoir monté.
+C'est le seul contrôle qui compte : si elle ne bouge pas, la poche relevée ne
+pèse rien dans l'allocation testée, ou la case n'a pas été cochée.
+
+Enfin, portez la date du jour dans **`HISTORIQUE_RELEVE`** (`js/data/historique.js`)
+et la source utilisée. C'est elle que la pastille surveille.
+
+### Les dix-neuf séries
+
+Les lignes marquées ✓ sont déjà sourcées.
+
+| Poche | Clé | Où relever |
+|---|---|---|
+| ✓ Actions Monde (développées) | `act-monde` | MSCI World Index (EUR), performances calendaires |
+| ✓ Obligations d'entreprises € Investment Grade | `obl-ig-euro` | Bloomberg Euro Aggregate Bond Index — proxy de la poche IG € |
+| Actions États-Unis | `act-us` | S&P 500 net EUR |
+| Actions Europe | `act-europe` | STOXX Europe 600 NR |
+| Actions Japon | `act-japon` | MSCI Japan EUR |
+| Actions Pays émergents | `act-emergents` | MSCI Emerging Markets EUR |
+| Actions Petites capitalisations | `act-small` | MSCI World Small Cap EUR |
+| Actions Technologie / Innovation | `act-tech` | MSCI World Information Technology EUR |
+| Actions Faible volatilité / Qualité | `act-min-vol` | MSCI World Minimum Volatility EUR |
+| Obligations souveraines € court terme | `obl-souv-euro-ct` | [`LU1650487413`](https://www.justetf.com/fr/etf-profile.html?isin=LU1650487413) — Amundi Euro Government Bond 1-3Y UCITS ETF Acc |
+| Obligations souveraines € moyen-long terme | `obl-souv-euro-lt` | [`IE00B4WXJJ64`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4WXJJ64) — iShares Core € Govt Bond UCITS ETF (Dist) |
+| Obligations à haut rendement | `obl-hy-euro` | [`IE00B66F4759`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B66F4759) — iShares € High Yield Corp Bond UCITS ETF EUR (Dist) |
+| Obligations indexées sur l'inflation | `obl-inflation` | [`IE00B0M62X26`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B0M62X26) — iShares € Inflation Linked Govt Bond UCITS ETF |
+| Dette émergente | `obl-emergente` | [`IE00B2NPKV68`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B2NPKV68) — iShares J.P. Morgan $ EM Bond UCITS ETF (Dist) |
+| Obligations globales couvertes en € | `obl-globale-hedge` | [`IE00BDBRDM35`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BDBRDM35) — iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc) |
+| Monétaire € / Liquidités | `mon-euro` | [`LU0290358497`](https://www.justetf.com/fr/etf-profile.html?isin=LU0290358497) — Xtrackers II EUR Overnight Rate Swap UCITS ETF 1C |
+| Or | `div-or` | [`IE00B4ND3602`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4ND3602) — iShares Physical Gold ETC |
+| Immobilier coté (SIIC / REITs) | `div-immobilier` | [`IE00B1FZS350`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B1FZS350) — iShares Developed Markets Property Yield UCITS ETF |
+| Matières premières diversifiées | `div-matieres` | [`IE00BDFL4P12`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BDFL4P12) — iShares Diversified Commodity Swap UCITS ETF |
+
+*Les liens ouvrent la fiche justETF du support de référence.*
+
 ## Sélectionner dans tout le catalogue européen
 
 Le champ « Univers de sélection », dans *Client & enveloppe*, choisit ce sur

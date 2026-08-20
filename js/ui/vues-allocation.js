@@ -566,6 +566,28 @@ function poidsTestes() {
   return Etat.backtest.allocation === 'strategique' ? alloc.strategique.poches : alloc.poches;
 }
 
+/* La fraîcheur des séries, à côté de leur part sourcée — même mécanique que
+   les trois pastilles de l'accueil : au-delà du seuil, la pastille écrit son
+   âge, et le nombre de jours EST l'alerte.
+
+   400 jours : une série gagne une année civile par an, et l'on ne la relève
+   qu'une fois l'année close et publiée. */
+function pastilleReleveSeries() {
+  if (typeof HISTORIQUE_RELEVE === 'undefined' || !HISTORIQUE_RELEVE.le) return '';
+  const SEUIL = 400;
+  const jours = Math.round((new Date(aujourdhuiISO()) - new Date(HISTORIQUE_RELEVE.le)) / 86400000);
+  const perime = jours > SEUIL;
+  return '<div class="fraicheur" style="margin:0">' +
+    '<span' + (perime ? ' class="perime"' : '') + ' title="' +
+      echapper('Séries relevées le ' + dateFr(HISTORIQUE_RELEVE.le) + ' sur ' +
+        (HISTORIQUE_RELEVE.source || 'source documentée') +
+        (perime ? ' — ' + jours + ' jours, au-delà des ' + SEUIL + ' attendus' : '')) + '">' +
+      '<i></i>Séries <b>' + echapper(dateFr(HISTORIQUE_RELEVE.le).replace(/ \d{4}$/, '')) + '</b>' +
+      ' <em>' + echapper(HISTORIQUE_RELEVE.source || '') + '</em>' +
+      (perime ? ' <strong class="fraicheur-age">· ' + jours + ' jours</strong>' : '') +
+    '</span></div>';
+}
+
 function rendreBacktest() {
   $('#bt-capital').value = Etat.backtest.capital;
   $('#bt-frais').value = Etat.backtest.frais;
@@ -603,7 +625,8 @@ function rendreBacktest() {
        yeux au moment où l'on lit les chiffres, pas trois écrans plus haut. */
     '<p class="intro rappel-local">Mesure le comportement du modèle, ne prédit rien. ' +
       '<button class="lien" data-aller="methode">Méthode &amp; limites</button></p>' +
-    '<h4 style="margin:0 0 8px">Part sourcée du backtest</h4>' +
+    '<div class="fil-entete" style="margin-top:0"><h4 style="margin:0">Part sourcée du backtest</h4>' +
+      pastilleReleveSeries() + '</div>' +
     (fiab.estime > 0
       ? '<div class="message ' + (fiab.estime > 40 ? 'erreur' : 'alerte') + '"><strong>' + pct(fiab.estime) +
         ' de l\'allocation testée repose encore sur des séries estimées, non vérifiées.</strong> ' +

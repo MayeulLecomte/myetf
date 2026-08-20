@@ -24,6 +24,21 @@
 
 const ANNEES_HISTORIQUE = [2021, 2022, 2023, 2024, 2025];
 
+/* ------------------------------------------------------------
+   QUAND LES SÉRIES ONT ÉTÉ RELEVÉES
+   ------------------------------------------------------------
+   UNE SEULE DATE, et non une par série : le relevé se fait d'un
+   bloc, en suivant la procédure du README. Dix-neuf dates à tenir
+   pour un geste unique finiraient par diverger sans que personne
+   ne s'en aperçoive.
+
+   Le seuil de péremption est de 400 jours, et non 365 : une série
+   s'enrichit d'une année CIVILE par an, et l'on ne la relève
+   qu'une fois la performance de l'année close et publiée — ce qui
+   prend quelques semaines de plus qu'un anniversaire.
+   ------------------------------------------------------------ */
+const HISTORIQUE_RELEVE = { le: '2026-08-20', source: 'justETF' };
+
 const HISTORIQUE_POCHES = {
 
   /* ---- Série sourcée : MSCI World net return, en EUR ---- */
