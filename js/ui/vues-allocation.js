@@ -695,9 +695,11 @@ function bandeauNonInvesti(sel) {
     });
 
   if (horsChamp && T('phrase.supports.residuel.pea') !== 'phrase.supports.residuel.pea' && montant) {
+    /* Le bouton vient APRÈS l'impossibilité, et dit lui-même qu'il ne la lèvera
+       pas : sans cette précision on le prendrait pour la solution. */
     return '<div class="message erreur"><strong>' +
       echapper(T('phrase.supports.residuel.pea', { montant: enEuros, pct: pct(sel.residuel) })) +
-      '</strong></div>';
+      '</strong>' + boutonCatalogue(T('supports.catalogue.inutile')) + '</div>';
   }
 
   if (T('phrase.supports.residuel') === 'phrase.supports.residuel' || !montant) {
@@ -708,7 +710,20 @@ function bandeauNonInvesti(sel) {
 
   return '<div class="message erreur"><strong>' +
     echapper(T('phrase.supports.residuel', { montant: enEuros, enveloppe: T('vue.client.nav') })) +
-    '</strong></div>';
+    '</strong>' + boutonCatalogue('') + '</div>';
+}
+
+/* Le bouton qui bascule la sélection sur le catalogue européen. Il n'apparaît
+   que si l'on n'y est pas déjà, et il DEMANDE avant : le catalogue est plus
+   large, mais aucune de ses lignes n'a été relue. C'est un échange, pas une
+   amélioration — et l'échange doit être dit avant, pas découvert après. */
+function boutonCatalogue(reserve) {
+  if (T('supports.catalogue.bouton') === 'supports.catalogue.bouton') return '';
+  if (Etat.filtres.sourceUnivers === 'catalogue') return '';
+  return (reserve ? '<p class="intro" style="font-size:12px;margin:10px 0 0">' +
+            echapper(reserve) + '</p>' : '') +
+    '<div class="barre-actions"><button class="bouton secondaire" id="btn-passer-catalogue">' +
+    echapper(T('supports.catalogue.bouton')) + '</button></div>';
 }
 
 function bandeauSupportsAVerifier(nombre) {

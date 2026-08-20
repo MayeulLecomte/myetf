@@ -1151,6 +1151,13 @@ une autre enveloppe, ou de l'épargne sécurisée à côté.
 Le mode conseiller garde sa phrase d'origine tant qu'elle n'a pas été
 arbitrée. Elle est pourtant trompeuse là-bas aussi.
 
+**Le bouton « Chercher dans le catalogue complet » vient APRÈS l'impossibilité,
+et dit lui-même qu'il ne la lèvera pas.** Sans cette réserve on le prendrait
+pour la solution — c'est le geste qu'il propose, pas le résultat. Il demande
+avant de basculer : le catalogue est plus large, mais aucune de ses lignes
+n'a été relue, et les supports retenus porteront « à vérifier ». C'est un
+échange, pas une amélioration, et l'échange se dit avant, jamais après.
+
 ## La valorisation de repli n'invente pas de cours
 
 Le catalogue porte une dernière clôture pour 4 525 supports. Elle ne sert de

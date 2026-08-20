@@ -414,6 +414,14 @@ const LIBELLES = {
       'matières premières — ces {pct} demandent une autre enveloppe (assurance-vie, compte-titres) ' +
       'ou restent en épargne sécurisée à côté.',
 
+        'supports.catalogue.bouton': 'Chercher dans le catalogue complet',
+    'supports.catalogue.confirmation':
+      'Le catalogue est plus large mais non vérifié ligne à ligne, contrairement à l\'univers de ' +
+      'travail. Les supports retenus porteront « à vérifier ».\n\nBasculer sur le catalogue complet ?',
+    'supports.catalogue.inutile':
+      'Le catalogue complet ne changerait presque rien ici : sur ses 4 530 supports, 35 sont ' +
+      'éligibles au PEA, et aucun n\'est obligataire, sur l\'or ou sur les matières premières.',
+
         'supports.adaptations.titre': 'Ce que l\'outil a dû adapter.',
     'supports.adaptations.ligne': '« {poche} » : pas d\'ETF dans la liste actuelle — {montant} restent à placer vous-même.',
 

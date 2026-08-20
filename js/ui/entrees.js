@@ -120,6 +120,19 @@ function brancher() {
     const choix = e.target.closest('[data-mode]');
     if (choix) { choisirMode(choix.dataset.mode); return; }
 
+    /* Bascule sur le catalogue depuis le bandeau « non placés ». Le même
+       geste que le sélecteur de source, avec la question posée avant. */
+    if (e.target.closest('#btn-passer-catalogue')) {
+      if (!confirm(T('supports.catalogue.confirmation'))) return;
+      Etat.filtres.sourceUnivers = 'catalogue';
+      sauver(true);
+      if (Catalogue.etat === 'absent') chargerCatalogue();
+      else rendre(vueCourante());
+      notifier('Sélection basculée sur le catalogue européen — les supports retenus porteront « à vérifier ».',
+               'info', { libelle: 'Ouvrir l\'univers', vue: 'univers' });
+      return;
+    }
+
     const aller = e.target.closest('[data-aller]');
     if (aller) { fermerFeuille(); afficher(aller.dataset.aller); return; }
 
