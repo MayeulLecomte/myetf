@@ -539,6 +539,20 @@ Une application qui s'ouvre sur « Aujourd'hui » doit s'ouvrir sur le HAUT
 d'Aujourd'hui : la position d'hier n'a aucun sens sur une vue dont le
 contenu a changé depuis.
 
+## L'écran d'entrée — le nom d'abord, le propos ensuite
+
+Le premier écran ne porte que le signe et le nom. La phrase qui dit ce que
+fait l'outil **commence sous le pli**, et c'est voulu : les deux se
+disputaient le même écran, et l'on ne lisait ni l'un ni l'autre.
+
+La hauteur retirée n'est pas 152 px — l'en-tête ET le ruban, comme pour
+l'ouverture d'une vue : **l'écran d'entrée n'a pas de ruban**. C'est la
+hauteur mesurée de l'en-tête qu'il faut retirer, `--h-entete`, et rien
+d'autre. Sur iPhone cela rend quatre-vingts pixels au premier écran.
+
+Les trois blocs du parcours — Profil, Allocation, Suivi — se lisent un à
+un : 34 px entre eux, et les dates de relevé se détachent d'eux.
+
 ## L'écran d'ouverture — trois secondes
 
 Le signe seul sur le fond de page, puis il s'efface en fondu. **Trois

@@ -2849,3 +2849,31 @@ table .illustration { display: none !important; }
   .etape { border-top: 1px solid #ccc; }
   .etape-chevron { display: none !important; }
 }
+
+/* ============================================================
+   L'ÉCRAN D'ENTRÉE — LE NOM TIENT L'ÉCRAN, LE PROPOS VIENT APRÈS
+   ------------------------------------------------------------
+   Le premier écran ne porte que le signe et le nom : on arrive
+   quelque part avant qu'on ne demande quoi que ce soit. La phrase
+   qui dit ce que fait l'outil pointait sous le pli, et les deux
+   se disputaient le même écran.
+   ============================================================ */
+
+/* La hauteur retirée était de 152 px — l'en-tête ET le ruban. L'écran
+   d'entrée n'a pas de ruban : c'est la hauteur mesurée de l'en-tête qu'il
+   faut retirer, et rien d'autre. Sur iPhone, cela rend quatre-vingts
+   pixels au premier écran. */
+.entree-ouverture {
+  min-height: calc(100dvh - var(--h-entete, 53px) - var(--marge-barre));
+  margin-bottom: 80px;
+}
+@media (min-width: 821px) { .entree-ouverture { margin-bottom: 104px; } }
+
+/* Les trois blocs du parcours se lisent un à un, pas en paquet. */
+.entree-propos { gap: 52px; }
+.entree-parcours { gap: 34px; }
+.entree-propos .fraicheur { gap: 10px; margin-top: 4px; }
+@media (min-width: 821px) {
+  .entree-propos { gap: 60px; }
+  .entree-parcours { gap: 32px; }
+}
