@@ -215,10 +215,16 @@ const ILLUSTRATIONS_VUES = {
      l'avertissement n'a plus lieu d'être. */
   allocation:   'camembert',
   portefeuille: 'fiches',
-  /* La balance : deux plateaux qu'on rééquilibre, c'est exactement un
-     arbitrage. Elle ouvrait « Mon allocation », où elle disait un dosage
-     et non un mouvement. */
-  arbitrages:   'balance',
+  /* LE SEUL DOUBLON ASSUMÉ DE LA TABLE. « Allocation cible » et
+     « Arbitrages » ouvrent sur le MÊME camembert, et c'est voulu : les
+     deux vues parlent de la même répartition, l'une comme cible, l'autre
+     comme chemin pour l'atteindre. Le dessin dit la continuité entre
+     elles.
+
+     La règle « une vue, un dessin » ci-dessus tient pour les quatorze
+     autres. Ne pas « réparer » celui-ci en croyant à un oubli — la
+     balance qu'il remplace reste dans `img/`, sans emploi. */
+  arbitrages:   'camembert',
   situation:    'port',
   revenus:      'revenus',
   journal:      'journal',
