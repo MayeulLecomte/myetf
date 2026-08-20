@@ -337,6 +337,13 @@ l'univers, la longue-vue au backtest ET à la méthode. Un dessin qui désigne
 deux écrans ne désigne plus rien — on arrive sur le second en croyant
 reconnaître le premier. Huit dessins ont été ajoutés pour lever les doublons.
 
+**UNE SEULE EXCEPTION, ET ELLE EST VOULUE.** « Allocation cible » et
+« Arbitrages proposés » ouvrent sur le MÊME camembert. Les deux vues parlent
+de la même répartition — l'une comme cible, l'autre comme chemin pour
+l'atteindre —, et le dessin dit cette continuité. Ne pas la « réparer » en
+croyant à un oubli. `balance` reste dans `img/` sans emploi, comme
+`arbitrages`.
+
 | Dessin | Vue |
 |---|---|
 | `logo` | en-tête (28 px) · écran de présentation · écran d'ouverture |
@@ -346,8 +353,7 @@ reconnaître le premier. Huit dessins ont été ajoutés pour lever les doublons
 | `profil` | Profil de risque |
 | `boussole` | Note du jour |
 | `contexte` | Contexte |
-| `repartition` | Allocation cible |
-| `balance` | Arbitrages |
+| `camembert` | Allocation cible · **Arbitrages proposés** |
 | `fiches` | Sélection des supports |
 | `port` | Situation |
 | `revenus` | Revenus & rachats |
@@ -361,15 +367,21 @@ La table qui fait foi est `ILLUSTRATIONS_VUES` dans `js/ui/socle.js`. Le
 bandeau « allocation stratégique seule » portait une boussole de 44 px : elle
 est retirée, l'allocation cible en montrait deux.
 
-**Une entorse assumée à « le bleu, seule couleur » :** la part remplie du
-camembert de l'allocation est **violette (`#6C63FF`)**, et non bleue. Le
-dessin est déjà prêt pour la bascule pastel à venir. Ne pas la « corriger »
-en croyant à un oubli.
+**`repartition.png` s'appelle désormais `camembert.png`** — même rôle, nom
+plus clair. Sa part remplie est violette comme l'accent ; ce fut un temps la
+seule entorse au « bleu, seule couleur », le dessin ayant pris l'avance sur
+la bascule pastel. Toute la feuille l'a rejoint depuis.
 
-**La balance a changé de vue.** Elle ouvrait l'allocation, où elle disait un
-dosage ; elle ouvre les arbitrages, où deux plateaux qu'on rééquilibre
-disent exactement le geste. `arbitrages.png` devient libre — le garder tant
-qu'aucune vue ne le réclame, ou le supprimer au prochain rangement.
+**Deux dessins sans emploi** : `balance.png`, qui ouvrait les arbitrages
+avant que le camembert ne les prenne, et `arbitrages.png`, libre depuis plus
+longtemps encore. Les garder tant qu'aucune vue ne les réclame, ou les
+supprimer au prochain rangement.
+
+**HUIT DESSINS SUR SEIZE PORTENT ENCORE LE BLEU `#2F6BFF`** de l'ancien
+registre : `enveloppe`, `contexte`, `profil`, `revenus`, `journal`,
+`rapport`, `univers`, `methode`. Les neuf autres ont été repeints en violet.
+Une vue sur deux ouvre donc sur un signe qui n'est plus celui de
+l'application — c'est le même défaut que le favicon, en plus visible.
 
 **Deux tailles, et deux seulement**, tenues par `TAILLE_ILLUSTRATION_TITRE`
 (38 px) et `TAILLE_ILLUSTRATION_BANNIERE` (180 px) dans `js/ui/socle.js`. Elles
