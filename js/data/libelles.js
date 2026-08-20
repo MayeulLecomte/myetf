@@ -477,7 +477,17 @@ const LIBELLES = {
     'arbitrages.motif.sur': 'au-dessus de la cible',
     'arbitrages.motif.sous': 'en dessous de la cible',
     'arbitrages.bouton.journal': 'Enregistrer cette revue dans mon suivi',
-    'arbitrages.bouton.appliquer': 'Simuler ces mouvements sur mon portefeuille',
+    'arbitrages.intro.titre': 'Voici les arbitrages proposés',
+    'arbitrages.intro.texte':
+      'Rien n\'est passé automatiquement : ces mouvements sont une proposition, à vous de les valider.',
+    'arbitrages.bouton.confirmer': 'Confirmer ces arbitrages',
+    'arbitrages.bouton.appliquer': 'Simuler sans confirmer',
+    'arbitrages.confirmation':
+      'Confirmer {n} mouvements ? Votre portefeuille sera mis à jour et la revue enregistrée.',
+    'arbitrages.confirme':
+      'Arbitrages du {date} confirmés — {n} mouvements appliqués.',
+    'arbitrages.annuler': 'Annuler cette confirmation',
+    'arbitrages.annule': 'Confirmation annulée — votre portefeuille est revenu à son état précédent.',
 
     /* ---------- La vue « Backtest » ---------- */
     'backtest.kpi.cumul': 'Gain total sur la période',

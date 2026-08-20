@@ -2996,3 +2996,9 @@ table .illustration { display: none !important; }
 }
 .repli-series[open] > summary::before { transform: rotate(90deg); }
 .repli-series > .carte { margin-top: 16px; }
+
+/* La phrase qui introduit les arbitrages : au-dessus de la carte, elle a
+   besoin de l'air d'un titre de section sans en prendre le poids. */
+.arbitrages-intro { margin: 0 0 6px; font-size: 20px; }
+@media (min-width: 821px) { .arbitrages-intro { font-size: 23px; } }
+.arbitrages-intro + .intro { margin: 0 0 20px; max-width: 62ch; }

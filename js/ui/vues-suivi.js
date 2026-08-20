@@ -127,6 +127,29 @@ function repartitionSituation(s) {
     '</tbody></table></div>';
 }
 
+/* ------------------------------------------------------------
+   L'ACCUSÉ DE RÉCEPTION D'UNE CONFIRMATION
+   ------------------------------------------------------------
+   « Vos arbitrages sont confirmés » doit se lire là où l'on
+   ATTERRIT, pas là d'où l'on vient : c'est ce qui ferme la boucle
+   proposer → confirmer → retrouver.
+
+   Le lien de retour rend la détention d'avant. Il ne vit que dans
+   cette page-ci : quitter la vue le consomme. Une annulation qui
+   traverse les jours n'est plus une annulation, c'est une seconde
+   vérité qui coexisterait avec la première.
+   ------------------------------------------------------------ */
+function bandeauConfirmation() {
+  if (typeof Confirmation === 'undefined' || !Confirmation.bandeau) return '';
+  return '<div class="message succes sans-impression"><strong>' +
+    echapper(Confirmation.bandeau) + '</strong>' +
+    (Confirmation.avant
+      ? ' <button class="lien" id="btn-annuler-confirmation">' +
+        echapper(T('arbitrages.annuler')) + '</button>'
+      : '') +
+    '</div>';
+}
+
 function rendreSituation() {
   const c = $('#situation-contenu');
 
@@ -143,6 +166,11 @@ function rendreSituation() {
   const montantAInvestir = aInvestir.reduce((a, l) => a + (Number(l.montant) || 0), 0);
 
   c.innerHTML =
+    /* Le bandeau de retour d'une confirmation d'arbitrages, avec son lien de
+       retour en arrière. Il ne survit ni au rechargement ni à un passage par
+       une autre vue : c'est un accusé de réception, pas un état du dossier. */
+    bandeauConfirmation() +
+
     /* Le portefeuille arrive ici dès que la sélection existe. Tant que rien
        n'est confirmé, le total affiché n'est pas une valeur détenue : il faut
        le dire au-dessus du tableau, pas en note de bas de page. */

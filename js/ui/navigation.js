@@ -297,6 +297,14 @@ function poserBarresParcours() {
 }
 
 function afficher(vue) {
+  /* L'accusé de confirmation ne vaut que sur la vue où l'on atterrit. En
+     partir le consomme : le lire une seconde fois, deux écrans plus loin,
+     laisserait croire qu'on peut encore revenir en arrière. */
+  if (typeof Confirmation !== 'undefined' && Confirmation.bandeau && vue !== 'situation') {
+    Confirmation.bandeau = null;
+    Confirmation.avant = null;
+  }
+
   $$('.vue').forEach(v => v.classList.remove('actif'));
   const cible = $('#vue-' + vue);
   if (cible) cible.classList.add('actif');

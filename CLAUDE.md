@@ -1003,6 +1003,33 @@ retraduit. Sans ce relais, la phrase resterait celle du mode d'ouverture de
 l'application — un défaut qui ne se voit qu'en basculant de mode, donc jamais
 pendant qu'on écrit la phrase.
 
+## Confirmer des arbitrages : deux métiers, deux gestes
+
+**Le conseiller garde ses deux boutons séparés.** Il journalise souvent sans
+appliquer, parce qu'il attend l'exécution réelle chez l'assureur : fondre les
+deux lui ferait perdre une distinction qu'il utilise tous les jours.
+
+**Celui qui gère son propre argent n'a pas cette attente.** Un seul bouton —
+« Confirmer ces arbitrages » — fait les trois gestes : journal, portefeuille,
+et redirection vers le suivi. La simulation reste disponible, au second rang,
+sous « Simuler sans confirmer ». C'est la boucle que le testeur demandait :
+**proposer → confirmer → retrouver.**
+
+**C'est le seul endroit de l'application qui change DEUX choses à la fois** —
+la détention et le journal. D'où la question, posée avec le nombre de
+mouvements, et d'où le retour en arrière : le journal garde la trace, mais la
+détention d'avant serait perdue. Elle est mise de côté, et le bandeau
+d'arrivée porte le lien qui la rend.
+
+**Cette mémoire ne survit ni au rechargement, ni à un passage par une autre
+vue**, et c'est voulu : une annulation qui traverse les jours n'est plus une
+annulation, c'est une seconde vérité qui coexiste avec la première. Le
+bandeau se lit là où l'on atterrit, une fois.
+
+`appliquerOrdres()` sert aux deux chemins — simuler et confirmer. Deux copies
+du même calcul finiraient par diverger, et c'est le portefeuille détenu
+qu'elles décriraient de deux façons.
+
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
 Section « Lecture du contexte de marché ». Sans contexte saisi,

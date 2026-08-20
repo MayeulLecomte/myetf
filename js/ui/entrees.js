@@ -120,6 +120,22 @@ function brancher() {
     const choix = e.target.closest('[data-mode]');
     if (choix) { choisirMode(choix.dataset.mode); return; }
 
+    /* Le retour en arrière d'une confirmation d'arbitrages : la détention
+       d'avant est rendue telle quelle, et l'entrée de journal retirée. */
+    if (e.target.closest('#btn-annuler-confirmation')) {
+      if (Confirmation.avant) {
+        Etat.detention = Confirmation.avant.detention;
+        Etat.apport = Confirmation.avant.apport;
+        Etat.journal = Etat.journal.slice(Etat.journal.length - Confirmation.avant.journal);
+        Confirmation.avant = null;
+        Confirmation.bandeau = null;
+        sauver(true);
+        notifier(T('arbitrages.annule'), 'info');
+        rendre('situation');
+      }
+      return;
+    }
+
     /* Bascule sur le catalogue depuis le bandeau « non placés ». Le même
        geste que le sélecteur de source, avec la question posée avant. */
     if (e.target.closest('#btn-passer-catalogue')) {

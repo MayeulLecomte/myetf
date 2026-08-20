@@ -535,7 +535,13 @@ function rendreArbitrages() {
       ? '<div class="message succes"><strong>Aucun arbitrage nécessaire.</strong> Tous les écarts constatés sont ' +
         'inférieurs au seuil de déclenchement (' + euro(analyse.seuilMontant) + ' ou ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) +
         ' de l\'encours). Arbitrer coûterait plus qu\'il ne rapporterait.</div>'
-      : '<div class="carte"><h3>' + echapper(mot('arbitrages.ordres.titre', 'Ordres à passer')) + '</h3>' +
+      : (T('arbitrages.intro.titre') === 'arbitrages.intro.titre' ? ''
+          /* Au-DESSUS de la carte, et pas dedans : le titre de carte nomme ce
+             qu'on lit, cette phrase-ci dit ce qu'on en fait. Les deux ne
+             disent pas la même chose et ne se remplacent pas. */
+          : '<h3 class="arbitrages-intro">' + echapper(T('arbitrages.intro.titre')) + '</h3>' +
+            '<p class="intro">' + echapper(T('arbitrages.intro.texte')) + '</p>') +
+        '<div class="carte"><h3>' + echapper(mot('arbitrages.ordres.titre', 'Ordres à passer')) + '</h3>' +
         '<div class="tableau-defilant"><table><thead><tr>' +
         '<th>Sens</th><th>Support</th><th>ISIN</th><th class="num">Montant</th><th class="num">% encours</th>' +
         (analyse.fiscalite.taux ? '<th class="num">PV réalisée</th><th class="num">Impôt estimé</th>' : '') +
@@ -561,9 +567,21 @@ function rendreArbitrages() {
         '</div>' +
       '</div>') +
 
+    /* DEUX MÉTIERS, DEUX GESTES.
+       Le conseiller garde ses deux boutons séparés : il journalise souvent
+       sans appliquer, parce qu'il attend l'exécution réelle chez l'assureur.
+       Fondre les deux lui ferait perdre une distinction qu'il utilise.
+
+       Celui qui gère son propre argent n'a pas cette attente : il décide,
+       il passe ses ordres, et il veut les retrouver dans son suivi. Un seul
+       bouton fait donc les trois gestes — journal, portefeuille, redirection
+       — et la simulation reste disponible, au second rang. */
     '<div class="barre-actions sans-impression">' +
-      '<button class="bouton" id="btn-journaliser">' +
-        echapper(mot('arbitrages.bouton.journal', 'Valider la revue et l\'inscrire au journal')) + '</button>' +
+      (T('arbitrages.bouton.confirmer') === 'arbitrages.bouton.confirmer'
+        ? '<button class="bouton" id="btn-journaliser">' +
+            echapper(mot('arbitrages.bouton.journal', 'Valider la revue et l\'inscrire au journal')) + '</button>'
+        : '<button class="bouton" id="btn-confirmer">' +
+            echapper(T('arbitrages.bouton.confirmer')) + '</button>') +
       '<button class="bouton secondaire" id="btn-appliquer">' +
         echapper(mot('arbitrages.bouton.appliquer', 'Appliquer les ordres à la détention saisie')) + '</button>' +
     '</div>';
@@ -580,15 +598,46 @@ function rendreArbitrages() {
     rendre('arbitrages');
   };
 
+  /* ------------------------------------------------------------
+     CONFIRMER : TROIS GESTES, UNE QUESTION, ET UN RETOUR EN ARRIÈRE
+     ------------------------------------------------------------
+     C'est le seul endroit de l'application qui change DEUX choses à la
+     fois — le portefeuille détenu et le journal. Un clic mal placé
+     réécrirait la détention sans qu'on l'ait voulu : d'où la question,
+     posée avec le nombre de mouvements.
+
+     Et d'où le retour en arrière. Le journal garde la trace de ce qui a
+     été confirmé, mais la détention D'AVANT est perdue : elle est donc
+     mise de côté, et le bandeau d'arrivée porte le lien qui la rend.
+     Cette mémoire ne survit pas au rechargement, et c'est voulu — une
+     annulation qui traverse les jours n'est plus une annulation, c'est
+     une seconde vérité. */
+  const bc = $('#btn-confirmer');
+  if (bc) bc.onclick = () => {
+    const n = analyse.ordres.length;
+    if (!confirm(T('arbitrages.confirmation', { n }))) return;
+
+    Confirmation.avant = {
+      detention: JSON.parse(JSON.stringify(Etat.detention)),
+      apport: Etat.apport,
+      journal: Etat.journal.length
+    };
+
+    Etat.journal.unshift(MoteurArbitrage.entreeJournal(analyse, {
+      dateISO: new Date().toISOString(),
+      profilNom: r.profil.nom,
+      enveloppe: Etat.identite.enveloppe || 'AV'
+    }, m));
+    appliquerOrdres(analyse);
+    sauver(true);
+
+    Confirmation.bandeau = T('arbitrages.confirme', { date: dateFr(), n });
+    afficher('situation');
+  };
+
   const ba = $('#btn-appliquer');
   if (ba) ba.onclick = () => {
-    analyse.ordres.forEach(o => {
-      let ligne = Etat.detention.find(l => l.isin === o.isin);
-      if (!ligne) { ligne = { isin: o.isin, libelle: o.libelle, montant: 0, pvLatente: 0 }; Etat.detention.push(ligne); }
-      ligne.montant = Math.max(0, (Number(ligne.montant) || 0) + (o.sens === 'Achat' ? o.montant : -o.montant));
-    });
-    Etat.detention = Etat.detention.filter(l => Number(l.montant) > 0);
-    Etat.apport = 0;
+    appliquerOrdres(analyse);
     sauver(true);
     notifier('Ordres appliqués à la détention.');
     rendre('arbitrages');
@@ -657,6 +706,23 @@ function poidsTestes() {
    « Surpondération de 4,2 pts sur Actions Monde ». Le chiffre est juste et le
    mot est du métier. En particulier, seul le mot change — le reste de la
    phrase, poche et écart, dit déjà tout. */
+/* Ce que « confirmer » a mis de côté, le temps qu'on puisse revenir dessus.
+   Vit en mémoire seulement : une annulation qui traverse un rechargement
+   n'est plus une annulation. */
+const Confirmation = { avant: null, bandeau: null };
+
+/* Les ordres portés sur la détention. Le même code sert à simuler et à
+   confirmer — deux chemins vers un seul calcul, sinon ils divergent. */
+function appliquerOrdres(analyse) {
+  analyse.ordres.forEach(o => {
+    let ligne = Etat.detention.find(l => l.isin === o.isin);
+    if (!ligne) { ligne = { isin: o.isin, libelle: o.libelle, montant: 0, pvLatente: 0 }; Etat.detention.push(ligne); }
+    ligne.montant = Math.max(0, (Number(ligne.montant) || 0) + (o.sens === 'Achat' ? o.montant : -o.montant));
+  });
+  Etat.detention = Etat.detention.filter(l => Number(l.montant) > 0);
+  Etat.apport = 0;
+}
+
 function motifLisible(motif) {
   if (T('arbitrages.motif.sur') === 'arbitrages.motif.sur') return motif;
   return String(motif || '')
