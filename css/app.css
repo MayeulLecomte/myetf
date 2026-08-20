@@ -3728,3 +3728,16 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
     grid-column: 1 / -1;
   }
 }
+
+/* ---------- UN TITRE SURLIGNÉ A BESOIN D'INTERLIGNE ----------
+   `h2` tient à 1,08 d'interligne : serré, c'est ce qu'on veut d'un
+   titre. Mais le surligneur est une PILULE, pas un trait : elle
+   déborde du texte de son rembourrage vertical, et sur un titre qui
+   se replie — « Situation des / placements », « Revenus & rachats /
+   programmés » — elle vient toucher la ligne du dessus.
+
+   L'interligne monte donc, mais SEULEMENT sur les titres qui portent
+   un surligneur : `:has()` suit le contenu au lieu d'imposer à tous
+   les titres l'air dont un seul a besoin. Un titre d'une seule ligne
+   ne s'en aperçoit pas — l'interligne ne se voit qu'entre deux. */
+h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }

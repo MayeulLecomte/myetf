@@ -316,6 +316,14 @@ la palette du graphique ferait croire à une cinquième classe.
 
 **Le papier ne le porte pas** : à l'impression il redevient un soulignement.
 
+**Un titre surligné a besoin d'interligne.** `h2` tient à 1,08 — serré, c'est
+ce qu'on veut d'un titre. Mais le surligneur est une PILULE et non un trait :
+elle déborde du texte de son remboursage vertical, et sur un titre qui se
+replie — « Situation des / placements » — elle vient toucher la ligne du
+dessus. L'interligne monte à 1,34, mais **seulement sur les titres qui en
+portent un** (`:has(.souligne)`) : inutile d'imposer à tous les titres l'air
+dont un seul a besoin.
+
 ### Le trait sous un mot du titre — remplacé
 
 Le **dernier** mot de chaque titre porte un trait bleu, posé par
