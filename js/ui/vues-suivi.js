@@ -232,9 +232,13 @@ function rendreSituation() {
 
     '<div class="grille quatre">' +
       kpi(euro(s.total), 'Valeur du portefeuille', dateFr(date)) +
+      /* Un décompte de ce que porte le dossier, pas un résultat de
+         calcul. Les trois autres — valeur, plus-value, couverture —
+         sont produites, et restent blanches. */
       kpi(String(s.lignes.length - aInvestir.length), 'Lignes détenues',
         aInvestir.length ? aInvestir.length + ' encore à investir'
-                         : enQuantites + ' suivie(s) en quantités') +
+                         : enQuantites + ' suivie(s) en quantités',
+        '', 'menthe') +
       kpi(euro(s.pvLatente), 'Plus-value latente', 'saisie dans le portefeuille') +
       kpi(s.fiable ? 'Complète' : 'Partielle', 'Couverture des cours',
         s.fiable ? 'toutes les lignes valorisées à la date'
@@ -444,7 +448,11 @@ function rendreRevenusContenuSeul() {
 
   c.innerHTML =
     '<div class="grille quatre">' +
-      kpi(euro(plan.besoinParEcheance), 'Revenu par échéance', plan.frequence.libelle.toLowerCase() + ' · ' + euro(plan.besoinAnnuel) + ' / an') +
+      /* Le besoin est saisi, pas calculé — c'est la donnée d'entrée de
+         toute la vue. Les trois autres en découlent. */
+      kpi(euro(plan.besoinParEcheance), 'Revenu par échéance',
+          plan.frequence.libelle.toLowerCase() + ' · ' + euro(plan.besoinAnnuel) + ' / an',
+          '', 'corail') +
       kpi(pct(plan.tauxRetrait, 2), 'Taux de retrait brut', 'soutenable jusqu\'à ' + pct(plan.projection.tauxSoutenable, 2)) +
       kpi(euro(plan.fiscalite.total), 'Fiscalité annuelle', 'soit ' + pct(plan.fiscalite.tauxEffectif) + ' du montant retiré') +
       kpi(plan.projection.epuisement ? 'An ' + plan.projection.epuisement : euro(plan.projection.capital30ans),

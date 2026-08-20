@@ -388,9 +388,17 @@ function aide(cle) {
 
 /**
  * @param {string} [cle] clé d'infobulle attachée au libellé
+ * @param {string} [teinte] « menthe » | « corail » | « jaune » — une tuile
+ *   DÉSIGNÉE. Réservée aux chiffres d'identité du dossier : ce que le
+ *   conseiller a saisi, ou ce qui décrit le dossier. JAMAIS sur un chiffre
+ *   de résultat — performance, valorisation, écart, projection —, où une
+ *   couleur se lirait comme un jugement. Deux par vue au maximum, aucune
+ *   sur une vue qui porte le camembert. Voir CLAUDE.md, « Les tuiles
+ *   pastel ».
  */
-function kpi(valeur, libelle, detail, cle) {
-  return '<div class="carte kpi"><div class="valeur">' + echapper(valeur) + '</div>' +
+function kpi(valeur, libelle, detail, cle, teinte) {
+  return '<div class="carte kpi' + (teinte ? ' kpi-' + teinte : '') + '">' +
+    '<div class="valeur">' + echapper(valeur) + '</div>' +
     '<div class="libelle">' + echapper(libelle) + (cle ? ' ' + aide(cle) : '') + '</div>' +
     (detail ? '<div class="detail">' + echapper(detail) + '</div>' : '') + '</div>';
 }

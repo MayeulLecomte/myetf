@@ -187,7 +187,35 @@ ni ombre. Une tuile désignée y prend son pastel **sur le trait**, à la place
 du bleu clair. Le fond pastel reste la forme téléphone, où la boîte pleine
 existe. La règle du contour ne se troue pas pour la couleur.
 
-**Le papier les ignore**, comme le reste du registre.
+**Le papier les ignore**, comme le reste du registre — le bloc
+`@media print` remettait déjà `.kpi` au blanc, il n'a pas eu à changer.
+
+### Les cinq tuiles, et pourquoi ce sont celles-là
+
+| Vue | Tuile | Teinte | Pourquoi |
+|---|---|---|---|
+| Sélection des supports | **Montant investi** | menthe | saisi |
+| | **Supports retenus** — « X sur Y éligibles » | corail | décrit le dossier |
+| Aujourd'hui | **Dernière revue** | menthe | un repère, pas un calcul |
+| Situation | **Lignes détenues** | menthe | un décompte |
+| Revenus | **Revenu par échéance** | corail | saisi |
+
+Ce qui reste blanc, et l'est délibérément : encours, dérive, valeur du
+portefeuille, plus-value latente, couverture des cours, frais, coût annuel,
+rendement, volatilité, scénario dominant, et **les quatre indicateurs
+d'Arbitrages comme les quatre de Backtest** — deux vues où tout est produit
+par un moteur, donc deux vues sans une seule tuile colorée.
+
+« Aujourd'hui » n'en garde qu'une sur quatre : deux, c'était la moitié de la
+rangée, et la parcimonie l'a emporté.
+
+### Ce que la pose a coûté au balisage
+
+**+110 octets**, de `f0eb99d0` · 1 369 400 à `77d6df58` · 1 369 510, relevés
+le même jour. Dix insertions d'un nom de classe de onze caractères : cinq
+tuiles vues sur un dossier complet dans les deux modes, et rien d'autre. Un
+écart qui se compte exactement est un écart qui se relit ; c'est tout ce
+qu'on demande à l'empreinte.
 
 ### Le verre, et seulement à trois endroits
 

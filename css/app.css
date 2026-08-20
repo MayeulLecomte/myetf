@@ -3094,6 +3094,60 @@ input, select, textarea { border-radius: var(--r-s); border-color: var(--ligne);
    à `skip-ink` : seul lui contourne les jambages du p, du g et du q. */
 .souligne { text-decoration-color: var(--bleu-clair); }
 
+/* ---------- LES TUILES DÉSIGNÉES ----------
+   Un fond pastel DÉSIGNE une tuile, il ne la décore pas. Cinq tuiles
+   dans toute l'application, sur quatre vues, et jamais plus de deux
+   par vue : au-delà, plus rien ne ressort, et une rangée entièrement
+   peinte vaut une rangée entièrement blanche.
+
+   Elles ne portent que des chiffres d'IDENTITÉ du dossier — ce qui a
+   été saisi, ou ce qui décrit le dossier. Jamais un résultat :
+   performance, valorisation, écart, projection restent sur carte
+   blanche. C'est le prolongement de la règle des douze pour cent —
+   une couleur posée sur un résultat se lit comme un jugement sur ce
+   résultat, et le nombre, lui, reste à l'encre dans tous les cas.
+
+   LE PÂLE, PAS LE FRANC. La teinte franche appartient au graphique,
+   où elle nomme une classe d'actifs. Une tuile au menthe franc à côté
+   d'un camembert dirait « obligations ». C'est aussi pourquoi
+   « Allocation cible » — la vue du camembert — n'en porte aucune. */
+.kpi-menthe { background: var(--menthe-pale); }
+.kpi-corail { background: var(--corail-pale); }
+.kpi-jaune  { background: var(--jaune-pale); }
+
+/* Sur écran large, la couleur passe AU TRAIT. Les tuiles d'une
+   `grille.quatre` y sont des bulles au seul contour — ni fond, ni
+   ombre —, et cette règle ne se troue pas pour la couleur : la teinte
+   prend la place du bleu clair sur le contour, le fond reste
+   transparent. Le fond pastel est la forme téléphone, là où la boîte
+   pleine existe.
+
+   Une `grille.trois` garde sa carte pleine à toutes les largeurs :
+   « Sélection des supports » y bascule en mode particulier, et ses
+   deux tuiles y sont donc pleines sur ordinateur. Deux grilles, deux
+   règles — l'asymétrie est assumée. */
+@media (min-width: 821px) {
+  .grille.quatre > .kpi-menthe,
+  .grille.quatre > .kpi-corail,
+  .grille.quatre > .kpi-jaune { background: transparent; }
+
+  .grille.quatre > .kpi-menthe { border-color: var(--menthe); }
+  .grille.quatre > .kpi-corail { border-color: var(--corail); }
+  .grille.quatre > .kpi-jaune  { border-color: var(--jaune); }
+
+  /* Au survol, le pâle vient en fond et le trait garde sa teinte —
+     là où une tuile ordinaire passe au bleu. */
+  .grille.quatre > .kpi-menthe:hover {
+    background: var(--menthe-pale); border-color: var(--menthe);
+  }
+  .grille.quatre > .kpi-corail:hover {
+    background: var(--corail-pale); border-color: var(--corail);
+  }
+  .grille.quatre > .kpi-jaune:hover {
+    background: var(--jaune-pale); border-color: var(--jaune);
+  }
+}
+
 /* ---------- Ce qui NE change PAS ----------
    Les performances restent à l'encre : douze pour cent d'hommes
    distinguent mal le vert du rouge, et le signe dit déjà le sens. Les

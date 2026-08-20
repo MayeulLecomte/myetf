@@ -307,7 +307,11 @@ function rendrePortefeuille() {
 
   c.innerHTML =
     '<div class="grille ' + (fraisEnEuros ? 'trois' : 'quatre') + '">' +
-      kpi(String(sel.nbSupports), 'Supports retenus', 'sur ' + sel.universEligible + ' éligibles') +
+      /* Deux tuiles désignées, et deux seulement : ce qu'on a mis, et
+         dans quoi on a puisé. Les deux autres — frais, coût annuel —
+         sont des résultats, et restent blanches. */
+      kpi(String(sel.nbSupports), 'Supports retenus', 'sur ' + sel.universEligible + ' éligibles',
+          '', 'corail') +
       /* Un taux de frais ne se sent pas ; un montant annuel, si. Le calcul est
          celui de la tuile « Coût annuel » juste à côté — les deux disent la
          même chose, l'une en taux, l'autre en euros. */
@@ -316,7 +320,8 @@ function rendrePortefeuille() {
               T('supports.kpi.frais.detail',
                 { montant: euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100) }))
         : kpi(pct(sel.terMoyen, 2), 'Frais courants moyens', 'pondérés par les encours cibles')) +
-      kpi(euro(Number(Etat.identite.montant) || 0), 'Montant investi', libelleEnveloppe()) +
+      kpi(euro(Number(Etat.identite.montant) || 0), 'Montant investi', libelleEnveloppe(),
+          '', 'menthe') +
       (fraisEnEuros ? '' :
         kpi(euro((Number(Etat.identite.montant) || 0) * sel.terMoyen / 100), 'Coût annuel des supports',
             'hors frais de contrat')) +

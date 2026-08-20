@@ -542,8 +542,12 @@ function rendreAccueil() {
       kpi(euro(analyse.total), 'Encours', r.profil.nom) +
       kpi(pct(derive), 'Dérive maximale', 'seuil ' + euro(analyse.seuilMontant), 'derive') +
       kpi(String(sel.nbSupports), 'Supports cibles', pct(sel.terMoyen, 2) + ' de frais moyens') +
+      /* La seule désignée de l'accueil. « Encours » est une valorisation
+         et « Dérive maximale » un écart : deux résultats, deux cartes
+         blanches. Une tuile colorée sur quatre, c'est la parcimonie. */
       kpi(derniere ? dateFr(derniere) : '—', 'Dernière revue',
-        derniere ? Etat.journal.length + ' revue(s) au journal' : 'aucune revue enregistrée') +
+        derniere ? Etat.journal.length + ' revue(s) au journal' : 'aucune revue enregistrée',
+        '', 'menthe') +
     '</div>' +
 
     (rien ? '' :
