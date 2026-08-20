@@ -453,6 +453,9 @@ de **gauche (40 %), collante**, et le premier contenu utile est visible
 centrée, « faites défiler » conservé. Deux colonnes de 180 px ne sont pas une
 mise en page.
 
+**Neuf vues** y sont : Client & enveloppe, Profil de risque, Note du jour,
+Contexte, Allocation cible, Revenus & rachats, Situation, Journal, Méthode.
+
 La liste est `VUES_DEUX_COLONNES` dans `js/ui/socle.js`. Trois familles en
 sont exclues, et pour trois raisons différentes :
 
@@ -519,6 +522,30 @@ mordent toujours.
 
 En zigzag, l'ouverture prend `grid-row: 1` et non `1 / -1` — la zone à deux
 colonnes se limite à la première ligne, le zigzag court dessous.
+
+### Les conteneurs s'effacent, et tout est forcé en colonne 2
+
+Le contenu d'une vue vit dans un `<div>` rendu à l'exécution, souvent dans
+une `grille deux` à l'intérieur. Ces conteneurs n'occupent qu'UNE cellule :
+tout ce qu'ils portent se tasse dans les 60 %. `display: contents` les efface
+en tant que boîtes — leurs enfants deviennent les cellules de la grille de la
+vue — sans les retirer du DOM ni casser les sélecteurs qui les traversent.
+
+**Il faut alors forcer explicitement `grid-column: 2`.** Sans cela
+l'auto-placement remplit les cellules libres au fur et à mesure : le premier
+bloc va à droite, le deuxième retombe à GAUCHE sous l'ouverture. Ce n'est pas
+une grille à deux colonnes, c'est un damier.
+
+### Deux choses s'étalent sur toute la largeur
+
+**Les tableaux**, par `:has(.tableau-defilant)` — la règle suit le contenu au
+lieu d'une liste de cartes à tenir à jour. Un tableau de treize colonnes
+serré dans 60 % n'est plus un tableau.
+
+**Les rangées d'indicateurs** — `grille.quatre` et `grille.trois`. Quatre
+tuiles dans 60 % font des colonnes de cent dix pixels, où « Dynamique » est
+coupé en deux. C'est une bande de tableau de bord : elle se lit en largeur ou
+pas du tout.
 
 ### L'ouverture occupe toutes les lignes de sa colonne
 

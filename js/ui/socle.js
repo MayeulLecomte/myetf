@@ -216,7 +216,8 @@ function illustration(nom, taille) {
    Sous 900 px, la classe ne fait rien : l'empilement reste celui d'avant. */
 const VUES_DEUX_COLONNES = [
   'client', 'profil',
-  'note', 'macro', 'allocation'
+  'note', 'macro', 'allocation',
+  'revenus', 'situation', 'journal', 'methode'
 ];
 
 /* CELLES QUI, EN PLUS, DÉROULENT LEUR SUITE EN ZIGZAG.
