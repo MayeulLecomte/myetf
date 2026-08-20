@@ -3420,3 +3420,64 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
   .grille > .carte { margin-bottom: 0; }
 }
 .grille > .carte { margin-bottom: 0; }
+
+/* ============================================================
+   (g) LA PASSE VUE PAR VUE — CE QUE LE BALAYAGE A TROUVÉ
+   ------------------------------------------------------------
+   Quinze vues relues après la vue témoin. Trois familles de
+   restes du registre « trait bleu », et rien d'autre.
+   ============================================================ */
+
+/* ---------- Les liens perdent leur soulignement permanent ----------
+   Le point 7 le demandait pour les tableaux ; le reste de
+   l'application posait la même question. Un soulignement permanent
+   sur chaque lien d'une liste fait un peigne, et le violet suffit
+   à dire « ceci se clique ». Le trait revient au survol, où il
+   désigne UN lien et non la colonne entière. */
+.lien, .lien-support {
+  color: var(--bleu); text-decoration: none; font-weight: 600;
+}
+.lien:hover, .lien:focus-visible,
+.lien-support:hover, .lien-support:focus-visible {
+  text-decoration: underline; text-decoration-color: currentColor;
+  text-underline-offset: 3px; text-decoration-thickness: 1.5px;
+}
+/* Dans un encart, le lien porte le geste : il est en gras plein. */
+.message .lien, .message a { font-weight: 700; color: var(--bleu-encre); }
+
+/* ---------- Les scénarios perdent leur rail ----------
+   Un filet de 3 px à gauche était le vocabulaire du registre
+   précédent, où les cartes se détachaient par un trait. Ici elles
+   se détachent par une ombre : le rail fait un signe de plus qui
+   ne dit rien que la carte ne dise déjà.
+
+   Le `!important` d'origine oblige à surcharger avec le même. */
+.scenario {
+  border: 0 !important;
+  border-radius: var(--r-m);
+  box-shadow: var(--ombre-1);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+
+/* ---------- L'avertissement devient chaud lui aussi ----------
+   `.info` est passé au crème ; `.alerte` restait blanc cerclé de
+   violet, c'est-à-dire exactement l'habillage de ce qu'on peut
+   cliquer. Deux encarts d'alerte empilés se lisaient comme deux
+   boutons géants.
+
+   Il garde son crème et prend un filet JAUNE : même famille que
+   l'information, un cran au-dessus. Le jaune ne nomme aucune classe
+   d'actifs — il ne dit que « lis ceci ». */
+.message.alerte, .message.erreur {
+  background: var(--creme);
+  border: 1.5px solid var(--jaune);
+  border-radius: 20px;
+  padding: 16px 20px;
+}
+
+/* Un bouton posé DANS un encart ne reprend pas le fond de l'encart :
+   sur du crème, un secondaire crème disparaît. */
+.message .bouton.secondaire, .message button.bouton.secondaire {
+  background: var(--surface); border: 1px solid var(--ligne);
+}

@@ -217,6 +217,48 @@ tuiles vues sur un dossier complet dans les deux modes, et rien d'autre. Un
 écart qui se compte exactement est un écart qui se relit ; c'est tout ce
 qu'on demande à l'empreinte.
 
+### La passe vue par vue — ce qui a été aligné sur la maquette
+
+Seize vues relues. La maquette fait foi, **dans la limite de deux règles qui
+ne bougent pas** : les performances restent à l'encre, et la navigation reste
+la barre basse et le ruban — **pas de colonne de gauche**, quoi qu'en montre
+la maquette.
+
+| | |
+|---|---|
+| Surligneur | jaune `#FFD166`, pilule, sur le dernier mot du titre |
+| Tuiles | étiquette 11 px caps **au-dessus**, chiffre 34 px/800, sous-ligne 12 px |
+| Anneau | 208/30, chiffre de la classe dominante au centre, légende à filets |
+| Badges | pilule pastel pleine, petites capitales, sans filet |
+| Encarts | `.info` crème sans filet · `.alerte` crème **à filet jaune** |
+| Boutons | 14/24, ombre teintée du violet du bouton — jamais grise |
+| Liens | violets, sans soulignement permanent, partout et pas seulement en tableau |
+| Densité | 22 px entre blocs, `gap` 20, cartes 22/24 |
+
+### LE ZIGZAG EST TOMBÉ, ET LA BULLE AU CONTOUR AVEC LUI
+
+Quatre tuiles réparties en quatre lignes alternées à 112/170 px occupaient un
+écran entier pour quatre nombres. **C'était l'obstacle réel** entre le site et
+la maquette, bien plus que la palette. Serrées en rang, les tuiles se
+comparent — ce que le zigzag interdisait précisément.
+
+La bulle au seul contour n'existait que parce que « quatre nombres espacés de
+cent pixels flottaient sans se rattacher à rien ». Sans zigzag, plus de
+flottement : **les tuiles redeviennent des cartes**, blanches par défaut,
+pastel pleines quand elles sont désignées, **à toutes les largeurs**.
+
+Tombe avec elles l'aération à **100 px** entre blocs, `gap: 44px` et cartes à
+`30/32` sur écran large. C'était elle, le « site qui flotte ». La feuille la
+remplace **avec les mêmes sélecteurs** : ceux d'origine valent (0,3,1), une
+règle de classe ne les atteindrait jamais.
+
+### Une différence assumée avec la maquette
+
+Elle place « Montant investi » et « Sélection parmi » sur **Allocation
+cible**, à côté du camembert. Elles vivent sur **Sélection des supports**, où
+elles ont été arrêtées. « Allocation cible » ne porte donc aucune tuile
+colorée — le camembert y possède déjà les quatre pastels.
+
 ### Le verre, et seulement à trois endroits
 
 **La barre basse, le ruban d'onglets et la feuille** sont translucides :
