@@ -467,9 +467,18 @@ function rendreArbitrages() {
   c.innerHTML =
     '<div class="grille quatre">' +
       kpi(String(analyse.ordres.length), 'Mouvements proposés', 'seuil de déclenchement ' + euro(analyse.seuilMontant)) +
-      kpi(pct(analyse.rotation), 'Rotation du portefeuille', 'part de l\'encours arbitrée', 'rotation') +
-      kpi(euro(analyse.fiscalite.impotEstime), 'Fiscalité estimée', analyse.fiscalite.taux ? 'PFU 30 %' : 'enveloppe non imposable') +
-      kpi(euro(analyse.total), 'Encours après opération', 'dont apport ' + euro(analyse.apport)) +
+      kpi(pct(analyse.rotation), mot('arbitrages.kpi.rotation', 'Rotation du portefeuille'),
+          mot('arbitrages.kpi.rotation.detail', 'part de l\'encours arbitrée'), 'rotation') +
+      /* « Enveloppe non imposable » est juste, et ne dit pas POURQUOI. Le
+         détail particulier explique le mécanisme : ce n'est pas l'arbitrage
+         qui déclenche l'impôt, c'est le retrait. */
+      kpi(euro(analyse.fiscalite.impotEstime), mot('arbitrages.kpi.impot', 'Fiscalité estimée'),
+          analyse.fiscalite.taux ? 'PFU 30 %'
+            : (T('arbitrages.kpi.impot.detail') === 'arbitrages.kpi.impot.detail'
+                ? 'enveloppe non imposable'
+                : T('arbitrages.kpi.impot.detail', { enveloppe: Etat.identite.enveloppe || 'AV' }))) +
+      kpi(euro(analyse.total), mot('arbitrages.kpi.encours', 'Encours après opération'),
+          'dont apport ' + euro(analyse.apport)) +
     '</div>' +
 
     (function () {
@@ -484,10 +493,18 @@ function rendreArbitrages() {
     (function () {
       const hors = analyse.ecarts.filter(e => e.declenche);
       return hors.length
-        ? '<div class="message alerte"><strong>' + hors.length + ' ligne(s) hors bande de tolérance.</strong> ' +
+        ? '<div class="message alerte"><strong>' +
+          echapper(T('arbitrages.hors.titre') === 'arbitrages.hors.titre'
+            ? hors.length + ' ligne(s) hors bande de tolérance.'
+            : T('arbitrages.hors.titre', { n: hors.length })) + '</strong> ' +
           hors.slice(0, 5).map(e => echapper(e.libelle) + ' ' + signe(e.pctCible - e.pctActuel)).join(' · ') +
-          (hors.length > 5 ? ' …' : '') + '. Bande retenue : ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) +
-          ' de l\'encours, soit ' + euro(analyse.seuilMontant) + '.</div>'
+          (hors.length > 5 ? ' …' : '') + '. ' +
+          echapper(T('arbitrages.hors.seuil') === 'arbitrages.hors.seuil'
+            ? 'Bande retenue : ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) + ' de l\'encours, soit ' +
+              euro(analyse.seuilMontant) + '.'
+            : T('arbitrages.hors.seuil', {
+                montant: euro(analyse.seuilMontant), pct: pct(SEUILS_ARBITRAGE.ecartAbsoluMin)
+              })) + '</div>'
         : '<div class="message succes"><strong>Portefeuille dans ses bandes de tolérance.</strong> ' +
           'Aucune ligne ne s\'écarte de plus de ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) + ' de sa cible.</div>';
     })() +
@@ -507,7 +524,8 @@ function rendreArbitrages() {
       '<div class="barre-actions"><button class="bouton secondaire" data-aller="univers">' +
       'Ouvrir l\'univers ETF</button></div></div>' : '') +
 
-    '<div class="carte"><h3>Écart d\'allocation par classe d\'actifs</h3>' +
+    '<div class="carte"><h3>' +
+      echapper(mot('arbitrages.classes.titre', 'Écart d\'allocation par classe d\'actifs')) + '</h3>' +
       '<div class="barres">' + Object.keys(analyse.parClasse).map(cl => {
         const p = analyse.parClasse[cl];
         return '<div class="barre"><div class="tete"><span>' + LIBELLES_CLASSES[cl] + '</span>' +
@@ -524,7 +542,7 @@ function rendreArbitrages() {
       ? '<div class="message succes"><strong>Aucun arbitrage nécessaire.</strong> Tous les écarts constatés sont ' +
         'inférieurs au seuil de déclenchement (' + euro(analyse.seuilMontant) + ' ou ' + pct(SEUILS_ARBITRAGE.ecartAbsoluMin) +
         ' de l\'encours). Arbitrer coûterait plus qu\'il ne rapporterait.</div>'
-      : '<div class="carte"><h3>Ordres à passer</h3>' +
+      : '<div class="carte"><h3>' + echapper(mot('arbitrages.ordres.titre', 'Ordres à passer')) + '</h3>' +
         '<div class="tableau-defilant"><table><thead><tr>' +
         '<th>Sens</th><th>Support</th><th>ISIN</th><th class="num">Montant</th><th class="num">% encours</th>' +
         (analyse.fiscalite.taux ? '<th class="num">PV réalisée</th><th class="num">Impôt estimé</th>' : '') +
@@ -537,7 +555,8 @@ function rendreArbitrages() {
           '<td class="num">' + pct(o.pct) + '</td>' +
           (analyse.fiscalite.taux ? '<td class="num">' + (o.plusValue ? euro(o.plusValue) : '—') + '</td>' +
             '<td class="num">' + (o.impot ? euro(o.impot) : '—') + '</td>' : '') +
-          '<td style="font-size:12px;color:var(--gris-doux)">' + echapper(o.motif) + '</td></tr>').join('') +
+          '<td style="font-size:12px;color:var(--gris-doux)">' + echapper(motifLisible(o.motif)) +
+          '</td></tr>').join('') +
         '</tbody><tfoot><tr><td colspan="3">Total ventes / achats</td><td class="num">' +
         euro(analyse.ordres.filter(o => o.sens === 'Vente').reduce((a, o) => a + o.montant, 0)) + ' / ' +
         euro(analyse.ordres.filter(o => o.sens === 'Achat').reduce((a, o) => a + o.montant, 0)) +
@@ -550,8 +569,10 @@ function rendreArbitrages() {
       '</div>') +
 
     '<div class="barre-actions sans-impression">' +
-      '<button class="bouton" id="btn-journaliser">Valider la revue et l\'inscrire au journal</button>' +
-      '<button class="bouton secondaire" id="btn-appliquer">Appliquer les ordres à la détention saisie</button>' +
+      '<button class="bouton" id="btn-journaliser">' +
+        echapper(mot('arbitrages.bouton.journal', 'Valider la revue et l\'inscrire au journal')) + '</button>' +
+      '<button class="bouton secondaire" id="btn-appliquer">' +
+        echapper(mot('arbitrages.bouton.appliquer', 'Appliquer les ordres à la détention saisie')) + '</button>' +
     '</div>';
 
   const bj = $('#btn-journaliser');
@@ -639,6 +660,17 @@ function poidsTestes() {
 
    Le mode conseiller garde son bandeau unique, mot pour mot : la
    clé absente rend la clé, et c'est le repli. */
+/* Le motif d'un ordre est écrit par le moteur, qui ne connaît aucun mode :
+   « Surpondération de 4,2 pts sur Actions Monde ». Le chiffre est juste et le
+   mot est du métier. En particulier, seul le mot change — le reste de la
+   phrase, poche et écart, dit déjà tout. */
+function motifLisible(motif) {
+  if (T('arbitrages.motif.sur') === 'arbitrages.motif.sur') return motif;
+  return String(motif || '')
+    .replace(/^Surpondération de /, T('arbitrages.motif.sur') + ', ')
+    .replace(/^Sous-pondération de /, T('arbitrages.motif.sous') + ', ');
+}
+
 function bandeauSupportsAVerifier(nombre) {
   const enveloppe = Etat.identite.enveloppe || 'AV';
   const cle = 'supports.contrat.' + enveloppe;

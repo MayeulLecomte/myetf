@@ -411,7 +411,25 @@ const LIBELLES = {
     'supports.kpi.frais': 'Frais moyens de vos ETF',
     'supports.kpi.frais.detail': 'soit ~{montant}/an',
 
-    'phrase.supports.choix':
+    /* ---------- La vue « Mes arbitrages » ---------- */
+    'arbitrages.detenu': 'Ce que vous détenez aujourd\'hui',
+    'arbitrages.coller': 'Coller un relevé',
+    'arbitrages.kpi.rotation': 'Part du portefeuille déplacée',
+    'arbitrages.kpi.rotation.detail': 'des mouvements proposés',
+    'arbitrages.kpi.impot': 'Impôt sur ces mouvements',
+    'arbitrages.kpi.impot.detail':
+      'dans un {enveloppe}, vendre et acheter ne déclenche pas d\'impôt tant que vous ne retirez pas',
+    'arbitrages.kpi.encours': 'Portefeuille après mouvements',
+    'arbitrages.hors.titre': '{n} lignes s\'éloignent trop de la cible',
+    'arbitrages.hors.seuil': '(seuil : {montant}, soit {pct} du portefeuille)',
+    'arbitrages.classes.titre': 'Où vous êtes, où est la cible',
+    'arbitrages.ordres.titre': 'Mouvements proposés',
+    'arbitrages.motif.sur': 'au-dessus de la cible',
+    'arbitrages.motif.sous': 'en dessous de la cible',
+    'arbitrages.bouton.journal': 'Enregistrer cette revue dans mon suivi',
+    'arbitrages.bouton.appliquer': 'Simuler ces mouvements sur mon portefeuille',
+
+        'phrase.supports.choix':
       'Comment ils ont été choisis : note Morningstar, frais, taille, réplication, label ISR — parmi ' +
       'les ETF à {etoiles} étoiles et plus, {encours} M€ d\'encours minimum, {frais} de frais maximum.',
 

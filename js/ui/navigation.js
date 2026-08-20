@@ -242,6 +242,29 @@ function poserOuvertures() {
   });
 }
 
+/* ------------------------------------------------------------
+   LES MOTS ÉCRITS DANS LA PAGE SUIVENT LE MODE
+   ------------------------------------------------------------
+   `poserTitres()` traduit les `h2[data-titre]`. Tout le reste de
+   la prose d'`index.html` — un titre de carte, le libellé d'un
+   bouton — ne dépendait d'aucun mode, faute de mécanisme.
+
+   `data-mot="cle"` en est un, et il ne coûte rien : le texte
+   ÉCRIT DANS LA PAGE reste le repli. Une clé absente ne rend
+   donc pas la clé mais la phrase d'origine, et le mode
+   conseiller n'a rien à recopier dans la table.
+
+   Le texte d'origine est retenu dans `data-mot-defaut` à la
+   première pose : sans lui, un second passage traduirait une
+   traduction, et le repli aurait disparu.
+   ------------------------------------------------------------ */
+function poserMots() {
+  $$('[data-mot]').forEach(el => {
+    if (!el.dataset.motDefaut) el.dataset.motDefaut = el.textContent;
+    el.textContent = mot(el.dataset.mot, el.dataset.motDefaut);
+  });
+}
+
 function poserBarresParcours() {
   /* Reposée telle quelle à chaque changement de mode : l'enchaînement saute
      les vues que le mode ne montre pas. */

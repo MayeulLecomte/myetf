@@ -13,7 +13,7 @@ function brancher() {
   /* Dans cet ordre : la colonne porte les libellés que la barre de parcours
      y relit ensuite. */
   poserNav();
-  poserTitres(); poserOuvertures();
+  poserTitres(); poserMots(); poserOuvertures();
   poserBarresParcours();
 
   /* La hauteur de l'en-tête change avec la largeur, et avec l'encoche du
@@ -367,7 +367,7 @@ function brancher() {
     if (t.id === 'f-mode') {
       Etat.mode = t.value;
       sauver(true);
-      poserNav(); poserTitres(); poserOuvertures(); poserBarresParcours(); majNav();
+      poserNav(); poserTitres(); poserMots(); poserOuvertures(); poserBarresParcours(); majNav();
       rendre('client');
       notifier('Mode « ' + (MODES.find(m => m.id === t.value) || {}).bouton + ' ».', 'info');
       return;
@@ -416,7 +416,7 @@ function brancher() {
     /* Un dossier exporté avant que le mode existe n'en porte aucun : il a été
        construit par un conseiller, et s'ouvre comme tel. */
     if (!Etat.mode) Etat.mode = MODE_DEFAUT;
-    poserNav(); poserTitres(); poserOuvertures();
+    poserNav(); poserTitres(); poserMots(); poserOuvertures();
     sauver(true); afficher('client'); notifier('Dossier importé.');
   });
 

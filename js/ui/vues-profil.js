@@ -362,7 +362,7 @@ function choisirMode(id) {
   Etat.mode = id;
   sauver(true);
   /* Le vocabulaire change en place : ni rechargement, ni perte de saisie. */
-  poserNav(); poserTitres(); poserOuvertures(); poserBarresParcours(); majNav();
+  poserNav(); poserTitres(); poserMots(); poserOuvertures(); poserBarresParcours(); majNav();
   rendre('accueil');
 }
 

@@ -613,8 +613,8 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`d515e3c4` · 1 333 665 octets · 68 empreintes**, relevée après « Mes
-supports ».
+**`7c0cd21e` · 1 334 331 octets · 68 empreintes**, relevée après « Mes
+arbitrages ».
 
 Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
 contient des dates, elle ne se compare qu'entre deux relevés du même jour :
@@ -906,6 +906,37 @@ fois.
 **Deux tuiles fusionnent** : « frais moyens » en taux et « coût annuel » en
 euros disaient le même nombre. En particulier la première porte le montant, la
 seconde disparaît, et la grille passe de quatre à trois.
+
+## `data-mot` : la prose d'index.html suit le mode elle aussi
+
+`poserTitres()` traduisait les `h2[data-titre]`. Tout le reste de la prose
+écrite dans la page — un titre de carte, le libellé d'un bouton — ne dépendait
+d'aucun mode, faute de mécanisme.
+
+`data-mot="cle"` en est un, et il ne coûte rien : **le texte écrit dans la
+page reste le repli**. Une clé absente ne rend donc pas la clé mais la phrase
+d'origine, et le mode conseiller n'a rien à recopier dans la table.
+
+Le texte d'origine est retenu dans `data-mot-defaut` à la première pose : sans
+lui, un second passage traduirait une traduction, et le repli aurait disparu.
+`poserMots()` se pose partout où `poserTitres()` se pose — au démarrage et à
+chaque changement de mode.
+
+## « Mes arbitrages » : le mot change, le chiffre reste
+
+« Rotation du portefeuille » devient « Part du portefeuille déplacée »,
+« Ordres à passer » devient « Mouvements proposés », et les deux boutons
+disent ce qu'ils font — « Enregistrer cette revue dans mon suivi »,
+« Simuler ces mouvements sur mon portefeuille ».
+
+**Le motif d'un ordre est écrit par le moteur**, qui ne connaît aucun mode :
+« Surpondération de 4 pts sur Or ». Le chiffre est juste et le mot est du
+métier — seul le mot change, le reste de la phrase dit déjà tout.
+
+**« Enveloppe non imposable » est juste, et ne dit pas pourquoi.** Le détail
+particulier explique le mécanisme : ce n'est pas l'arbitrage qui déclenche
+l'impôt, c'est le retrait. C'est le genre de phrase qu'un conseiller dit de
+vive voix et que personne n'écrit.
 
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
