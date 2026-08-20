@@ -156,6 +156,39 @@ d'« obligations » ne veut pas dire « ça monte », le corail de
 avec les couleurs du graphique mélangerait les deux lectures sur le même
 écran — et casserait la seule règle d'accessibilité de la feuille.
 
+### Les tuiles pastel — avec parcimonie, et jamais sur un résultat
+
+Le fond coloré d'une tuile **désigne**, il ne décore pas. Trois règles, toutes
+arrêtées :
+
+**Deux par vue au maximum.** Au-delà, plus rien ne ressort — une rangée
+entièrement peinte vaut une rangée entièrement blanche.
+
+**Sur les chiffres d'identité du dossier uniquement** : ce que le conseiller
+a saisi ou ce qui décrit le dossier — montant investi, sélection parmi,
+nombre de lignes, besoin de revenu. Ce sont des données d'entrée.
+
+**JAMAIS sur un chiffre de résultat** : performances, valorisations, écarts,
+fiscalité, rotation, projections. Ceux-là restent sur carte blanche, et leur
+nombre reste à l'encre. C'est le prolongement direct de la règle des 12 % —
+une couleur sur un résultat se lit comme un jugement sur ce résultat.
+
+**Le pâle, pas le franc.** `--menthe-pale`, `--corail-pale`, `--jaune-pale` :
+la teinte franche appartient au graphique, où elle nomme une classe d'actifs.
+Une tuile au menthe franc à côté d'un camembert dirait « obligations ».
+
+**Corollaire : une vue qui porte le camembert ne porte aucune tuile
+colorée.** Sur « Allocation cible », les quatre pastels ont déjà un sens ;
+une cinquième surface colorée y ferait deux lectures sur un même écran.
+
+**Sur écran large, la couleur passe au contour.** Les tuiles d'une
+`grille.quatre` sont des bulles au seul contour au-delà de 821 px — ni fond,
+ni ombre. Une tuile désignée y prend son pastel **sur le trait**, à la place
+du bleu clair. Le fond pastel reste la forme téléphone, où la boîte pleine
+existe. La règle du contour ne se troue pas pour la couleur.
+
+**Le papier les ignore**, comme le reste du registre.
+
 ### Le verre, et seulement à trois endroits
 
 **La barre basse, le ruban d'onglets et la feuille** sont translucides :
