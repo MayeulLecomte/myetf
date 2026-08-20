@@ -226,18 +226,41 @@ function fraicheurDonnees() {
     const d = ETF_UNIVERS.map(e => e[champ]).filter(Boolean).sort();
     return d[d.length - 1] || null;
   };
+  /* CHAQUE RELEVÉ A SA CADENCE, DONC SON SEUIL DE PÉREMPTION.
+     Trois sources, trois rythmes qui n'ont rien à voir :
+
+     • les cours tombent chaque séance, du mardi au samedi — au-delà de
+       quatre jours, c'est un relevé manqué, et c'est le seuil que porte
+       déjà le badge de la note du jour ;
+     • les notations sont recalculées le 1er de chaque mois par la tâche
+       planifiée — quarante-cinq jours veut dire qu'un passage a échoué ;
+     • les caractéristiques justETF, elles, NE SE RAFRAÎCHISSENT PAS
+       toutes seules. Aucun script ne les écrit : c'est un relevé à la
+       main, et rien ne le rappelle. D'où ce garde-fou, et un seuil
+       trimestriel — les encours dérivent en permanence, les frais et les
+       indices changent à l'occasion. */
   const entrees = [
-    { l: 'Caractéristiques', d: dateMax('donneesLe'), s: 'justETF' },
-    { l: 'Notations', d: dateMax('notationLe'), s: 'Morningstar' },
+    { l: 'Caractéristiques', d: dateMax('donneesLe'), s: 'justETF', seuil: 90 },
+    { l: 'Notations', d: dateMax('notationLe'), s: 'Morningstar', seuil: 45 },
     { l: 'Cours', d: (typeof VARIATIONS_POCHES !== 'undefined' && VARIATIONS_POCHES.genere) || null,
-      s: 'Euronext' }
+      s: 'Euronext', seuil: 4 }
   ].filter(x => x.d);
   if (!entrees.length) return '';
 
-  return '<div class="fraicheur">' + entrees.map(x =>
-    '<span title="' + echapper(x.l + ' relevées le ' + dateFr(x.d) + ' sur ' + x.s) + '">' +
+  return '<div class="fraicheur">' + entrees.map(x => {
+    /* Même mécanique que le badge de la note du jour : l'âge s'affiche
+       quand il dépasse le seuil, et jamais avant. Le nombre de jours EST
+       l'alerte — la palette n'a pas de rouge, et n'en veut pas. */
+    const jours = Math.round((new Date(aujourdhuiISO()) - new Date(x.d)) / 86400000);
+    const perime = jours > x.seuil;
+    return '<span' + (perime ? ' class="perime"' : '') + ' title="' +
+      echapper(x.l + ' relevées le ' + dateFr(x.d) + ' sur ' + x.s +
+        (perime ? ' — ' + jours + ' jours, au-delà des ' + x.seuil + ' attendus' : '')) + '">' +
       '<i></i>' + echapper(x.l) + ' <b>' + dateFr(x.d).replace(/ \d{4}$/, '') + '</b>' +
-      ' <em>' + echapper(x.s) + '</em></span>').join('') +
+      ' <em>' + echapper(x.s) + '</em>' +
+      (perime ? ' <strong class="fraicheur-age">· ' + jours + ' jours</strong>' : '') +
+      '</span>';
+  }).join('') +
     '</div>';
 }
 

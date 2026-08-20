@@ -2877,3 +2877,14 @@ table .illustration { display: none !important; }
   .entree-propos { gap: 60px; }
   .entree-parcours { gap: 32px; }
 }
+
+/* ---------- La fraîcheur des données : l'âge paraît quand il dépasse ----------
+   Même mécanique que le badge de la note du jour. Le nombre de jours EST
+   l'alerte : la palette n'a pas de rouge, et n'en veut pas. La pastille
+   prend le filet bleu, sa puce s'allume, et l'âge s'écrit à la suite. */
+.fraicheur span.perime { border-color: var(--bleu); }
+.fraicheur span.perime i { background: var(--bleu); }
+.fraicheur-age { color: var(--bleu-encre); font-weight: 800; white-space: nowrap; }
+
+/* ---------- Le signe du pied est une image, comme celui de l'en-tête ---------- */
+.pied img.logo-pied { border-radius: 5px; object-fit: contain; }

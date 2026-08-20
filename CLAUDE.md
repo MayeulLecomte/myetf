@@ -787,6 +787,32 @@ git, ni les harnais, qui ne savent pas qu'un bouton devait disparaître.
 par fichier**, et vérifier que chaque changement voulu y est encore. Les zones
 en conflit ne sont pas les seules à bouger.
 
+## Chaque relevé a sa cadence, donc son seuil de péremption
+
+Les trois pastilles de fraîcheur portent des dates qui n'ont rien à voir
+entre elles, et il faut le savoir avant de les lire :
+
+| Relevé | Cadence réelle | Seuil |
+|---|---|---|
+| **Cours** · Euronext | chaque séance, du mardi au samedi (`cours.yml`) | 4 jours |
+| **Notations** · Morningstar | le 1er de chaque mois (`catalogue.yml`) | 45 jours |
+| **Caractéristiques** · justETF | **aucune — c'est un relevé à la main** | 90 jours |
+
+**Rien n'écrit `donneesLe`.** Ni script, ni tâche planifiée : les frais,
+encours, réplication, devise, capi/dist et éligibilité PEA des 42 supports
+de l'univers de travail sont saisis à la main, et vieillissent en silence.
+Le relevé du 15 août 2026 avait corrigé neuf ISIN qui désignaient un autre
+fonds que celui annoncé et quatorze frais faux : ce n'est pas une donnée
+d'agrément.
+
+D'où le garde-fou : au-delà du seuil, la pastille prend le filet bleu et
+**écrit son âge**. Même mécanique que le badge de la note du jour, et pour
+la même raison — le nombre de jours EST l'alerte, la palette n'a pas de
+rouge et n'en veut pas.
+
+Le seuil des notations n'est pas décoratif non plus : à quarante-cinq
+jours, c'est qu'un passage mensuel a échoué sans que personne ne le voie.
+
 ## La valorisation de repli n'invente pas de cours
 
 Le catalogue porte une dernière clôture pour 4 525 supports. Elle ne sert de
