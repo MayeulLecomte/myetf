@@ -255,7 +255,26 @@ produirait un hybride que personne n'a validé. `color-scheme: light` le dit au
 navigateur. **À rouvrir un jour comme une palette à arrêter, pas comme une
 bascule à rétablir.**
 
-### Le trait sous un mot du titre
+### Le SURLIGNEUR sous un mot du titre
+
+Le **dernier** mot de chaque titre est **surligné en jaune** (`--surligneur`
+`#FFD166`), en pilule arrondie, posé par `titreSouligne()` — un seul endroit
+pour quinze titres. C'est le geste le plus reconnaissable de la maquette.
+
+**Le trait violet qui le précédait n'existe plus.** Un trait sous un mot se
+lit comme un lien ; un surligneur se lit comme un coup de marqueur.
+
+`box-decoration-break: clone` n'est pas un raffinement : sans lui, un titre
+qui se replie sur deux lignes perd l'arrondi au point de coupure et se
+termine au carré au milieu d'un mot.
+
+Le jaune du surligneur **n'est aucune des quatre teintes de classes
+d'actifs**. Il ne nomme rien d'autre que « regardez ce mot » ; l'inclure dans
+la palette du graphique ferait croire à une cinquième classe.
+
+**Le papier ne le porte pas** : à l'impression il redevient un soulignement.
+
+### Le trait sous un mot du titre — remplacé
 
 Le **dernier** mot de chaque titre porte un trait bleu, posé par
 `titreSouligne()` — un seul endroit pour quinze titres.

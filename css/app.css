@@ -3169,3 +3169,254 @@ input, select, textarea { border-radius: var(--r-s); border-color: var(--ligne);
   }
   .bouton { border-radius: 6px !important; }
 }
+
+/* ============================================================
+   (f) LA PASSE VUE PAR VUE — CE QUE LA MAQUETTE DEMANDE
+   ------------------------------------------------------------
+   Huit points, tenus dans la limite de DEUX règles qui ne bougent
+   pas : les performances restent à l'encre, et la navigation reste
+   celle d'aujourd'hui — barre basse et ruban, pas de colonne de
+   gauche. Tout le reste du registre s'aligne sur la maquette.
+   ============================================================ */
+
+/* ---------- 1. LE SURLIGNEUR ----------
+   Un trait sous un mot se lit comme un lien ; un surligneur se lit
+   comme un coup de marqueur. C'est le geste le plus reconnaissable
+   de la maquette, et il remplace le trait violet partout —
+   `titreSouligne()` pose déjà le `<span>`, un seul endroit pour
+   quinze titres.
+
+   `box-decoration-break: clone` n'est pas un détail : sans lui, un
+   titre qui se replie sur deux lignes perd l'arrondi au point de
+   coupure, et le surligneur se termine au carré en plein milieu
+   d'un mot. */
+.souligne {
+  text-decoration: none;
+  background: var(--surligneur);
+  border-radius: var(--r-pilule);
+  padding: .04em .34em .1em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ---------- 2. LES TUILES CHIFFRÉES ----------
+   L'étiquette PASSE AU-DESSUS du chiffre. C'est l'ordre de la
+   maquette, et c'est aussi l'ordre de lecture : on cherche d'abord
+   de quoi on parle, ensuite combien. Le DOM garde l'ordre
+   chiffre-puis-étiquette — `order` suffit, et l'empreinte ne bouge
+   pas d'un octet pour un changement qui n'est que de mise en page. */
+.kpi { justify-content: flex-start; gap: 2px; }
+.kpi .libelle {
+  order: -1;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--texte-doux);
+  margin: 0 0 2px;
+}
+.kpi .valeur { font-size: 34px; font-weight: 800; letter-spacing: -.02em; line-height: 1.06; }
+.kpi .detail { font-size: 12px; color: var(--texte-doux); margin-top: 4px; }
+
+/* Le fond pastel est PLEIN, à toutes les largeurs.
+   C'est un revirement assumé : les tuiles désignées ne passent plus
+   au contour sur écran large. La maquette les montre pleines, et
+   une tuile qui change de nature selon la largeur demandait au
+   lecteur de réapprendre le code à chaque redimensionnement.
+
+   Les tuiles ORDINAIRES, elles, gardent la bulle au seul contour —
+   la règle tient toujours pour elles. Ce qui est peint est peint
+   parce qu'on l'a désigné, pas parce que la largeur le permet. */
+@media (min-width: 821px) {
+  .grille.quatre > .kpi-menthe { background: var(--menthe-pale); border-color: transparent; }
+  .grille.quatre > .kpi-corail { background: var(--corail-pale); border-color: transparent; }
+  .grille.quatre > .kpi-jaune  { background: var(--jaune-pale);  border-color: transparent; }
+  .grille.quatre > .kpi-menthe:hover { background: var(--menthe-pale); border-color: var(--menthe); }
+  .grille.quatre > .kpi-corail:hover { background: var(--corail-pale); border-color: var(--corail); }
+  .grille.quatre > .kpi-jaune:hover  { background: var(--jaune-pale);  border-color: var(--jaune); }
+  /* Une tuile pleine n'a pas besoin d'être aussi haute qu'une bulle
+     vide : le chiffre porte, le vide autour ne porte rien. */
+  .grille.quatre > .kpi-menthe, .grille.quatre > .kpi-corail, .grille.quatre > .kpi-jaune {
+    padding: 22px 24px 20px;
+  }
+}
+
+/* ---------- 3. L'ANNEAU ET SA LÉGENDE ----------
+   La carte maîtresse. L'anneau porte son chiffre au centre, la
+   légende tient à droite en lignes séparées par un filet. */
+.tete-carte {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 16px;
+}
+.tete-carte h3 { margin: 0; }
+
+.graphique { align-items: center; }
+.donut-valeur {
+  font-family: var(--police); font-size: 30px; font-weight: 800;
+  fill: var(--texte); letter-spacing: -.02em;
+}
+.donut-libelle {
+  font-family: var(--police); font-size: 10px; font-weight: 700;
+  fill: var(--texte-doux); letter-spacing: .14em; text-transform: uppercase;
+}
+
+.legende .item {
+  gap: 12px; margin: 0; padding: 12px 0;
+  border-bottom: 1px solid var(--ligne);
+  align-items: flex-start;
+}
+.legende .item:last-child { border-bottom: 0; padding-bottom: 0; }
+.legende .item:first-child { padding-top: 0; }
+.legende .nom { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.legende .nom strong { font-size: 14px; font-weight: 700; }
+.legende .nom .sous { font-size: 12px; color: var(--texte-doux); }
+.legende .item .valeur { font-size: 20px; font-weight: 800; align-self: center; }
+/* La pastille est un DISQUE, et elle ne s'écrase pas quand le nom
+   de la classe est long. */
+.pastille { border-radius: 999px; }
+.legende .pastille { width: 12px; height: 12px; flex: 0 0 12px; margin-top: 3px; }
+
+/* ---------- 4. LES BADGES EN PILULE PASTEL ---------- */
+.badge {
+  font-size: 10px; font-weight: 800; letter-spacing: .09em;
+  text-transform: uppercase; padding: 5px 11px; border: 0;
+}
+.badge.violet  { background: var(--bleu-pale);   color: var(--bleu-encre); }
+.badge.menthe  { background: var(--menthe-pale); color: #0E6B4C; }
+.badge.lavande { background: var(--fond);        color: var(--bleu-encre); }
+
+/* ---------- 5. L'ENCART D'AVERTISSEMENT EN CRÈME ----------
+   Sans bordure : le fond suffit à le détacher du blanc des cartes,
+   et un filet en plus d'un fond fait deux signaux pour une seule
+   information. */
+.message.info, .message.succes {
+  background: var(--creme); border: 0; border-radius: 20px;
+  padding: 16px 20px;
+}
+.message.info a, .message.info .lien, .message.info [data-aller] {
+  color: var(--bleu-encre); font-weight: 700;
+}
+
+/* ---------- 6. LES BOUTONS ----------
+   Le principal porte une ombre TEINTÉE DE SON PROPRE VIOLET, et non
+   une ombre grise : c'est ce qui le fait flotter au lieu de le
+   salir. Le secondaire garde l'ombre douce des cartes. */
+.bouton, .bouton.secondaire, .bouton.discret,
+button.bouton, button.bouton.secondaire, a.bouton, a.bouton.secondaire {
+  padding: 14px 24px; font-size: 14px; font-weight: 700;
+}
+.bouton, button.bouton { box-shadow: 0 6px 18px -4px rgba(108, 99, 255, .55); }
+.bouton:hover, button.bouton:hover { box-shadow: 0 8px 22px -4px rgba(108, 99, 255, .62); }
+.bouton.secondaire, button.bouton.secondaire, a.bouton.secondaire {
+  box-shadow: var(--ombre-1); border-color: transparent;
+}
+.bouton.petit, button.bouton.petit { padding: 7px 15px; font-size: 12px; box-shadow: none; }
+
+/* ---------- 7. LES LIENS DE TABLEAU ----------
+   Violets, et sans soulignement permanent : dans une colonne de
+   quarante lignes, quarante soulignements font un peigne. Le
+   soulignement revient au survol, où il désigne UNE ligne. */
+table a, .tableau-defilant a, td a {
+  color: var(--bleu); text-decoration: none; font-weight: 600;
+}
+table a:hover, .tableau-defilant a:hover, td a:hover {
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ---------- 8. LA DENSITÉ ----------
+   La maquette est plus serrée que ne l'était le site. On ne touche
+   pas au dedans des cartes — 22/24 était déjà la bonne valeur —,
+   seulement à ce qui les sépare. */
+.grille { gap: 20px; }
+.carte { margin-bottom: 20px; }
+
+/* ---------- Ce que le papier ignore de tout cela ----------
+   Le surligneur jaune, les fonds pastel et les ombres colorées ne
+   passent pas à l'impression : le rapport client est de l'encre sur
+   du blanc, et il le reste. */
+@media print {
+  .souligne { background: transparent !important; padding: 0 !important;
+              text-decoration: underline !important; }
+  .badge { background: #fff !important; color: #000 !important; border: 1px solid #ccc !important; }
+  .donut-valeur { fill: #000 !important; }
+  .donut-libelle { fill: #444 !important; }
+}
+
+/* Une règle d'identifiant tenait « Situation » à l'ancien bleu pâle : elle
+   pèse plus lourd qu'une règle de classe, et elle aurait laissé UNE vue
+   sur seize avec un encart d'une autre couleur. */
+#situation-contenu .message.info { background: var(--creme); border: 0; }
+
+/* Le pourcentage ne se coupe JAMAIS en deux : « 47,5 » sur une ligne et
+   « % » sur la suivante se lit comme deux nombres. Et le sous-titre tient
+   sur une ligne — le détail complet est dans le tableau juste dessous,
+   la légende n'en donne que la couleur. */
+.legende .item .valeur { white-space: nowrap; }
+.legende .nom .sous {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---------- 8 bis. LA DENSITÉ SUR ÉCRAN LARGE ----------
+   Le registre précédent aérait à cent pixels entre blocs, avec des
+   grilles à 44 et des cartes à 30/32. C'était cohérent avec des
+   indicateurs en zigzag qu'on lisait un par un. La maquette fait
+   l'inverse : elle rassemble. On ne peut pas avoir les deux — une
+   composition dense dont les blocs sont séparés d'un écran n'est plus
+   dense, elle est seulement découpée.
+
+   Ce bloc annule l'aération, et il faut qu'il porte les MÊMES
+   sélecteurs : ceux d'origine valent (0,3,1), une règle de classe
+   seule ne les atteindrait jamais. */
+@media (min-width: 821px) {
+  .vue > .carte, .vue > .grille, .vue > .message, .vue > .verdict,
+  .vue > .tableau-defilant, .vue > .etat-vide, .vue > .bandeau-profil,
+  .vue > .accroche, .vue > .fil, .vue > div[id$="-contenu"] > .accroche,
+  .vue > div[id$="-contenu"] > .fil,
+  .vue > div[id$="-contenu"] > .carte,
+  .vue > div[id$="-contenu"] > .grille,
+  .vue > div[id$="-contenu"] > .message,
+  .vue > div[id$="-contenu"] > .verdict,
+  .vue > div[id$="-contenu"] > .tableau-defilant,
+  .vue > div[id$="-contenu"] > .etat-vide,
+  .vue > div[id$="-contenu"] > .bandeau-profil {
+    margin-bottom: 22px;
+  }
+  .grille { gap: 20px; }
+  .carte { padding: 22px 24px; }
+
+  /* LE ZIGZAG TOMBE. Quatre tuiles réparties en quatre lignes
+     alternées occupaient un écran entier pour quatre nombres. La
+     maquette les met en rang serré, et c'est ce rang qui permet de
+     les comparer — ce que le zigzag interdisait justement.
+
+     Avec lui tombe la bulle au seul contour : elle existait parce que
+     quatre nombres espacés de cent pixels flottaient sans se rattacher
+     à rien. Serrées, les tuiles redeviennent des cartes, comme dans la
+     maquette — blanches par défaut, pastel quand elles sont désignées. */
+  .grille.quatre { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .grille.quatre > .kpi:nth-child(1),
+  .grille.quatre > .kpi:nth-child(2),
+  .grille.quatre > .kpi:nth-child(3),
+  .grille.quatre > .kpi:nth-child(4) { grid-column: auto; grid-row: auto; }
+  .grille.quatre > .kpi {
+    background: var(--surface);
+    border: 0;
+    box-shadow: var(--ombre-2);
+    border-radius: var(--r-m);
+    padding: 22px 24px 20px;
+    min-height: 0;
+  }
+  .grille.quatre > .kpi:hover { background: var(--surface); transform: translateY(-2px); }
+  .grille.quatre > .kpi .valeur { font-size: 30px; }
+
+  /* Les désignées reprennent la main, fond plein et sans filet. */
+  .grille.quatre > .kpi-menthe { background: var(--menthe-pale); }
+  .grille.quatre > .kpi-corail { background: var(--corail-pale); }
+  .grille.quatre > .kpi-jaune  { background: var(--jaune-pale); }
+  .grille.quatre > .kpi-menthe:hover { background: var(--menthe-pale); }
+  .grille.quatre > .kpi-corail:hover { background: var(--corail-pale); }
+  .grille.quatre > .kpi-jaune:hover  { background: var(--jaune-pale); }
+
+  /* Une carte dans une grille n'a pas de marge basse : c'est le `gap`
+     qui espace, et les deux s'additionnaient. */
+  .grille > .carte { margin-bottom: 0; }
+}
+.grille > .carte { margin-bottom: 0; }

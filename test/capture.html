@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>myetf — capture d'une vue</title>
+<!--
+   ============================================================
+   CAPTURE D'UNE VUE
+   ------------------------------------------------------------
+   Un outil de relecture, pas un test.
+
+   Il charge l'application dans un cadre à la largeur demandée, la
+   remplit du dossier de démonstration, ouvre UNE vue, et cadre sur
+   l'élément voulu. La page ne contient que le cadre : un cliché de
+   la fenêtre est donc un cliché de la vue, sans chrome autour.
+
+   POURQUOI IL EXISTE. Le volet d'aperçu intégré fait 785 px de
+   large : il ne peut pas rendre la mise en page au-delà de 821 px,
+   et aucune capture « ordinateur » n'y est fiable. Ici la largeur
+   est celle qu'on demande.
+
+   Il neutralise deux choses, et seulement pour le cliché :
+   l'écran d'entrée, qui masquerait la vue, et le paraître-au-
+   défilement, qui rendrait la moitié de la page à demi effacée.
+
+   Même idiome que test/fumee.html : `w.eval` pour atteindre les
+   `const` du cadre — ils ne deviennent pas propriétés de `window` —,
+   et `w.afficher(vue)` pour ouvrir.
+
+   Il a besoin d'un serveur, comme les deux autres pages de test.
+
+       python3 -m http.server 8777 --directory .
+
+   Paramètres :
+       vue    la vue à ouvrir              (défaut : accueil)
+       mode   conseiller | particulier     (défaut : conseiller)
+       w, h   la taille du cadre           (défaut : 1280 × 900)
+       cible  un sélecteur à cadrer, cherché DANS la vue ouverte
+   ============================================================
+-->
+<style>
+  html, body { margin: 0; padding: 0; background: #F3F2FE; }
+  iframe { display: block; border: 0; }
+</style>
+</head>
+<body>
+<iframe id="app" title="Application sous capture"></iframe>
+<script>
+const P = new URLSearchParams(location.search);
+const VUE   = P.get('vue')  || 'accueil';
+const MODE  = P.get('mode') || 'conseiller';
+const L     = +(P.get('w')  || 1280);
+const H     = +(P.get('h')  || 900);
+const CIBLE = P.get('cible') || '';
+
+const cadre = document.getElementById('app');
+cadre.width = L; cadre.height = H;
+
+/* Les mêmes valeurs que le test de fumée, pour qu'une capture et un
+   contrôle parlent du même dossier. */
+function dossierComplet(w, Etat) {
+  const lien = w.document.getElementById('lien-remplir-demo');
+  if (lien) lien.click();
+  Etat.identite.montant = 100000;
+  Etat.identite.enveloppe = 'AV';
+  Etat.identite.contratAV = 'av-large';
+  Etat.detention = [
+    { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World', montant: 48000, pvLatente: 8000 },
+    { isin: 'IE00B4WXJJ64', libelle: 'iShares Core € Govt Bond', montant: 24000, pvLatente: 0 },
+    { isin: 'IE00B4ND3602', libelle: 'iShares Physical Gold', montant: 8000, pvLatente: 2000 }
+  ];
+  /* Aucun besoin de revenu : sinon le coussin monétaire déforme
+     l'allocation, et la vue « Allocation cible » montrerait des écarts
+     qui ne viennent d'aucune vue de marché. */
+  Etat.revenus.besoin = 0;
+}
+
+(async function () {
+  try { localStorage.removeItem('allocation-etf-dossier-v1'); } catch (e) { /* origine restreinte */ }
+
+  await new Promise(r => { cadre.onload = r; cadre.src = '../index.html?capture=1'; });
+  const w = cadre.contentWindow, d = w.document;
+  const Etat = w.eval('Etat');
+
+  dossierComplet(w, Etat);
+  Etat.mode = MODE;
+
+  const s = d.createElement('style');
+  s.textContent =
+    '.ecran-ouverture, .entree-ouverture, #ecran-entree { display: none !important; }' +
+    '.vue.actif > *, .vue.actif > div[id$="-contenu"] > *, .vue.actif .kpi, .vue.actif .carte {' +
+    '  animation: none !important; opacity: 1 !important; transform: none !important; }';
+  d.head.appendChild(s);
+
+  w.afficher(VUE);
+  await new Promise(r => setTimeout(r, 450));
+
+  /* Le document porte les SEIZE vues, dont quinze masquées : un sélecteur
+     non qualifié tomberait sur l'élément d'une vue cachée, et le cadrage
+     ne bougerait pas d'un pixel. */
+  const vueDom = d.getElementById('vue-' + VUE);
+  const ancre = CIBLE ? (vueDom || d).querySelector(CIBLE) : null;
+  if (ancre) {
+    ancre.scrollIntoView({ block: 'start' });
+    await new Promise(r => setTimeout(r, 120));
+    const el = d.scrollingElement || d.documentElement;
+    el.scrollTop = Math.max(0, el.scrollTop - 120);
+  }
+  await new Promise(r => setTimeout(r, 350));
+
+  document.title = 'pret';
+})();
+</script>
+</body>
+</html>

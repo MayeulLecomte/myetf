@@ -82,11 +82,21 @@
   /* ---------- Les quatre pastels ----------
      Ils nomment des CATÉGORIES, jamais un sens. */
   --menthe:      #3ED9A4;
-  --menthe-pale: #DEF7EE;
+  --menthe-pale: #DDF6EE;
   --corail:      #FF7A5C;
-  --corail-pale: #FFE6DE;
+  --corail-pale: #FFE8D6;   /* pêche : la teinte de tuile de la maquette */
   --jaune:       #FFC93C;
   --jaune-pale:  #FFF3D4;
+
+  /* Le surligneur du titre. Ce n'est ni l'accent ni un pastel de
+     graphique : c'est une couleur à lui, qui ne nomme rien d'autre que
+     « regardez ce mot ». La mêler aux quatre teintes de classes d'actifs
+     ferait croire à une cinquième classe. */
+  --surligneur:  #FFD166;
+  /* Le crème des encarts d'avertissement. Assez chaud pour se distinguer
+     du fond lavande, assez pâle pour que l'encre y reste à pleine
+     lisibilité. */
+  --creme:       #FFF6E3;
 
   /* ⚠ LES PERFORMANCES RESTENT À L'ENCRE, et c'est une décision, pas un
      reste de l'ancienne palette : douze pour cent d'hommes distinguent

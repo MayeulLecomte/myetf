@@ -269,7 +269,13 @@ function dateFr(iso) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-function donut(segments, taille, epaisseur) {
+/**
+ * @param {{valeur: string, libelle: string}} [centre] le chiffre au coeur de
+ *   l'anneau. C'est la classe dominante, et elle se lit avant la légende :
+ *   un anneau sans centre oblige à comparer des arcs à l'oeil pour savoir
+ *   lequel pèse le plus.
+ */
+function donut(segments, taille, epaisseur, centre) {
   taille = taille || 190; epaisseur = epaisseur || 36;
   const r = (taille - epaisseur) / 2, cx = taille / 2, cy = taille / 2;
   const total = segments.reduce((a, s) => a + s.valeur, 0);
@@ -298,13 +304,28 @@ function donut(segments, taille, epaisseur) {
     }
     angle = fin;
   });
+  if (centre) {
+    /* Le texte est DANS le SVG et non posé par-dessus en HTML : superposer
+       demanderait un conteneur positionné, et le centre se décalerait à
+       chaque taille d'anneau. Ici il suit le viewBox. */
+    contenu += '<text class="donut-valeur" x="' + cx + '" y="' + (cy - 1) +
+      '" text-anchor="middle" dominant-baseline="middle">' + echapper(centre.valeur) + '</text>' +
+      '<text class="donut-libelle" x="' + cx + '" y="' + (cy + 22) +
+      '" text-anchor="middle" dominant-baseline="middle">' + echapper(centre.libelle) + '</text>';
+  }
   return '<svg width="' + taille + '" height="' + taille + '" viewBox="0 0 ' + taille + ' ' + taille + '">' + contenu + '</svg>';
 }
 
+/* Une ligne par classe, séparée par un filet : pastille, nom, ce qu'il y a
+   dedans, et le poids à droite. Le sous-titre `sous` est facultatif — sans
+   lui la ligne se referme sur deux lignes de texte au lieu de trois, et rien
+   ne se casse. */
 function legende(segments) {
   return '<div class="legende">' + segments.filter(s => s.valeur > 0).map(s =>
     '<div class="item"><span class="pastille" style="background:' + s.couleur + '"></span>' +
-    echapper(s.label) + '<span class="valeur">' + pct(s.valeur) + '</span></div>').join('') + '</div>';
+    '<span class="nom"><strong>' + echapper(s.label) + '</strong>' +
+    (s.sous ? '<span class="sous">' + echapper(s.sous) + '</span>' : '') + '</span>' +
+    '<span class="valeur">' + pct(s.valeur) + '</span></div>').join('') + '</div>';
 }
 
 /* ============================================================

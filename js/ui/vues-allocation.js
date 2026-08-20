@@ -168,12 +168,45 @@ function rendreAllocation() {
   const metriquesStrat = MoteurAllocation.metriques(alloc.strategique.classes);
   const metriquesTact  = MoteurAllocation.metriques(alloc.classes);
 
-  const segments = Object.keys(alloc.classes).map(cl => ({
-    label: LIBELLES_CLASSES[cl], valeur: alloc.classes[cl], couleur: COULEURS_CLASSES[cl]
-  }));
-
   const poches = Object.keys(alloc.poches).filter(p => alloc.poches[p] > 0)
     .sort((a, b) => alloc.poches[b] - alloc.poches[a]);
+
+  /* Le sous-titre de chaque classe n'est pas écrit à la main : ce sont ses
+     POCHES retenues, dans l'ordre de poids. Une liste écrite en dur aurait
+     annoncé « Or · immobilier coté » même le jour où l'une des deux tombe
+     à zéro. Trois au plus — au-delà, la ligne déborde et n'apprend plus
+     rien qu'une lecture du tableau ne dise mieux. */
+  const pochesParClasse = {};
+  poches.forEach(p => {
+    const cl = MoteurSelection.classeDePoche(p);
+    /* Le nom de la classe se répète dans celui de chaque poche —
+       « Actions Monde », « Actions Europe », « Actions États-Unis ». Sous
+       un titre qui dit déjà « Actions », le redire trois fois occupe la
+       ligne sans rien apprendre. On le retire en tête, et seulement en
+       tête : « Or » et « Immobilier coté » n'ont pas de préfixe et
+       ressortent intacts. */
+    /* La parenthèse part avec : « Immobilier coté (SIIC / REITs) » est une
+       définition, et une définition n'a pas sa place dans une légende de
+       trois mots. Elle reste au tableau, juste dessous. */
+    const brut = (LIBELLES_POCHES[p] || p).replace(/\s*\([^)]*\)/g, '');
+    const prefixe = LIBELLES_CLASSES[cl] + ' ';
+    (pochesParClasse[cl] = pochesParClasse[cl] || [])
+      .push(brut.indexOf(prefixe) === 0 ? brut.slice(prefixe.length) : brut);
+  });
+
+  /* Triées par poids décroissant : l'anneau se lit alors dans le sens des
+     aiguilles en partant de la plus grosse part, et la légende suit le même
+     ordre que le dessin. Sans tri, l'oeil fait l'aller-retour. */
+  const segments = Object.keys(alloc.classes).map(cl => ({
+    label: LIBELLES_CLASSES[cl], valeur: alloc.classes[cl], couleur: COULEURS_CLASSES[cl],
+    sous: (pochesParClasse[cl] || []).slice(0, 3).join(' · ')
+  })).sort((a, b) => b.valeur - a.valeur);
+
+  /* Le centre de l'anneau dit la classe dominante. C'est le chiffre qu'on
+     vient chercher en premier — « combien d'actions ? » —, et le lire au
+     coeur du dessin évite de comparer quatre arcs à l'oeil. */
+  const dominante = segments.filter(g => g.valeur > 0)
+    .reduce((a, b) => (b.valeur > a.valeur ? b : a), { valeur: -1 });
 
   /* Sans contexte, la vue s'affiche quand même — l'allocation stratégique du
      profil est une réponse complète, pas un pis-aller. Elle dit seulement
@@ -230,8 +263,20 @@ function rendreAllocation() {
       ' pour le profil seul. Ce coussin évite d\'avoir à vendre des actions pendant une baisse de marché.</div>' : '') +
 
     '<div class="grille deux">' +
-      '<div class="carte"><h3>Répartition par classe d\'actifs</h3>' +
-        '<div class="graphique">' + donut(segments) + '<div style="flex:1;min-width:200px">' + legende(segments) + '</div></div>' +
+      '<div class="carte carte-repartition">' +
+        '<div class="tete-carte"><h3>Répartition par classe d\'actifs</h3>' +
+        /* Le badge dit la NATURE de ce qui est montré, là où on le regarde.
+           Le bandeau « aucun contexte renseigné » le dit déjà en toutes
+           lettres plus haut ; le badge le redit sur la carte elle-même, pour
+           qui arrive par le graphique et non par le texte. */
+        (sansContexte ? '<span class="badge violet">' +
+          echapper(mot('alloc.badge.strategique', 'Stratégique seule')) + '</span>' : '') +
+        '</div>' +
+        '<div class="graphique">' +
+          donut(segments, 208, 30, dominante.valeur > 0
+            ? { valeur: pct(dominante.valeur), libelle: dominante.label } : null) +
+          '<div style="flex:1;min-width:220px">' + legende(segments) + '</div>' +
+        '</div>' +
       '</div>' +
       '<div class="carte"><h3>' + echapper(mot('alloc.barres.titre', 'Stratégique vs tactique')) + '</h3>' +
         '<div class="barres">' + Object.keys(alloc.classes).map(cl => {
