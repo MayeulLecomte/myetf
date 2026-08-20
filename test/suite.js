@@ -700,6 +700,49 @@ console.log('\n== Entonnoir de sélection ==');
 
    Il lit le SOURCE, pas la portée : c'est le seul moyen de voir un nom
    déclaré deux fois, puisqu'à l'exécution il n'en reste qu'un. */
+/* ============================================================
+   RAPPROCHEMENT DE L'UNIVERS AVEC LE CATALOGUE
+   ------------------------------------------------------------
+   Deux pièges structurels ont été mesurés et écartés une fois ;
+   ces contrôles sont là pour qu'on ne les réintroduise pas en
+   croyant bien faire.
+   ============================================================ */
+console.log('\n== Rapprochement univers / catalogue ==');
+(function () {
+  if (typeof ECARTS_UNIVERS === 'undefined') {
+    console.log('   (pas de rapprochement en place — contrôles ignorés)');
+    return;
+  }
+  const champs = new Set(ECARTS_UNIVERS.lignes.map(l => l.champ));
+
+  ok(!champs.has('encours'),
+     "l'encours n'est PAS rapproché — Morningstar donne le fonds entier, justETF la part");
+  ok(!champs.has('devise'),
+     "la devise n'est PAS rapprochée — le catalogue donne celle de la part cotée");
+  ok(!champs.has('nom'),
+     "le nom ne déclenche rien — les nuages vrai/faux se recouvrent, aucun seuil ne sépare");
+
+  ok(ECARTS_UNIVERS.controles === ETF_UNIVERS.length,
+     'le rapprochement porte sur les ' + ETF_UNIVERS.length + ' supports de l\'univers');
+
+  /* Un écart de frais sous le centième est un arrondi, pas un changement
+     de tarif : 0,20 et 0,2 ne doivent jamais produire de ligne. */
+  const arrondis = ECARTS_UNIVERS.lignes.filter(l =>
+    l.champ === 'ter' && Math.abs(Number(l.releve) - Number(l.catalogue)) <= 0.01);
+  ok(arrondis.length === 0,
+     'aucun écart de frais ne tient à un arrondi' +
+     (arrondis.length ? ' — ' + arrondis.map(l => l.isin).join(', ') : ''));
+
+  /* Chaque ligne signalée doit pouvoir être rouverte : sans l'ISIN, on ne
+     sait pas quelle fiche justETF aller relire. */
+  const orphelines = ECARTS_UNIVERS.lignes.filter(l =>
+    !l.isin || !ETF_UNIVERS.some(e => e.isin === l.isin));
+  ok(orphelines.length === 0, 'chaque écart nomme un support de l\'univers');
+
+  console.log('   ' + ECARTS_UNIVERS.lignes.length + ' écart(s) au rapprochement du ' +
+              ECARTS_UNIVERS.genere);
+})();
+
 console.log('\n== Espace de noms ==');
 (function () {
   const fichiers = Object.keys(typeof SOURCES !== 'undefined' ? SOURCES : {});

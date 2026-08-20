@@ -164,9 +164,21 @@ jobs:
 
           echo "Notations retenues : $AVANT supports, harnais vert."
 
+      # Rapproche l'univers de travail du catalogue et écrit la liste des
+      # écarts. Aucun appel réseau : le catalogue est déjà là. Il ne corrige
+      # rien — le relevé manuel reste la référence, la liste dit seulement
+      # quelles fiches justETF rouvrir au prochain relevé trimestriel.
+      #
+      # Non bloquant : un rapprochement en échec ne doit pas retenir un
+      # catalogue par ailleurs bon. Il n'est de toute façon qu'une aide à
+      # la relecture.
+      - name: Rapprocher l'univers du catalogue
+        continue-on-error: true
+        run: node scripts/ecarts.mjs | tee /tmp/ecarts.txt
+
       - name: Versionner les ressources si le catalogue a changé
         run: |
-          if [ -n "$(git status --porcelain js/data/catalogue-etf.js js/data/etf-univers.js)" ]; then
+          if [ -n "$(git status --porcelain js/data/catalogue-etf.js js/data/etf-univers.js js/data/ecarts-univers.js)" ]; then
             python3 - <<'PY'
           import re, datetime, pathlib
           p = pathlib.Path('index.html')
@@ -190,7 +202,9 @@ jobs:
 
           $(grep -E 'supports retenus|rattachés à une poche|cotés sur Euronext|perf 12 mois|clôture' /tmp/rapport.txt || true)
 
-          $(if [ "$(cat /tmp/notations-etat.txt 2>/dev/null)" = 'ok' ]; then grep -E 'Notées :' /tmp/notations.txt || true; else echo 'Notations non retenues — voir le résumé du job.'; fi)"
+          $(if [ "$(cat /tmp/notations-etat.txt 2>/dev/null)" = 'ok' ]; then grep -E 'Notées :' /tmp/notations.txt || true; else echo 'Notations non retenues — voir le résumé du job.'; fi)
+
+          $(grep -E 'supports contrôlés' /tmp/ecarts.txt || true)"
           # Le relevé des cours écrit dans le même dépôt. Il ne tombe pas à la
           # même heure, mais un déclenchement manuel peut se croiser : on se
           # replace sur la pointe plutôt que d'échouer sur un push non

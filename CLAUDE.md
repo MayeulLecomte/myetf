@@ -813,6 +813,44 @@ rouge et n'en veut pas.
 Le seuil des notations n'est pas décoratif non plus : à quarante-cinq
 jours, c'est qu'un passage mensuel a échoué sans que personne ne le voie.
 
+## Le rapprochement ne compare que ce qui a la même définition
+
+Chaque passage mensuel du catalogue rapproche les 42 supports de l'univers
+du screener Morningstar et écrit `js/data/ecarts-univers.js`. **Rien n'est
+écrasé** : le relevé manuel justETF reste la référence, la liste dit
+seulement quelles fiches rouvrir au prochain relevé trimestriel. Le premier
+passage l'a montré — sur les trois écarts de frais trouvés, deux ont été
+revérifiés le jour même sur justETF, et **c'est le catalogue qui avait tort
+les deux fois**.
+
+**Trois colonnes ont l'air comparables et ne le sont pas.** Les inclure
+noierait les vrais écarts sous trente lignes de bruit tous les mois, et la
+liste serait abandonnée au deuxième passage.
+
+| Colonne | Pourquoi elle est dehors |
+|---|---|
+| **Encours** | Morningstar donne la taille du FONDS ENTIER, justETF celle de la PART. Les quatre parts de Xtrackers MSCI Japan portent toutes 7 623 M€ au catalogue quand la 4C EUR-Hedged en fait 924 : **+725 % d'écart apparent, zéro information** |
+| **Devise** | Le catalogue donne celle de la PART COTÉE (« 2D USD » → USD), notre champ celle du FONDS. Seize « USD vs EUR » qui n'en sont pas |
+| **Nom** | Mesuré : les paires VRAIES scorent de 0,60 à 1,00, les paires FAUSSES jusqu'à 0,80. **Les deux nuages se recouvrent, aucun seuil ne sépare.** Bas, il laisse passer un ISIN faux ; haut, il crie sur une abréviation |
+
+La poche a été essayée aussi : trois écarts permanents, qui sont des choix
+de classement et non des erreurs — le Nasdaq 100 est en `act-tech` chez nous
+et en `act-us` chez Morningstar. Un signal qui ne se corrigera jamais est un
+signal qu'on apprend à ignorer.
+
+**Reste ce qui a la même définition des deux côtés : les frais et la
+présence.** Les frais tolèrent le centième — 0,20 et 0,2 sont le même
+nombre. La disparition d'un ISIN du catalogue dit une fermeture ou une
+fusion, et n'a aucun faux positif.
+
+Le nom du catalogue est **affiché** à côté du nôtre sur chaque ligne
+signalée : l'œil tranche là où l'algorithme ne peut pas. Il ne déclenche
+rien. **Ne pas le rétablir en déclencheur sans refaire la mesure** — elle
+est reproductible, et elle échouera de nouveau.
+
+`node test/runner.js` tient ces trois exclusions par des assertions : un
+rapprochement qui se remettrait à comparer l'encours fait rougir le harnais.
+
 ## La valorisation de repli n'invente pas de cours
 
 Le catalogue porte une dernière clôture pour 4 525 supports. Elle ne sert de
