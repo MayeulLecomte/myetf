@@ -194,13 +194,21 @@ const ILLUSTRATIONS_VUES = {
   profil:       'profil',
   note:         'boussole',
   macro:        'contexte',
-  /* ⚠ PROVISOIRE. La balance ne convient pas ; le dessin de remplacement —
-     un camembert au trait, une part en bleu — est attendu sous
-     `img/repartition.png` (320 px, fond transparent). Le jour où il est
-     déposé : remplacer 'logo' par 'repartition' ici, et rien d'autre. */
-  allocation:   'logo',
+  /* Un camembert au trait, une part remplie : la répartition se lit avant
+     qu'on ait lu le titre. La balance qu'il remplace est passée aux
+     arbitrages, où elle dit ce qu'elle sait dire — rééquilibrer deux
+     plateaux.
+
+     ⚠ SA PART EST VIOLETTE (#6C63FF), et c'est voulu : le dessin est déjà
+     prêt pour la bascule pastel à venir. C'est aujourd'hui la seule entorse
+     au « bleu, seule couleur » — ne pas la « corriger » en croyant à un
+     oubli. */
+  allocation:   'repartition',
   portefeuille: 'fiches',
-  arbitrages:   'arbitrages',
+  /* La balance : deux plateaux qu'on rééquilibre, c'est exactement un
+     arbitrage. Elle ouvrait « Mon allocation », où elle disait un dosage
+     et non un mouvement. */
+  arbitrages:   'balance',
   situation:    'port',
   revenus:      'revenus',
   journal:      'journal',

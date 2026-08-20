@@ -193,9 +193,9 @@ reconnaître le premier. Huit dessins ont été ajoutés pour lever les doublons
 | `profil` | Profil de risque |
 | `boussole` | Note du jour |
 | `contexte` | Contexte |
-| `balance` | Allocation cible |
+| `repartition` | Allocation cible |
+| `balance` | Arbitrages |
 | `fiches` | Sélection des supports |
-| `arbitrages` | Arbitrages |
 | `port` | Situation |
 | `revenus` | Revenus & rachats |
 | `journal` | Journal |
@@ -207,6 +207,16 @@ reconnaître le premier. Huit dessins ont été ajoutés pour lever les doublons
 La table qui fait foi est `ILLUSTRATIONS_VUES` dans `js/ui/socle.js`. Le
 bandeau « allocation stratégique seule » portait une boussole de 44 px : elle
 est retirée, l'allocation cible en montrait deux.
+
+**Une entorse assumée à « le bleu, seule couleur » :** la part remplie du
+camembert de l'allocation est **violette (`#6C63FF`)**, et non bleue. Le
+dessin est déjà prêt pour la bascule pastel à venir. Ne pas la « corriger »
+en croyant à un oubli.
+
+**La balance a changé de vue.** Elle ouvrait l'allocation, où elle disait un
+dosage ; elle ouvre les arbitrages, où deux plateaux qu'on rééquilibre
+disent exactement le geste. `arbitrages.png` devient libre — le garder tant
+qu'aucune vue ne le réclame, ou le supprimer au prochain rangement.
 
 **Deux tailles, et deux seulement**, tenues par `TAILLE_ILLUSTRATION_TITRE`
 (38 px) et `TAILLE_ILLUSTRATION_BANNIERE` (180 px) dans `js/ui/socle.js`. Elles
