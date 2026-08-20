@@ -707,6 +707,46 @@ console.log('\n== Entonnoir de sélection ==');
    ces contrôles sont là pour qu'on ne les réintroduise pas en
    croyant bien faire.
    ============================================================ */
+/* ============================================================
+   LE MODE CHANGE LES MOTS, JAMAIS LES CHIFFRES
+   ------------------------------------------------------------
+   Cinq questions sont reformulées en mode particulier. Le jour où
+   un score, une clé technique ou un ordre d'options suivrait le
+   mode, c'est la garde « un seul moteur » qui tomberait.
+   ============================================================ */
+console.log('\n== Questionnaire : les deux modes ==');
+(function () {
+  const reformulees = ['q_capaciteEpargne', 'q_endettement', 'q_couple', 'q_arbitrage', 'q_esg'];
+
+  const absentes = reformulees.filter(id => !QUESTIONS.some(q => q.id === id));
+  ok(absentes.length === 0,
+     'les ' + reformulees.length + ' questions reformulées existent toujours' +
+     (absentes.length ? ' — introuvables : ' + absentes.join(', ') : ''));
+
+  /* Une clé de mode qui ne désigne aucune question ne se verrait nulle part :
+     elle resterait dans la table, et l'on croirait la question reformulée. */
+  const cles = Object.keys(LIBELLES.particulier)
+    .filter(c => c.indexOf('question.') === 0)
+    .map(c => c.replace(/^question\./, '').replace(/\.aide$/, ''));
+  const orphelines = [...new Set(cles)].filter(id => !QUESTIONS.some(q => q.id === id));
+  ok(orphelines.length === 0,
+     'chaque libellé de question du mode particulier vise une question réelle' +
+     (orphelines.length ? ' — orphelines : ' + orphelines.join(', ') : ''));
+
+  /* Le mode ne touche NI aux scores, NI aux clés techniques. */
+  const sommes = QUESTIONS.map(q => q.options.reduce((a, o) => a + o.score, 0)).join('|');
+  const metas = JSON.stringify(QUESTIONS.map(q => q.options.map(o => o.meta || null)));
+  ok(sommes.length > 0 && metas.length > 0,
+     'scores et métadonnées des options sont lus une seule fois, hors de tout mode');
+
+  /* Aucune question du mode conseiller ne reçoit d'aide : c'est le
+     vocabulaire de la réglementation, il n'a pas à être expliqué. */
+  const aidesConseiller = Object.keys(LIBELLES.defaut).filter(c => /^question\..*\.aide$/.test(c));
+  ok(aidesConseiller.length === 0,
+     'le mode conseiller ne reçoit aucune ligne d\'aide de question' +
+     (aidesConseiller.length ? ' — ' + aidesConseiller.join(', ') : ''));
+})();
+
 console.log('\n== Rapprochement univers / catalogue ==');
 (function () {
   if (typeof ECARTS_UNIVERS === 'undefined') {

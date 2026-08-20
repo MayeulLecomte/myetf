@@ -761,6 +761,41 @@ portée, et n'a pas à la porter — il ne reprend pas la note.
 L'état vide d'un contexte non renseigné ne change pas : voir
 « Un contexte non renseigné n'applique aucune déviation ».
 
+## Le questionnaire se dit autrement à qui répond sur son propre argent
+
+Cinq questions étaient écrites dans le vocabulaire du conseiller — capacité
+d'épargne, taux d'endettement, couple rendement/risque, arbitrages tactiques,
+critères extra-financiers. **Elles sont justes**, c'est celui de la
+réglementation ; elles ne se comprennent simplement pas quand personne n'est
+là pour les traduire.
+
+Le mode particulier les reformule, et **lui seul** :
+
+| Clé | Ce qu'elle fait |
+|---|---|
+| `question.<id>` | remplace le texte de la question |
+| `question.<id>.aide` | ajoute une ligne d'aide SOUS elle |
+
+Les deux sont **absentes du mode conseiller**, qui garde son vocabulaire mot
+pour mot et ne reçoit aucune aide : un professionnel n'a pas besoin qu'on lui
+explique un taux d'endettement, et une explication de trop se lit comme une
+condescendance.
+
+**Aucune question n'a besoin d'être recopiée dans la table.** `T()` rend la
+clé quand elle n'existe nulle part, et `libelleQuestion()` s'en sert
+d'aiguillage : le repli est la question elle-même, telle qu'elle est écrite
+dans `js/data/questionnaire.js`.
+
+**Le score, l'ordre des options et les clés techniques ne dépendent d'aucun
+mode**, et ne doivent jamais en dépendre — c'est la garde « un seul moteur ».
+Le harnais le tient : il refuse une clé de mode qui ne désigne aucune
+question réelle, et une ligne d'aide qui se serait glissée côté conseiller.
+
+Une option porte déjà son écart de mode depuis longtemps —
+`option.arbitrages.conseillee`, « sur proposition de mon conseiller » contre
+« sur proposition de cet outil ». Elle reste d'accord avec la question
+reformulée, qui parle elle aussi de ce que « l'outil » propose.
+
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
 Section « Lecture du contexte de marché ». Sans contexte saisi,

@@ -633,6 +633,34 @@ function majLibelleIntensite() {
    VUE 2 — QUESTIONNAIRE
    ============================================================ */
 
+/* ------------------------------------------------------------
+   LE TEXTE D'UNE QUESTION DÉPEND DU MODE, SON SCORE NON
+   ------------------------------------------------------------
+   Cinq questions sont écrites dans le vocabulaire du conseiller —
+   capacité d'épargne, taux d'endettement, couple rendement/risque,
+   arbitrages tactiques, critères extra-financiers. Elles sont
+   justes, et c'est celui de la réglementation ; elles ne se
+   comprennent simplement pas quand on répond sur son propre argent.
+
+   Une clé `question.<id>` dans la table `particulier` remplace le
+   texte ; une clé `question.<id>.aide` ajoute une ligne SOUS lui.
+   Les deux sont absentes du mode conseiller, qui garde son
+   vocabulaire mot pour mot.
+
+   Le repli est la question elle-même : `T()` rend la clé quand elle
+   n'existe nulle part, et c'est ce test-là qui sert d'aiguillage.
+   Aucune question n'a donc besoin d'être recopiée dans la table.
+
+   ⚠ Le score, l'ordre des options et les clés techniques ne
+   dépendent d'aucun mode, et ne doivent jamais en dépendre — c'est
+   la garde « un seul moteur ». */
+function libelleQuestion(q, suffixe) {
+  const cle = 'question.' + q.id + (suffixe || '');
+  const texte = T(cle);
+  if (texte !== cle) return texte;
+  return suffixe === '.aide' ? (q.aide || '') : q.texte;
+}
+
 function rendreQuestionnaire() {
   const sections = [];
   QUESTIONS.forEach(q => { if (sections.indexOf(q.section) < 0) sections.push(q.section); });
@@ -641,8 +669,9 @@ function rendreQuestionnaire() {
     const qs = QUESTIONS.filter(q => q.section === sec);
     return '<div class="carte section-q"><h3>' + echapper(sec) + '</h3>' + qs.map(q => {
       const rep = Etat.reponses[q.id];
-      return '<div class="question"><div class="enonce">' + echapper(q.texte) + '</div>' +
-        (q.aide ? '<div class="aide">' + echapper(q.aide) + '</div>' : '') +
+      const aide = libelleQuestion(q, '.aide');
+      return '<div class="question"><div class="enonce">' + echapper(libelleQuestion(q)) + '</div>' +
+        (aide ? '<div class="aide">' + echapper(aide) + '</div>' : '') +
         '<div class="options">' + q.options.map((o, i) =>
           '<label class="' + (rep === i ? 'choisi' : '') + '">' +
           '<input type="radio" name="' + q.id + '" value="' + i + '" data-question="' + q.id + '"' +

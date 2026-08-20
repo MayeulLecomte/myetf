@@ -182,6 +182,50 @@ const LIBELLES = {
 
     'option.arbitrages.conseillee': 'Oui, sur proposition de cet outil',
 
+    /* ---------- Questions du profilage ----------
+       Les mêmes questions, dites autrement. Le score, les clés techniques et
+       l'ordre des options ne changent PAS : seul le vocabulaire change, et
+       il ne change que pour qui répond sur son propre argent.
+
+       Une clé `question.<id>` remplace le texte de la question ; une clé
+       `question.<id>.aide` ajoute une ligne d'aide SOUS elle. Les deux sont
+       absentes du mode conseiller — le professionnel garde son vocabulaire,
+       qui est celui de la réglementation, et n'a pas besoin qu'on lui
+       explique un taux d'endettement. */
+
+    'question.q_capaciteEpargne': 'Combien pouvez-vous mettre de côté chaque mois ?',
+    'question.q_capaciteEpargne.aide':
+      'Ce qu\'il reste une fois payées les dépenses courantes — même si vous ne l\'investissez ' +
+      'pas. Sert à mesurer le risque que vous pouvez prendre.',
+
+    'question.q_endettement':
+      'Quelle part de vos revenus part chaque mois dans des remboursements de crédits ?',
+    'question.q_endettement.aide':
+      'Additionnez toutes vos mensualités de crédit (immobilier, voiture, conso…) et comparez à ' +
+      'vos revenus. 600 € de crédits pour 2 000 € de revenus = 30 %. Aucun crédit = 0 %.',
+
+    'question.q_couple':
+      'Qu\'est-ce qui vous correspond le mieux : gagner plus en acceptant des baisses plus ' +
+      'fortes en chemin, ou gagner moins mais plus tranquillement ?',
+    'question.q_couple.aide':
+      'Rendement et risque vont toujours ensemble : viser plus haut, c\'est accepter des baisses ' +
+      'temporaires plus fortes. Sur 10 ans, une baisse en route n\'est pas une perte — sauf si ' +
+      'vous devez vendre à ce moment-là.',
+
+    'question.q_arbitrage':
+      'Acceptez-vous que l\'outil vous propose quelques ajustements par an (vendre un peu d\'un ' +
+      'support, renforcer un autre) ?',
+    'question.q_arbitrage.aide':
+      '2 à 4 propositions par an au maximum. Vous restez libre de les suivre ou non. Si vous ' +
+      'préférez ne rien toucher entre deux rééquilibrages, c\'est une réponse tout aussi valable.',
+
+    'question.q_esg':
+      'Souhaitez-vous privilégier des placements responsables (environnement, social) ?',
+    'question.q_esg.aide':
+      'Si oui, l\'outil privilégiera des ETF qui excluent ou limitent certains secteurs ' +
+      '(énergies fossiles, armement…) selon des critères dits ESG. Cela peut restreindre le ' +
+      'choix et légèrement modifier la performance, dans un sens comme dans l\'autre.',
+
     'rapport.ligne.client':     'Dossier',
 
     'phrase.accroche.longue':
