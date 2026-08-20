@@ -244,6 +244,19 @@ function annexeMethode(numero) {
 /* Le rapport s'ouvre sur l'état des lieux : d'où l'on part, avant de dire
    où l'on va. Le relevé détaillé, lui, reste dans l'onglet « Situation »,
    qui seul permet de choisir la date et de figer un arrêté. */
+/* Les coordonnées de l'en-tête du document. Facultatives à la saisie, donc
+   facultatives à l'impression : une ligne vide sur un document remis se lit
+   comme un oubli. */
+function lignesCoordonnees() {
+  const i = Etat.identite;
+  const identite = [i.prenom, i.nomFamille].map(x => (x || '').trim()).filter(Boolean).join(' ');
+  return (identite ? ligne(T('rapport.ligne.identite'), identite) : '') +
+    ((i.adresse || '').trim() && (Etat.mode || MODE_DEFAUT) !== 'particulier'
+      ? ligne('Adresse', i.adresse.trim()) : '') +
+    ((i.telephone || '').trim() ? ligne('Téléphone', i.telephone.trim()) : '') +
+    ((i.email || '').trim() ? ligne('E-mail', i.email.trim()) : '');
+}
+
 function blocSituationRapport(numero) {
   const aujourd = aujourdhuiISO();
 
@@ -465,6 +478,10 @@ function rendreRapport() {
       '<h3>Proposition d\'allocation d\'actifs</h3>' +
       '<table><tbody>' +
       ligne(T('rapport.ligne.client'), Etat.identite.nom || '—') +
+      /* Les coordonnées ne paraissent QUE si elles ont été saisies : une ligne
+         « Téléphone — » sur un document remis dit qu'on a oublié de le
+         demander, là où l'absence de ligne ne dit rien du tout. */
+      lignesCoordonnees() +
       ligne('Date', dateFr()) +
       ligne('Enveloppe', libelleEnveloppe()) +
       ligne('Montant', euro(Number(Etat.identite.montant) || 0)) +

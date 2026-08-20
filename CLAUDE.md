@@ -961,6 +961,38 @@ colonnes et deux boutons CSV s'adressent à qui source ses séries. Sous un
 la règle appliquée partout dans cette passe : **on déplace, on ne cache pas** —
 le SRI au rapport, les pourcentages au conseiller, les séries sous un pli.
 
+## Les coordonnées sont facultatives, et le restent
+
+Prénom, nom, téléphone, e-mail — plus l'adresse en mode conseiller, qui n'a
+de sens que sur un document remis. **Aucun calcul n'en dépend** : un dossier
+sans coordonnées se profile, s'alloue et s'imprime exactement comme un autre.
+
+Trois règles qui vont ensemble :
+
+- **le libellé porte « (facultatif) »**, dans les deux modes. Un champ vide
+  qui ne le dit pas se lit comme un champ oublié ;
+- **une ligne sous le bloc dit où elles vont** : « Ces informations restent
+  dans ce navigateur et ne sont utilisées que pour votre synthèse. » C'est le
+  seul endroit de l'application où l'on saisit autre chose que des montants,
+  et cela mérite d'être redit là ;
+- **le document remis ne montre que ce qui est rempli.** Une ligne
+  « Téléphone — » sur une proposition signée dit qu'on a oublié de le
+  demander ; l'absence de ligne ne dit rien du tout.
+
+**L'accueil salue quand il sait qui il salue** — « Bonjour Marie » à la place
+d'« Aujourd'hui », dans les deux modes : un conseiller ouvre le dossier de
+quelqu'un. Sans prénom, le titre reste celui de la vue. Un « Bonjour » suivi
+d'un blanc serait pire que pas de bonjour.
+
+## Une phrase d'ouverture ne se pose qu'une fois
+
+`poserOuvertures()` ressort par son `return` du haut dès que l'ouverture
+existe : au changement de mode, elle ne repasse pas. Le sous-titre créé depuis
+`SOUS_TITRES_VUES` porte donc `data-mot`, et c'est `poserMots()` qui le
+retraduit. Sans ce relais, la phrase resterait celle du mode d'ouverture de
+l'application — un défaut qui ne se voit qu'en basculant de mode, donc jamais
+pendant qu'on écrit la phrase.
+
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
 Section « Lecture du contexte de marché ». Sans contexte saisi,

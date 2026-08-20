@@ -13,6 +13,22 @@
    pris sous `champ.<id>.exemple`. */
 const IDENTITE = [
   { id: 'nom',        type: 'text',   exemple: true },
+  /* ---------- Coordonnées, TOUTES facultatives ----------
+     Elles ne servent qu'à personnaliser l'accueil et à remplir l'en-tête du
+     document remis. AUCUN CALCUL n'en dépend, et rien n'oblige à les saisir :
+     un dossier sans coordonnées se profile, s'alloue et s'imprime exactement
+     comme un autre.
+
+     Elles ne quittent pas le navigateur — c'est vrai de tout le dossier, mais
+     ces quatre-là méritent qu'on le redise sous le bloc : ce sont les seules
+     qui désignent une personne. */
+  { id: 'prenom',     type: 'text',   exemple: true },
+  { id: 'nomFamille', type: 'text',   exemple: true },
+  { id: 'telephone',  type: 'tel',    exemple: true },
+  { id: 'email',      type: 'email',  exemple: true },
+  /* L'adresse n'a de sens que sur un document remis et signé : elle ne
+     paraît qu'en mode conseiller. */
+  { id: 'adresse',    type: 'text',   exemple: true, masqueEn: 'particulier' },
   { id: 'age',        type: 'number', min: 18, max: 100, defaut: 45, suffixe: 'ans' },
   { id: 'montant',    type: 'number', min: 0, defaut: 100000, suffixe: '€' },
   { id: 'versement',  type: 'number', min: 0, defaut: 0, suffixe: '€/mois' },

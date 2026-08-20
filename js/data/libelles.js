@@ -77,6 +77,19 @@ const LIBELLES = {
     'champ.nom':                'Nom / référence dossier',
     'champ.nom.exemple':        'M. et Mme Dupont',
     'champ.age':                'Âge du client',
+    'champ.prenom':             'Prénom du client (facultatif)',
+    'champ.prenom.exemple':     'Marie',
+    'champ.nomFamille':         'Nom du client (facultatif)',
+    'champ.nomFamille.exemple': 'Dupont',
+    'champ.telephone':          'Téléphone (facultatif)',
+    'champ.telephone.exemple':  '06 12 34 56 78',
+    'champ.email':              'E-mail (facultatif)',
+    'champ.email.exemple':      'marie.dupont@exemple.fr',
+    'champ.adresse':            'Adresse (facultatif)',
+    'champ.adresse.exemple':    '12 rue des Lilas, 75011 Paris',
+    'phrase.identite.coordonnees':
+      'Coordonnées facultatives. Elles ne servent qu\'à l\'en-tête du document remis, ne quittent pas ' +
+      'ce navigateur, et n\'entrent dans aucun calcul.',
     'champ.montant':            'Montant à investir',
     'champ.versement':          'Versement programmé mensuel',
     'champ.enveloppe':          'Enveloppe support',
@@ -84,6 +97,7 @@ const LIBELLES = {
 
     /* ---------- Le rapport ---------- */
     'rapport.ligne.client':     'Client',
+    'rapport.ligne.identite':   'Client (nom)',
 
     /* ---------- Une option du questionnaire ----------
        Seul son libellé dépend du mode. Son score et son `meta` n'en
@@ -103,6 +117,17 @@ const LIBELLES = {
     /* Une seule ligne, pour l'accueil d'un dossier vide. Qui arrive là n'a
        rien à lire : il a un dossier à commencer. La version longue reste
        pour l'écran d'entrée, où elle est à sa place. */
+    /* L'accueil salue quand il sait qui il salue. Dans les deux modes : un
+       conseiller ouvre le dossier de quelqu'un, et le prénom qu'il a saisi est
+       celui de ce quelqu'un. */
+    'phrase.bonjour': 'Bonjour {prenom}',
+
+    /* « Ce que le profil commande » se lit comme un ordre venu d'ailleurs, et
+       « ce qui l'en écarte » ne dit pas qui écarte quoi. La version conseiller
+       nomme les deux temps du calcul — la stratégique, puis la déviation. */
+    'sousTitre.allocation':
+      'La répartition que porte le profil, poche par poche, et la déviation tactique qui s\'y ajoute.',
+
     'phrase.accroche.ligne':
       '<strong>myetf construit et suit une allocation d\'ETF pour un client</strong> — les ' +
       'décisions sont les vôtres.',
@@ -177,6 +202,14 @@ const LIBELLES = {
     'champ.nom':                'Nom du dossier (facultatif)',
     'champ.nom.exemple':        'Assurance-vie 2026',
     'champ.age':                'Votre âge',
+    'champ.prenom':             'Votre prénom (facultatif)',
+    'champ.prenom.exemple':     'Marie',
+    'champ.nomFamille':         'Votre nom (facultatif)',
+    'champ.nomFamille.exemple': 'Dupont',
+    'champ.telephone':          'Votre téléphone (facultatif)',
+    'champ.email':              'Votre e-mail (facultatif)',
+    'phrase.identite.coordonnees':
+      'Ces informations restent dans ce navigateur et ne sont utilisées que pour votre synthèse.',
     'champ.versement':          'Ce que vous ajoutez chaque mois',
     'champ.enveloppe':          'Où placez-vous cet argent ?',
     'champ.montant':            'Combien voulez-vous placer ?',
@@ -480,6 +513,7 @@ const LIBELLES = {
       'choix et légèrement modifier la performance, dans un sens comme dans l\'autre.',
 
     'rapport.ligne.client':     'Dossier',
+    'rapport.ligne.identite':   'Nom',
 
     'phrase.accroche.longue':
       '<strong>myetf construit et suit votre allocation d\'ETF</strong> — du questionnaire de ' +
@@ -487,6 +521,9 @@ const LIBELLES = {
       'conseil : les décisions sont les vôtres.',
     'phrase.accroche.courte':
       '<strong>Votre allocation d\'ETF</strong> — vos décisions, votre suivi.',
+    'sousTitre.allocation':
+      'Votre répartition, poche par poche — et les ajustements appliqués.',
+
     'phrase.accroche.ligne':
       '<strong>myetf construit et suit votre allocation d\'ETF</strong> — les décisions sont ' +
       'les vôtres.',

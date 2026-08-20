@@ -230,7 +230,16 @@ function poserOuvertures() {
     } else if (SOUS_TITRES_VUES[vue]) {
       const p = document.createElement('p');
       p.className = 'intro';
-      p.textContent = SOUS_TITRES_VUES[vue];
+      /* La phrase d'ouverture suit le mode comme le reste : une clé
+         `sousTitre.<vue>` la remplace, et son absence rend celle d'origine.
+
+         `data-mot` la confie ensuite à `poserMots()` : l'ouverture n'est
+         posée QU'UNE FOIS — un changement de mode ressort ici par le
+         `return` du haut —, et sans ce relais la phrase resterait celle du
+         mode d'origine. */
+      p.dataset.mot = 'sousTitre.' + vue;
+      p.dataset.motDefaut = SOUS_TITRES_VUES[vue];
+      p.textContent = mot('sousTitre.' + vue, SOUS_TITRES_VUES[vue]);
       bloc.appendChild(p);
     }
 

@@ -167,6 +167,23 @@ function ouvrirPoche(poche) {
    Le dessin ne paraît QUE sur un dossier neuf : vu tous les jours, il
    cesserait d'être vu. Sur un dossier entamé il ne reste que l'accroche
    courte, seule et sans dessin — c'est la même règle qu'avant. */
+/* ------------------------------------------------------------
+   L'ACCUEIL SALUE QUAND IL SAIT QUI IL SALUE
+   ------------------------------------------------------------
+   « Bonjour Marie » à la place de « Aujourd'hui », dès qu'un
+   prénom est saisi — dans les deux modes : un conseiller ouvre le
+   dossier de quelqu'un, et le prénom qu'il a saisi est celui de ce
+   quelqu'un.
+
+   Le prénom est FACULTATIF : sans lui, le titre reste celui de la
+   vue, et rien ne manque. C'est la seule règle qui compte ici — un
+   « Bonjour  » avec un blanc serait pire que pas de bonjour.
+   ------------------------------------------------------------ */
+function titreAccueil() {
+  const prenom = (Etat.identite.prenom || '').trim();
+  return prenom ? T('phrase.bonjour', { prenom }) : T('vue.accueil.nav');
+}
+
 function ouvertureAccueil() {
   /* Un dossier entamé n'a pas d'ouverture : le dessin, vu tous les jours,
      cesserait d'être vu. La phrase d'accroche, elle, est posée par l'appelant
@@ -185,7 +202,7 @@ function ouvertureAccueil() {
   return '<div class="ouverture-vue sans-impression">' +
       illustration(Etat.mode === 'particulier' ? 'logo' : 'cafe',
                    tailleOuverture(Etat.mode === 'particulier' ? 'logo' : 'cafe')) +
-      '<h2>' + titreSouligne(T('vue.accueil.nav')) + '</h2>' +
+      '<h2>' + titreSouligne(titreAccueil()) + '</h2>' +
       '<p class="intro">' + echapper(SOUS_TITRES_VUES.accueil) + '</p>' +
       '<div class="ouverture-suite" aria-hidden="true"><span>Faites défiler</span>' +
         '<svg viewBox="0 0 24 24"><path d="M6 9.5 12 15.5 18 9.5"/></svg></div>' +
@@ -516,7 +533,7 @@ function rendreAccueil() {
     '<div class="ecran-aujourdhui">' +
       filPoches() +
       '<div class="ecran-aujourdhui-corps">' +
-        '<h2>' + titreSouligne('Aujourd\'hui') + '</h2>' +
+        '<h2>' + titreSouligne(titreAccueil()) + '</h2>' +
         verdict +
       '</div>' +
     '</div>' +
@@ -556,6 +573,9 @@ function rendreIdentite() {
   const c = $('#champs-identite');
   c.innerHTML = IDENTITE.map(f => {
     if (f.dependDe && Etat.identite[f.dependDe.champ] !== f.dependDe.valeur) return '';
+    /* Un champ qui n'a de sens que sur un document remis ne paraît pas à qui
+       ne remet rien à personne. */
+    if (f.masqueEn && (Etat.mode || MODE_DEFAUT) === f.masqueEn) return '';
     const val = Etat.identite[f.id] !== undefined ? Etat.identite[f.id] : (f.defaut !== undefined ? f.defaut : '');
     let saisie;
     if (f.type === 'select') {
@@ -584,7 +604,12 @@ function rendreIdentite() {
         '<option value="' + echapper(m.id) + '"' +
         ((Etat.mode || MODE_DEFAUT) === m.id ? ' selected' : '') + '>' +
         echapper(m.bouton) + '</option>').join('') + '</select>' +
-      '<span class="suffixe">Ne change ni les calculs ni le dossier.</span></div>';
+      '<span class="suffixe">Ne change ni les calculs ni le dossier.</span></div>' +
+    /* La phrase qui suit le bloc : ces quatre champs-là désignent une
+       personne, et c'est le seul endroit de l'application où l'on saisit
+       autre chose que des montants. */
+    '<p class="intro rappel-local" style="margin-top:6px">' +
+      echapper(T('phrase.identite.coordonnees')) + '</p>';
 
   /* Les contraintes de sélection sont l'outillage du conseiller : notation
      minimale, encours, frais, réplication, univers, référencement au contrat,

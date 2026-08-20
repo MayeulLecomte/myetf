@@ -194,7 +194,11 @@ const ILLUSTRATIONS_VUES = {
   profil:       'profil',
   note:         'boussole',
   macro:        'contexte',
-  allocation:   'balance',
+  /* ⚠ PROVISOIRE. La balance ne convient pas ; le dessin de remplacement —
+     un camembert au trait, une part en bleu — est attendu sous
+     `img/repartition.png` (320 px, fond transparent). Le jour où il est
+     déposé : remplacer 'logo' par 'repartition' ici, et rien d'autre. */
+  allocation:   'logo',
   portefeuille: 'fiches',
   arbitrages:   'arbitrages',
   situation:    'port',
