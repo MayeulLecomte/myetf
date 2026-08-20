@@ -465,6 +465,52 @@ async function lancer() {
     ok(!!tabbar && tabbar.querySelectorAll('button[data-groupe]').length >= 3,
        'la barre basse mobile porte ses destinations — ' +
        (tabbar ? tabbar.querySelectorAll('button[data-groupe]').length : 0) + ' groupes');
+
+    /* --- LE DERNIER ÉLÉMENT PASSE AU-DESSUS DE LA BARRE BASSE ---
+       La barre basse FLOTTE : elle ne pousse rien, elle recouvre. Le bas de
+       chaque vue doit donc réserver sa hauteur, et c'est `--marge-barre`
+       qui le fait. Rien ne signalait jusqu'ici qu'une vue avait cessé de la
+       réserver : la page se rend, aucune erreur n'est levée, et le dernier
+       bouton est simplement inatteignable — recouvert par la barre qui
+       passe par-dessus.
+
+       C'est le contrôle qui manquait au pied de l'accueil, et c'est celui
+       qu'il faut avant de toucher aux mises en page : une colonne collante
+       ou une grille qui change la hauteur d'une vue peut reprendre cette
+       réserve sans qu'aucun autre contrôle ne bronche.
+
+       On mesure le DERNIER élément de chaque vue contre le haut de la
+       barre. Une tolérance de 4 px absorbe les arrondis de sous-pixel. */
+    {
+      const barre = tabbar ? tabbar.getBoundingClientRect() : null;
+      const recouverts = [];
+      if (barre && barre.height > 0) {
+        vues.forEach(vue => {
+          try { w.afficher(vue); } catch (e) { return; }
+          const section = d.getElementById('vue-' + vue);
+          if (!section) return;
+          /* Le dernier enfant VISIBLE : un bloc masqué ne se recouvre pas. */
+          const enfants = [...section.children].filter(c => {
+            const r = c.getBoundingClientRect();
+            return r.height > 0 && r.width > 0;
+          });
+          if (!enfants.length) return;
+          const dernier = enfants[enfants.length - 1];
+          const r = dernier.getBoundingClientRect();
+          /* Position ABSOLUE dans le document, barre comprise : la barre
+             est fixe, son haut se lit dans le repère du viewport, et le
+             bas de la vue aussi une fois qu'on a défilé jusqu'en bas. */
+          const basVue = r.bottom + w.scrollY;
+          const hauteurDoc = d.documentElement.scrollHeight;
+          if (basVue > hauteurDoc - (barre.height - 4)) {
+            recouverts.push(vue + ' (' + Math.round(basVue - (hauteurDoc - barre.height)) + ' px sous le pli)');
+          }
+        });
+      }
+      ok(recouverts.length === 0,
+         'le dernier élément de chaque vue reste au-dessus de la barre basse' +
+         (recouverts.length ? ' — recouvert sur : ' + recouverts.join(', ') : ''));
+    }
   }
 
   /* --- Les textes d'aide ne sont pas écrasés ---

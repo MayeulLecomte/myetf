@@ -3506,3 +3506,74 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
     margin-top: 22px; margin-bottom: 22px;
   }
 }
+
+/* ============================================================
+   (h) OUVERTURE À GAUCHE, CONTENU À DROITE
+   ------------------------------------------------------------
+   Au-delà de 900 px, arriver sur une vue ne doit plus vouloir dire
+   arriver sur du vide. L'ouverture — dessin, titre surligné, phrase —
+   passe dans une colonne de gauche qui reste au regard pendant qu'on
+   défile ; le premier contenu utile est visible d'emblée à droite.
+
+   La règle ne s'applique QU'AUX VUES PORTANT `deux-colonnes`, posée
+   par `VUES_DEUX_COLONNES` — voir socle.js pour ce qui en est exclu,
+   et pourquoi.
+
+   SOUS 900 PX, RIEN NE CHANGE : l'empilement reste celui d'avant, et
+   « faites défiler » avec lui. Sur un téléphone, deux colonnes de
+   180 px ne sont pas une mise en page, c'est un accident.
+   ============================================================ */
+@media (min-width: 901px) {
+  /* `.actif` EST OBLIGATOIRE ICI, et ce n'est pas une précaution.
+     `.vue { display: none }` pèse (0,1,0) et `.vue.actif { display: block }`
+     (0,2,0). Une règle `.vue.deux-colonnes` pèse (0,2,0) elle aussi et,
+     placée plus bas dans la feuille, l'emportait sur le `none` : les vues
+     masquées portant la classe se rendaient TOUTES en même temps. Le ruban
+     annonçait « Profil de risque », l'écran montrait le formulaire client. */
+  .vue.deux-colonnes.actif {
+    display: grid;
+    /* 40 / 60. `minmax(0, …)` et non `2fr / 3fr` seuls : un enfant de
+       grille vaut `min-width: auto` et refuse de descendre sous la
+       largeur naturelle de son contenu — un tableau étirerait sa
+       colonne et mangerait l'autre. */
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    column-gap: 44px;
+    align-items: start;
+  }
+
+  /* Tout va à droite, sauf l'ouverture. Écrit dans cet ordre pour que la
+     règle suivante l'emporte sans surenchère de spécificité. */
+  .vue.deux-colonnes.actif > * { grid-column: 2; }
+
+  .vue.deux-colonnes.actif > .ouverture-vue {
+    grid-column: 1;
+    /* Elle occupe TOUTES les lignes : sans cela sa zone de grille se
+       limite à la première, et une position collante n'a de course que
+       dans sa propre zone — elle décrocherait au bout d'un écran. */
+    grid-row: 1 / -1;
+    position: sticky;
+    /* L'en-tête et le ruban sont collants : se caler dessous, sinon
+       l'ouverture leur passe derrière. `--h-entete` est mesuré à
+       l'exécution, jamais écrit à la main. */
+    top: calc(var(--h-entete, 56px) + 96px);
+
+    /* Elle cesse d'être un plein écran centré. */
+    min-height: 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    padding: 0 0 24px;
+    gap: 18px;
+  }
+  .vue.deux-colonnes.actif > .ouverture-vue .intro { max-width: 36ch; }
+
+  /* « Faites défiler » n'a plus d'objet : le contenu est déjà là. */
+  .vue.deux-colonnes.actif > .ouverture-vue > .ouverture-suite { display: none; }
+
+  /* La marge basse de l'ouverture visait à loger cette invitation. */
+  .vue.deux-colonnes.actif > .ouverture-vue { padding-bottom: 24px; }
+
+  /* Le premier bloc de droite n'a pas d'air au-dessus de lui : il doit
+     s'aligner sur le haut de l'ouverture, pas flotter en dessous. */
+  .vue.deux-colonnes.actif > *:not(.ouverture-vue):first-of-type { margin-top: 0; }
+}

@@ -442,6 +442,46 @@ l'entrée ; sans timeline de défilement, ce départ ne finit jamais et la page
 resterait à **zéro d'opacité pour toujours**. Ne jamais retirer ce bloc, ni
 son jumeau `prefers-reduced-motion`.
 
+## Ouverture à gauche, contenu à droite — au-delà de 900 px
+
+Arriver sur une vue ne doit pas vouloir dire arriver sur du vide. Sur écran
+large, l'ouverture — dessin, titre surligné, phrase — passe dans une colonne
+de **gauche (40 %), collante**, et le premier contenu utile est visible
+**d'emblée à droite (60 %)**. « Faites défiler » n'a plus d'objet et disparaît.
+
+**Sous 900 px, RIEN NE CHANGE** : empilement pleine largeur, ouverture
+centrée, « faites défiler » conservé. Deux colonnes de 180 px ne sont pas une
+mise en page.
+
+La liste est `VUES_DEUX_COLONNES` dans `js/ui/socle.js`. Trois familles en
+sont exclues, et pour trois raisons différentes :
+
+| Exclu | Pourquoi |
+|---|---|
+| **L'écran de présentation** | il EST un plein écran centré ; c'est son propos |
+| **Le questionnaire** | garde son empilement et son repère de progression |
+| **Univers · Backtest · Sélection des supports · Arbitrages · Rapport** | leur contenu dominant est un TABLEAU LARGE — treize colonnes serrées dans 60 %, ce n'est plus un tableau |
+
+**Le critère de tri est « ce qui domine l'écran d'arrivée »**, et non « la vue
+contient-elle un tableau ». Allocation cible en porte un — « Détail par
+poche » — mais il arrive après l'anneau ; elle est donc en deux colonnes.
+Sélection des supports et Arbitrages posent le leur trop tôt.
+
+### `.actif` est obligatoire sur la règle de grille
+
+`.vue { display: none }` pèse (0,1,0), `.vue.actif { display: block }`
+(0,2,0). Une règle `.vue.deux-colonnes` pèse (0,2,0) **elle aussi** et,
+placée plus bas dans la feuille, l'emporte sur le `none` : **les quinze vues
+masquées se rendent alors toutes en même temps**. Le ruban annonce « Profil
+de risque » et l'écran montre le formulaire client. Toujours qualifier par
+`.actif`.
+
+### L'ouverture occupe toutes les lignes de sa colonne
+
+`grid-row: 1 / -1`. Sans cela sa zone de grille se limite à la première
+ligne, et une position collante n'a de course que dans sa propre zone —
+elle décroche au bout d'un écran.
+
 ## La navigation est en bas, à toutes les largeurs
 
 Il y avait deux navigations : la colonne à gauche sur écran large, les deux

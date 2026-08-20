@@ -211,6 +211,13 @@ function poserOuvertures() {
     const vue = h.dataset.titre;
     if (h.parentElement && h.parentElement.classList.contains('ouverture-vue')) return;
 
+    /* La classe est posée sur la VUE et non sur l'ouverture : c'est la vue
+       qui devient une grille, l'ouverture n'en est qu'une cellule. */
+    const section = h.closest('.vue');
+    if (section && VUES_DEUX_COLONNES.indexOf(vue) >= 0) {
+      section.classList.add('deux-colonnes');
+    }
+
     const bloc = document.createElement('div');
     bloc.className = 'ouverture-vue sans-impression';
 

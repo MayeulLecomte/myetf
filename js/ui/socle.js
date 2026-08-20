@@ -197,6 +197,27 @@ function illustration(nom, taille) {
 
    Huit dessins ont été ajoutés pour lever les doublons. Chacun ouvre
    sa vue en pleine page, et une seule. */
+/* LES VUES QUI S'OUVRENT EN DEUX COLONNES SUR ÉCRAN LARGE.
+
+   Une ouverture qui prend tout l'écran fait arriver sur du vide : le
+   dessin, le titre, une phrase, et « faites défiler ». Au-delà de 900 px
+   il y a la place de montrer l'ouverture À GAUCHE, collante, et le
+   premier contenu utile à droite — formulaire, carte, indicateurs.
+
+   NE FIGURENT PAS ICI, ET C'EST VOULU :
+     · l'écran de présentation, qui EST un plein écran centré — c'est son
+       propos, pas un défaut ;
+     · le questionnaire, qui garde son empilement pleine largeur et son
+       repère de progression ;
+     · les vues dont le contenu principal est un TABLEAU LARGE — univers,
+       backtest, sélection des supports, arbitrages, rapport. Serré dans
+       une colonne de 60 %, un tableau de treize colonnes ne se lit plus.
+
+   Sous 900 px, la classe ne fait rien : l'empilement reste celui d'avant. */
+const VUES_DEUX_COLONNES = [
+  'client', 'profil'
+];
+
 const ILLUSTRATIONS_VUES = {
   accueil:      'cafe',
   client:       'enveloppe',
