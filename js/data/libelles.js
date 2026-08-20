@@ -177,8 +177,21 @@ const LIBELLES = {
     'champ.nom':                'Nom du dossier (facultatif)',
     'champ.nom.exemple':        'Assurance-vie 2026',
     'champ.age':                'Votre âge',
-    'champ.versement':          'Votre versement mensuel',
-    'champ.enveloppe':          'Votre enveloppe',
+    'champ.versement':          'Ce que vous ajoutez chaque mois',
+    'champ.enveloppe':          'Où placez-vous cet argent ?',
+    'champ.montant':            'Combien voulez-vous placer ?',
+    'champ.contratAV':          'Quel type de contrat d\'assurance-vie ?',
+    'champ.contratAV.suffixe':  'Si vous ne savez pas, laissez le choix par défaut.',
+
+    /* Les options des deux listes déroulantes n'étaient traduites dans aucun
+       mode : elles vivaient dans `questionnaire.js`, comme celles du
+       questionnaire, et se surchargent donc de la même façon — par leur rang. */
+    'option.enveloppe.0': 'Une assurance-vie',
+    'option.enveloppe.1': 'Un PEA',
+    'option.enveloppe.2': 'Un compte-titres',
+    'option.contratAV.0': 'Contrat en ligne, large choix de supports',
+    'option.contratAV.1': 'Contrat classique, choix moyen',
+    'option.contratAV.2': 'Contrat de banque, choix limité',
 
     'option.arbitrages.conseillee': 'Oui, sur proposition de cet outil',
 
@@ -322,7 +335,33 @@ const LIBELLES = {
     'stress.3': 'Tensions géopolitiques',
     'profil.stress.colonne': 'Scénario',
 
-    'profil.plafond.titre': 'Profil plafonné.',
+    /* La carte des caractéristiques devient une carte de conséquences. Les
+       montants sont calculés dans la vue à partir du montant du dossier ;
+       les phrases n'en portent que les trous. */
+    'profil.carte.titre': 'Ce que ça implique pour vos {montant}',
+    'profil.ligne.amplitude': 'Amplitude normale d\'une année',
+    'profil.ligne.amplitude.valeur': 'entre {bas} et {haut}',
+    'profil.ligne.amplitude.aide':
+      'Environ deux années sur trois restent dans cette fourchette. Une sur trois en sort, dans un ' +
+      'sens comme dans l\'autre.',
+    'profil.ligne.gain': 'Gain espéré en moyenne',
+    'profil.ligne.gain.valeur': '~{montant}/an',
+    'profil.ligne.gain.aide': 'Hypothèse de long terme, non garantie.',
+    'profil.ligne.mauvaise': 'Une mauvaise année sur vingt',
+    'profil.ligne.mauvaise.valeur': '~{montant} ou plus',
+    'profil.ligne.krach': 'Dans un krach',
+    'profil.ligne.krach.valeur': 'vers {montant}, avant de se reconstruire',
+    'profil.ligne.horizon': 'À ne pas toucher avant',
+    'profil.ligne.esg': 'Placements responsables',
+    'profil.ligne.gestion': 'Ajustements en cours de route',
+    'profil.esg.aucune': 'non',
+    'profil.esg.souhaitee': 'oui',
+    'profil.esg.prioritaire': 'oui, en priorité',
+    'profil.gestion.passive': 'non',
+    'profil.gestion.conseillee': 'acceptés',
+    'profil.gestion.active': 'acceptés, y compris importants',
+
+        'profil.plafond.titre': 'Profil plafonné.',
     'phrase.profil.plafond':
       'Vos réponses pointaient vers un profil plus offensif ({theorique}), mais vous avez posé une ' +
       'limite — le profil {retenu} la respecte :',

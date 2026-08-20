@@ -2966,3 +2966,15 @@ table .illustration { display: none !important; }
   .accueil-vide > * { animation: none !important; opacity: 1 !important; transform: none !important; }
   .accueil-secondaire { display: none !important; }
 }
+
+/* Le petit « ? » d'une ligne qui porte une infobulle : il dit qu'il y a
+   quelque chose à survoler, sans peser. Sur téléphone il n'y a pas de
+   survol — le titre reste lisible par les lecteurs d'écran, et la ligne
+   se comprend sans lui. */
+.indice-aide {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; margin-left: 4px; vertical-align: 1px;
+  border-radius: 50%; border: 1px solid var(--ligne-forte);
+  font-size: 10px; font-weight: 800; color: var(--texte-doux);
+  cursor: help;
+}

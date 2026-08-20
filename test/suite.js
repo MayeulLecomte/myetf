@@ -740,11 +740,13 @@ console.log('\n== Questionnaire : les deux modes ==');
      lirait le jargon. C'est le risque propre à cette convention, et c'est
      donc celui qu'il faut tenir. */
   const rangs = Object.keys(LIBELLES.particulier)
-    .filter(c => /^option\.q_[a-zA-Z]+\.\d+$/.test(c))
+    .filter(c => /^option\.[a-zA-Z_]+\.\d+$/.test(c))
     .map(c => c.split('.'));
   const horsRang = rangs.filter(([, id, n]) => {
-    const q = QUESTIONS.find(x => x.id === id);
-    return !q || !q.options[Number(n)];
+    /* Les listes déroulantes de l'identité suivent la même convention que les
+       options du questionnaire : un rang, et il doit exister. */
+    const cible = QUESTIONS.find(x => x.id === id) || IDENTITE.find(x => x.id === id);
+    return !cible || !cible.options || !cible.options[Number(n)];
   }).map(x => x.join('.'));
   ok(horsRang.length === 0,
      'chaque option reformulée vise un rang qui existe — ' + rangs.length + ' contrôlés' +

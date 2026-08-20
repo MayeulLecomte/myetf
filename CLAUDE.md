@@ -613,8 +613,8 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`bab8c6cd` · 1 333 220 octets · 68 empreintes**, relevée après la
-reformulation de « Mon profil ».
+**`5d897b4a` · 1 333 604 octets · 68 empreintes**, relevée après la carte
+de conséquences et les champs d'identité.
 
 Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
 contient des dates, elle ne se compare qu'entre deux relevés du même jour :
@@ -833,6 +833,31 @@ calcul, aucun plafond n'a bougé** :
 **Les scénarios sont nommés dans le moteur, et le moteur ne connaît aucun
 mode** : la traduction se fait dans la vue, au RANG (`stress.<n>`), comme les
 options du questionnaire. Le harnais tient les rangs.
+
+**La carte des caractéristiques devient une carte de conséquences.** Le
+conseiller lit des taux — c'est ainsi qu'il compare deux profils et qu'il
+documente son conseil. Celui qui répond sur son propre argent lit des
+montants : « une mauvaise année sur vingt peut coûter 28 500 € » se comprend
+là où « perte annuelle à 95 % de confiance » ne dit rien.
+
+**Aucun calcul n'est propre à un mode** : les deux colonnes sortent des mêmes
+`metriques`. Le mode choisit seulement s'il les multiplie par le montant du
+dossier ou s'il les affiche en pourcentage. Trois précautions :
+
+- **deux lignes fusionnent** — volatilité cible du profil et volatilité
+  estimée du portefeuille deviennent une amplitude unique en euros. La
+  première reste au rapport, avec le SRI : elle justifie un classement, elle
+  n'aide pas à décider ;
+- **l'amplitude est un écart-type**, pas un maximum. Une infobulle le dit :
+  environ deux années sur trois restent dedans. Sans elle, « normale » se lit
+  comme « pire cas » ;
+- **sans montant, pas d'euros.** Un dossier commencé sans montant retombe sur
+  les pourcentages : afficher « 0 € » quatre fois de suite serait faux, et
+  inquiétant.
+
+Les montants sont arrondis à la centaine — un « environ » au centime se lit
+comme une promesse. Et `profil.perteMax` est un TEXTE (« -25 % ») : il se
+lit, il ne se calcule pas.
 
 `mot(cle, defaut)` (js/ui/socle.js) est le petit aiguillage commun : `T()`
 rend la clé quand elle n'existe nulle part, donc **le mode conseiller garde

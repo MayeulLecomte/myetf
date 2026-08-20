@@ -559,8 +559,11 @@ function rendreIdentite() {
     const val = Etat.identite[f.id] !== undefined ? Etat.identite[f.id] : (f.defaut !== undefined ? f.defaut : '');
     let saisie;
     if (f.type === 'select') {
-      saisie = '<select data-identite="' + f.id + '">' + f.options.map(o =>
-        '<option value="' + o.valeur + '"' + (String(val) === o.valeur ? ' selected' : '') + '>' + echapper(o.label) + '</option>'
+      /* Les options se surchargent par leur rang, comme celles du
+         questionnaire — même convention, même garde-fou au harnais. */
+      saisie = '<select data-identite="' + f.id + '">' + f.options.map((o, i) =>
+        '<option value="' + o.valeur + '"' + (String(val) === o.valeur ? ' selected' : '') + '>' +
+        echapper(mot('option.' + f.id + '.' + i, o.label)) + '</option>'
       ).join('') + '</select>';
     } else {
       saisie = '<input type="' + f.type + '" data-identite="' + f.id + '" value="' + echapper(val) + '"' +
@@ -568,8 +571,11 @@ function rendreIdentite() {
         (f.max !== undefined ? ' max="' + f.max + '"' : '') +
         (f.exemple ? ' placeholder="' + echapper(T('champ.' + f.id + '.exemple')) + '"' : '') + '>';
     }
+    /* Le suffixe peut venir du mode : « Si vous ne savez pas, laissez le
+       choix par défaut » n'a de sens que pour qui ne sait pas. */
+    const suffixe = mot('champ.' + f.id + '.suffixe', f.suffixe || '');
     return '<div class="champ"><label>' + echapper(T('champ.' + f.id)) + '</label>' + saisie +
-      (f.suffixe ? '<span class="suffixe">' + echapper(f.suffixe) + '</span>' : '') + '</div>';
+      (suffixe ? '<span class="suffixe">' + echapper(suffixe) + '</span>' : '') + '</div>';
   }).join('') +
     /* Le mode se change ici, et non dans un réglage d'application : c'est une
        propriété du dossier, elle voyage avec lui à l'export. */
@@ -735,6 +741,85 @@ function majSectionCourante() {
    VUE 3 — PROFIL
    ============================================================ */
 
+/* ------------------------------------------------------------
+   CE QUE LE PROFIL IMPLIQUE, EN EUROS
+   ------------------------------------------------------------
+   La même carte, deux langues. Le conseiller lit des taux — c'est
+   ainsi qu'il compare deux profils et qu'il documente son conseil.
+   Celui qui répond sur son propre argent lit des montants : « une
+   mauvaise année sur vingt peut coûter 11 400 € » se comprend là
+   où « perte annuelle à 95 % de confiance » ne dit rien.
+
+   AUCUN CALCUL N'EST PROPRE À UN MODE : les deux colonnes sortent
+   des mêmes `metriques`. Le mode choisit seulement s'il les
+   multiplie par le montant du dossier ou s'il les affiche en
+   pourcentage.
+
+   DEUX LIGNES FUSIONNENT en mode particulier : la volatilité cible
+   du profil (« 10 – 14 % ») et la volatilité estimée du
+   portefeuille (10,3 %) deviennent une seule amplitude en euros.
+   La première reste au rapport, comme le SRI — elle sert à
+   justifier le classement, pas à décider.
+
+   SANS MONTANT, PAS D'EUROS : un dossier commencé sans montant
+   retombe sur les pourcentages. Afficher « 0 € » quatre fois de
+   suite serait faux et inquiétant. */
+function carteCaracteristiques(r, metriques) {
+  const montant = Number(Etat.identite.montant) || 0;
+  const particulier = T('profil.carte.titre') !== 'profil.carte.titre';
+
+  if (!particulier || !montant) {
+    return '<div class="carte"><h3>' +
+        echapper(mot('profil.carte.titre.sansMontant', 'Caractéristiques du profil')) + '</h3>' +
+      '<p>' + echapper(r.profil.description) + '</p>' +
+      '<table><tbody>' +
+      ligne('Volatilité cible', r.profil.volatiliteCible) +
+      ligne('Volatilité estimée du portefeuille', pct(metriques.volatilite)) +
+      ligne('Rendement annuel espéré (hypothèses LT)', pct(metriques.rendement)) +
+      ligne('Perte annuelle à 95 % de confiance', pct(metriques.perteAnnuelle95)) +
+      ligne('Perte maximale de référence', r.profil.perteMax) +
+      ligne('Horizon minimum', r.profil.horizonMin + ' ans') +
+      ligne('Préférences ESG', { aucune: 'Aucune', souhaitee: 'Souhaitées', prioritaire: 'Prioritaires' }[r.preferences.esg]) +
+      ligne('Mode de gestion accepté', { passive: 'Allocation figée', conseillee: 'Arbitrages sur conseil', active: 'Gestion active' }[r.preferences.gestion]) +
+      '</tbody></table></div>';
+  }
+
+  /* Arrondi à la centaine : un « environ » au centime se lit comme une
+     promesse, et ces montants sont des ordres de grandeur. */
+  const cent = x => Math.round(x / 100) * 100;
+  const part = taux => cent(montant * Math.abs(taux) / 100);
+  /* La perte maximale du profil est un TEXTE (« -25 % ») : elle se lit,
+     elle ne se calcule pas. */
+  const perteMax = Math.abs(parseFloat(String(r.profil.perteMax).replace(',', '.'))) || 0;
+
+  const amplitude = part(metriques.volatilite);
+
+  const ligneAidee = (cle, valeur) => {
+    const aide = T(cle + '.aide');
+    const titre = aide === cle + '.aide' ? '' : ' title="' + echapper(aide) + '"';
+    return '<tr><td style="color:var(--gris-doux)"' + titre + '>' + echapper(T(cle)) +
+      (titre ? ' <span class="indice-aide" aria-hidden="true">?</span>' : '') +
+      '</td><td class="num"><strong>' + echapper(valeur) + '</strong></td></tr>';
+  };
+
+  return '<div class="carte"><h3>' +
+      echapper(T('profil.carte.titre', { montant: euro(montant) })) + '</h3>' +
+    '<p>' + echapper(r.profil.description) + '</p>' +
+    '<table><tbody>' +
+    ligneAidee('profil.ligne.amplitude',
+               T('profil.ligne.amplitude.valeur', { bas: '−' + euro(amplitude), haut: '+' + euro(amplitude) })) +
+    ligneAidee('profil.ligne.gain',
+               T('profil.ligne.gain.valeur', { montant: euro(part(metriques.rendement)) })) +
+    ligneAidee('profil.ligne.mauvaise',
+               T('profil.ligne.mauvaise.valeur', { montant: euro(part(metriques.perteAnnuelle95)) })) +
+    ligneAidee('profil.ligne.krach',
+               T('profil.ligne.krach.valeur', { montant: euro(cent(montant * (1 - perteMax / 100))) })) +
+    ligne(T('profil.ligne.horizon'), r.profil.horizonMin + ' ans') +
+    ligne(T('profil.ligne.esg'), T('profil.esg.' + r.preferences.esg)) +
+    ligne(T('profil.ligne.gestion'), T('profil.gestion.' + r.preferences.gestion)) +
+    '</tbody></table></div>';
+}
+
 function rendreProfil() {
   const r = resultatProfil();
   const c = $('#profil-contenu');
@@ -785,19 +870,7 @@ function rendreProfil() {
             'perdre. La connaissance agit ensuite comme plafond.'
           : echapper(T('phrase.profil.axes'))) + '</p>' +
       '</div>' +
-      '<div class="carte"><h3>Caractéristiques du profil</h3>' +
-        '<p>' + echapper(r.profil.description) + '</p>' +
-        '<table><tbody>' +
-        ligne('Volatilité cible', r.profil.volatiliteCible) +
-        ligne('Volatilité estimée du portefeuille', pct(metriques.volatilite)) +
-        ligne('Rendement annuel espéré (hypothèses LT)', pct(metriques.rendement)) +
-        ligne('Perte annuelle à 95 % de confiance', pct(metriques.perteAnnuelle95)) +
-        ligne('Perte maximale de référence', r.profil.perteMax) +
-        ligne('Horizon minimum', r.profil.horizonMin + ' ans') +
-        ligne('Préférences ESG', { aucune: 'Aucune', souhaitee: 'Souhaitées', prioritaire: 'Prioritaires' }[r.preferences.esg]) +
-        ligne('Mode de gestion accepté', { passive: 'Allocation figée', conseillee: 'Arbitrages sur conseil', active: 'Gestion active' }[r.preferences.gestion]) +
-        '</tbody></table>' +
-      '</div>' +
+      carteCaracteristiques(r, metriques) +
     '</div>' +
 
     '<div class="carte"><h3>' +
