@@ -716,7 +716,9 @@ console.log('\n== Entonnoir de sélection ==');
    ============================================================ */
 console.log('\n== Questionnaire : les deux modes ==');
 (function () {
-  const reformulees = ['q_capaciteEpargne', 'q_endettement', 'q_couple', 'q_arbitrage', 'q_esg'];
+  const reformulees = ['q_capaciteEpargne', 'q_endettement', 'q_couple', 'q_arbitrage', 'q_esg',
+    'q_horizon', 'q_retrait', 'q_precaution', 'q_partpatrimoine', 'q_stabilite',
+    'q_connaissance', 'q_produits', 'q_perteMax', 'q_volatilite'];
 
   const absentes = reformulees.filter(id => !QUESTIONS.some(q => q.id === id));
   ok(absentes.length === 0,
@@ -732,6 +734,21 @@ console.log('\n== Questionnaire : les deux modes ==');
   ok(orphelines.length === 0,
      'chaque libellé de question du mode particulier vise une question réelle' +
      (orphelines.length ? ' — orphelines : ' + orphelines.join(', ') : ''));
+
+  /* Une option se surcharge par son RANG. Une clé qui vise un rang inexistant
+     ne se verrait nulle part : on croirait l'option reformulée, et l'on
+     lirait le jargon. C'est le risque propre à cette convention, et c'est
+     donc celui qu'il faut tenir. */
+  const rangs = Object.keys(LIBELLES.particulier)
+    .filter(c => /^option\.q_[a-zA-Z]+\.\d+$/.test(c))
+    .map(c => c.split('.'));
+  const horsRang = rangs.filter(([, id, n]) => {
+    const q = QUESTIONS.find(x => x.id === id);
+    return !q || !q.options[Number(n)];
+  }).map(x => x.join('.'));
+  ok(horsRang.length === 0,
+     'chaque option reformulée vise un rang qui existe — ' + rangs.length + ' contrôlés' +
+     (horsRang.length ? ' — hors rang : ' + horsRang.join(', ') : ''));
 
   /* Le mode ne touche NI aux scores, NI aux clés techniques. */
   const sommes = QUESTIONS.map(q => q.options.reduce((a, o) => a + o.score, 0)).join('|');

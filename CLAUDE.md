@@ -786,6 +786,25 @@ clé quand elle n'existe nulle part, et `libelleQuestion()` s'en sert
 d'aiguillage : le repli est la question elle-même, telle qu'elle est écrite
 dans `js/data/questionnaire.js`.
 
+**Les options se surchargent par leur RANG** — `option.<id>.<n>` —, et non
+par une clé posée dans `questionnaire.js`. C'est ce qui permet d'en
+reformuler vingt-sept sans toucher au fichier qui porte les scores et les
+métadonnées, le seul endroit où une faute de frappe changerait un profil.
+
+Le rang est la clé, avec ce que cela implique : **réordonner les options
+d'une question casse la traduction AVANT de casser le score**, et c'est tant
+mieux — cela se voit. Le harnais contrôle que chaque clé vise un rang qui
+existe : une clé hors rang ne se verrait nulle part, on croirait l'option
+reformulée et l'on lirait le jargon.
+
+`o.cle` reste prioritaire, pour les options qui portaient déjà leur écart de
+mode.
+
+**Quatorze questions sur dix-huit sont reformulées.** Les quatre autres sont
+déjà claires : `q_objectif` (seules ses options changent), `q_vecu` (seule
+son aide), `q_comprehension` et `q_reaction`, qui posent des chiffres et des
+situations, pas des concepts.
+
 **Le score, l'ordre des options et les clés techniques ne dépendent d'aucun
 mode**, et ne doivent jamais en dépendre — c'est la garde « un seul moteur ».
 Le harnais le tient : il refuse une clé de mode qui ne désigne aucune

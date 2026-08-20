@@ -661,6 +661,23 @@ function libelleQuestion(q, suffixe) {
   return suffixe === '.aide' ? (q.aide || '') : q.texte;
 }
 
+/* Une option se surcharge par son RANG, `option.<id>.<n>`, et non par une clé
+   posée dans `questionnaire.js`. C'est ce qui permet de reformuler
+   vingt-sept libellés sans toucher au fichier qui porte les scores et les
+   métadonnées — le seul endroit où une faute de frappe changerait un profil.
+
+   Le rang est la clé : réordonner les options d'une question casserait la
+   traduction AVANT de casser le score, et c'est tant mieux, cela se voit.
+
+   `o.cle` reste prioritaire : une option qui portait déjà son écart de mode —
+   « sur proposition de mon conseiller » — garde sa clé nommée. */
+function libelleOption(q, i, o) {
+  if (o.cle) return T(o.cle);
+  const cle = 'option.' + q.id + '.' + i;
+  const texte = T(cle);
+  return texte === cle ? o.label : texte;
+}
+
 function rendreQuestionnaire() {
   const sections = [];
   QUESTIONS.forEach(q => { if (sections.indexOf(q.section) < 0) sections.push(q.section); });
@@ -676,7 +693,7 @@ function rendreQuestionnaire() {
           '<label class="' + (rep === i ? 'choisi' : '') + '">' +
           '<input type="radio" name="' + q.id + '" value="' + i + '" data-question="' + q.id + '"' +
           (rep === i ? ' checked' : '') + '> ' +
-          echapper(o.cle ? T(o.cle) : o.label) + '</label>').join('') +
+          echapper(libelleOption(q, i, o)) + '</label>').join('') +
         '</div></div>';
     }).join('') + '</div>';
   }).join('');

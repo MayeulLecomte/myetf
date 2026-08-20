@@ -219,6 +219,82 @@ const LIBELLES = {
       '2 à 4 propositions par an au maximum. Vous restez libre de les suivre ou non. Si vous ' +
       'préférez ne rien toucher entre deux rééquilibrages, c\'est une réponse tout aussi valable.',
 
+    /* ---------- La passe complète : onze questions de plus ----------
+       Même règle que les cinq premières — le texte change, le score jamais.
+       Les options se surchargent par leur RANG (`option.<id>.<n>`) : c'est
+       ce qui permet de les reformuler sans toucher à `questionnaire.js`, donc
+       sans risquer de déplacer un score ou une métadonnée. Le rang est la
+       clé ; réordonner les options d'une question casserait la traduction
+       AVANT de casser le score, et c'est tant mieux — cela se voit. */
+
+    'question.q_horizon': 'Dans combien de temps risquez-vous d\'avoir besoin de cet argent ?',
+    'question.q_horizon.aide':
+      'C\'est la question la plus importante du questionnaire. Plus l\'échéance est proche, moins ' +
+      'on peut prendre de risque — quelles que soient vos réponses aux autres questions.',
+
+    'option.q_objectif.0': 'Garder mon argent disponible sans risque',
+    'option.q_objectif.1': 'Me verser un complément de revenus régulier',
+    'option.q_objectif.2': 'Faire grossir mon épargne à moyen terme',
+    'option.q_objectif.3': 'Préparer ma retraite',
+    'option.q_objectif.4': 'Chercher le rendement le plus élevé possible',
+    'option.q_objectif.5': 'Le transmettre un jour',
+
+    'question.q_retrait':
+      'Risquez-vous d\'avoir à retirer une grosse partie de cet argent plus tôt que prévu ?',
+    'question.q_retrait.aide':
+      'Une grosse partie = plus d\'un tiers. Un projet, un imprévu, un achat.',
+    'option.q_retrait.0': 'Oui, c\'est sûr, dans les 2 ans',
+    'option.q_retrait.1': 'C\'est possible, sans que ce soit prévu',
+    'option.q_retrait.2': 'Peu probable',
+    'option.q_retrait.3': 'Non, cet argent est mis de côté pour ça',
+
+    'question.q_precaution': 'Combien avez-vous de côté, ailleurs, pour les imprévus ?',
+    'question.q_precaution.aide':
+      'L\'argent immédiatement disponible sur un livret, hors ce placement. Sans ce matelas, une ' +
+      'baisse de marché peut vous forcer à vendre au pire moment.',
+    'option.q_precaution.0': 'Rien',
+    'option.q_precaution.1': 'Moins de 3 mois de dépenses',
+    'option.q_precaution.2': 'De 3 à 6 mois de dépenses',
+    'option.q_precaution.3': 'Plus de 6 mois de dépenses',
+
+    'question.q_partpatrimoine': 'Cet argent, c\'est quelle part de toutes vos économies ?',
+    'question.q_partpatrimoine.aide':
+      'Comptez vos placements et votre épargne — pas votre logement.',
+
+    'question.q_stabilite': 'Vos revenus des 5 prochaines années vous semblent-ils sûrs ?',
+    'option.q_stabilite.0': 'Incertains',
+    'option.q_stabilite.1': 'Variables (indépendant, commissions, primes)',
+    'option.q_stabilite.2': 'Stables',
+    'option.q_stabilite.3': 'Stables et revalorisés chaque année (fonction publique, retraite)',
+
+    'question.q_connaissance': 'Vous y connaissez-vous en placements ?',
+    'option.q_connaissance.0': 'Pas du tout',
+    'option.q_connaissance.1': 'Un peu, j\'en entends parler',
+    'option.q_connaissance.2': 'Bien, je suis les marchés régulièrement',
+    'option.q_connaissance.3': 'J\'en fais mon métier (finance, gestion)',
+
+    /* Celle-ci pèse 1,5 sur l'axe connaissance, et son jargon fausse le score :
+       qui ne reconnaît aucun mot coche « Livrets » par défaut, et se retrouve
+       tiré vers un profil prudent qui n'est pas le sien. */
+    'question.q_produits': 'Qu\'avez-vous déjà eu comme placements ?',
+    'question.q_produits.aide':
+      'Cochez le plus risqué que vous ayez détenu, même il y a longtemps.',
+    'option.q_produits.0': 'Seulement des livrets et de l\'assurance-vie en fonds euros',
+    'option.q_produits.1': 'De l\'immobilier via des parts (SCPI)',
+    'option.q_produits.2': 'Des fonds ou des ETF',
+    'option.q_produits.3': 'Des actions achetées en direct',
+    'option.q_produits.4': 'Des produits à effet de levier ou complexes',
+
+    'question.q_vecu.aide':
+      'Ce qu\'on a réellement fait pendant une baisse en dit plus long que ce qu\'on croit qu\'on ' +
+      'ferait. Répondez sans vous juger.',
+
+    'question.q_perteMax': 'Quelle baisse pourriez-vous encaisser en un an sans tout arrêter ?',
+    'question.q_perteMax.aide':
+      'Sur 100 000 €, −20 % veut dire voir 80 000 € sur votre relevé, et attendre.',
+
+    'question.q_volatilite': 'Voir la valeur monter et descendre d\'une semaine à l\'autre, ça vous…',
+
     'question.q_esg':
       'Souhaitez-vous privilégier des placements responsables (environnement, social) ?',
     'question.q_esg.aide':
