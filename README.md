@@ -875,13 +875,23 @@ filet bleu et écrit son âge. C'est le seul rappel qui existe.
 
 ### Par où commencer
 
-**S'il existe une liste d'écarts** — le rapprochement mensuel avec le screener
-Morningstar, en tête de la vue *Univers ETF* —, **ne revérifiez que les lignes
-qu'elle signale**. Elle compare frais, encours et devise, et dit sur quoi les
-deux sources divergent. C'est vingt minutes au lieu de deux heures.
+**Commencez par la liste d'écarts** — carte « Rapprochement avec le catalogue
+Morningstar », en tête de la vue *Univers ETF*. Elle est écrite à chaque passage
+mensuel du catalogue et **ne rouvre que les lignes qui divergent** : c'est vingt
+minutes au lieu de deux heures.
 
-*(Ce rapprochement n'existe pas encore : tant qu'il n'est pas en place, le relevé
-porte sur les 42 lignes.)*
+Elle rapproche **les frais et la présence au catalogue**, et rien d'autre.
+L'encours de Morningstar porte sur le fonds entier quand celui de justETF porte
+sur la part ; sa devise est celle de la part cotée, non celle du fonds. Les
+comparer ferait crier trente lignes par mois sans rien dire.
+
+**Un écart n'est pas une erreur de votre relevé.** Au premier passage, sur les
+deux écarts de frais revérifiés le jour même, c'est le catalogue qui avait tort
+les deux fois. La liste dit quoi rouvrir, pas quoi corriger.
+
+Une fois par an, ou après un écart douteux, refaites tout de même le tour
+complet des 42 : le rapprochement ne voit ni la réplication, ni la devise du
+fonds, ni le type de distribution.
 
 **Sinon**, parcourez les 42 supports ci-dessous. Chaque ISIN pointe sur sa page
 justETF.

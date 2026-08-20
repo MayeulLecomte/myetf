@@ -567,13 +567,76 @@ function celluleAnnee(isin) {
     dateFr(CATALOGUE_ETF.genere) + '.">' + signe(v, 2) + '</span>';
 }
 
+/* ============================================================
+   LA CARTE DE RAPPROCHEMENT AVEC LE CATALOGUE
+   ------------------------------------------------------------
+   Écrite chaque mois par `scripts/ecarts.mjs`, lue ici. Elle ne
+   corrige rien : elle dit quelles fiches justETF rouvrir au
+   prochain relevé trimestriel.
+
+   ELLE PARAÎT TOUJOURS, y compris à zéro écart. « Aucun écart »
+   et « le rapprochement n'a pas tourné » sont deux choses très
+   différentes, et une carte qui disparaît quand tout va bien ne
+   permet plus de les distinguer.
+   ============================================================ */
+function carteEcartsCatalogue() {
+  if (typeof ECARTS_UNIVERS === 'undefined' || !ECARTS_UNIVERS) return '';
+  const e = ECARTS_UNIVERS;
+  const n = (e.lignes || []).length;
+
+  const entete = '<div class="carte"><h3>Rapprochement avec le catalogue Morningstar</h3>';
+
+  /* La phrase des exclusions n'est pas une précaution de style : sans elle,
+     on cherche l'encours dans le tableau et l'on conclut que le contrôle
+     est incomplet. */
+  const limites = '<p class="intro">Le catalogue mensuel sert de deuxième regard sur le relevé ' +
+    'justETF. <strong>Seuls les frais et la présence au catalogue y sont rapprochés</strong> : ' +
+    "l'encours de Morningstar porte sur le fonds entier quand celui de justETF porte sur la part, " +
+    'et sa devise est celle de la part cotée, non celle du fonds. Les comparer ferait crier ' +
+    'trente lignes par mois sans rien dire.</p>';
+
+  const date = 'Rapprochement du ' + dateFr(e.genere) + ' · catalogue du ' + dateFr(e.catalogue) +
+    ' · ' + e.controles + ' supports contrôlés';
+
+  if (!n) {
+    return entete + limites +
+      '<div class="message info" style="margin-top:12px"><strong>Aucun écart.</strong> ' +
+      echapper(date) + '.</div></div>';
+  }
+
+  const libelleChamp = { ter: 'Frais courants', presence: 'Présence au catalogue' };
+
+  return entete + limites +
+    '<p class="intro" style="margin-top:10px">' + echapper(date) + '. ' +
+    '<strong>' + n + ' ligne' + (n > 1 ? 's' : '') + ' à revérifier sur justETF.</strong> ' +
+    "Rien n'a été modifié : le relevé manuel reste la référence — au premier passage, sur les " +
+    "deux écarts revérifiés, c'est le catalogue qui avait tort les deux fois.</p>" +
+    '<div class="tableau-defilant"><table><thead><tr><th>Support</th><th>Champ</th>' +
+    '<th class="num">Relevé justETF</th><th class="num">Catalogue</th><th>Au catalogue</th>' +
+    '</tr></thead><tbody>' +
+    e.lignes.map(l =>
+      '<tr><td><a href="https://www.justetf.com/fr/etf-profile.html?isin=' + echapper(l.isin) + '"' +
+        ' target="_blank" rel="noopener">' + echapper(l.nom) + '</a>' +
+        '<div style="font-size:11.5px;color:var(--texte-doux)">' + echapper(l.isin) + '</div></td>' +
+      '<td>' + echapper(libelleChamp[l.champ] || l.champ) + '</td>' +
+      '<td class="num">' + echapper(l.champ === 'ter' ? pct(l.releve, 2) : String(l.releve)) + '</td>' +
+      '<td class="num">' + echapper(l.champ === 'ter' ? pct(l.catalogue, 2) : String(l.catalogue)) + '</td>' +
+      /* Le nom du catalogue est là pour l'œil : c'est ce qui permet de voir
+         qu'un ISIN désigne un autre fonds, là où aucun seuil ne le peut. */
+      '<td style="font-size:12px;color:var(--texte-doux)">' + echapper(l.nomCatalogue || '—') + '</td>' +
+      '</tr>').join('') +
+    '</tbody></table></div>' +
+    '<p class="intro" style="font-size:12px">La procédure de relevé trimestriel commence par cette ' +
+    'liste : ne rouvrez que ces fiches-là.</p></div>';
+}
+
 function rendreUnivers() {
   const f = Etat.filtreUnivers;
   rendreCatalogue();
   rendreRapprochement();
 
   const tete = $('#entonnoir-univers');
-  if (tete) tete.innerHTML = ligneEntonnoir();
+  if (tete) tete.innerHTML = ligneEntonnoir() + carteEcartsCatalogue();
 
   $('#filtres-univers').innerHTML =
     '<div class="champ"><label>Classe d\'actifs</label><select data-filtre-univers="classe">' +
