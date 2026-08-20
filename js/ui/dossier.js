@@ -387,9 +387,44 @@ function possessionDe(ligne) {
   return ligne && ligne.possession === 'a-investir' ? 'a-investir' : 'detenu';
 }
 
+/* CE QUE LE MOTEUR D'ARBITRAGE DOIT VOIR, ET RIEN D'AUTRE.
+
+   Une ligne « encore à investir » est posée par l'amorce : elle décrit ce
+   qu'il FAUDRAIT acheter, pas ce qui est détenu. La passer au moteur
+   d'arbitrage lui faisait voir un portefeuille déjà parfaitement à la
+   cible — zéro écart, zéro mouvement proposé —, sur un dossier où rien
+   n'avait encore été acheté.
+
+   Le symptôme était trompeur : « Aucun arbitrage nécessaire » sur un
+   dossier neuf, donc pas d'ordres, donc pas de proposition à envoyer,
+   donc une revue journalisée vide, donc un suivi qui ne montrait rien.
+   Une seule cause pour quatre écrans.
+
+   Sans ces lignes, la détention d'un dossier neuf est VIDE, et le moteur
+   rend ce qu'il a toujours su rendre dans ce cas : le plan
+   d'investissement initial — exactement ce qu'annonce le sous-titre de la
+   vue. */
 function lignesDetenues()   { return Etat.detention.filter(l => possessionDe(l) === 'detenu'); }
 
 function lignesAInvestir()  { return Etat.detention.filter(l => possessionDe(l) === 'a-investir'); }
+
+/* L'ARGENT QUI N'EST PAS ENCORE PLACÉ.
+
+   Une ligne « encore à investir » n'est pas un actif : c'est une somme
+   fléchée qui dort. Vis-à-vis du moteur d'arbitrage, elle se comporte
+   exactement comme un apport — de la trésorerie à déployer sur la cible.
+
+   Sans cela, retirer ces lignes de la détention ne faisait que déplacer le
+   problème : le moteur ne voyait plus de portefeuille, mais plus d'argent
+   non plus, et il rendait `null` faute de matière. Sur un dossier neuf de
+   cent mille euros, « saisissez au moins une ligne détenue ou un apport ».
+
+   Les deux moitiés vont ensemble : on retire ce qui n'est pas détenu de la
+   DÉTENTION, et on le rend comme APPORT. Le total est conservé. */
+function apportDisponible() {
+  return (Number(Etat.apport) || 0) +
+    lignesAInvestir().reduce((a, l) => a + (Number(l.montant) || 0), 0);
+}
 
 /* ------------------------------------------------------------
    LA SYNCHRONISATION DU SUIVI SUR LA CIBLE

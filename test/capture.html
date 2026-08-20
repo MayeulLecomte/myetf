@@ -64,11 +64,11 @@ function dossierComplet(w, Etat) {
   Etat.identite.montant = 100000;
   Etat.identite.enveloppe = 'AV';
   Etat.identite.contratAV = 'av-large';
-  Etat.detention = [
-    { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World', montant: 48000, pvLatente: 8000 },
-    { isin: 'IE00B4WXJJ64', libelle: 'iShares Core € Govt Bond', montant: 24000, pvLatente: 0 },
-    { isin: 'IE00B4ND3602', libelle: 'iShares Physical Gold', montant: 8000, pvLatente: 2000 }
-  ];
+  /* Détention VIDE : c'est le dossier neuf, celui où l'amorce pose les
+     lignes « encore à investir ». C'est l'état dans lequel arrive un
+     utilisateur, et celui où le plan d'investissement initial se lit. */
+  Etat.detention = [];
+  Etat.suiviAmorce = false;
   /* Aucun besoin de revenu : sinon le coussin monétaire déforme
      l'allocation, et la vue « Allocation cible » montrerait des écarts
      qui ne viennent d'aucune vue de marché. */

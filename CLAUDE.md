@@ -1168,6 +1168,33 @@ retraduit. Sans ce relais, la phrase resterait celle du mode d'ouverture de
 l'application — un défaut qui ne se voit qu'en basculant de mode, donc jamais
 pendant qu'on écrit la phrase.
 
+## Une ligne « à investir » n'est pas détenue — et c'est de l'argent
+
+**Le moteur d'arbitrage ne voit que `lignesDetenues()`, et reçoit le reste en
+apport.** Les deux moitiés vont ensemble ; l'une sans l'autre casse la vue.
+
+L'amorce pose le portefeuille recommandé dans le suivi, **marqué « encore à
+investir »**. Ces lignes décrivent ce qu'il FAUDRAIT acheter, pas ce qui est
+détenu. Passées telles quelles au moteur, elles lui montraient un portefeuille
+déjà parfaitement à la cible — zéro écart, zéro mouvement —, sur un dossier où
+rien n'avait été acheté.
+
+**Une seule cause, quatre écrans muets** : « aucun arbitrage nécessaire », donc
+pas d'ordres, donc pas de boutons de proposition, donc une revue journalisée
+vide, donc un suivi qui ne montre rien.
+
+Les retirer de la détention ne suffit pas : le moteur n'a alors plus de
+matière et rend `null` — « saisissez au moins une ligne détenue ou un apport »
+sur un dossier de cent mille euros. **Une somme fléchée qui dort est un
+apport**, et `apportDisponible()` la lui rend. Le total est conservé.
+
+Sur un dossier neuf de 100 000 €, la vue rend désormais **14 achats** — le
+plan d'investissement initial, exactement ce qu'annonce son sous-titre.
+
+Trois appelants, tous alignés : l'accueil, « Situation » et « Arbitrages
+proposés ». Les faire diverger, c'est afficher deux vérités sur la même
+détention.
+
 ## Confirmer des arbitrages : deux métiers, deux gestes
 
 **Le conseiller garde ses deux boutons séparés.** Il journalise souvent sans

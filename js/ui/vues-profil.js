@@ -481,9 +481,11 @@ function rendreAccueil() {
   /* --- Dossier complet : verdict d'abord, détail ensuite --- */
   const r = resultatProfil();
   const sel = selectionCourante();
+  /* `lignesDetenues()` et non `Etat.detention` : une ligne encore à
+     investir n'est pas détenue — voir dossier.js. */
   const analyse = MoteurArbitrage.analyser(
-    Etat.detention, sel.lignes,
-    { enveloppe: Etat.identite.enveloppe || 'AV', apport: Number(Etat.apport) || 0 },
+    lignesDetenues(), sel.lignes,
+    { enveloppe: Etat.identite.enveloppe || 'AV', apport: apportDisponible() },
     universSelection()
   );
 
