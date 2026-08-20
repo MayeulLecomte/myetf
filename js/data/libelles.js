@@ -120,6 +120,22 @@ const LIBELLES = {
     /* L'accueil salue quand il sait qui il salue. Dans les deux modes : un
        conseiller ouvre le dossier de quelqu'un, et le prénom qu'il a saisi est
        celui de ce quelqu'un. */
+    /* ---------- L'envoi de la proposition ----------
+       Ces clés-ci vivent dans la table PAR DÉFAUT : les deux modes envoient,
+       et le corps du message est le même à la signature près. */
+    'arbitrages.mail.bouton': 'Préparer l\'e-mail',
+    'arbitrages.mail.copier': 'Copier le texte',
+    'arbitrages.mail.copie': 'Proposition copiée — collez-la dans votre message.',
+    'arbitrages.mail.objet': 'Proposition d\'arbitrages — {dossier} — {date}',
+    'arbitrages.mail.entete': 'Proposition d\'arbitrages du {date}',
+    'arbitrages.mail.total': 'Total : {ventes} de ventes, {achats} d\'achats.',
+    'arbitrages.mail.reserve':
+      'Cette proposition est établie à partir de l\'allocation cible du dossier. Rien n\'est ' +
+      'exécuté : les ordres sont à passer par vos soins.',
+    'arbitrages.mail.tronque':
+      '(Liste tronquée pour tenir dans un e-mail — le texte complet est disponible par ' +
+      '« Copier le texte ».)',
+
     'phrase.bonjour': 'Bonjour {prenom}',
 
     /* « Ce que le profil commande » se lit comme un ordre venu d'ailleurs, et

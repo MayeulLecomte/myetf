@@ -1030,6 +1030,29 @@ bandeau se lit là où l'on atterrit, une fois.
 du même calcul finiraient par diverger, et c'est le portefeuille détenu
 qu'elles décriraient de deux façons.
 
+## L'e-mail de proposition : l'application n'envoie rien
+
+« Préparer l'e-mail » ouvre le logiciel de messagerie avec un brouillon
+pré-rempli. **Rien ne quitte le navigateur** : pas de serveur, pas de carnet
+d'adresses, pas de trace des envois. C'est écrit dans « Méthode & limites »,
+à côté de « il ne passe aucun ordre » — c'est la même promesse.
+
+Le même texte sert au `mailto:` et au presse-papier : deux versions du même
+message finiraient par diverger, et c'est celle qu'on envoie qui serait la
+mauvaise. La seule différence est la longueur.
+
+**⚠ La limite des `mailto:` porte sur l'URL ENCODÉE, pas sur le texte.** Un
+accent devient trois caractères, un retour à la ligne aussi : 1 500 signes de
+français en font 2 600 une fois encodés. Budgéter sur le texte brut laissait
+passer des liens d'un tiers trop longs, que certains clients de messagerie
+tronquent en silence. On resserre donc tant que l'URL dépasse 1 900.
+
+**La réserve ne se coupe jamais.** « Rien n'est exécuté : les ordres sont à
+passer par vos soins » survit à toute troncature — sans quoi un message
+tronqué deviendrait un ordre. Ce qui se coupe, c'est la liste, et le message
+dit qu'elle a été coupée. Le bouton « Copier le texte » donne la version
+entière.
+
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
 Section « Lecture du contexte de marché ». Sans contexte saisi,

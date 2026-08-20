@@ -584,6 +584,15 @@ function rendreArbitrages() {
             echapper(T('arbitrages.bouton.confirmer')) + '</button>') +
       '<button class="bouton secondaire" id="btn-appliquer">' +
         echapper(mot('arbitrages.bouton.appliquer', 'Appliquer les ordres à la détention saisie')) + '</button>' +
+      /* L'envoi existe dans les deux modes : un conseiller adresse la
+         proposition à son client, un particulier se l'envoie à lui-même ou à
+         son courtier. Rien ne part de l'application — voir `texteProposition`. */
+      (analyse.ordres.length
+        ? '<button class="bouton secondaire" id="btn-mail">' +
+            echapper(T('arbitrages.mail.bouton')) + '</button>' +
+          '<button class="bouton discret" id="btn-copier-proposition">' +
+            echapper(T('arbitrages.mail.copier')) + '</button>'
+        : '') +
     '</div>';
 
   const bj = $('#btn-journaliser');
@@ -633,6 +642,43 @@ function rendreArbitrages() {
 
     Confirmation.bandeau = T('arbitrages.confirme', { date: dateFr(), n });
     afficher('situation');
+  };
+
+  const bm = $('#btn-mail');
+  if (bm) bm.onclick = () => {
+    const dest = (Etat.identite.email || '').trim();
+    const objet = T('arbitrages.mail.objet', {
+      dossier: (Etat.identite.nom || '').trim() || '—', date: dateFr()
+    });
+    /* ~2 000 caractères : au-delà, des clients de messagerie tronquent ou
+       refusent le lien. On coupe la LISTE, jamais la réserve — la phrase qui
+       dit que rien n'est exécuté doit survivre à la troncature.
+
+       ⚠ LA LIMITE PORTE SUR L'URL ENCODÉE, PAS SUR LE TEXTE. Un accent
+       devient trois caractères, un retour à la ligne aussi : 1 500 signes de
+       français en font 2 600 une fois encodés. Budgéter sur le texte brut
+       laissait donc passer des liens d'un tiers trop longs. On resserre tant
+       que l'URL ne tient pas. */
+    const lien = corps => 'mailto:' + encodeURIComponent(dest) +
+      '?subject=' + encodeURIComponent(objet) + '&body=' + encodeURIComponent(corps);
+
+    let brut = 1500, url = lien(texteProposition(analyse, brut));
+    while (url.length > 1900 && brut > 300) {
+      brut = Math.round(brut * 0.8);
+      url = lien(texteProposition(analyse, brut));
+    }
+    window.location.href = url;
+  };
+
+  const bcp = $('#btn-copier-proposition');
+  if (bcp) bcp.onclick = () => {
+    const texte = texteProposition(analyse, Infinity);
+    const fini = () => notifier(T('arbitrages.mail.copie'));
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texte).then(fini, () => copierParSelection(texte, fini));
+    } else {
+      copierParSelection(texte, fini);
+    }
   };
 
   const ba = $('#btn-appliquer');
@@ -710,6 +756,79 @@ function poidsTestes() {
    Vit en mémoire seulement : une annulation qui traverse un rechargement
    n'est plus une annulation. */
 const Confirmation = { avant: null, bandeau: null };
+
+/* ------------------------------------------------------------
+   LA PROPOSITION EN TEXTE SIMPLE
+   ------------------------------------------------------------
+   Un e-mail n'a ni tableau ni police : la liste s'écrit en lignes.
+   Le même texte sert au `mailto:` et au presse-papier — deux
+   versions du même message finiraient par diverger, et c'est
+   celle qu'on envoie qui serait la mauvaise.
+
+   La seule différence est la LONGUEUR : un `mailto:` au-delà de
+   deux mille caractères est tronqué ou refusé par certains
+   clients de messagerie. On coupe alors la liste, et l'on dit
+   qu'on l'a coupée. LA RÉSERVE NE SE COUPE JAMAIS : « rien n'est
+   exécuté » doit survivre à la troncature, sans quoi le message
+   tronqué devient un ordre.
+   ------------------------------------------------------------ */
+function texteProposition(analyse, limite) {
+  const l = [];
+  l.push(T('arbitrages.mail.entete', { date: dateFr() }));
+  l.push('');
+
+  const lignes = analyse.ordres.map(o =>
+    '- ' + o.sens + ' · ' + o.libelle + ' (' + o.isin + ') · ' + euro(o.montant));
+
+  /* On mesure ce que la liste peut prendre : l'en-tête, le total, la réserve
+     et la signature sont incompressibles. */
+  const ventes = analyse.ordres.filter(o => o.sens === 'Vente').reduce((a, o) => a + o.montant, 0);
+  const achats = analyse.ordres.filter(o => o.sens === 'Achat').reduce((a, o) => a + o.montant, 0);
+  const pied = [
+    '',
+    T('arbitrages.mail.total', { ventes: euro(ventes), achats: euro(achats) }),
+    '',
+    T('arbitrages.mail.reserve')
+  ];
+  const signature = signatureProposition();
+  if (signature) pied.push('', signature);
+
+  const fixe = l.join('\n').length + pied.join('\n').length;
+  let place = limite - fixe;
+  const retenues = [];
+  let tronque = false;
+  lignes.forEach(ligne => {
+    if (place - (ligne.length + 1) > 0) { retenues.push(ligne); place -= ligne.length + 1; }
+    else tronque = true;
+  });
+
+  return l.concat(retenues,
+    tronque ? ['', T('arbitrages.mail.tronque')] : [],
+    pied).join('\n');
+}
+
+/* Le conseiller signe de son nom quand il l'a renseigné. Un particulier qui
+   s'envoie sa propre liste n'a personne à qui se présenter. */
+function signatureProposition() {
+  if ((Etat.mode || MODE_DEFAUT) === 'particulier') return '';
+  const nom = [Etat.identite.prenom, Etat.identite.nomFamille]
+    .map(x => (x || '').trim()).filter(Boolean).join(' ');
+  return nom ? nom : '';
+}
+
+/* Repli de copie pour les navigateurs sans presse-papier asynchrone — et
+   pour les pages ouvertes en `file://`, où il n'existe pas. */
+function copierParSelection(texte, fini) {
+  const z = document.createElement('textarea');
+  z.value = texte;
+  z.setAttribute('readonly', '');
+  z.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+  document.body.appendChild(z);
+  z.select();
+  try { document.execCommand('copy'); fini(); }
+  catch (e) { notifier('Copie impossible — sélectionnez le texte à la main.', 'alerte'); }
+  z.remove();
+}
 
 /* Les ordres portés sur la détention. Le même code sert à simuler et à
    confirmer — deux chemins vers un seul calcul, sinon ils divergent. */

@@ -199,6 +199,12 @@ function rendreMethode() {
       'n\'existe qu\'une fois validée, complétée et signée par vous dans le rapport d\'adéquation.</p>' +
       '<p><strong>Il ne passe aucun ordre</strong> et n\'est connecté à aucun contrat. Les mouvements ' +
       'proposés sont à saisir chez l\'assureur ou le teneur de compte.</p>' +
+      /* La question se pose dès qu'un bouton porte le mot « e-mail » : le
+         message part-il d'ici ? Non — et cela s'écrit à côté de « il ne passe
+         aucun ordre », qui est la même promesse. */
+      '<p><strong>Il n\'envoie aucun message.</strong> « Préparer l\'e-mail » ouvre votre logiciel de ' +
+      'messagerie avec un brouillon pré-rempli : rien ne quitte ce navigateur, et vous relisez puis ' +
+      'envoyez vous-même. L\'application n\'a ni serveur, ni carnet d\'adresses, ni trace des envois.</p>' +
       '<p><strong>Il ne surveille rien.</strong> Aucune alerte de marché, aucun contrôle quotidien : le ' +
       'suivi se déclenche quand vous ouvrez une revue, jamais tout seul. C\'est un choix — une alerte ' +
       'pousse à agir, et les bandes de tolérance servent précisément à ne pas agir.</p>' +
