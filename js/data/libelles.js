@@ -405,7 +405,16 @@ const LIBELLES = {
       '{montant} ne sont pas placés : la liste d\'ETF actuelle ne couvre pas ces catégories. ' +
       'Élargissez l\'univers de sélection (dans « {enveloppe} ») ou ajoutez des ETF.',
 
-    'supports.adaptations.titre': 'Ce que l\'outil a dû adapter.',
+    /* Quand la part non investie n'est pas un trou de la liste d'ETF mais une
+       IMPOSSIBILITÉ de l'enveloppe, la phrase change de nature : il n'y a
+       rien à élargir, et suggérer un réglage envoie chercher une solution qui
+       n'existe pas. */
+    'phrase.supports.residuel.pea':
+      '{montant} ne sont pas placés. Un PEA ne peut pas détenir d\'obligations, d\'or ni de ' +
+      'matières premières — ces {pct} demandent une autre enveloppe (assurance-vie, compte-titres) ' +
+      'ou restent en épargne sécurisée à côté.',
+
+        'supports.adaptations.titre': 'Ce que l\'outil a dû adapter.',
     'supports.adaptations.ligne': '« {poche} » : pas d\'ETF dans la liste actuelle — {montant} restent à placer vous-même.',
 
     'supports.kpi.frais': 'Frais moyens de vos ETF',

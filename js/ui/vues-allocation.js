@@ -351,14 +351,7 @@ function rendrePortefeuille() {
         'Vérifiez que le portefeuille obtenu reste compatible avec le profil ' +
         r.profil.nom.toLowerCase() + '.')) + '</div>' : '') +
 
-    (sel.residuel > 0 ? '<div class="message erreur">' +
-      (T('phrase.supports.residuel') === 'phrase.supports.residuel' || !(Number(Etat.identite.montant) || 0)
-        ? '<strong>' + pct(sel.residuel) + ' non investis.</strong> Aucun support de l\'univers ne couvre ' +
-          'ces poches. Élargissez les filtres ou complétez l\'univers ETF.'
-        : '<strong>' + echapper(T('phrase.supports.residuel', {
-            montant: euro((Number(Etat.identite.montant) || 0) * sel.residuel / 100),
-            enveloppe: T('vue.client.nav')
-          })) + '</strong>') + '</div>' : '') +
+    (sel.residuel > 0 ? bandeauNonInvesti(sel) : '') +
 
     (sel.avertissements.length ? '<div class="message info"><strong>' +
       echapper(mot('supports.adaptations.titre', 'Adaptations à l\'univers disponible.')) + '</strong><ul>' +
@@ -669,6 +662,53 @@ function motifLisible(motif) {
   return String(motif || '')
     .replace(/^Surpondération de /, T('arbitrages.motif.sur') + ', ')
     .replace(/^Sous-pondération de /, T('arbitrages.motif.sous') + ', ');
+}
+
+/* ------------------------------------------------------------
+   POURQUOI CETTE PART N'EST PAS PLACÉE — DEUX RAISONS
+   ------------------------------------------------------------
+   « Élargissez les filtres ou complétez l'univers ETF » suppose
+   qu'une solution existe. En PEA, pour les poches obligataires,
+   l'or et les matières premières, IL N'Y EN A PAS : le PEA ne
+   peut pas les détenir. Mesuré sur le catalogue européen entier —
+   4 530 supports, 35 éligibles au PEA — il n'existe aucun ETF PEA
+   obligataire, aucun sur l'or, aucun sur les matières premières.
+   Ce n'est pas un trou de données, c'est la loi.
+
+   Envoyer quelqu'un régler un filtre pour une chose qui n'existe
+   pas, c'est lui faire perdre une heure et sa confiance. La phrase
+   dit donc l'impossibilité, et ce qu'on fait à la place.
+
+   ⚠ Le mode conseiller garde sa phrase d'origine, mot pour mot :
+   la version qui dit l'impossibilité lui est proposée, pas encore
+   appliquée. */
+function bandeauNonInvesti(sel) {
+  const montant = Number(Etat.identite.montant) || 0;
+  const enEuros = euro(montant * sel.residuel / 100);
+
+  /* Structurel : toutes les poches non couvertes sont hors du champ du PEA. */
+  const horsChamp = (sel.pochesSansSupport || []).length > 0 &&
+    Etat.identite.enveloppe === 'PEA' &&
+    sel.pochesSansSupport.every(x => {
+      const cl = MoteurSelection.classeDePoche(x.poche);
+      return cl === 'obligations' || cl === 'diversifiants' || cl === 'monetaire';
+    });
+
+  if (horsChamp && T('phrase.supports.residuel.pea') !== 'phrase.supports.residuel.pea' && montant) {
+    return '<div class="message erreur"><strong>' +
+      echapper(T('phrase.supports.residuel.pea', { montant: enEuros, pct: pct(sel.residuel) })) +
+      '</strong></div>';
+  }
+
+  if (T('phrase.supports.residuel') === 'phrase.supports.residuel' || !montant) {
+    return '<div class="message erreur"><strong>' + pct(sel.residuel) + ' non investis.</strong> ' +
+      'Aucun support de l\'univers ne couvre ces poches. Élargissez les filtres ou complétez ' +
+      'l\'univers ETF.</div>';
+  }
+
+  return '<div class="message erreur"><strong>' +
+    echapper(T('phrase.supports.residuel', { montant: enEuros, enveloppe: T('vue.client.nav') })) +
+    '</strong></div>';
 }
 
 function bandeauSupportsAVerifier(nombre) {

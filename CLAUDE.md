@@ -1127,6 +1127,30 @@ est reproductible, et elle échouera de nouveau.
 `node test/runner.js` tient ces trois exclusions par des assertions : un
 rapprochement qui se remettrait à comparer l'encours fait rougir le harnais.
 
+## Un PEA ne peut pas porter une allocation diversifiée, et il faut le dire
+
+« Élargissez les filtres ou complétez l'univers ETF » suppose qu'une solution
+existe. **En PEA, pour les poches obligataires, l'or et les matières
+premières, il n'y en a pas.** Mesuré sur le catalogue européen entier —
+4 530 supports, dont **35 éligibles au PEA** — il n'existe **aucun** ETF PEA
+obligataire, **aucun** sur l'or, **aucun** sur les matières premières. Ce
+n'est pas un trou de données : c'est la loi.
+
+| Sur l'allocation Dynamique en PEA | Part couverte |
+|---|---|
+| Univers de travail, filtre d'encours par défaut (500 M€) | **54,0 %** |
+| Le même, filtre abaissé à 100 M€ | **62,0 %** |
+| Catalogue européen complet | **60,8 %** |
+
+**Basculer sur le catalogue rapporte moins qu'abaisser le filtre d'encours**,
+et les deux laissent 38 à 46 % hors d'atteinte. Envoyer quelqu'un régler un
+filtre pour une chose qui n'existe pas lui fait perdre une heure et sa
+confiance : le bandeau dit donc l'impossibilité, et ce qu'on fait à la place —
+une autre enveloppe, ou de l'épargne sécurisée à côté.
+
+Le mode conseiller garde sa phrase d'origine tant qu'elle n'a pas été
+arbitrée. Elle est pourtant trompeuse là-bas aussi.
+
 ## La valorisation de repli n'invente pas de cours
 
 Le catalogue porte une dernière clôture pour 4 525 supports. Elle ne sert de
