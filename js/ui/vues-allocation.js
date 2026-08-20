@@ -97,12 +97,25 @@ function rendreMacro() {
   $('#indicateurs').innerHTML = '<h3>Lecture du contexte</h3>' + groupes.map(g =>
     '<div class="groupe-macro"><h4>' + echapper(g) + '</h4>' +
     INDICATEURS.filter(i => i.groupe === g).map(ind => {
-      const val = Etat.macroChoix[ind.id] !== undefined ? Etat.macroChoix[ind.id] : MoteurAllocation.valeurDefaut(ind);
+      /* UNE OPTION VIDE, ET ELLE EST SÉLECTIONNÉE PAR DÉFAUT.
+
+         La liste présélectionnait la valeur de repli — « Stabilisation »,
+         « Neutres », « Dans la moyenne ». Onze listes paraissaient donc
+         remplies au-dessus d'un bandeau disant « aucun indicateur n'est
+         renseigné » : deux affirmations contraires sur le même écran, et
+         c'est l'écran qui avait tort.
+
+         Ce que l'on voit dit maintenant ce que l'application calcule. */
+      const choisi = Etat.macroChoix[ind.id] !== undefined;
+      const val = choisi ? Etat.macroChoix[ind.id] : '';
       return '<div class="indicateur"><label>' + echapper(ind.label) + '</label>' +
         (ind.aide ? '<div class="aide">' + echapper(ind.aide) + '</div>' : '') +
-        '<select data-macro="' + ind.id + '">' + ind.options.map(o =>
-          '<option value="' + o.valeur + '"' + (o.valeur === val ? ' selected' : '') + '>' + echapper(o.label) + '</option>'
-        ).join('') + '</select></div>';
+        '<select data-macro="' + ind.id + '"' + (choisi ? '' : ' class="non-renseigne"') + '>' +
+          '<option value=""' + (choisi ? '' : ' selected') + '>— non renseigné</option>' +
+          ind.options.map(o =>
+            '<option value="' + o.valeur + '"' + (o.valeur === val ? ' selected' : '') + '>' +
+            echapper(o.label) + '</option>'
+          ).join('') + '</select></div>';
     }).join('') + '</div>').join('');
 
   const m = macroCourante();
@@ -123,12 +136,41 @@ function rendreMacro() {
          repli — 66,7 % sur l'atterrissage en douceur. Les montrer sans le dire
          reviendrait à présenter une vue de marché par défaut comme une lecture
          du conseiller ; c'est exactement ce qu'elles ne sont pas. */
+      /* TROIS ÉTATS, ET NON UN TOUT-OU-RIEN.
+
+         « Renseigné » n'est pas binaire : entre zéro et onze indicateurs, il
+         y a neuf situations où le conseiller a commencé sans finir. Lui dire
+         « aucun » quand il en a choisi trois est faux, et lui laisser croire
+         que les onze pèsent l'est tout autant.
+
+         Ce que le bandeau doit dire, c'est CE QUI ENTRE DANS LE CALCUL :
+         dès le premier indicateur choisi, la déviation s'applique — et les
+         indicateurs laissés vides y pèsent leur valeur de repli. C'est
+         mesurable : un seul choix sur « cycle » fait passer l'atterrissage
+         de 66,7 % à 41,7 %. Le taire reviendrait à présenter une lecture
+         partielle comme une lecture complète. */
       : !m.exprime
-        ? '<div class="message alerte" style="margin-top:10px"><strong>Aucun indicateur n\'est ' +
-          'renseigné.</strong> Les probabilités ci-dessus sont celles du repli, pas une lecture du ' +
-          'marché : tant qu\'aucun indicateur n\'est choisi, elles n\'entrent dans aucun calcul et ' +
-          'l\'allocation cible reste strictement stratégique.</div>'
-        : '');
+        ? '<div class="message alerte" style="margin-top:10px"><strong>Aucun des ' +
+          INDICATEURS.length + ' indicateurs n\'est renseigné.</strong> Les probabilités ' +
+          'ci-dessus sont celles du repli, pas une lecture du marché : tant qu\'aucun ' +
+          'indicateur n\'est choisi, elles n\'entrent dans aucun calcul et l\'allocation ' +
+          'cible reste strictement stratégique.</div>'
+        : (function () {
+            const n = INDICATEURS.length;
+            const k = Object.keys(Etat.macroChoix).length;
+            if (k >= n) {
+              return '<div class="message info" style="margin-top:10px"><strong>Les ' + n +
+                ' indicateurs sont renseignés.</strong> Les probabilités ci-dessus sont votre ' +
+                'lecture du marché, et la déviation tactique en découle.</div>';
+            }
+            return '<div class="message info" style="margin-top:10px"><strong>' + k +
+              ' indicateur' + (k > 1 ? 's' : '') + ' renseigné' + (k > 1 ? 's' : '') +
+              ' sur ' + n + '.</strong> La déviation tactique s\'applique dès le premier ' +
+              'choix. Les ' + (n - k) + ' indicateur' + (n - k > 1 ? 's' : '') +
+              ' laissé' + (n - k > 1 ? 's' : '') + ' vide' + (n - k > 1 ? 's' : '') +
+              ' pèsent leur valeur de repli dans le calcul — la lecture est partielle, ' +
+              'pas neutre.</div>';
+          })());
 
   const alloc = allocationCourante();
   $('#overlays-macro').innerHTML = '<h3>Déviations appliquées</h3>' +

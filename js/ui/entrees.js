@@ -260,7 +260,11 @@ function brancher() {
     }
 
     if (t.dataset.macro) {
-      Etat.macroChoix[t.dataset.macro] = t.value;
+      /* Repasser une liste à « non renseigné » doit RETIRER l'indicateur,
+         et non enregistrer la chaîne vide : `contexteExprime()` compte les
+         clés, et une clé vide compterait comme une vue de marché. */
+      if (t.value === '') delete Etat.macroChoix[t.dataset.macro];
+      else Etat.macroChoix[t.dataset.macro] = t.value;
       Etat.scenariosManuels = null;
       sauver(true); rendreMacro(); return;
     }

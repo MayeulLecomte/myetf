@@ -802,6 +802,83 @@ console.log('\n== Rapprochement univers / catalogue ==');
               ECARTS_UNIVERS.genere);
 })();
 
+/* ============================================================
+   « PAS DE CONTEXTE = STRATÉGIQUE » — LE FILET
+   ------------------------------------------------------------
+   C'est la règle la plus facile à casser sans s'en apercevoir : elle
+   ne se voit qu'en comparant deux allocations, et un défaut y produit
+   des chiffres plausibles. Elle a déjà cédé une fois — `agregerMacro({})`
+   rend des probabilités de repli qui pèsent 66,7 % sur l'atterrissage,
+   et un contexte jamais renseigné produisait donc une allocation déviée.
+
+   Trois contrôles : le tout-vide ne dévie pas, un seul choix suffit à
+   être vu, et les listes vides ne s'enregistrent pas.
+   ============================================================ */
+console.log('\n== Contexte macro : pas de contexte = stratégique ==');
+(function () {
+  const n = INDICATEURS.length;
+  ok(n === 11, n + ' indicateurs de contexte');
+
+  /* 1. Toutes les listes à « non renseigné » : AUCUNE déviation.
+        On ne compare pas des probabilités — `agregerMacro({})` en rend
+        toujours —, mais ce qui décide de dévier : le nombre de clés
+        retenues. Zéro clé, zéro vue de marché. */
+  const vide = {};
+  ok(Object.keys(vide).length === 0,
+     'aucune liste choisie ⇒ aucun indicateur enregistré');
+
+  /* Et la déviation elle-même, mesurée sur l'allocation. Le garde-fou
+     applicatif est `contexteExprime()` : sans clé, l'intensité tombe à
+     zéro et la cible EST la stratégique. On rejoue ici la même
+     condition, faute de pouvoir appeler l'interface. */
+  const profilRef = PROFILS.find(p => p.id === 'dynamique') || PROFILS[2];
+  const strat = MoteurAllocation.strategique(profilRef.id);
+  const agrVide = MoteurAllocation.agregerMacro(vide);
+  const cibleSansContexte = MoteurAllocation.tactique(
+    profilRef.id, agrVide.probas, agrVide.overlays, 0);
+  const ecartMax = Object.keys(strat.classes).reduce((m, cl) =>
+    Math.max(m, Math.abs((cibleSansContexte.classes[cl] || 0) - strat.classes[cl])), 0);
+  ok(ecartMax < 0.001,
+     'intensité nulle ⇒ la cible EST la stratégique — écart max ' +
+     ecartMax.toFixed(4) + ' pt');
+
+  /* Et la contre-épreuve : à intensité pleine, les MÊMES probabilités de
+     repli dévient bel et bien. C'est ce qui prouve que le point ci-dessus
+     tient à l'intensité nulle, et non à un calcul devenu inerte. */
+  const cibleIntensite = MoteurAllocation.tactique(
+    profilRef.id, agrVide.probas, agrVide.overlays, 1);
+  const ecartPlein = Object.keys(strat.classes).reduce((m, cl) =>
+    Math.max(m, Math.abs((cibleIntensite.classes[cl] || 0) - strat.classes[cl])), 0);
+  ok(ecartPlein > 0.5,
+     'à intensité pleine les mêmes probabilités dévient — ' +
+     ecartPlein.toFixed(1) + ' pt : le contrôle ci-dessus n\'est pas vide');
+
+  /* 2. RÉCIPROQUE : un seul indicateur choisi, et le moteur le voit.
+        Sans ce contrôle, on pourrait « corriger » le point 1 en
+        neutralisant le contexte tout entier, et personne ne le verrait. */
+  const ind = INDICATEURS[0];
+  const autre = ind.options.find(o => !o.defaut);
+  ok(!!autre, 'l\'indicateur « ' + ind.id + ' » a une option non-repli');
+
+  const avant = MoteurAllocation.agregerMacro({}).probas;
+  const apres = MoteurAllocation.agregerMacro({ [ind.id]: autre.valeur }).probas;
+  const bouge = Object.keys(avant).some(k => Math.abs(apres[k] - avant[k]) > 0.5);
+  ok(bouge, 'un seul indicateur choisi déplace les probabilités — ' +
+     Object.keys(avant).map(k => k + ' ' + avant[k].toFixed(1) + '→' + apres[k].toFixed(1)).join(' · '));
+
+  ok(Object.keys({ [ind.id]: autre.valeur }).length === 1,
+     'un choix ⇒ une clé enregistrée, donc contexte exprimé');
+
+  /* 3. Le compte du bandeau : « k sur n », et non un tout-ou-rien. */
+  const partiel = {};
+  INDICATEURS.slice(0, 3).forEach(i => {
+    const o = i.options.find(x => !x.defaut) || i.options[0];
+    partiel[i.id] = o.valeur;
+  });
+  ok(Object.keys(partiel).length === 3 && n - 3 === 8,
+     'trois choisis sur onze ⇒ le bandeau annonce 3 / 11, huit au repli');
+})();
+
 console.log('\n== Espace de noms ==');
 (function () {
   const fichiers = Object.keys(typeof SOURCES !== 'undefined' ? SOURCES : {});
