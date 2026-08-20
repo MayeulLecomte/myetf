@@ -9,52 +9,52 @@
    ============================================================ */
 
 const NOTE_MARCHE = {
-  "genere": "2026-08-18",
+  "genere": "2026-08-19",
   "modele": "claude-opus-5",
   "tokens": {
     "entree": 2177,
-    "sortie": 1662
+    "sortie": 1749
   },
   "note": {
-    "titre": "Séance de repli général, tenue des actifs réels",
-    "synthese": "La séance du 18 août est nettement négative sur l'ensemble des poches actions, avec des reculs marqués sur les pays émergents, le Japon et la technologie, tandis que l'or cède également du terrain. Sur la semaine, l'ampleur des mouvements reste toutefois contenue : seuls le Japon et l'Europe reculent de plus d'un point, les autres poches évoluant à l'intérieur du bruit habituel. Le mois écoulé demeure positif pour les actions et les actifs réels, à l'exception de l'immobilier coté et des poches obligataires.",
+    "titre": "Repli généralisé des actions, or et matières premières à part",
+    "synthese": "La semaine se solde par un recul homogène des poches actions, compris entre 1 et 2 % pour la plupart des zones, le Japon se distinguant par une baisse plus marquée. Les poches obligataires et monétaires en euros sont restées quasi stables, tandis que l'or et les matières premières poursuivent une progression entamée sur le mois. Les performances depuis le 1er janvier demeurent nettement positives sur l'ensemble des compartiments actions, ce repli hebdomadaire ne modifiant pas la physionomie de l'année.",
     "mouvements": [
       {
         "poche": "Actions Japon",
-        "constat": "La poche recule de 2,87 % sur la séance et de 1,35 % sur la semaine, tout en conservant une progression de 3,33 % sur le mois et de 20,97 % depuis le 1er janvier.",
-        "lecture": "Le repli hebdomadaire intervient après une phase de hausse soutenue et ne modifie pas, à ce stade, la contribution élevée de cette poche à la performance annuelle d'un portefeuille diversifié."
+        "constat": "Recul de 3,70 % sur la semaine, dont 1,07 % sur la seule séance, alors que la poche reste stable sur un mois (+0,29 %) et en hausse de 19,67 % depuis le 1er janvier.",
+        "lecture": "L'écart avec les autres zones développées suggère un facteur propre au marché japonais, possiblement de change ou sectoriel, que les seules variations de cours ne permettent pas de trancher ; sur un portefeuille diversifié, l'impact dépend surtout du poids accordé à cette exposition satellite."
       },
       {
-        "poche": "Actions Europe",
-        "constat": "La poche cède 1,13 % sur la semaine, dont 0,68 % sur la seule séance, après un mois en hausse de 2,24 %.",
-        "lecture": "Le mouvement est le plus marqué des grandes zones développées sur la semaine, ce qui peut légèrement réduire l'écart de performance annuelle entre l'exposition européenne et l'exposition mondiale."
+        "poche": "Actions Technologie / Innovation",
+        "constat": "Baisse de 1,80 % sur la semaine et de 0,94 % sur le mois, seule poche actions négative sur ces deux horizons, pour +16,96 % depuis le 1er janvier.",
+        "lecture": "La poche la plus sensible aux anticipations de croissance et de taux recule plus vite que l'indice mondial, ce qui rappelle que sa contribution à la performance annuelle s'accompagne d'une amplitude supérieure."
+      },
+      {
+        "poche": "Actions Monde (développées)",
+        "constat": "Recul de 1,41 % sur la semaine, mais progression de 0,99 % sur le mois et de 13,86 % depuis le 1er janvier.",
+        "lecture": "Le cœur actions des portefeuilles absorbe la baisse sans remettre en cause la tendance mensuelle, ce qui situe la séance dans une respiration plutôt que dans une rupture de régime."
       },
       {
         "poche": "Or",
-        "constat": "L'once recule de 1,35 % sur la séance et de 0,74 % sur la semaine, mais progresse de 7,07 % sur le mois pour une performance annuelle limitée à 2,59 % en euros.",
-        "lecture": "La poche a cédé une partie de son avance récente en même temps que les actions, ce qui rappelle que son effet diversifiant peut être temporairement absent sur une séance donnée."
-      },
-      {
-        "poche": "Matières premières diversifiées",
-        "constat": "La poche est quasi stable sur la semaine (-0,17 %) mais gagne 4,28 % sur le mois et 32,11 % depuis le 1er janvier, soit la meilleure performance annuelle du panel.",
-        "lecture": "Cette poche a résisté à la séance de repli et pèse désormais davantage que prévu dans les allocations qui la comportent, ce qui mérite un contrôle des poids réels."
+        "constat": "Hausse de 2,10 % sur la séance et de 7,51 % sur le mois, pour une variation hebdomadaire limitée à +0,44 % et +4,75 % depuis le 1er janvier.",
+        "lecture": "La progression mensuelle, concomitante au repli des actions, illustre la fonction de diversification attendue de cette poche, sans que l'on puisse attribuer ce mouvement à une cause identifiable à partir des seuls cours."
       },
       {
         "poche": "Immobilier coté (SIIC / REITs)",
-        "constat": "La poche progresse légèrement sur la séance et sur la semaine (+0,32 %), mais recule de 3,02 % sur le mois, à contre-courant des actions.",
-        "lecture": "Le décrochage mensuel, dans un contexte où les poches obligataires sont également en léger recul, pourrait renvoyer à la sensibilité de cette classe d'actifs aux taux longs, sans que les données disponibles permettent de le confirmer."
+        "constat": "Baisse de 4,15 % sur le mois, alors que le recul hebdomadaire reste contenu à 0,82 % ; la poche conserve +11,40 % depuis le 1er janvier.",
+        "lecture": "La dégradation s'est jouée sur l'horizon mensuel plutôt que sur la semaine, un profil qui renvoie généralement à la sensibilité de cette classe d'actifs aux taux longs et mérite d'être rapproché du comportement des poches obligataires."
       }
     ],
     "aVerifier": [
-      "Le poids effectif des poches matières premières et petites capitalisations, dont les performances annuelles élevées ont pu créer une dérive par rapport à l'allocation cible.",
-      "La cohérence de l'exposition émergents et Japon avec le profil de risque des clients, ces poches affichant les variations quotidiennes les plus amples du panel.",
-      "La contribution réelle de la poche obligataire dans les portefeuilles prudents, les obligations globales couvertes en euro restant en repli de 1,10 % depuis le 1er janvier.",
-      "La position de l'immobilier coté dans les dossiers où il joue un rôle de diversification, compte tenu de son recul mensuel isolé."
+      "Le poids réel des expositions Japon et Technologie dans les allocations, ces deux poches concentrant l'essentiel du repli hebdomadaire.",
+      "Les portefeuilles exposés à l'immobilier coté, dont le recul mensuel de 4,15 % contraste avec la tenue des autres poches et peut avoir modifié les pondérations cibles.",
+      "La part des matières premières et de l'or après leur progression mensuelle, susceptible d'avoir fait dériver ces poches au-delà de leur allocation prévue, en particulier sur les matières premières (+33,02 % depuis le 1er janvier).",
+      "Les dossiers dont un versement ou un arbitrage programmé tombe dans les prochains jours, afin de vérifier la cohérence entre le calendrier client et l'amplitude constatée."
     ],
     "indicateursASurveiller": [
-      "Le niveau des taux souverains longs en zone euro, seule lecture susceptible d'éclairer le recul conjoint de l'immobilier coté et des poches obligataires sur le mois.",
-      "Les anticipations d'inflation, les obligations indexées ne se distinguant pas des obligations nominales sur la période.",
-      "Le taux de change euro-dollar, qui conditionne la lecture en euros des performances américaines et de l'or."
+      "Les taux longs de la zone euro, dont l'évolution éclairerait le décrochage mensuel de l'immobilier coté face à la stabilité des poches obligataires.",
+      "Le change euro-yen, seule explication documentable du décalage entre les actions japonaises et les autres marchés développés.",
+      "Les anticipations d'inflation, à rapprocher de la progression des matières premières et de la performance atone des obligations indexées (-0,24 % sur le mois)."
     ]
   }
 };
