@@ -476,6 +476,34 @@ masquées se rendent alors toutes en même temps**. Le ruban annonce « Profil
 de risque » et l'écran montre le formulaire client. Toujours qualifier par
 `.actif`.
 
+### L'ouverture est une enseigne, pas le sujet
+
+Elle se **centre** dans sa colonne et **maigrit** : dessin à 132 px, titre à
+34 px. Posée en haut à gauche à sa taille de bannière, elle pesait plus que
+le formulaire qu'elle annonce. La taille vient de `tailleOuverture()`, en
+style d'attribut : la surcharger demande `!important`.
+
+### La suite en zigzag — `VUES_ZIGZAG`
+
+« Profil de risque » n'a qu'UNE chose à dire à l'arrivée : le profil retenu
+et son score. Empiler les quatre cartes de détail à droite les met au même
+rang, et la première s'y noie.
+
+**Un seul bloc à droite ; la suite dessous, en pleine largeur, un bloc par
+ligne, alternativement à droite et à gauche.** Bornée à 72 % : sans borne,
+deux blocs pleine largeur sont au même endroit et l'alternance ne se voit
+pas.
+
+`display: contents` sur le conteneur rendu à l'exécution — `#profil-contenu`
+— pour que ses enfants deviennent les cellules de la grille de la VUE. Sans
+lui ils restent enfermés dans un `<div>` qui occupe une seule cellule, et
+aucune règle de grille ne les atteint. Le conteneur ne quitte pas le DOM, il
+cesse seulement de produire une boîte : les sélecteurs qui le traversent
+mordent toujours.
+
+En zigzag, l'ouverture prend `grid-row: 1` et non `1 / -1` — la zone à deux
+colonnes se limite à la première ligne, le zigzag court dessous.
+
 ### L'ouverture occupe toutes les lignes de sa colonne
 
 `grid-row: 1 / -1`. Sans cela sa zone de grille se limite à la première

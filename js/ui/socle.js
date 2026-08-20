@@ -218,6 +218,19 @@ const VUES_DEUX_COLONNES = [
   'client', 'profil'
 ];
 
+/* CELLES QUI, EN PLUS, DÉROULENT LEUR SUITE EN ZIGZAG.
+
+   « Profil de risque » n'a qu'UNE chose à dire à l'arrivée : le profil
+   retenu et son score. Empiler les quatre cartes de détail dans la colonne
+   de droite les met toutes au même rang, et la première se noie.
+
+   La suite passe donc sous la zone à deux colonnes, en pleine largeur, un
+   bloc par ligne, alternativement à droite et à gauche. On les lit un par
+   un au lieu de les balayer — c'est le même raisonnement que le zigzag des
+   indicateurs, appliqué là où il vaut : des blocs qu'on lit, et non des
+   nombres qu'on compare. */
+const VUES_ZIGZAG = ['profil'];
+
 const ILLUSTRATIONS_VUES = {
   accueil:      'cafe',
   client:       'enveloppe',

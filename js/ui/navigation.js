@@ -216,6 +216,7 @@ function poserOuvertures() {
     const section = h.closest('.vue');
     if (section && VUES_DEUX_COLONNES.indexOf(vue) >= 0) {
       section.classList.add('deux-colonnes');
+      if (VUES_ZIGZAG.indexOf(vue) >= 0) section.classList.add('zigzag');
     }
 
     const bloc = document.createElement('div');

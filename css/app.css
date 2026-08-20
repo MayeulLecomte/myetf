@@ -3577,3 +3577,71 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
      s'aligner sur le haut de l'ouverture, pas flotter en dessous. */
   .vue.deux-colonnes.actif > *:not(.ouverture-vue):first-of-type { margin-top: 0; }
 }
+
+/* ---------- (h bis) L'OUVERTURE SE CENTRE, ET ELLE MAIGRIT ----------
+   Posée en haut à gauche et à sa taille de bannière, elle pesait plus
+   que le contenu qu'elle annonce : un dessin de 180 px et un titre de
+   46 px contre un formulaire. Elle n'est pas le sujet de la vue, elle
+   en est l'enseigne.
+
+   Elle se centre — dans sa colonne, et verticalement dans la hauteur
+   qu'elle occupe — et le dessin descend à 132 px. La taille vient de
+   `tailleOuverture()`, posée en style d'attribut : sans `!important`
+   le style en ligne l'emporterait. */
+@media (min-width: 901px) {
+  .vue.deux-colonnes.actif > .ouverture-vue {
+    align-self: center;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  .vue.deux-colonnes.actif > .ouverture-vue > .illustration {
+    width: 132px !important; height: 132px !important;
+  }
+  .vue.deux-colonnes.actif > .ouverture-vue h2 { font-size: 34px; }
+  .vue.deux-colonnes.actif > .ouverture-vue .intro { max-width: 30ch; }
+}
+
+/* ---------- (h ter) LA SUITE EN ZIGZAG ----------
+   Un seul bloc à droite de l'ouverture ; tout le reste dessous, en
+   pleine largeur, alternativement à droite et à gauche.
+
+   `display: contents` sur le conteneur rendu à l'exécution : ses
+   enfants deviennent les cellules de la grille de la VUE. Sans cela ils
+   restent enfermés dans un `<div>` qui, lui, occupe une seule cellule —
+   et aucune règle de grille ne les atteint. Le conteneur ne disparaît
+   pas du DOM, il cesse seulement de produire une boîte : les sélecteurs
+   qui le traversent continuent de mordre. */
+@media (min-width: 901px) {
+  .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] { display: contents; }
+
+  /* L'ouverture ne s'étire plus sur toutes les lignes : la zone à deux
+     colonnes se limite à la première, et le zigzag court dessous. */
+  .vue.deux-colonnes.zigzag.actif > .ouverture-vue { grid-row: 1; }
+
+  /* LE bloc de droite — celui qu'on vient lire. */
+  .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :first-child {
+    grid-column: 2; grid-row: 1;
+  }
+
+  /* La suite : pleine largeur de grille, mais bornée à 72 % et poussée
+     d'un côté puis de l'autre. Bornée, sinon « alternativement à droite
+     et à gauche » ne se voit pas — un bloc pleine largeur est au même
+     endroit que le suivant. */
+  .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :not(:first-child) {
+    grid-column: 1 / -1;
+    max-width: 72%;
+  }
+  .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :nth-child(even) {
+    justify-self: end;
+  }
+  .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :nth-child(odd):not(:first-child) {
+    justify-self: start;
+  }
+
+  /* La barre de parcours reprend toute la largeur : elle ferme la vue,
+     elle n'appartient pas au zigzag. */
+  .vue.deux-colonnes.zigzag.actif > .barre-parcours {
+    grid-column: 1 / -1; max-width: none; justify-self: stretch;
+  }
+}
