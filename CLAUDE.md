@@ -1281,9 +1281,24 @@ détention.
 
 ## Confirmer des arbitrages : deux métiers, deux gestes
 
-**Le conseiller garde ses deux boutons séparés.** Il journalise souvent sans
-appliquer, parce qu'il attend l'exécution réelle chez l'assureur : fondre les
-deux lui ferait perdre une distinction qu'il utilise tous les jours.
+**Le conseiller garde ses deux boutons séparés** — journaliser sans appliquer,
+parce qu'il attend l'exécution réelle chez l'assureur. Fondre les deux lui
+ferait perdre une distinction qu'il utilise tous les jours.
+
+**Mais « Confirmer ces arbitrages » lui a été AJOUTÉ en tête, et ses deux
+boutons sont passés au second rang.** La distinction reste ; ce qui manquait,
+c'était le geste évident. Sur téléphone, la barre proposait « Valider la revue
+et l'inscrire au journal » et rien qui dise « c'est exécuté, mets à jour le
+portefeuille » : on lui demandait de composer lui-même l'action qu'il vient
+chercher. Trois boutons, une intention chacun.
+
+**Le mode particulier n'a pas bougé** — il avait déjà ce bouton. Le geste du
+journal seul n'y apparaît pas et n'y apparaîtra pas : qui gère son propre
+argent n'attend l'exécution de personne.
+
+`arbitrages.confirmation` et `arbitrages.confirme` n'existaient qu'en mode
+particulier. Elles portent désormais un repli : sans lui, le conseiller
+verrait la CLÉ s'afficher dans la boîte de dialogue.
 
 **Celui qui gère son propre argent n'a pas cette attente.** Un seul bouton —
 « Confirmer ces arbitrages » — fait les trois gestes : journal, portefeuille,

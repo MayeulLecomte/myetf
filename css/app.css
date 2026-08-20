@@ -3678,3 +3678,53 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
      cet écart-là : il vaut pour ce qui se déroule DESSOUS. */
   .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :first-child { margin-bottom: 0; }
 }
+
+/* ---------- (h quinquies) LES CONTENEURS S'EFFACENT ----------
+   Le contenu d'une vue vit dans un `<div>` rendu à l'exécution, et
+   souvent dans une `grille deux` à l'intérieur. Ces conteneurs
+   n'occupent qu'UNE cellule de la grille de la vue : tout ce qu'ils
+   portent se retrouve tassé dans les 60 % de la colonne droite, y
+   compris ce qui devrait s'étaler.
+
+   `display: contents` les efface en tant que boîtes — leurs enfants
+   deviennent les cellules de la grille de la vue — sans les retirer du
+   DOM ni casser les sélecteurs qui les traversent.
+
+   Conséquence voulue : sur « Contexte », les onze listes tiennent la
+   colonne de droite et les scénarios passent dessous en pleine largeur,
+   au lieu de se partager 60 % à deux. */
+@media (min-width: 901px) {
+  .vue.deux-colonnes.actif > div[id$="-contenu"],
+  .vue.deux-colonnes.actif > .grille.deux,
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > .grille.deux { display: contents; }
+
+  /* TOUT VA EN COLONNE 2, y compris ce qui remonte d'un conteneur
+     effacé. Sans cette règle, l'auto-placement remplit les cellules
+     libres au fur et à mesure : le premier bloc va à droite, le
+     deuxième retombe à GAUCHE sous l'ouverture, et ainsi de suite. Ce
+     n'est pas une grille à deux colonnes, c'est un damier. */
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > *,
+  .vue.deux-colonnes.actif > .grille.deux > *,
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > .grille.deux > * { grid-column: 2; }
+
+  /* TOUT CE QUI PORTE UN TABLEAU LARGE S'ÉTALE.
+     C'est l'exception de largeur : un tableau serré dans 60 % n'est plus
+     un tableau. `:has()` évite d'avoir à nommer chaque carte une à une —
+     la règle suit le contenu, pas une liste à tenir à jour. */
+  .vue.deux-colonnes.actif > *:has(.tableau-defilant),
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > *:has(.tableau-defilant),
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > .grille.deux > *:has(.tableau-defilant) {
+    grid-column: 1 / -1;
+  }
+
+  /* UNE RANGÉE D'INDICATEURS S'ÉTALE ELLE AUSSI.
+     Quatre tuiles dans 60 % d'écran font quatre colonnes de cent dix
+     pixels : « Dynamique » y est coupé en deux. C'est une bande de
+     tableau de bord, elle se lit en largeur ou pas du tout. */
+  .vue.deux-colonnes.actif > .grille.quatre,
+  .vue.deux-colonnes.actif > .grille.trois,
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > .grille.quatre,
+  .vue.deux-colonnes.actif > div[id$="-contenu"] > .grille.trois {
+    grid-column: 1 / -1;
+  }
+}

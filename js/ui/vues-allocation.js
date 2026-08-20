@@ -671,11 +671,29 @@ function rendreArbitrages() {
        bouton fait donc les trois gestes — journal, portefeuille, redirection
        — et la simulation reste disponible, au second rang. */
     '<div class="barre-actions sans-impression">' +
+      /* CONFIRMER EXISTE DANS LES DEUX MODES. Seul le CONSEILLER change.
+
+         Il gardait ses deux gestes séparés — journaliser d'un côté,
+         appliquer de l'autre — parce qu'il journalise souvent sans
+         appliquer, en attendant l'exécution réelle chez l'assureur. Cette
+         distinction reste, et ses deux boutons avec elle : ils passent
+         simplement au second rang.
+
+         Ce qui lui manquait, c'était le geste évident. Sur téléphone, la
+         barre proposait « Valider la revue et l'inscrire au journal » et
+         rien qui dise « c'est exécuté, mets à jour le portefeuille » : on
+         lui demandait de composer lui-même l'action qu'il vient chercher.
+
+         Le raccourci s'ajoute en tête, sans rien retirer. Le mode
+         particulier, lui, ne bouge pas d'un pixel — il avait déjà ce
+         bouton, et le geste du journal seul n'a aucun sens pour qui gère
+         son propre argent : il n'attend l'exécution de personne. */
+      '<button class="bouton" id="btn-confirmer">' +
+        echapper(mot('arbitrages.bouton.confirmer', 'Confirmer ces arbitrages')) + '</button>' +
       (T('arbitrages.bouton.confirmer') === 'arbitrages.bouton.confirmer'
-        ? '<button class="bouton" id="btn-journaliser">' +
+        ? '<button class="bouton secondaire" id="btn-journaliser">' +
             echapper(mot('arbitrages.bouton.journal', 'Valider la revue et l\'inscrire au journal')) + '</button>'
-        : '<button class="bouton" id="btn-confirmer">' +
-            echapper(T('arbitrages.bouton.confirmer')) + '</button>') +
+        : '') +
       '<button class="bouton secondaire" id="btn-appliquer">' +
         echapper(mot('arbitrages.bouton.appliquer', 'Appliquer les ordres à la détention saisie')) + '</button>' +
       /* L'envoi existe dans les deux modes : un conseiller adresse la
@@ -718,7 +736,12 @@ function rendreArbitrages() {
   const bc = $('#btn-confirmer');
   if (bc) bc.onclick = () => {
     const n = analyse.ordres.length;
-    if (!confirm(T('arbitrages.confirmation', { n }))) return;
+    /* Ces deux phrases n'existaient qu'en mode particulier. Sans repli, le
+       conseiller aurait vu la CLÉ s'afficher dans la boîte de dialogue —
+       `T()` rend la clé quand elle manque. */
+    if (!confirm(mot('arbitrages.confirmation',
+        'Confirmer ' + n + ' mouvement' + (n > 1 ? 's' : '') + ' ? Le portefeuille détenu sera ' +
+        'mis à jour et la revue enregistrée au journal.').replace('{n}', n))) return;
 
     Confirmation.avant = {
       detention: JSON.parse(JSON.stringify(Etat.detention)),
@@ -734,7 +757,10 @@ function rendreArbitrages() {
     appliquerOrdres(analyse);
     sauver(true);
 
-    Confirmation.bandeau = T('arbitrages.confirme', { date: dateFr(), n });
+    Confirmation.bandeau = mot('arbitrages.confirme',
+      'Arbitrages du ' + dateFr() + ' confirmés — ' + n + ' mouvement' + (n > 1 ? 's' : '') +
+      ' appliqué' + (n > 1 ? 's' : '') + '.')
+      .replace('{date}', dateFr()).replace('{n}', n);
     afficher('situation');
   };
 
