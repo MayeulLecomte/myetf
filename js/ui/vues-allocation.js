@@ -207,9 +207,18 @@ function rendreAllocation() {
        contexte : un indicateur structurellement vide occupe une place et
        n'apprend rien. Il tombe, et les trois autres s'élargissent. */
     '<div class="grille ' + (vueMasquee('macro') ? 'trois' : 'quatre') + '">' +
-      kpi(r.profil.nom, 'Profil', r.profil.sri ? 'SRI ' + r.profil.sri : '') +
-      kpi(pct(metriquesTact.rendement), 'Rendement espéré', 'hypothèses long terme') +
-      kpi(pct(metriquesTact.volatilite), 'Volatilité estimée', 'contre ' + pct(metriquesStrat.volatilite) + ' en stratégique') +
+      /* Le SRI quitte la carte du profil comme il a quitté l'en-tête de
+         « Mon profil » : il reste au rapport, où il justifie un classement.
+         Ici, un chiffre de 1 à 7 sans échelle ne dit rien. */
+      kpi(r.profil.nom, 'Profil',
+          T('alloc.kpi.gain') === 'alloc.kpi.gain' && r.profil.sri ? 'SRI ' + r.profil.sri : '') +
+      /* Les deux mêmes métriques, dites en euros quand un montant existe.
+         Sans montant, les taux — afficher « 0 € » serait faux. */
+      kpiMontant('alloc.kpi.gain', 'Rendement espéré', 'hypothèses long terme',
+                 pct(metriquesTact.rendement), metriquesTact.rendement) +
+      kpiMontant('alloc.kpi.amplitude', 'Volatilité estimée',
+                 'contre ' + pct(metriquesStrat.volatilite) + ' en stratégique',
+                 pct(metriquesTact.volatilite), metriquesTact.volatilite) +
       (vueMasquee('macro') ? '' :
         kpi(scenarioDominant ? Math.round(m.probas[m.dominant]) + ' %' : '—', 'Scénario dominant',
             scenarioDominant ? scenarioDominant.nom : 'aucun contexte renseigné')) +
@@ -224,24 +233,33 @@ function rendreAllocation() {
       '<div class="carte"><h3>Répartition par classe d\'actifs</h3>' +
         '<div class="graphique">' + donut(segments) + '<div style="flex:1;min-width:200px">' + legende(segments) + '</div></div>' +
       '</div>' +
-      '<div class="carte"><h3>Stratégique vs tactique</h3>' +
+      '<div class="carte"><h3>' + echapper(mot('alloc.barres.titre', 'Stratégique vs tactique')) + '</h3>' +
         '<div class="barres">' + Object.keys(alloc.classes).map(cl => {
           const t = alloc.classes[cl], s = alloc.strategique.classes[cl], d = t - s;
           return '<div class="barre"><div class="tete"><span>' + LIBELLES_CLASSES[cl] + '</span>' +
-            '<span>' + pct(t) + ' <span style="color:var(--gris-doux)">(cible stratégique ' + pct(s) + ')</span> ' +
+            '<span>' + pct(t) + ' <span style="color:var(--gris-doux)">' +
+            echapper(T('alloc.barres.cible') === 'alloc.barres.cible'
+              ? '(cible stratégique ' + pct(s) + ')'
+              : T('alloc.barres.cible', { pct: pct(s) })) + '</span> ' +
             (Math.abs(d) >= 0.1 ? '<strong class="' + (d > 0 ? 'positif' : 'negatif') + '">' + signe(d) + '</strong>' : '') +
             '</span></div>' +
             '<div class="piste"><div class="part" style="width:' + t + '%;background:' + COULEURS_CLASSES[cl] + '"></div>' +
             '<div class="cible" style="left:calc(' + s + '% - 1px)" title="Cible stratégique"></div></div></div>';
         }).join('') + '</div>' +
-        '<p class="intro" style="font-size:11px;margin-top:10px">Le repère vertical marque l\'allocation stratégique du profil. ' +
-        'Les déviations tactiques sont bornées à ±' + BORNES_TACTIQUES.actions + ' points sur les actions.</p>' +
+        '<p class="intro" style="font-size:11px;margin-top:10px">' +
+        echapper(T('alloc.barres.note') === 'alloc.barres.note'
+          ? 'Le repère vertical marque l\'allocation stratégique du profil. Les déviations tactiques ' +
+            'sont bornées à ±' + BORNES_TACTIQUES.actions + ' points sur les actions.'
+          : T('alloc.barres.note', { points: BORNES_TACTIQUES.actions })) + '</p>' +
       '</div>' +
     '</div>' +
 
     '<div class="carte"><h3>Détail par poche</h3>' +
       '<div class="tableau-defilant"><table><thead><tr>' +
-      '<th>Poche' + aide('poche') + '</th><th>Classe</th><th class="num">Stratégique</th><th class="num">Tactique</th><th class="num">Écart</th><th class="num">Montant</th>' +
+      '<th>Poche' + aide('poche') + '</th><th>Classe</th>' +
+      '<th class="num">' + echapper(mot('alloc.colonne.strategique', 'Stratégique')) + '</th>' +
+      '<th class="num">' + echapper(mot('alloc.colonne.tactique', 'Tactique')) + '</th>' +
+      '<th class="num">Écart</th><th class="num">Montant</th>' +
       '</tr></thead><tbody>' +
       poches.map(p => {
         const t = alloc.poches[p], s = alloc.strategique.poches[p] || 0, d = t - s;
@@ -572,6 +590,18 @@ function poidsTestes() {
 
    400 jours : une série gagne une année civile par an, et l'on ne la relève
    qu'une fois l'année close et publiée. */
+/* Une tuile qui dit un taux au conseiller et un montant au particulier. Le
+   calcul est le même des deux côtés — c'est l'affichage qui change, et
+   seulement si un montant existe : sans lui, « 0 € » serait faux. */
+function kpiMontant(cle, libelleDefaut, detailDefaut, valeurPct, taux) {
+  const montant = Number(Etat.identite.montant) || 0;
+  if (T(cle) === cle || !montant) return kpi(valeurPct, libelleDefaut, detailDefaut);
+  const cent = x => Math.round(x / 100) * 100;
+  const part = euro(cent(montant * Math.abs(taux) / 100));
+  return kpi(valeurPct, T(cle),
+             T(cle + '.detail', { gain: part, ecart: part, montant: euro(montant) }));
+}
+
 function pastilleReleveSeries() {
   if (typeof HISTORIQUE_RELEVE === 'undefined' || !HISTORIQUE_RELEVE.le) return '';
   const SEUIL = 400;

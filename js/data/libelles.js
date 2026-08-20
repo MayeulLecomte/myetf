@@ -361,6 +361,22 @@ const LIBELLES = {
     'profil.gestion.conseillee': 'acceptés',
     'profil.gestion.active': 'acceptés, y compris importants',
 
+    /* ---------- La vue « Mon allocation » ----------
+       Trois taux deviennent trois montants, et le SRI quitte encore une
+       carte. Les calculs sont les mêmes : c'est la vue qui multiplie par le
+       montant du dossier, comme dans « Mon profil ». */
+    'alloc.kpi.gain': 'Gain espéré en moyenne',
+    'alloc.kpi.gain.detail': '~{gain}/an sur {montant} (long terme, non garanti)',
+    'alloc.kpi.amplitude': 'Amplitude d\'une année ordinaire',
+    'alloc.kpi.amplitude.detail': 'vos {montant} peuvent osciller d\'environ ±{ecart}',
+    'alloc.barres.titre': 'Votre répartition, et la cible',
+    'alloc.barres.cible': '(cible {pct})',
+    'alloc.barres.note':
+      'Le repère vertical marque votre répartition de base. Les ajustements de contexte sont ' +
+      'limités à ±{points} points sur les actions.',
+    'alloc.colonne.strategique': 'Base',
+    'alloc.colonne.tactique': 'Ajustée',
+
         'profil.plafond.titre': 'Profil plafonné.',
     'phrase.profil.plafond':
       'Vos réponses pointaient vers un profil plus offensif ({theorique}), mais vous avez posé une ' +

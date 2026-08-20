@@ -613,8 +613,8 @@ conseil » est **encadré de noir et plus gros que les mentions** (13,5 px contr
 
 ## L'empreinte de référence
 
-**`5d897b4a` · 1 333 604 octets · 68 empreintes**, relevée après la carte
-de conséquences et les champs d'identité.
+**`78aca4f0` · 1 333 982 octets · 68 empreintes**, relevée après « Mon
+allocation ».
 
 Le remaniement lui-même s'est mesuré ainsi, à la journée près — l'empreinte
 contient des dates, elle ne se compare qu'entre deux relevés du même jour :
@@ -863,6 +863,22 @@ lit, il ne se calcule pas.
 rend la clé quand elle n'existe nulle part, donc **le mode conseiller garde
 ses phrases sans qu'elles aient à être recopiées dans la table**. C'est ce
 qui permet de reformuler une vue entière sans dupliquer sa prose.
+
+## « Mon allocation » : trois taux deviennent trois montants
+
+Même principe que la carte de conséquences du profil, et même garde-fou :
+**les calculs sont identiques dans les deux modes**, c'est la vue qui
+multiplie par le montant du dossier — et seulement s'il existe. Sans montant,
+les taux reviennent : « 0 € » serait faux.
+
+`kpiMontant()` porte cette bascule pour les tuiles. Le SRI quitte la tuile
+« Profil » comme il a quitté l'en-tête de « Mon profil ».
+
+Le vocabulaire de la carte des barres suit : « Stratégique vs tactique »
+devient « Votre répartition, et la cible », et les colonnes « Stratégique /
+Tactique » du détail par poche deviennent « Base / Ajustée ». **Le mot
+« poche » reste** : c'est l'un des trois termes de métier que l'application
+garde et explique, avec « dérive » et « rotation ».
 
 ## Le rapport ne montre pas de scénarios que personne n'a choisis
 
