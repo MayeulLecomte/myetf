@@ -478,10 +478,22 @@ de risque » et l'écran montre le formulaire client. Toujours qualifier par
 
 ### L'ouverture est une enseigne, pas le sujet
 
-Elle se **centre** dans sa colonne et **maigrit** : dessin à 132 px, titre à
-34 px. Posée en haut à gauche à sa taille de bannière, elle pesait plus que
-le formulaire qu'elle annonce. La taille vient de `tailleOuverture()`, en
-style d'attribut : la surcharger demande `!important`.
+**En haut à gauche, et plus petite** : dessin à 132 px, titre à 34 px. C'est
+la TAILLE qui pesait trop, pas la position — centrée, elle flottait au milieu
+d'une colonne vide et l'oeil devait la chercher ; alignée sur le premier bloc
+de droite, les deux colonnes commencent au même trait.
+
+La taille vient de `tailleOuverture()`, en style d'attribut : la surcharger
+demande `!important`.
+
+### L'air se prend par `row-gap`, pas par les marges
+
+Dans une grille, la marge basse d'une cellule ne s'ajoute pas à celle de sa
+voisine : elle est simplement ignorée entre deux lignes. Les blocs de droite
+portaient encore la marge du rythme général, qui doublait l'écart sur les uns
+et pas sur les autres selon leur nature. **Un seul mécanisme** : `row-gap`
+40 px en deux colonnes, **64 px en zigzag** — des blocs qu'on lit un par un
+ont besoin de plus d'air que des blocs qu'on balaie.
 
 ### La suite en zigzag — `VUES_ZIGZAG`
 
@@ -493,6 +505,10 @@ rang, et la première s'y noie.
 ligne, alternativement à droite et à gauche.** Bornée à 72 % : sans borne,
 deux blocs pleine largeur sont au même endroit et l'alternance ne se voit
 pas.
+
+**L'alternance démarre À GAUCHE.** Le premier bloc est à droite, dans la zone
+à deux colonnes : envoyer le deuxième à droite lui aussi le fait lire comme
+sa suite, et le zigzag ne commence qu'au troisième.
 
 `display: contents` sur le conteneur rendu à l'exécution — `#profil-contenu`
 — pour que ses enfants deviennent les cellules de la grille de la VUE. Sans

@@ -3537,7 +3537,12 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
        largeur naturelle de son contenu — un tableau étirerait sa
        colonne et mangerait l'autre. */
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    column-gap: 44px;
+    column-gap: 56px;
+    /* Les blocs de droite s'espacent par le `row-gap` de la grille et non
+       par leurs marges : dans une grille, la marge d'une cellule ne
+       s'ajoute pas à celle de sa voisine, elle est simplement ignorée
+       entre deux lignes. Sans `row-gap`, les cartes se touchaient. */
+    row-gap: 40px;
     align-items: start;
   }
 
@@ -3589,17 +3594,28 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
    `tailleOuverture()`, posée en style d'attribut : sans `!important`
    le style en ligne l'emporterait. */
 @media (min-width: 901px) {
+  /* EN HAUT À GAUCHE, et non centrée. Centrée, elle flottait au milieu
+     d'une colonne vide et l'oeil devait la chercher ; alignée sur le
+     premier bloc de droite, les deux colonnes commencent au même trait.
+
+     Elle maigrit quand même : c'est la TAILLE qui pesait trop, pas la
+     position. */
   .vue.deux-colonnes.actif > .ouverture-vue {
-    align-self: center;
-    align-items: center;
-    text-align: center;
+    align-self: start;
+    align-items: flex-start;
+    text-align: left;
     gap: 16px;
   }
   .vue.deux-colonnes.actif > .ouverture-vue > .illustration {
     width: 132px !important; height: 132px !important;
   }
   .vue.deux-colonnes.actif > .ouverture-vue h2 { font-size: 34px; }
-  .vue.deux-colonnes.actif > .ouverture-vue .intro { max-width: 30ch; }
+  .vue.deux-colonnes.actif > .ouverture-vue .intro { max-width: 32ch; }
+
+  /* Les blocs de droite portaient encore la marge basse du rythme
+     général. Additionnée au `row-gap`, elle doublait l'écart sur les uns
+     et pas sur les autres selon leur nature. Un seul mécanisme. */
+  .vue.deux-colonnes.actif > *:not(.ouverture-vue) { margin-bottom: 0; }
 }
 
 /* ---------- (h ter) LA SUITE EN ZIGZAG ----------
@@ -3632,11 +3648,16 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
     grid-column: 1 / -1;
     max-width: 72%;
   }
+  /* L'ALTERNANCE DÉMARRE À GAUCHE. Le premier bloc est à DROITE, dans la
+     zone à deux colonnes : envoyer le deuxième à droite lui aussi le fait
+     lire comme sa suite, et le zigzag ne commence qu'au troisième. Le
+     deuxième part donc à gauche — c'est le premier changement de côté qui
+     dit qu'il y en aura d'autres. */
   .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :nth-child(even) {
-    justify-self: end;
+    justify-self: start;
   }
   .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :nth-child(odd):not(:first-child) {
-    justify-self: start;
+    justify-self: end;
   }
 
   /* La barre de parcours reprend toute la largeur : elle ferme la vue,
@@ -3644,4 +3665,16 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
   .vue.deux-colonnes.zigzag.actif > .barre-parcours {
     grid-column: 1 / -1; max-width: none; justify-self: stretch;
   }
+}
+
+/* ---------- (h quater) LE ZIGZAG RESPIRE PLUS ----------
+   Des blocs qu'on lit un par un ont besoin de plus d'air que des blocs
+   qu'on balaie : c'est le vide entre eux qui dit « celui-ci est fini,
+   passe au suivant ». Serrés à quarante pixels, ils se lisaient encore
+   comme une pile. */
+@media (min-width: 901px) {
+  .vue.deux-colonnes.zigzag.actif { row-gap: 64px; }
+  /* La première ligne — ouverture et bloc de droite — n'a pas besoin de
+     cet écart-là : il vaut pour ce qui se déroule DESSOUS. */
+  .vue.deux-colonnes.zigzag.actif > div[id$="-contenu"] > :first-child { margin-bottom: 0; }
 }
