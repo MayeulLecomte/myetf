@@ -3481,3 +3481,28 @@ table a:hover, .tableau-defilant a:hover, td a:hover {
 .message .bouton.secondaire, .message button.bouton.secondaire {
   background: var(--surface); border: 1px solid var(--ligne);
 }
+
+/* ---------- Une barre d'actions posée dans la vue est un BLOC ----------
+   `.barre-actions` n'a qu'une marge HAUTE : à l'intérieur d'un encart
+   ou d'une carte, c'est exactement ce qu'il faut — elle se referme sur
+   le bord du conteneur.
+
+   Posée directement dans la vue, elle n'a plus de bord pour la
+   refermer. Sur « Rapport », « Imprimer / enregistrer en PDF » touchait
+   le document qu'il imprime, à zéro pixel. L'aération à cent pixels le
+   masquait ; la densité l'a mis au jour.
+
+   Elle prend donc le rythme des autres blocs, et seulement quand elle
+   EST un bloc — d'où les mêmes sélecteurs d'enfant direct que la liste
+   d'aération, et non une règle de classe qui toucherait aussi celles
+   des encarts. */
+.vue > .barre-actions,
+.vue > div[id$="-contenu"] > .barre-actions {
+  margin-bottom: 22px;
+}
+@media (min-width: 821px) {
+  .vue > .barre-actions,
+  .vue > div[id$="-contenu"] > .barre-actions {
+    margin-top: 22px; margin-bottom: 22px;
+  }
+}
