@@ -9,7 +9,7 @@
 > d'adéquation.
 >
 > **Les caractéristiques de marché des ETF ont été relevées sur justETF le
-> 15 août 2026** — nom, ISIN, frais, encours, réplication, devise, éligibilité
+> 20 août 2026** — nom, ISIN, frais, encours, réplication, devise, éligibilité
 > PEA — et **les notations Morningstar le 16 août 2026**. Elles vieillissent :
 > les notes sont recalculées chaque mois. **Un contrôle reste à faire, dossier
 > par dossier** : le référencement effectif de chaque support dans le contrat du
@@ -806,7 +806,7 @@ seule à porter le référencement au contrat.
 
 L'univers compte **42 supports**, contrôlés à deux niveaux distincts.
 
-**Niveau 1 — caractéristiques de marché : fait le 15 août 2026, sur justETF.**
+**Niveau 1 — caractéristiques de marché : refait le 20 août 2026, sur justETF.**
 Les 42 lignes portent une date et une source (`donneesLe`, `donneesSource`,
 colonne « Données »). Ce contrôle a corrigé beaucoup : **neuf ISIN désignaient un
 autre fonds que celui annoncé** — deux fonds liquidés, un ETF classé en actions
@@ -815,7 +815,13 @@ un « PEA Nasdaq-100 » qui était un PEA S&P 500 (ISIN faux d'un chiffre), une
 obligataire euro qui était une *floating rate* en dollars. S'y ajoutaient
 quatorze frais courants erronés, la quasi-totalité des encours, et plusieurs
 erreurs de devise, de capitalisation et d'éligibilité PEA. Ces données
-vieillissent : refaites le relevé périodiquement.
+vieillissent : la procédure de relevé trimestriel est plus bas, et la pastille
+de l'accueil réclame au-delà de quatre-vingt-dix jours.
+
+Le relevé du 20 août 2026 a reconduit les 42 lignes : **réplication, devise et
+capitalisation intactes sur les 42**, aucun ISIN ne désignant un autre fonds
+qu'attendu. Un seul frais avait changé — `FR0011871128`, Amundi PEA S&P 500,
+passé de 0,15 % à 0,12 % —, et 39 encours avaient dérivé de 0,1 % à 2,4 %.
 
 **Niveau 2 — référencement au contrat : à votre charge.** Aucune source ne
 connaît la liste des supports de *votre* contrat. La case « Contrat » (champ
@@ -856,6 +862,125 @@ qui est affiché, jamais davantage.
 *Client & enveloppe* restreint la sélection aux seuls supports validés.
 Il reste inactif par défaut, et refuse de s'activer sur un univers dont rien
 n'est validé : il viderait la sélection sans dire pourquoi.
+
+## Procédure — relevé justETF trimestriel
+
+**Rien ne rafraîchit ces données.** Les cours tombent chaque séance et les
+notations chaque mois, par tâche planifiée ; les caractéristiques justETF, elles,
+n'ont **aucun script et aucun workflow** derrière elles. Le champ `donneesLe`
+n'est écrit par personne. C'est ce relevé-ci, à la main, et rien d'autre.
+
+Au-delà de **90 jours**, la pastille « Caractéristiques » de l'accueil prend le
+filet bleu et écrit son âge. C'est le seul rappel qui existe.
+
+### Par où commencer
+
+**S'il existe une liste d'écarts** — le rapprochement mensuel avec le screener
+Morningstar, en tête de la vue *Univers ETF* —, **ne revérifiez que les lignes
+qu'elle signale**. Elle compare frais, encours et devise, et dit sur quoi les
+deux sources divergent. C'est vingt minutes au lieu de deux heures.
+
+*(Ce rapprochement n'existe pas encore : tant qu'il n'est pas en place, le relevé
+porte sur les 42 lignes.)*
+
+**Sinon**, parcourez les 42 supports ci-dessous. Chaque ISIN pointe sur sa page
+justETF.
+
+### Ce qu'on relève, et où l'écrire
+
+Tout vit dans **`js/data/etf-univers.js`**, une ligne par support.
+
+| Sur justETF | Champ | Forme attendue |
+|---|---|---|
+| Frais courants (« TER ») | `ter` | nombre, **deux décimales** — `0.20`, pas `0.2` |
+| Taille du fonds | `encours` | entier, **en millions d'euros** — « EUR 6 532 M » → `6532` |
+| Méthode de réplication | `replication` | `'Physique'` · `'Synthétique'` · `'Physique (ETC)'` pour l'or |
+| Devise du fonds | `devise` | `'EUR'` · `'USD'` |
+| Type de distribution | `capitalisation` | `true` si capitalisant, `false` si distribuant |
+| — *absent de justETF* — | `pea` | **ne se relève pas ici** : justETF ne porte pas l'éligibilité PEA |
+
+**Le nom ne se recopie pas.** Les libellés du fichier sont des abréviations
+voulues — `iShares Core € Govt Bond UCITS ETF (Dist)` pour
+`iShares Core Euro Government Bond UCITS ETF (Dist)` — et les tableaux sont
+calibrés dessus. En revanche, **si le nom désigne un AUTRE FONDS que celui
+attendu, arrêtez tout** : c'est un ISIN faux, et le relevé d'août 2026 en avait
+trouvé neuf.
+
+### Terminer
+
+1. Portez la date du jour dans **`donneesLe` des 42 lignes**, y compris celles
+   que rien n'a fait bouger : la date dit « vérifié le », pas « changé le ».
+2. `node test/runner.js` — les moteurs relisent l'univers.
+3. Ouvrez `test/fumee.html` derrière un serveur.
+4. Poussez le marqueur de version : changez `?v=…` dans `index.html`, puis
+   `node scripts/version.mjs`.
+
+### Les 42 supports
+
+**Actions** — 23 supports
+
+| ISIN | Support | Frais | Encours |
+|---|---|---|---|
+| [`IE00B4L5Y983`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4L5Y983) | iShares Core MSCI World UCITS ETF USD (Acc) | 0.20 % | 127 856 M€ |
+| [`LU1681043599`](https://www.justetf.com/fr/etf-profile.html?isin=LU1681043599) | Amundi MSCI World Swap UCITS ETF EUR (Acc) | 0.38 % | 6 532 M€ |
+| [`FR001400U5Q4`](https://www.justetf.com/fr/etf-profile.html?isin=FR001400U5Q4) | Amundi PEA Monde (MSCI World) UCITS ETF Acc | 0.20 % | 1 366 M€ |
+| [`IE00BFY0GT14`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BFY0GT14) | SPDR MSCI World UCITS ETF USD Unhedged (Acc) | 0.12 % | 17 857 M€ |
+| [`IE00BYX2JD69`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BYX2JD69) | iShares MSCI World SRI UCITS ETF EUR (Acc) | 0.20 % | 7 045 M€ |
+| [`IE00B5BMR087`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B5BMR087) | iShares Core S&P 500 UCITS ETF USD (Acc) | 0.07 % | 134 451 M€ |
+| [`FR0011871128`](https://www.justetf.com/fr/etf-profile.html?isin=FR0011871128) | Amundi PEA S&P 500 UCITS ETF Acc | 0.12 % | 1 149 M€ |
+| [`LU0490618542`](https://www.justetf.com/fr/etf-profile.html?isin=LU0490618542) | Xtrackers S&P 500 Swap UCITS ETF 1C | 0.15 % | 3 554 M€ |
+| [`LU0908500753`](https://www.justetf.com/fr/etf-profile.html?isin=LU0908500753) | Amundi Core Stoxx Europe 600 UCITS ETF Acc | 0.07 % | 21 058 M€ |
+| [`IE00B4K48X80`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4K48X80) | iShares Core MSCI Europe UCITS ETF EUR (Acc) | 0.12 % | 16 044 M€ |
+| [`FR0007052782`](https://www.justetf.com/fr/etf-profile.html?isin=FR0007052782) | Amundi CAC 40 UCITS ETF Dist | 0.25 % | 3 386 M€ |
+| [`LU1861137484`](https://www.justetf.com/fr/etf-profile.html?isin=LU1861137484) | Amundi MSCI Europe SRI Climate Paris Aligned UCITS ETF Acc | 0.18 % | 964 M€ |
+| [`IE00B4L5YX21`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4L5YX21) | iShares Core MSCI Japan IMI UCITS ETF (Acc) | 0.12 % | 7 258 M€ |
+| [`LU0659580079`](https://www.justetf.com/fr/etf-profile.html?isin=LU0659580079) | Xtrackers MSCI Japan UCITS ETF 4C EUR Hedged | 0.40 % | 924 M€ |
+| [`IE00BKM4GZ66`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BKM4GZ66) | iShares Core MSCI EM IMI UCITS ETF (Acc) | 0.18 % | 37 927 M€ |
+| [`FR0013412020`](https://www.justetf.com/fr/etf-profile.html?isin=FR0013412020) | Amundi PEA Emergent (MSCI Emerging) ESG Transition UCITS ETF Acc | 0.30 % | 857 M€ |
+| [`IE00BF4RFH31`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BF4RFH31) | iShares MSCI World Small Cap UCITS ETF (Acc) | 0.35 % | 7 707 M€ |
+| [`LU1681038672`](https://www.justetf.com/fr/etf-profile.html?isin=LU1681038672) | Amundi Russell 2000 UCITS ETF EUR (C) | 0.35 % | 789 M€ |
+| [`IE00BM67HT60`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BM67HT60) | Xtrackers MSCI World Information Technology UCITS ETF 1C | 0.25 % | 5 538 M€ |
+| [`IE00B53SZB19`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B53SZB19) | iShares Nasdaq 100 UCITS ETF (Acc) | 0.30 % | 24 257 M€ |
+| [`FR0011871110`](https://www.justetf.com/fr/etf-profile.html?isin=FR0011871110) | Amundi PEA Nasdaq-100 UCITS ETF Acc | 0.30 % | 1 142 M€ |
+| [`IE00B8FHGS14`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B8FHGS14) | iShares Edge MSCI World Minimum Volatility UCITS ETF USD (Acc) | 0.30 % | 2 299 M€ |
+| [`IE00BP3QZ601`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BP3QZ601) | iShares Edge MSCI World Quality Factor UCITS ETF (Acc) | 0.25 % | 5 321 M€ |
+
+**Obligations** — 10 supports
+
+| ISIN | Support | Frais | Encours |
+|---|---|---|---|
+| [`IE00B14X4Q57`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B14X4Q57) | iShares € Government Bond 1-3yr UCITS ETF (Dist) | 0.15 % | 1 774 M€ |
+| [`LU1650487413`](https://www.justetf.com/fr/etf-profile.html?isin=LU1650487413) | Amundi Euro Government Bond 1-3Y UCITS ETF Acc | 0.15 % | 2 212 M€ |
+| [`IE00B4WXJJ64`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4WXJJ64) | iShares Core € Govt Bond UCITS ETF (Dist) | 0.07 % | 5 389 M€ |
+| [`LU0290355717`](https://www.justetf.com/fr/etf-profile.html?isin=LU0290355717) | Xtrackers II Eurozone Government Bond UCITS ETF 1C | 0.07 % | 2 253 M€ |
+| [`IE00B3F81R35`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B3F81R35) | iShares Core € Corp Bond UCITS ETF (Dist) | 0.09 % | 8 737 M€ |
+| [`LU2089238625`](https://www.justetf.com/fr/etf-profile.html?isin=LU2089238625) | Amundi Core EUR Corporate Bond UCITS ETF Acc | 0.07 % | 868 M€ |
+| [`IE00B66F4759`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B66F4759) | iShares € High Yield Corp Bond UCITS ETF EUR (Dist) | 0.50 % | 5 458 M€ |
+| [`IE00B0M62X26`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B0M62X26) | iShares € Inflation Linked Govt Bond UCITS ETF | 0.09 % | 1 931 M€ |
+| [`IE00B2NPKV68`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B2NPKV68) | iShares J.P. Morgan $ EM Bond UCITS ETF (Dist) | 0.45 % | 3 756 M€ |
+| [`IE00BDBRDM35`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BDBRDM35) | iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc) | 0.10 % | 2 511 M€ |
+
+**Monetaire** — 3 supports
+
+| ISIN | Support | Frais | Encours |
+|---|---|---|---|
+| [`LU0290358497`](https://www.justetf.com/fr/etf-profile.html?isin=LU0290358497) | Xtrackers II EUR Overnight Rate Swap UCITS ETF 1C | 0.10 % | 22 566 M€ |
+| [`FR0010510800`](https://www.justetf.com/fr/etf-profile.html?isin=FR0010510800) | Amundi EUR Overnight Return UCITS ETF Acc | 0.10 % | 3 231 M€ |
+| [`FR0013346681`](https://www.justetf.com/fr/etf-profile.html?isin=FR0013346681) | Amundi PEA Euro Court Terme UCITS ETF Acc | 0.25 % | 194 M€ |
+
+**Diversifiants** — 6 supports
+
+| ISIN | Support | Frais | Encours |
+|---|---|---|---|
+| [`IE00B4ND3602`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B4ND3602) | iShares Physical Gold ETC | 0.12 % | 33 424 M€ |
+| [`FR0013416716`](https://www.justetf.com/fr/etf-profile.html?isin=FR0013416716) | Amundi Physical Gold ETC (C) | 0.12 % | 10 827 M€ |
+| [`IE00B1FZS350`](https://www.justetf.com/fr/etf-profile.html?isin=IE00B1FZS350) | iShares Developed Markets Property Yield UCITS ETF | 0.59 % | 1 036 M€ |
+| [`LU1437018838`](https://www.justetf.com/fr/etf-profile.html?isin=LU1437018838) | Amundi FTSE EPRA NAREIT Global UCITS ETF Acc | 0.24 % | 401 M€ |
+| [`IE00BDFL4P12`](https://www.justetf.com/fr/etf-profile.html?isin=IE00BDFL4P12) | iShares Diversified Commodity Swap UCITS ETF | 0.19 % | 2 006 M€ |
+| [`LU1829218749`](https://www.justetf.com/fr/etf-profile.html?isin=LU1829218749) | Amundi Bloomberg Equal-weight Commodity ex-Agriculture UCITS ETF Acc | 0.30 % | 1 654 M€ |
+
+*Frais et encours au dernier relevé. Les liens ouvrent la fiche justETF du
+support.*
 
 ## Sélectionner dans tout le catalogue européen
 
