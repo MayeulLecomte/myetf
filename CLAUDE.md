@@ -722,7 +722,7 @@ celle du dessus.
 | Encours | 1 | 1 | 0 |
 | Dérive maximale | 8 | 1 | 96 px |
 | Supports cibles | 3 | 2 | 34 px |
-| Dernière revue | **5 — centrée** | **3** | 20 px |
+| Dernière revue | **5 — centrée** | **3** | 68 px |
 
 Les valeurs ne sortent pas d'un chapeau : **aucune n'est répétée**, ni en
 abscisse ni en ordonnée.
@@ -738,6 +738,12 @@ tombe exactement sur celui de la page.
 placements explicites qui se croisent se SUPERPOSENT — la grille ne les
 écarte pas, elle les empile. Toute bulle recentrée devra descendre d'une
 rangée pour la même raison.
+
+**Son retrait est le plus grand de la grille, et c'est voulu.** Vingt
+pixels — la première valeur essayée — la collaient à « Supports cibles » :
+la rangée neuve ne se voyait pas, et les deux bulles se lisaient comme un
+bloc. Soixante-huit les sépare. La dispersion se lit donc toujours en
+descendant, alors même que la dernière bulle est revenue au milieu.
 
 `align-items: start` sur cette grille, sinon une tuile s'étire à la hauteur de
 sa RANGÉE : celle de gauche prenait la hauteur de sa voisine décalée et se
