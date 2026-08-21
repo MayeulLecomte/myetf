@@ -1315,13 +1315,21 @@ Le relevé est **périmé à 36 h** côté note : une note du vendredi rédigée
 sur les titres du lundi serait pire qu'une note sans actualité — elle
 aurait l'air informée.
 
-**Le coût de la note a doublé, et c'est assumé.** Relevé sur la
-première note réellement rédigée avec l'actualité (21 août 2026) :
-**10 359 jetons en entrée, 1 973 en sortie**, contre 2 177 / 1 403
-auparavant. À 5 $ et 25 $ le million, cela fait 0,10 $ le passage, soit
-**environ 2,20 $ par mois** sur vingt-deux séances — au lieu de 1,30.
-Le chiffre affiché dans l'état vide de la vue « Note du jour » doit
-suivre s'il rebouge.
+**Le coût de la note a doublé, et c'est assumé.** Trois relevés, tous
+du 21 août 2026, et ils disent la pente :
+
+| Invite | Entrée | Sortie | Le passage |
+|---|---|---|---|
+| Cours seuls | 2 177 | 1 403 | 0,046 $ |
+| + actualité | 10 359 | 1 973 | 0,101 $ |
+| + les onze indicateurs | **12 562** | **2 303** | **0,120 $** |
+
+À 5 $ et 25 $ le million, cela fait **environ 2,60 $ par mois** sur
+vingt-deux séances — au lieu de 1,30. La liste des indicateurs coûte à
+elle seule 2 200 jetons par passage : c'est le prix d'options fermées
+et d'identifiants exacts, et c'est ce qui rend les lectures
+recoupables. Le chiffre affiché dans l'état vide de la vue « Note du
+jour » doit suivre s'il rebouge.
 
 L'estimation d'avant mesure — « près de huit mille jetons » — était
 basse d'un quart : le compte de caractères divisé par 3,6 sous-estime le
