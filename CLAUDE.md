@@ -1250,10 +1250,17 @@ Le relevé est **périmé à 36 h** côté note : une note du vendredi rédigée
 sur les titres du lundi serait pire qu'une note sans actualité — elle
 aurait l'air informée.
 
-**Le coût de la note a doublé, et c'est assumé** : l'invite passe de
-deux mille à près de huit mille jetons d'entrée, soit **2 à 3 $ par
-mois** au lieu de 1,30. Le chiffre affiché dans l'état vide de la vue
-« Note du jour » doit suivre s'il rebouge.
+**Le coût de la note a doublé, et c'est assumé.** Relevé sur la
+première note réellement rédigée avec l'actualité (21 août 2026) :
+**10 359 jetons en entrée, 1 973 en sortie**, contre 2 177 / 1 403
+auparavant. À 5 $ et 25 $ le million, cela fait 0,10 $ le passage, soit
+**environ 2,20 $ par mois** sur vingt-deux séances — au lieu de 1,30.
+Le chiffre affiché dans l'état vide de la vue « Note du jour » doit
+suivre s'il rebouge.
+
+L'estimation d'avant mesure — « près de huit mille jetons » — était
+basse d'un quart : le compte de caractères divisé par 3,6 sous-estime le
+français ponctué de titres de presse. Mesurer, pas estimer.
 
 `node scripts/note-marche.mjs --blanc` imprime l'invite complète sans
 appeler l'API ni rien écrire. C'est ce qu'on relit le jour où la note dit

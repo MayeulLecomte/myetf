@@ -23,7 +23,7 @@ function rendreNote() {
       '<p class="intro">La note est rédigée par l\'API Claude à partir des cours relevés chaque matin, ' +
       'et des titres de presse relevés le matin même, puis publiée avec le site. Elle coûte environ ' +
       '<strong>2 à 3 $ par mois</strong> en appels d\'API — l\'actualité a fait passer l\'invite ' +
-      'de deux mille à près de huit mille jetons d\'entrée.</p>' +
+      'de deux mille à dix mille jetons d\'entrée.</p>' +
       '<ol style="font-size:13px;line-height:1.8">' +
       '<li>Créez une clé sur <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> ' +
       'et créditez le compte (5 $ minimum, soit environ quatre mois).</li>' +
