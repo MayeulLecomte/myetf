@@ -461,8 +461,33 @@ de **gauche (40 %), collante**, et le premier contenu utile est visible
 centrée, « faites défiler » conservé. Deux colonnes de 180 px ne sont pas une
 mise en page.
 
-**Neuf vues** y sont : Client & enveloppe, Profil de risque, Note du jour,
-Contexte, Allocation cible, Revenus & rachats, Situation, Journal, Méthode.
+**Douze vues** y sont : Client & enveloppe, Profil de risque, Note du jour,
+Contexte, Allocation cible, Sélection des supports, Arbitrages proposés,
+Revenus & rachats, Situation, Journal, Rapport, Méthode.
+
+Les trois dernières arrivées — supports, arbitrages, rapport — figuraient
+d'abord au rang des exclues à cause de leur tableau large. **L'exception de
+largeur suffit** : le tableau sort de la colonne et devient une section pleine
+largeur, le reste de la vue gagne l'ouverture à gauche.
+
+### Un bloc en pleine largeur ne prend JAMAIS la première ligne
+
+Placé sur la première ligne, il reçoit les deux colonnes — dont celle que
+l'ouverture occupe — et **passe par-dessus le dessin et le titre**. C'est ce
+qui est arrivé à « Arbitrages proposés », dont le premier enfant est la rangée
+d'indicateurs.
+
+Le premier bloc tient donc la colonne de droite, quoi qu'il soit. Ce qui
+s'étale, s'étale à partir de la deuxième ligne. Une rangée de quatre tuiles
+coincée dans 60 % se replie en **2 × 2** : ni coupée, ni écrasée.
+
+### Un tableau large en zigzag est une SECTION
+
+Les blocs du zigzag sont bornés à 72 % et poussés d'un côté puis de l'autre.
+Un tableau ne se lit pas ainsi : « Portefeuille proposé », « Ordres à passer »,
+le document de synthèse sont ce qu'on vient chercher. Ils reprennent toute la
+largeur, avec de l'air au-dessus et au-dessous — le zigzag s'interrompt, et
+cette interruption dit « voici la pièce maîtresse ».
 
 La liste est `VUES_DEUX_COLONNES` dans `js/ui/socle.js`. Trois familles en
 sont exclues, et pour trois raisons différentes :

@@ -217,7 +217,12 @@ function illustration(nom, taille) {
 const VUES_DEUX_COLONNES = [
   'client', 'profil',
   'note', 'macro', 'allocation',
-  'revenus', 'situation', 'journal', 'methode'
+  'revenus', 'situation', 'journal', 'methode',
+  /* Elles portent un tableau large, et y figuraient pour cette raison au
+     rang des exclues. L'exception de largeur le règle : le tableau sort de
+     la colonne et s'étale sous la zone à deux colonnes. Le reste de la vue
+     — cartes courtes, encarts, boutons — gagne l'ouverture à gauche. */
+  'portefeuille', 'arbitrages', 'rapport'
 ];
 
 /* CELLES QUI, EN PLUS, DÉROULENT LEUR SUITE EN ZIGZAG.
@@ -231,7 +236,24 @@ const VUES_DEUX_COLONNES = [
    un au lieu de les balayer — c'est le même raisonnement que le zigzag des
    indicateurs, appliqué là où il vaut : des blocs qu'on lit, et non des
    nombres qu'on compare. */
-const VUES_ZIGZAG = ['profil'];
+const VUES_ZIGZAG = ['profil', 'portefeuille', 'arbitrages', 'rapport'];
+
+/* Le code d'enveloppe tel qu'il est ENREGISTRÉ, rendu lisible.
+
+   Le journal garde `AV`, `PEA` ou `CTO` — c'est la bonne chose à stocker,
+   un libellé stocké vieillit mal. Mais l'afficher tel quel met un
+   identifiant interne sous les yeux du client, à côté d'un profil écrit en
+   toutes lettres : « DYNAMIQUE · AV ».
+
+   `libelleEnveloppe()` ne sert pas ici : elle lit `Etat.identite`, donc
+   l'enveloppe D'AUJOURD'HUI, alors qu'une entrée de journal décrit celle
+   du jour où la revue a été faite. */
+function libelleEnveloppeCode(code) {
+  if (code === 'PEA') return 'PEA';
+  if (code === 'CTO') return 'Compte-titres';
+  if (code === 'AV') return 'Assurance-vie';
+  return code || '';
+}
 
 const ILLUSTRATIONS_VUES = {
   accueil:      'cafe',

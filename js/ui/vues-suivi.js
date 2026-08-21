@@ -546,7 +546,7 @@ function rendreJournal() {
   c.innerHTML = Etat.journal.map((j, i) =>
     '<div class="carte"><div style="display:flex;justify-content:space-between;align-items:center">' +
       '<h3 style="margin:0">Revue du ' + dateFr(j.date) + '</h3>' +
-      '<div><span class="badge">' + echapper(j.profil) + '</span> <span class="badge gris">' + echapper(j.enveloppe) + '</span>' +
+      '<div><span class="badge">' + echapper(j.profil) + '</span> <span class="badge gris">' + echapper(libelleEnveloppeCode(j.enveloppe)) + '</span>' +
       ' <button class="bouton secondaire" data-supprimer-journal="' + i + '">Supprimer</button></div></div>' +
       '<p class="intro" style="font-size:12px;margin:8px 0">Scénario dominant : <strong>' +
         echapper((SCENARIOS.find(s => s.id === j.scenarioDominant) || {}).nom ||
