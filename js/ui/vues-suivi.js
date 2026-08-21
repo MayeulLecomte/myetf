@@ -540,6 +540,21 @@ function rendreRevenusContenuSeul() {
    VUE 9 — JOURNAL
    ============================================================ */
 
+/* LA POCHE D'UN MOUVEMENT JOURNALISÉ.
+
+   Les revues écrites avant que `entreeJournal` ne retienne la poche n'en
+   portent aucune : on la retrouve alors dans l'univers du jour, faute de
+   mieux — c'est l'univers d'AUJOURD'HUI et non celui de la revue, et un
+   support reclassé depuis se lira sous sa poche actuelle.
+
+   Un support sorti de l'univers n'en a plus du tout, et la ligne l'écrit
+   par un tiret. Un nom de poche déduit d'un classement disparu vaudrait
+   moins que rien : on le croirait relevé ce jour-là. */
+function pocheJournal(ordre) {
+  const code = ordre.poche || (Etat.univers.find(e => e.isin === ordre.isin) || {}).poche;
+  return code ? (LIBELLES_POCHES[code] || code) : '—';
+}
+
 function rendreJournal() {
   const c = $('#journal-contenu');
   if (!Etat.journal.length) { c.innerHTML = etatVide('journal'); return; }
@@ -553,9 +568,16 @@ function rendreJournal() {
                  'aucun contexte renseigné') + '</strong> · ' +
         j.nbOrdres + ' mouvement(s) · rotation ' + pct(j.rotation) +
         (j.impot ? ' · fiscalité estimée ' + euro(j.impot) : '') + '</p>' +
-      (j.ordres.length ? '<table><thead><tr><th>Sens</th><th>Support</th><th class="num">Montant</th></tr></thead><tbody>' +
+      (j.ordres.length ? '<div class="tableau-defilant"><table><thead><tr>' +
+        '<th>Sens</th><th>Support</th><th>ISIN</th><th>Poche</th><th class="num">Montant</th><th>Motif</th>' +
+        '</tr></thead><tbody>' +
         j.ordres.map(o => '<tr><td><span class="badge ' + (o.sens === 'Achat' ? 'vert' : 'rouge') + '">' + o.sens + '</span></td>' +
-          '<td>' + echapper(o.libelle) + '</td><td class="num">' + euro(o.montant) + '</td></tr>').join('') +
-        '</tbody></table>' : '<p class="intro">Aucun mouvement : portefeuille dans ses bandes de tolérance.</p>') +
+          '<td>' + lienFiche(o.isin, o.libelle) + '</td>' +
+          '<td style="font-family:monospace;font-size:12px">' + echapper(o.isin || '—') + '</td>' +
+          '<td>' + echapper(pocheJournal(o)) + '</td>' +
+          '<td class="num"><strong>' + euro(o.montant) + '</strong></td>' +
+          '<td style="font-size:12px;color:var(--gris-doux)">' +
+            echapper(o.motif ? motifLisible(o.motif) : '—') + '</td></tr>').join('') +
+        '</tbody></table></div>' : '<p class="intro">Aucun mouvement : portefeuille dans ses bandes de tolérance.</p>') +
     '</div>').join('');
 }

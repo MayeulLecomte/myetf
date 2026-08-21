@@ -191,7 +191,16 @@ const MoteurArbitrage = (function () {
       nbOrdres: analyse.ordres.length,
       rotation: analyse.rotation,
       impot: analyse.fiscalite.impotEstime,
-      ordres: analyse.ordres.map(o => ({ sens: o.sens, isin: o.isin, libelle: o.libelle, montant: o.montant }))
+      /* LA POCHE ET LE MOTIF SONT RETENUS AVEC L'ORDRE, et non retrouvés
+         au moment de relire la revue. L'univers de travail bouge — un
+         support en sort, une poche est reclassée —, et une revue de mars
+         relue en septembre doit dire ce qu'elle disait en mars. Les
+         entrées écrites avant cette ligne ne les portent pas : la vue
+         retombe alors sur l'univers du jour, et le dit. */
+      ordres: analyse.ordres.map(o => ({
+        sens: o.sens, isin: o.isin, libelle: o.libelle, montant: o.montant,
+        poche: o.poche, motif: o.motif
+      }))
     };
   }
 
