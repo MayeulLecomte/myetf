@@ -38,7 +38,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { dirname, join } from 'node:path';
+import { dirname, join, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
@@ -83,7 +83,13 @@ function moteur() {
    ------------------------------------------------------------- */
 function dossier() {
   const chemin = arg('fichier');
-  const brut = chemin ? readFileSync(join(RACINE, chemin), 'utf8') : process.env.DOSSIER_CLIENT;
+  /* Chemin absolu accepté tel quel : `join(RACINE, '/Users/…')` CONCATÈNE
+     au lieu de repartir de la racine, et cherchait le dossier à l'intérieur
+     du dépôt. Or un dossier client n'a rien à y faire — c'est justement
+     depuis l'extérieur qu'on veut l'essayer. */
+  const brut = chemin
+    ? readFileSync(isAbsolute(chemin) ? chemin : join(RACINE, chemin), 'utf8')
+    : process.env.DOSSIER_CLIENT;
   if (!brut || !brut.trim()) {
     console.log('Aucun dossier fourni (DOSSIER_CLIENT vide) — rien à proposer.');
     return null;
