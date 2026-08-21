@@ -666,6 +666,69 @@ async function lancer() {
   ok(brutes.length === 0, 'le ruban mobile ne montre ni vue masquée ni identifiant brut' +
      (brutes.length ? ' — ' + brutes.slice(0, 4).join(', ') : ''));
 
+  /* --- LES LECTURES PROPOSÉES PAR LA NOTE N'APPLIQUENT RIEN ---
+     C'est l'invariant du bloc, et le seul qui compte : la note peut
+     proposer une option pour un indicateur macro, mais tant que personne
+     n'a cliqué, `Etat.macroChoix` reste vide et l'allocation cible reste
+     strictement la stratégique du profil.
+
+     Le contrôle POSE de fausses propositions plutôt que d'attendre celles
+     du jour : la note du dépôt n'en porte pas tous les matins, et un test
+     qui ne s'exécute qu'un jour sur trois ne protège rien. Une quatrième
+     lecture désigne un indicateur inexistant — elle doit être écartée
+     sans bruit, comme le ferait un modèle qui a inventé un identifiant.
+
+     Le rendu est déclenché, PUIS l'état est relu. C'est l'ordre qui
+     compte : c'est pendant le rendu qu'un raccourci trop zélé écrirait
+     le choix. */
+  /* `lire()` et non `w.NOTE_MARCHE` : un `const` de premier niveau ne
+     devient PAS une propriété de `window`. Les fonctions, si — d'où
+     `w.afficher` juste au-dessus, qui marche. */
+  const NOTE = existe('NOTE_MARCHE') ? lire('NOTE_MARCHE') : null;
+  if (NOTE && NOTE.note) {
+    const sauvLectures = NOTE.note.lecturesMacro;
+    const sauvChoix = JSON.parse(JSON.stringify(Etat.macroChoix));
+    const sauvScen = Etat.scenariosManuels;
+
+    NOTE.note.lecturesMacro = [
+      { indicateur: 'inflation', option: 'reacceleration', motif: 'contrôle', source: 'contrôle' },
+      { indicateur: 'geopolitique', option: 'eleve', motif: 'contrôle', source: 'contrôle' },
+      { indicateur: 'indicateur-qui-nexiste-pas', option: 'nimporte', motif: 'contrôle', source: 'contrôle' }
+    ];
+    Etat.macroChoix = {};
+    Etat.scenariosManuels = null;
+    w.afficher('macro');
+
+    const affichees = d.querySelectorAll('#macro-propositions .proposition-macro').length;
+    ok(affichees === 2,
+       'une lecture proposée sur un indicateur inconnu est écartée — ' +
+       affichees + ' affichée(s) sur 3 proposées');
+
+    const choixApresRendu = Object.keys(Etat.macroChoix).length;
+    ok(choixApresRendu === 0,
+       'afficher les lectures proposées n\'en applique AUCUNE — ' +
+       choixApresRendu + ' indicateur(s) renseigné(s)');
+    ok(w.intensiteEffective() === 0 && w.macroCourante().dominant === null,
+       'deux lectures proposées, et l\'allocation reste strictement stratégique — ' +
+       'intensité ' + w.intensiteEffective() + ', dominant ' + w.macroCourante().dominant);
+
+    /* Et le clic, lui, écrit — sinon le contrôle ci-dessus passerait aussi
+       sur un bouton mort. */
+    const bouton = d.querySelector('#macro-propositions button[data-macro-proposition]');
+    if (bouton) {
+      bouton.click();
+      ok(Etat.macroChoix.inflation === 'reacceleration' && w.intensiteEffective() > 0,
+         'un clic sur « Retenir » écrit le choix et ouvre la déviation — ' +
+         JSON.stringify(Etat.macroChoix) + ', intensité ' + w.intensiteEffective());
+    } else {
+      ok(false, 'le bouton « Retenir » est absent');
+    }
+
+    NOTE.note.lecturesMacro = sauvLectures;
+    Etat.macroChoix = sauvChoix;
+    Etat.scenariosManuels = sauvScen;
+  }
+
   /* --- Le mode ne touche à aucun calcul ---
      C'est la contrainte de fond du chantier : un seul moteur, un seul
      dossier. Le jour où ce contrôle échoue, c'est qu'un `if (mode)` s'est

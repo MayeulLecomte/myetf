@@ -16,6 +16,14 @@
    provenance suit ce qui a réellement servi. Les cours, eux, sont
    obligatoires : c'est le squelette de la note.
 
+   ⚠  LES LECTURES MACRO SONT DES PROPOSITIONS, JAMAIS DES CHOIX.
+   La note peut suggérer une option pour tel indicateur du module
+   macro. Rien n'est appliqué : l'application les affiche, et c'est
+   le conseiller qui clique. Tant qu'il ne clique pas,
+   `Etat.macroChoix` reste vide et l'allocation cible reste
+   strictement la stratégique du profil. Voir « Un contexte non
+   renseigné n'applique aucune déviation » dans CLAUDE.md.
+
    ⚠  DOCUMENT INTERNE. La note décrit ce qui a bougé et ce que
    le conseiller devrait vérifier. Elle ne formule aucune
    recommandation d'achat ou de vente et n'est pas destinée à
@@ -81,9 +89,24 @@ const SCHEMA = {
         required: ['fait', 'portee', 'source'],
         additionalProperties: false
       }
+    },
+    lecturesMacro: {
+      type: 'array',
+      description: 'Les indicateurs du module macro que la presse du jour permet de renseigner, et l\'option proposée pour chacun. Vide si rien dans les titres ne documente un indicateur — c\'est le cas normal certains jours. N\'en propose JAMAIS un que les titres ne documentent pas.',
+      items: {
+        type: 'object',
+        properties: {
+          indicateur: { type: 'string', description: 'Identifiant EXACT de l\'indicateur, repris de la liste fournie. Rien d\'autre.' },
+          option: { type: 'string', description: 'Identifiant EXACT de l\'option proposée pour cet indicateur, repris de la liste fournie. Rien d\'autre.' },
+          motif: { type: 'string', description: 'Une à deux phrases : ce que les titres rapportent qui justifie cette lecture. Le journal est nommé ici aussi.' },
+          source: { type: 'string', description: 'Le ou les journaux qui la documentent, repris exactement de la liste fournie.' }
+        },
+        required: ['indicateur', 'option', 'motif', 'source'],
+        additionalProperties: false
+      }
     }
   },
-  required: ['titre', 'synthese', 'mouvements', 'aVerifier', 'indicateursASurveiller', 'actualite'],
+  required: ['titre', 'synthese', 'mouvements', 'aVerifier', 'indicateursASurveiller', 'actualite', 'lecturesMacro'],
   additionalProperties: false
 };
 
@@ -99,6 +122,9 @@ Règles impératives :
 - LA CORRÉLATION N'EST PAS LA CAUSE. Tu as sous les yeux des cours qui ont bougé et des nouvelles du même jour ; rien ne prouve que les secondes expliquent les premiers. Un rapprochement se formule au conditionnel — « pourrait tenir à », « coïncide avec » — et jamais « en raison de » ou « à cause de ».
 - Les titres fournis couvrent l'économie en général, et beaucoup n'ont aucun rapport avec les marchés. ÉCARTE-LES sans les mentionner. Ne retiens que ce qui touche aux taux, aux banques centrales, à l'inflation, à la croissance, au change, à l'énergie, ou à un secteur assez large pour peser sur une classe d'actifs. Un fait divers, une politique sectorielle étroite, un papier de conseil patrimonial : rien de tout cela n'entre dans la note.
 - Ne cite JAMAIS de valeur individuelle, même si un titre en parle. Le résultat semestriel d'une société cotée n'a pas sa place dans une note d'allocation : remonte au secteur, ou tais-toi.
+- LES LECTURES MACRO SONT DES PROPOSITIONS, PAS DES DÉCISIONS. Le conseiller les voit, les pèse, et clique s'il est d'accord. Rien n'est appliqué sans lui. Propose donc ce que tu défendrais devant lui, et rien de plus : mieux vaut deux lectures solides que sept bricolées.
+- N'EN PROPOSE AUCUNE QUE LES TITRES NE DOCUMENTENT PAS. Un indicateur sur lequel la presse du jour ne dit rien reste absent de ta liste — il ne prend PAS sa valeur de repli, il n'apparaît simplement pas. Une liste vide est une réponse normale et fréquente ; une liste de onze lectures un jour ordinaire serait une invention.
+- Les identifiants d'indicateur et d'option se recopient EXACTEMENT depuis la liste fournie. Une valeur inventée est écartée en silence à l'écriture du fichier : elle ne coûte rien à personne sauf à la qualité de ta note.
 - Écris en français, dans un registre sobre et professionnel. Phrases complètes. Pas de superlatifs, pas de langage d'alerte, pas d'emphase typographique.
 - Un mouvement de moins de 1 % sur la semaine n'est pas un événement : ne le relève pas.`;
 
@@ -125,6 +151,31 @@ function contexte() {
     });
 
   return { genere, texte: lignes.join('\n'), nbPoches: lignes.length };
+}
+
+/* -------------------------------------------------------------
+   LES ONZE INDICATEURS DU MODULE MACRO
+   -------------------------------------------------------------
+   Lus dans `js/data/macro.js`, la MÊME source que l'application :
+   recopier la liste ici la ferait diverger au premier indicateur
+   ajouté, et le modèle proposerait des options qui n'existent
+   plus. Le fichier est du JavaScript global, pas un module — d'où
+   `vm`, comme pour les libellés de poches.
+   ------------------------------------------------------------- */
+function indicateurs() {
+  const ctx = vm.createContext({});
+  vm.runInContext(readFileSync(join(RACINE, 'js/data/macro.js'), 'utf8'), ctx, { filename: 'macro.js' });
+  return vm.runInContext('INDICATEURS', ctx);
+}
+
+/* La liste telle que le modèle la reçoit : identifiants d'abord,
+   libellés ensuite. L'option de repli est signalée — non pour qu'il
+   la choisisse, mais pour qu'il sache ce que vaut le silence. */
+function texteIndicateurs(inds) {
+  return inds.map(i =>
+    `- ${i.id} — « ${i.label} »` + (i.aide ? `\n  (${i.aide})` : '') + '\n' +
+    i.options.map(o => `    · ${o.valeur} = « ${o.label} »` + (o.defaut ? '  [valeur de repli]' : '')).join('\n')
+  ).join('\n\n');
 }
 
 /* -------------------------------------------------------------
@@ -180,7 +231,7 @@ function actualite() {
    composer dans l'appel rendait impossible de vérifier ce qu'on envoie
    sans le payer — et c'est justement ce qu'on veut relire le jour où la
    note dit quelque chose d'inattendu. */
-function invite(genere, texte, actu) {
+function invite(genere, texte, actu, inds) {
   return `# Ce qui est MESURÉ\n\n` +
     `Performances relevées à la clôture du ${genere}, en euros, dividendes réinvestis ` +
     `(cours de Bourse d'ETF capitalisants) :\n\n${texte}\n\n` +
@@ -192,6 +243,13 @@ function invite(genere, texte, actu) {
         `ceux-là sans les mentionner.\n\n${actu.texte}\n\n`
       : `# Ce qui est RAPPORTÉ\n\nRien : aucun relevé d'actualité n'est disponible aujourd'hui. ` +
         `Laisse « actualite » vide et ne suppose aucune cause.\n\n`) +
+    `# Les onze indicateurs du module macro\n\n` +
+    `Le conseiller renseigne lui-même sa lecture du contexte sur ces onze indicateurs, et ` +
+    `l'allocation cible en dévie. Tant qu'il n'en choisit AUCUN, l'allocation reste ` +
+    `strictement celle de son profil de risque.\n\n` +
+    `Propose une option pour les seuls indicateurs que les titres ci-dessus documentent ` +
+    `réellement. Recopie les identifiants à l'exactitude. Une liste vide est une réponse ` +
+    `normale.\n\n${texteIndicateurs(inds)}\n\n` +
     `# Ta tâche\n\n` +
     `Rédige la note de marché interne correspondant à cette séance.`;
 }
@@ -201,7 +259,7 @@ async function principal() {
     const { genere, texte } = contexte();
     const actu = actualite();
     console.log('===== SYSTÈME =====\n' + CONSIGNE);
-    console.log('\n===== UTILISATEUR =====\n' + invite(genere, texte, actu));
+    console.log('\n===== UTILISATEUR =====\n' + invite(genere, texte, actu, indicateurs()));
     console.log(`\n===== ${actu.nb} titre(s), ${actu.sources.length} source(s) — rien n'a été appelé ni écrit. =====`);
     return;
   }
@@ -214,6 +272,7 @@ async function principal() {
   const { genere, texte, nbPoches } = contexte();
   console.log(`Variations disponibles : ${nbPoches} poches, arrêtées au ${genere}.`);
 
+  const inds = indicateurs();
   const actu = actualite();
   console.log(actu.nb
     ? `Actualité : ${actu.nb} titre(s) sur ${actu.sources.length} source(s), fenêtre de ${actu.fenetre} h.`
@@ -229,7 +288,7 @@ async function principal() {
       format: { type: 'json_schema', schema: SCHEMA }
     },
     system: CONSIGNE,
-    messages: [{ role: 'user', content: invite(genere, texte, actu) }]
+    messages: [{ role: 'user', content: invite(genere, texte, actu, inds) }]
   });
 
   if (reponse.stop_reason === 'refusal') {
@@ -241,6 +300,34 @@ async function principal() {
   const bloc = reponse.content.find(b => b.type === 'text');
   if (!bloc) { console.error('Réponse sans contenu texte.'); process.exit(1); }
   const note = JSON.parse(bloc.text);
+
+  /* ---------- LES LECTURES MACRO SONT VÉRIFIÉES AVANT D'ÊTRE ÉCRITES ----------
+     Le schéma garantit la FORME — quatre champs, tous présents — pas le
+     CONTENU : rien n'empêche un `indicateur: 'petrole'` qui n'existe pas,
+     ou une option prise sur le mauvais indicateur. Écrite telle quelle,
+     la proposition arriverait dans l'application comme un bouton qui ne
+     fait rien, ou pire, qui écrit une valeur que le moteur ne connaît pas.
+
+     On écarte donc en silence côté fichier, et bruyamment côté journal :
+     une lecture rejetée est un signe que la liste envoyée au modèle et
+     `js/data/macro.js` ont divergé. */
+  const parId = new Map(inds.map(i => [i.id, i]));
+  const rejets = [];
+  note.lecturesMacro = (note.lecturesMacro || []).filter(l => {
+    const ind = parId.get(l.indicateur);
+    if (!ind) { rejets.push(`indicateur inconnu : ${l.indicateur}`); return false; }
+    if (!ind.options.some(o => o.valeur === l.option)) {
+      rejets.push(`option « ${l.option} » absente de « ${l.indicateur} »`); return false;
+    }
+    return true;
+  });
+  /* Un indicateur proposé deux fois : on garde la première lecture. */
+  const vus = new Set();
+  note.lecturesMacro = note.lecturesMacro.filter(l => {
+    if (vus.has(l.indicateur)) { rejets.push(`doublon sur ${l.indicateur}`); return false; }
+    vus.add(l.indicateur); return true;
+  });
+  if (rejets.length) console.error('Lectures macro écartées : ' + rejets.join(' · '));
 
   const sortie = [
     '/* ============================================================',
@@ -278,6 +365,8 @@ async function principal() {
   console.log(`Note rédigée : « ${note.titre} »`);
   console.log(`${note.mouvements.length} mouvement(s) relevé(s), ${note.aVerifier.length} point(s) à vérifier.`);
   console.log(`${(note.actualite || []).length} fait(s) d'actualité retenu(s).`);
+  console.log(`${note.lecturesMacro.length} lecture(s) macro proposée(s)` +
+    (note.lecturesMacro.length ? ' : ' + note.lecturesMacro.map(l => `${l.indicateur}=${l.option}`).join(', ') : '') + '.');
   console.log(`Tokens : ${reponse.usage.input_tokens} en entrée, ${reponse.usage.output_tokens} en sortie.`);
 }
 

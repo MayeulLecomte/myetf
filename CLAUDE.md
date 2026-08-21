@@ -74,6 +74,12 @@ L'allocation stratégique seule est une réponse complète, pas un pis-aller : l
 vue s'affiche normalement et dit simplement qu'aucune vue de marché n'y est
 mêlée.
 
+**La note du jour peut PROPOSER des lectures d'indicateurs, et cela ne
+change rien à ce qui précède** : une proposition affichée n'est pas un
+indicateur renseigné. Tant que le conseiller n'a pas cliqué, les trois
+égalités ci-dessus tiennent. Voir « La note PROPOSE des lectures macro ;
+elle n'en applique aucune ».
+
 Consigné dans la vue **Méthode & limites**, section 2, et dans l'**annexe
 « Méthode »** du rapport client — qui dit explicitement, quand c'est le cas,
 qu'aucune déviation n'est appliquée dans le document remis.
@@ -1200,6 +1206,65 @@ bougé », l'actualité dans une carte à part, **« Ce que la presse
 rapporte »**, qui porte sa propre mise en garde et le nom du journal sous
 chaque ligne. La carte disparaît quand la liste est vide — un encart vide
 laisserait croire à une panne.
+
+## La note PROPOSE des lectures macro ; elle n'en applique aucune
+
+C'est le seul endroit où l'actualité touche un CALCUL, et il est fermé
+par un clic.
+
+La note peut proposer une option pour tel des onze indicateurs du module
+macro — `inflation = persistante`, `fiscalite = derapage` — à partir de
+ce que la presse du jour rapporte. Elle l'écrit dans son fichier,
+`NOTE_MARCHE.note.lecturesMacro`, et **rien d'autre ne se produit** :
+
+- `Etat.macroChoix` reste intact tant que personne n'a cliqué ;
+- `intensiteEffective()` vaut donc 0, `macroCourante().dominant` vaut
+  `null`, et l'allocation cible reste **strictement la stratégique du
+  profil** ;
+- le clic passe par le MÊME chemin que la liste déroulante — même
+  écriture, même `scenariosManuels` remis à zéro, même sauvegarde. Une
+  lecture retenue est indiscernable d'une lecture saisie, et c'est
+  voulu : **elle est du conseiller à partir de cet instant.**
+
+Voir « Un contexte non renseigné n'applique aucune déviation », que ce
+bloc ne doit jamais contredire.
+
+**Quatre contrôles de `test/fumee.html` le tiennent**, et ils posent de
+FAUSSES propositions plutôt que d'attendre celles du jour : la note du
+dépôt n'en porte pas tous les matins, et un test qui ne s'exécute qu'un
+jour sur trois ne protège rien. Ils vérifient dans cet ordre — un
+identifiant inconnu est écarté sans bruit ; le RENDU n'applique aucun
+choix ; l'intensité reste nulle et le dominant `null` ; et le clic, lui,
+écrit bien. Le dernier compte autant que les autres : sans lui, un
+bouton mort passerait les trois premiers.
+
+⚠ `NOTE_MARCHE` est un `const` de premier niveau : il n'est **pas** une
+propriété de `window`. Le harnais le lit par `lire('NOTE_MARCHE')`, pas
+par `w.NOTE_MARCHE` — qui vaut `undefined` et faisait silencieusement
+sauter les quatre contrôles. Les `function` deviennent des propriétés de
+`window`, les `const` non ; c'est ce qui rend l'erreur crédible.
+
+**Trois états par lecture, et le troisième est celui qui compte** :
+indicateur non renseigné (on propose), déjà à la même valeur (badge
+« retenue », aucun bouton), renseigné AUTREMENT (on montre les deux et
+on propose de remplacer). Cacher le troisième laisserait croire que la
+note n'a rien dit sur un indicateur où elle a dit le contraire du
+conseiller.
+
+**Les identifiants rendus sont vérifiés à l'écriture du fichier.** Le
+schéma garantit la forme — quatre champs — pas le contenu : rien
+n'empêche un `indicateur: 'petrole'`, ou une option prise sur le mauvais
+indicateur. `scripts/note-marche.mjs` recoupe chaque lecture contre
+`js/data/macro.js` — la MÊME source que l'application, lue par `vm` et
+non recopiée —, écarte les invalides et les doublons, et les **journalise
+en `stderr`**. Une lecture rejetée signale que la liste envoyée au modèle
+et le modèle réel ont divergé.
+
+**La note ne propose rien la plupart des jours, et c'est normal.** La
+consigne l'interdit explicitement sur un indicateur que les titres ne
+documentent pas : un indicateur muet reste ABSENT de la liste, il ne
+prend pas sa valeur de repli. Une liste de onze lectures un jour
+ordinaire serait une invention.
 
 ## Dix-huit fils de presse, dont aucun n'a le droit de casser la chaîne
 

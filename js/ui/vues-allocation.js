@@ -95,6 +95,16 @@ function rendreNote() {
       (n.indicateursASurveiller && n.indicateursASurveiller.length ?
         '<div class="carte"><h3>Lectures macro à réexaminer</h3><ul style="font-size:13px;line-height:1.7">' +
         n.indicateursASurveiller.map(x => '<li>' + echapper(x) + '</li>').join('') + '</ul>' +
+        /* Le compte des lectures PROPOSÉES, s'il y en a. Sans lui, le
+           conseiller n'a aucune raison de suivre le lien : les points « à
+           réexaminer » sont formulés en prose, et rien ne dit qu'un geste
+           d'un clic l'attend de l'autre côté. Le mot « proposées » n'est
+           pas décoratif — rien n'est appliqué. */
+        ((n.lecturesMacro && n.lecturesMacro.length)
+          ? '<p class="intro" style="font-size:12px;margin-top:10px"><strong>' +
+            n.lecturesMacro.length + ' lecture' + (n.lecturesMacro.length > 1 ? 's sont proposées' : ' est proposée') +
+            '</strong> dans le contexte macro, à retenir ou non — rien n\'y est appliqué sans vous.</p>'
+          : '') +
         '<div class="barre-actions"><button class="bouton secondaire" data-aller="macro">' +
         'Ouvrir le contexte macro →</button></div></div>' : '') +
     '</div>' +
@@ -126,7 +136,87 @@ function rendreNote() {
    VUE 5 — MACRO
    ============================================================ */
 
+/* ------------------------------------------------------------
+   LES LECTURES PROPOSÉES PAR LA NOTE DU JOUR
+   ------------------------------------------------------------
+   ⚠  RIEN N'EST APPLIQUÉ. C'est la règle entière de ce bloc.
+
+   La note peut proposer une option pour tel indicateur, à partir de
+   ce que la presse du jour rapporte. Elle ne l'écrit nulle part :
+   `Etat.macroChoix` reste intact tant que le conseiller n'a pas
+   cliqué, et l'allocation cible reste donc strictement la
+   stratégique de son profil. Le jour où ce bloc écrira un choix
+   tout seul, il aura cassé « Un contexte non renseigné n'applique
+   aucune déviation ».
+
+   Trois états par lecture, et le troisième est celui qui compte :
+   non renseigné (on propose), déjà à la même valeur (on le dit et
+   on n'offre rien), renseigné AUTREMENT (on montre les deux et on
+   propose de remplacer). Cacher le troisième cas laisserait croire
+   que la note n'a rien dit sur un indicateur où elle a dit le
+   contraire du conseiller.
+   ------------------------------------------------------------ */
+function rendrePropositionsMacro() {
+  const hote = $('#macro-propositions');
+  if (!hote) return;
+
+  const dispo = typeof NOTE_MARCHE !== 'undefined' && NOTE_MARCHE;
+  /* Les notes d'avant cette fonctionnalité n'ont pas le champ : elles ne
+     proposent rien, et c'est exact — elles n'ont jamais lu de presse. */
+  const lectures = dispo && NOTE_MARCHE.note && NOTE_MARCHE.note.lecturesMacro
+    ? NOTE_MARCHE.note.lecturesMacro : [];
+  if (!lectures.length) { hote.innerHTML = ''; return; }
+
+  const parId = {};
+  INDICATEURS.forEach(i => { parId[i.id] = i; });
+
+  const lignes = lectures.map(l => {
+    const ind = parId[l.indicateur];
+    if (!ind) return '';                       /* l'indicateur a disparu du modèle */
+    const opt = ind.options.filter(o => o.valeur === l.option)[0];
+    if (!opt) return '';
+    const actuel = Etat.macroChoix[ind.id];
+    const identique = actuel === l.option;
+    const autre = actuel !== undefined && !identique;
+    const optActuelle = autre ? ind.options.filter(o => o.valeur === actuel)[0] : null;
+
+    return '<div class="proposition-macro">' +
+      '<div class="ligne-titre">' +
+        '<span class="quoi">' + echapper(ind.label) + '</span>' +
+        '<span class="badge ' + (identique ? 'vert' : 'gris') + '">' +
+          (identique ? 'retenue' : echapper(opt.label)) + '</span>' +
+      '</div>' +
+      (autre && optActuelle
+        ? '<div class="ecart">Vous avez retenu « ' + echapper(optActuelle.label) + ' ».</div>'
+        : '') +
+      '<div class="motif">' + echapper(l.motif) + '</div>' +
+      '<div class="source">' + echapper(l.source) + '</div>' +
+      (identique ? '' :
+        '<div class="barre-actions"><button class="bouton secondaire" ' +
+        'data-macro-proposition="' + echapper(ind.id) + '" ' +
+        'data-macro-valeur="' + echapper(l.option) + '">' +
+        (autre ? 'Remplacer par « ' + echapper(opt.label) + ' »' : 'Retenir cette lecture') +
+        '</button></div>') +
+    '</div>';
+  }).join('');
+
+  if (!lignes) { hote.innerHTML = ''; return; }
+
+  hote.innerHTML =
+    '<div class="carte">' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px">' +
+        '<h3 style="margin:0">Lectures proposées par la note du jour</h3>' +
+        '<span class="badge gris">' + echapper(dateFr(NOTE_MARCHE.genere)) + '</span>' +
+      '</div>' +
+      '<p class="intro" style="font-size:12px">Déduites de la presse du jour, et de rien ' +
+      'd\'autre — ni des cours, ni du dossier. <strong>Rien n\'est appliqué tant que vous ' +
+      'n\'avez pas cliqué</strong> : retenir une lecture, c\'est la faire vôtre.</p>' +
+      lignes +
+    '</div>';
+}
+
 function rendreMacro() {
+  rendrePropositionsMacro();
   const groupes = [];
   INDICATEURS.forEach(i => { if (groupes.indexOf(i.groupe) < 0) groupes.push(i.groupe); });
 

@@ -3979,3 +3979,35 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
      pour cinq boutons d'une même rangée, à ne pas généraliser. */
   #vue-arbitrages #btn-confirmer { order: 1; }
 }
+
+/* ---------- Les lectures proposées par la note ----------
+   Une proposition n'est pas un résultat : elle ne prend donc ni tuile
+   pastel, ni fond coloré. Un filet à gauche, comme les mouvements de la
+   note et les faits de presse — c'est la marque de ce qui est RAPPORTÉ,
+   par opposition aux blocs qui portent un chiffre calculé.
+
+   Le filet est en accent clair et non en pastel : les quatre pastels
+   nomment des classes d'actifs, et un filet menthe devant « Dynamique
+   d'inflation » dirait « obligations ». */
+.proposition-macro {
+  border-left: 3px solid var(--bleu-clair);
+  padding-left: 14px;
+  margin-top: 16px;
+}
+.proposition-macro .ligne-titre {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.proposition-macro .quoi { font-weight: 600; }
+/* L'écart entre ce qu'on a retenu et ce que la note propose est la ligne
+   la plus importante du bloc : elle est la seule à mériter d'être vue
+   avant le motif. */
+.proposition-macro .ecart {
+  font-size: 13px; font-weight: 600; margin-top: 4px;
+}
+.proposition-macro .motif  { font-size: 13px; margin-top: 4px; }
+.proposition-macro .source { font-size: 12px; color: var(--gris-doux); margin-top: 2px; }
+/* `.barre-actions` porte une marge haute de 18 px pensée pour un pied de
+   carte ; à l'intérieur d'une proposition elle sépare deux propositions
+   au lieu de fermer celle-ci. */
+.proposition-macro .barre-actions { margin-top: 10px; }

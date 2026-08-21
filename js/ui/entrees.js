@@ -109,6 +109,26 @@ function brancher() {
     const pastille = e.target.closest('[data-poche]');
     if (pastille) { ouvrirPoche(pastille.dataset.poche); return; }
 
+    /* RETENIR UNE LECTURE PROPOSÉE PAR LA NOTE.
+       C'est le SEUL endroit où une proposition devient un choix, et il
+       demande un clic. La note écrit ses lectures dans son fichier ; elle
+       ne touche jamais `Etat.macroChoix`. Le geste passe ensuite par le
+       même chemin que la liste déroulante — même écriture, même
+       `scenariosManuels` remis à zéro, même sauvegarde — pour qu'une
+       lecture retenue soit indiscernable d'une lecture saisie. Elle EST
+       du conseiller à partir de cet instant. */
+    const prop = e.target.closest('[data-macro-proposition]');
+    if (prop) {
+      const ind = INDICATEURS.filter(i => i.id === prop.dataset.macroProposition)[0];
+      const opt = ind && ind.options.filter(o => o.valeur === prop.dataset.macroValeur)[0];
+      if (!ind || !opt) return;              /* le modèle a changé sous la note */
+      Etat.macroChoix[ind.id] = opt.valeur;
+      Etat.scenariosManuels = null;
+      sauver(true); rendreMacro(); majNav();
+      notifier('« ' + ind.label +' » renseigné : ' + opt.label + '.');
+      return;
+    }
+
     if (e.target.closest('#btn-charger-perfs')) {
       chargerCatalogue(() => rendreUnivers());
       return;
