@@ -4021,3 +4021,30 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
    carte ; à l'intérieur d'une proposition elle sépare deux propositions
    au lieu de fermer celle-ci. */
 .proposition-macro .barre-actions { margin-top: 10px; }
+
+/* ---------- « Mon allocation » : les deux cartes du milieu se centrent ----------
+   La vue alterne des blocs pleine largeur et des blocs de colonne : la
+   rangée d'indicateurs s'étale, « Détail par poche » aussi — c'est un
+   tableau —, et entre les deux, « Répartition par classe d'actifs » et
+   « Votre répartition, et la cible » restent dans les 60 % de droite.
+   Elles se retrouvent donc décalées entre deux blocs qui, eux, vont d'un
+   bord à l'autre, avec un vide à leur gauche que rien n'occupe une fois
+   l'ouverture remontée.
+
+   Elles prennent toute la rangée et se CENTRENT, en gardant exactement la
+   largeur qu'elles avaient : `(100% - 56px) × 3/5` est la définition de la
+   colonne de droite — 3fr sur 2fr + 3fr, moins la gouttière. Les élargir
+   aurait éloigné la légende de son anneau ; les centrer ne change que leur
+   place.
+
+   ⚠ `screen and` n'est pas décoratif : `min-width` s'évalue AUSSI sur le
+   papier, où la grille à deux colonnes ne s'applique pas. `grid-column` y
+   serait inerte, mais `width` non — les deux cartes s'imprimeraient à 60 %
+   de la page sans que rien ne le signale. */
+@media screen and (min-width: 901px) {
+  #vue-allocation.deux-colonnes.actif > div[id$="-contenu"] > .grille.deux > * {
+    grid-column: 1 / -1;
+    width: calc((100% - 56px) * 3 / 5);
+    justify-self: center;
+  }
+}

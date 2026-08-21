@@ -586,6 +586,25 @@ tuiles dans 60 % font des colonnes de cent dix pixels, où « Dynamique » est
 coupé en deux. C'est une bande de tableau de bord : elle se lit en largeur ou
 pas du tout.
 
+### Et sur « Mon allocation », ce qui reste entre les deux se CENTRE
+
+La vue alterne : la rangée d'indicateurs s'étale, « Détail par poche »
+aussi — c'est un tableau —, et entre les deux, « Répartition par classe
+d'actifs » et « Votre répartition, et la cible » tenaient les 60 % de
+droite. Décalées entre deux blocs qui vont d'un bord à l'autre, elles
+laissaient à leur gauche un vide que plus rien n'occupe depuis que
+l'ouverture ne suit plus le défilement.
+
+Elles prennent donc toute la rangée et se centrent, **en gardant
+exactement leur largeur** : `calc((100% - 56px) * 3 / 5)` est la
+définition de la colonne de droite, gouttière déduite. Les élargir aurait
+éloigné la légende de son anneau ; les centrer ne change que leur place.
+
+⚠ La règle est sous `@media screen and …`, et le `screen` compte :
+`min-width` s'évalue AUSSI sur le papier, où la grille à deux colonnes ne
+s'applique pas. `grid-column` y serait inerte, mais `width` non — les deux
+cartes s'imprimeraient à 60 % de la page sans que rien ne le signale.
+
 ### L'ouverture occupe toutes les lignes de sa colonne
 
 `grid-row: 1 / -1`. Sans cela sa zone de grille se limite à la première
