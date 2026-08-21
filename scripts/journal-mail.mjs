@@ -15,11 +15,15 @@
    trace exploitable : le workflow est vert, la boîte est vide, et
    il n'y a rien entre les deux.
 
-   ⚠  IL NE LIT QUE. Aucun envoi, aucune modification.
+   ⚠  IL NE LIT QUE — sauf `--debloquer`, seul geste d'écriture,
+   et il faut le demander nommément. Il retire UNE adresse de la
+   liste de blocage du compte ; il n'envoie jamais rien.
 
    Variables : BREVO_API_KEY.
 
    Usage :  node scripts/journal-mail.mjs [--limite=25]
+            node scripts/journal-mail.mjs --bloques
+            node scripts/journal-mail.mjs --debloquer=adresse@x.fr
    ============================================================= */
 
 const arg = n => (process.argv.find(a => a.startsWith('--' + n + '=')) || '').split('=')[1];
@@ -45,6 +49,61 @@ const SENS = {
   invalid:     'adresse invalide',
   unsubscribed:'désabonnement'
 };
+
+/* -------------------------------------------------------------
+   LA LISTE DE BLOCAGE DU COMPTE
+   -------------------------------------------------------------
+   Brevo tient, par compte, une liste d'adresses vers lesquelles il
+   REFUSE d'envoyer. Une adresse y entre après un rejet définitif,
+   une plainte, un désabonnement — ou un ajout manuel. Tant qu'elle
+   y est, tout envoi ressort en « blocked by Admin » sans jamais
+   atteindre le serveur d'en face.
+
+   C'est la seule chose qu'un journal d'événements ne montre pas :
+   il dit qu'un message a été bloqué, pas POURQUOI l'adresse l'est.
+   ------------------------------------------------------------- */
+async function bloques() {
+  const r = await fetch('https://api.brevo.com/v3/smtp/blockedContacts?limit=50', {
+    headers: { 'api-key': cle, 'accept': 'application/json' },
+    signal: AbortSignal.timeout(20000)
+  });
+  const t = await r.text();
+  if (!r.ok) { console.error(`Brevo a refusé (HTTP ${r.status}) : ${t}`); process.exit(1); }
+  const { contacts } = JSON.parse(t);
+  if (!contacts || !contacts.length) {
+    console.log('Aucune adresse bloquée sur ce compte.');
+    return;
+  }
+  console.log(`${contacts.length} adresse(s) bloquée(s) :\n`);
+  contacts.forEach(c => {
+    console.log(`  ${c.email}`);
+    console.log(`     motif : ${c.reason ? (c.reason.code || '') + ' — ' + (c.reason.message || '') : 'non précisé'}`);
+    if (c.blockedAt) console.log(`     depuis : ${String(c.blockedAt).replace('T', ' ').slice(0, 19)}`);
+  });
+  console.log('\nPour en retirer une : --debloquer=adresse@exemple.fr');
+}
+
+/* Le SEUL geste d'écriture du script, et il faut le nommer. Il retire une
+   adresse de la liste ; il n'envoie rien et ne touche à rien d'autre. */
+async function debloquer(adr) {
+  const r = await fetch('https://api.brevo.com/v3/smtp/blockedContacts/' + encodeURIComponent(adr), {
+    method: 'DELETE',
+    headers: { 'api-key': cle, 'accept': 'application/json' },
+    signal: AbortSignal.timeout(20000)
+  });
+  if (r.status === 204) { console.log(`${adr} retirée de la liste de blocage.`); return; }
+  const t = await r.text();
+  if (r.status === 404) {
+    console.log(`${adr} n'était pas sur la liste de blocage — rien à faire.`);
+    return;
+  }
+  console.error(`Brevo a refusé (HTTP ${r.status}) : ${t}`);
+  process.exit(1);
+}
+
+if (process.argv.includes('--bloques')) { await bloques(); process.exit(0); }
+const aDebloquer = arg('debloquer');
+if (aDebloquer) { await debloquer(aDebloquer); await bloques(); process.exit(0); }
 
 const rep = await fetch(`https://api.brevo.com/v3/smtp/statistics/events?limit=${LIMITE}&sort=desc`, {
   headers: { 'api-key': cle, 'accept': 'application/json' },
@@ -89,7 +148,20 @@ if (parEtat.delivered && !parEtat.spam && !parEtat.blocked) {
   console.log('  tiers échoue l\'authentification DMARC : c\'est la cause de loin la');
   console.log('  plus fréquente, et elle se règle avec un domaine à soi.');
 } else if (parEtat.softBounces || parEtat.hardBounces) {
-  console.log('\n→ REJETÉ par le serveur destinataire. Le motif ci-dessus dit lequel.');
+  /* « blocked by Admin » N'EST PAS un refus du serveur destinataire, et le
+     dire serait envoyer chercher au mauvais endroit. C'est BREVO qui
+     refuse, parce que l'adresse figure sur la liste de blocage du compte.
+     La distinction change tout : dans un cas on ne peut rien faire, dans
+     l'autre il suffit de retirer l'adresse de la liste. */
+  const admin = events.some(e => /blocked by admin/i.test(e.reason || ''));
+  if (admin) {
+    console.log('\n→ BLOQUÉ PAR BREVO, pas par le destinataire. « blocked by Admin »');
+    console.log('  veut dire que l\'adresse figure sur la liste de blocage DU COMPTE :');
+    console.log('  le message n\'a même pas été présenté au serveur d\'en face.');
+    console.log('  `--bloques` la liste, `--debloquer=adresse` en retire une.');
+  } else {
+    console.log('\n→ REJETÉ par le serveur destinataire. Le motif ci-dessus dit lequel.');
+  }
 } else if (parEtat.requests && !parEtat.delivered) {
   console.log('\n→ ACCEPTÉ mais pas encore remis. Brevo enregistre la remise avec');
   console.log('  quelques secondes de retard : relancez dans une minute.');

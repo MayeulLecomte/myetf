@@ -17,6 +17,14 @@ on:
         description: "Nombre d'événements à relire"
         type: string
         default: "25"
+      bloques:
+        description: "Lister les adresses bloquées du compte au lieu du journal"
+        type: boolean
+        default: false
+      debloquer:
+        description: "Retirer CETTE adresse de la liste de blocage (laisser vide sinon)"
+        type: string
+        default: ""
 
 jobs:
   lire:
@@ -32,7 +40,15 @@ jobs:
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
         run: |
-          node scripts/journal-mail.mjs --limite=${{ inputs.limite }} | tee /tmp/journal.txt
+          # Un seul mode à la fois, et « débloquer » l'emporte : c'est celui
+          # qu'on a demandé nommément, il ne peut pas être un effet de bord.
+          if [ -n "${{ inputs.debloquer }}" ]; then
+            node scripts/journal-mail.mjs --debloquer="${{ inputs.debloquer }}" | tee /tmp/journal.txt
+          elif [ "${{ inputs.bloques }}" = "true" ]; then
+            node scripts/journal-mail.mjs --bloques | tee /tmp/journal.txt
+          else
+            node scripts/journal-mail.mjs --limite=${{ inputs.limite }} | tee /tmp/journal.txt
+          fi
           {
             echo "### Journal des envois"
             echo '```'
