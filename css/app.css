@@ -3936,3 +3936,46 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
     grid-column: 5 / span 4; grid-row: 3; margin-top: 68px;
   }
 }
+
+/* ---------- La barre d'actions des arbitrages ferme la vue, à droite ----------
+   Elle était prise dans le zigzag : bornée à 72 % de la grille et poussée
+   d'un côté ou de l'autre selon son RANG parmi les blocs de la vue. Le rang
+   dépend du dossier — un encart de fiscalité de plus, et la parité bascule.
+   La barre changeait donc de côté d'un dossier à l'autre, et ses boutons,
+   tassés à gauche de sa boîte, laissaient « Confirmer ces arbitrages » au
+   milieu de la page avec un trou de cent trente pixels à sa droite.
+
+   Elle sort du zigzag, comme `.barre-parcours` avant elle et pour la même
+   raison : ce n'est pas un bloc qu'on lit, c'est le geste qui clôt la vue.
+   Pleine largeur, et les boutons rangés au bord droit — le même bord que
+   les cartes du dessus.
+
+   `justify-self: stretch` est nécessaire EN PLUS de `grid-column: 1 / -1` :
+   les règles de parité du zigzag posent `justify-self: start|end`, qui
+   ramènerait la barre à sa largeur de contenu et rendrait `flex-end` sans
+   effet. */
+@media (min-width: 901px) {
+  #vue-arbitrages.deux-colonnes.zigzag.actif > div[id$="-contenu"] > .barre-actions {
+    grid-column: 1 / -1;
+    max-width: none;
+    justify-self: stretch;
+    justify-content: flex-end;
+  }
+
+  /* ET « CONFIRMER » PASSE AU BOUT, PAR `order` ET NON DANS LE BALISAGE.
+     Ranger la barre au bord droit ne suffisait pas : le bouton est le
+     PREMIER du balisage, donc le plus à gauche de sa rangée — il s'était
+     éloigné du bord au lieu de s'en rapprocher.
+
+     Le déplacer dans le HTML aurait cassé le TÉLÉPHONE, où la barre
+     s'empile et où ce bouton doit rester en tête : c'est le geste évident
+     qu'on venait chercher, et l'enterrer sous quatre boutons secondaires
+     annulerait la raison de son existence. `order` ne bouge que le rendu,
+     et seulement au-delà de 901 px, là où la rangée est horizontale.
+
+     Le prix : sur grand écran, la tabulation atteint « Confirmer » en
+     premier alors qu'il s'affiche en dernier. C'est le seul endroit du
+     dépôt où l'ordre visuel et l'ordre de tabulation divergent — assumé
+     pour cinq boutons d'une même rangée, à ne pas généraliser. */
+  #vue-arbitrages #btn-confirmer { order: 1; }
+}

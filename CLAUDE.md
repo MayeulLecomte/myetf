@@ -1525,6 +1525,42 @@ Trois appelants, tous alignés : l'accueil, « Situation » et « Arbitrages
 proposés ». Les faire diverger, c'est afficher deux vérités sur la même
 détention.
 
+## La barre d'actions des arbitrages ferme la vue, et « Confirmer » est au bout
+
+Elle était prise dans le zigzag : bornée à 72 % de la grille et poussée
+d'un côté ou de l'autre **selon son RANG parmi les blocs de la vue**. Le
+rang dépend du dossier — un encart de fiscalité de plus et la parité
+bascule —, donc la barre changeait de côté d'un dossier à l'autre. Ses
+boutons, tassés à gauche de sa boîte, laissaient « Confirmer ces
+arbitrages » au milieu de la page avec cent trente pixels de vide à sa
+droite.
+
+Elle **sort du zigzag**, comme `.barre-parcours` avant elle et pour la
+même raison : ce n'est pas un bloc qu'on lit, c'est le geste qui clôt la
+vue. Pleine largeur, boutons rangés au bord droit — le même bord que les
+cartes du dessus. `justify-self: stretch` est nécessaire EN PLUS de
+`grid-column: 1 / -1` : sans lui, les règles de parité du zigzag
+ramènent la barre à sa largeur de contenu et `flex-end` n'a plus d'effet.
+
+**Ranger la barre à droite ne suffisait pas.** « Confirmer » est le
+PREMIER bouton du balisage, donc le plus à gauche de sa rangée : il
+s'était éloigné du bord au lieu de s'en rapprocher. Il passe au bout par
+**`order: 1`, et non dans le balisage**.
+
+Le déplacer dans le HTML aurait cassé le **téléphone**, où la barre
+s'empile et où ce bouton doit rester en tête — c'est le geste évident
+qu'on vient chercher, et l'enterrer sous quatre boutons secondaires
+annulerait la raison de son existence (voir la section suivante).
+`order` ne bouge que le rendu, et seulement au-delà de 901 px, là où la
+rangée est horizontale. Vérifié : à 375 px l'ordre calculé retombe à 0
+et « Confirmer » reste le premier affiché.
+
+**Le prix est assumé et ne se généralise pas** : sur grand écran, la
+tabulation atteint « Confirmer » en premier alors qu'il s'affiche en
+dernier. C'est le seul endroit du dépôt où l'ordre visuel et l'ordre de
+tabulation divergent. Pour cinq boutons d'une même rangée, l'écart est
+tenable ; sur un formulaire, il ne le serait pas.
+
 ## Confirmer des arbitrages : deux métiers, deux gestes
 
 **Le conseiller garde ses deux boutons séparés** — journaliser sans appliquer,
