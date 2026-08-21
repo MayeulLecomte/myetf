@@ -1,0 +1,41 @@
+name: Journal des envois
+
+# Dit ce que sont devenus les messages une fois partis : remis, différés,
+# classés en indésirable, refusés.
+#
+# POURQUOI UN WORKFLOW POUR ÇA. La clé Brevo est un secret de dépôt : elle
+# n'existe que sur les serveurs de GitHub. Interroger le journal depuis un
+# poste demanderait de sortir la clé, ce qu'on ne fait pas pour un
+# diagnostic. Le workflow lit et imprime ; la clé ne bouge pas.
+#
+# ⚠ IL NE LIT QUE. Aucun envoi, aucune écriture, aucun commit.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: "Nombre d'événements à relire"
+        type: string
+        default: "25"
+
+jobs:
+  lire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Relire le journal
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: |
+          node scripts/journal-mail.mjs --limite=${{ inputs.limite }} | tee /tmp/journal.txt
+          {
+            echo "### Journal des envois"
+            echo '```'
+            cat /tmp/journal.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
