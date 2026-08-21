@@ -38,24 +38,60 @@ const arg = n => {
   return t ? t.slice(n.length + 3) : '';
 };
 
-const a = arg('a');
+/* -------------------------------------------------------------
+   LES ADRESSES SE NETTOIENT AVANT D'ÊTRE ENVOYÉES
+   -------------------------------------------------------------
+   Une adresse vient d'un secret de dépôt ou d'un champ saisi à la
+   main, et elle arrive régulièrement avec un retour à la ligne ou
+   une espace au bout — `gh secret set` depuis un `echo`, un
+   copier-coller qui emporte la fin de ligne. Le caractère est
+   invisible partout, y compris dans les journaux.
+
+   Brevo, lui, répond « email is not valid in to » : un message
+   qui décrit la conséquence et pas la cause, sur une valeur que
+   GitHub masque dans le journal. On peut y passer une heure.
+
+   D'où deux gestes ici. On NETTOIE — c'est toujours ce qu'on
+   voulait dire. Et si ça ne suffit pas, on décrit la FORME de
+   l'adresse sans jamais l'imprimer : sa longueur, son nombre
+   d'arrobases, la présence d'espaces. C'est ce qu'il faut pour
+   comprendre, et ça ne divulgue rien.
+   ------------------------------------------------------------- */
+function adresse(brut, quoi) {
+  const net = String(brut || '').trim().replace(/[\r\n]/g, '');
+  if (net !== String(brut || '')) {
+    console.log(`(${quoi} : espaces ou fin de ligne retirés)`);
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(net)) {
+    console.error(`${quoi} n'est pas une adresse e-mail exploitable.`);
+    console.error(`   forme reçue : ${net.length} caractère(s), ` +
+      `${(net.match(/@/g) || []).length} arrobase(s), ` +
+      `${/\s/.test(String(brut || '')) ? 'contient une espace' : 'sans espace'}, ` +
+      `point après l'arrobase : ${/@[^@]*\./.test(net) ? 'oui' : 'non'}.`);
+    console.error('   (la valeur n\'est pas imprimée : elle vient d\'un secret)');
+    process.exit(1);
+  }
+  return net;
+}
+
+const a = adresse(arg('a'), 'Le destinataire');
 const objet = arg('objet');
 const chemin = arg('corps');
 const blanc = process.argv.includes('--blanc');
 
-if (!a || !objet || !chemin) {
+if (!objet || !chemin) {
   console.error('Usage : --a=adresse --objet="…" --corps=chemin');
   process.exit(1);
 }
 
 const corps = readFileSync(chemin, 'utf8');
-const cle = process.env.BREVO_API_KEY;
-const expediteur = process.env.EXPEDITEUR_EMAIL;
-const nom = process.env.EXPEDITEUR_NOM || 'Allocation ETF';
+const cle = (process.env.BREVO_API_KEY || '').trim();
+const expediteurBrut = process.env.EXPEDITEUR_EMAIL;
+const nom = (process.env.EXPEDITEUR_NOM || 'Allocation ETF').trim();
 
 if (blanc) {
   console.log(`À      : ${a}`);
-  console.log(`De     : ${nom} <${expediteur || '(EXPEDITEUR_EMAIL manquante)'}>`);
+  console.log(`De     : ${nom} <${expediteurBrut || '(EXPEDITEUR_EMAIL manquante)'}>`);
   console.log(`Objet  : ${objet}`);
   console.log(`Corps  : ${corps.length} caractères, ${corps.split('\n').length} lignes`);
   console.log('\n--- rien n\'a été envoyé (--blanc) ---');
@@ -65,8 +101,9 @@ if (blanc) {
 /* Les deux manquent ensemble ou pas du tout : sans clé il n'y a pas de
    compte, sans expéditeur il n'y a pas d'adresse validée. Le dire
    séparément aide à savoir lequel des deux secrets a été oublié. */
-if (!cle)        { console.error('BREVO_API_KEY absente.');    process.exit(1); }
-if (!expediteur) { console.error('EXPEDITEUR_EMAIL absente.'); process.exit(1); }
+if (!cle)            { console.error('BREVO_API_KEY absente.');    process.exit(1); }
+if (!expediteurBrut) { console.error('EXPEDITEUR_EMAIL absente.'); process.exit(1); }
+const expediteur = adresse(expediteurBrut, 'L\'expéditeur');
 
 const rep = await fetch('https://api.brevo.com/v3/smtp/email', {
   method: 'POST',
