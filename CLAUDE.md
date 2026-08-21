@@ -592,6 +592,28 @@ pas du tout.
 ligne, et une position collante n'a de course que dans sa propre zone —
 elle décroche au bout d'un écran.
 
+### Sept ouvertures sur douze ne suivent PLUS le défilement
+
+Collante, l'ouverture accompagne le contenu de droite. Sur les vues
+longues, ce compagnonnage se retourne : un titre qui glisse le long de
+trois mille pixels de tableau donne le sentiment que la page ne tient pas
+en place.
+
+**Sept vues l'ont donc en `position: static`** au-delà de 1 024 px —
+sélection des supports, arbitrages, profil, puis **situation, journal,
+rapport et allocation**, ajoutées à la relecture. Le titre y dit ce qu'il
+a à dire sur le premier écran, et s'en va avec lui.
+
+**Cinq la gardent collante** : enveloppe, note du jour, contexte, revenus,
+méthode. Ce sont les vues courtes ou celles qu'on remplit — l'ouverture y
+reste un repère, pas un poids.
+
+Elles sont visées **par leur identifiant** (`#vue-…`), qui est un contrat
+du dépôt, et non par un rang de grille qui changerait au premier bloc
+ajouté. Le seuil est **1 024 px et non 901** : entre les deux, la mise en
+page est à deux colonnes et l'ouverture suit encore. Ne pas l'aligner sans
+mesurer — c'est la fenêtre où la colonne de gauche est la plus étroite.
+
 ## La navigation est en bas, à toutes les largeurs
 
 Il y avait deux navigations : la colonne à gauche sur écran large, les deux

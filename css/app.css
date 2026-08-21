@@ -3863,10 +3863,16 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
 
 /* ---------- L'ouverture qui suit, et celle qui reste ----------
    L'ouverture à deux colonnes est collante : le titre et sa phrase
-   accompagnent le défilement du contenu de droite. Sur trois vues, cet
+   accompagnent le défilement du contenu de droite. Sur sept vues, cet
    accompagnement gêne plus qu'il n'aide — ce sont les plus longues, et
    voir un titre glisser sur trois mille pixels de tableau donne le
    sentiment que la page ne tient pas en place.
+
+   Quatre s'y sont ajoutées à la relecture, et toutes quatre portent le
+   même défaut : ce sont les vues qu'on parcourt de haut en bas — la
+   situation, le journal, la synthèse, l'allocation. Le titre y a dit ce
+   qu'il avait à dire dès le premier écran ; le garder sous les yeux
+   pendant tout le reste ne l'explique pas davantage.
 
    Elles sont visées par leur identifiant, qui est un contrat du dépôt et
    ne bougera pas, plutôt que par un rang de grille qui changerait au
@@ -3874,7 +3880,11 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
 @media (min-width: 1024px) {
   #vue-portefeuille.deux-colonnes.actif > .ouverture-vue,
   #vue-arbitrages.deux-colonnes.actif > .ouverture-vue,
-  #vue-profil.deux-colonnes.actif > .ouverture-vue {
+  #vue-profil.deux-colonnes.actif > .ouverture-vue,
+  #vue-situation.deux-colonnes.actif > .ouverture-vue,
+  #vue-journal.deux-colonnes.actif > .ouverture-vue,
+  #vue-rapport.deux-colonnes.actif > .ouverture-vue,
+  #vue-allocation.deux-colonnes.actif > .ouverture-vue {
     position: static;
   }
 
