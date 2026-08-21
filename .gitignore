@@ -15,6 +15,7 @@ clients/
 # `data/proposition-envoyee.json`, lui, EST versionné — il ne porte qu'une
 # empreinte, une date et un décompte.
 data/proposition-corps.txt
+data/proposition-enveloppe.json
 
 # Univers ETF personnalisé (peut refléter la liste des supports
 # d'un contrat, information commercialement sensible).

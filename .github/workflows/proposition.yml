@@ -132,6 +132,7 @@ jobs:
           name: proposition
           path: |
             data/proposition-corps.txt
+            data/proposition-enveloppe.json
             data/proposition-envoyee.json
           retention-days: 7
 
@@ -189,15 +190,23 @@ jobs:
           name: proposition
           path: data
 
+      # L'ADRESSE ET L'OBJET VIENNENT DE L'ARTEFACT, PAS DES SORTIES DU
+      # TRAVAIL. GitHub CAVIARDE une sortie de travail qui contient un
+      # secret : l'adresse du destinataire est aussi la valeur d'un secret,
+      # et elle arrivait ici VIDE — `--a=""`, sans le moindre avertissement.
+      # À l'intérieur d'un même travail elle passe ; c'est le franchissement
+      # qui la perd.
       - name: Envoyer au client
         env:
           BREVO_API_KEY:    ${{ secrets.BREVO_API_KEY }}
           EXPEDITEUR_EMAIL: ${{ secrets.EXPEDITEUR_EMAIL }}
           EXPEDITEUR_NOM:   ${{ vars.EXPEDITEUR_NOM }}
         run: |
+          DEST=$(node -p "require('./data/proposition-enveloppe.json').destinataire")
+          OBJET=$(node -p "require('./data/proposition-enveloppe.json').objet")
           node scripts/envoyer-mail.mjs \
-            --a="${{ needs.calculer.outputs.destinataire }}" \
-            --objet="${{ needs.calculer.outputs.objet }}" \
+            --a="$DEST" \
+            --objet="$OBJET" \
             --corps=data/proposition-corps.txt
 
       # APRÈS l'envoi seulement. C'est ce commit qui fait que la même
@@ -206,10 +215,11 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          rm -f data/proposition-corps.txt
+          ORDRES=$(node -p "require('./data/proposition-enveloppe.json').ordres")
+          rm -f data/proposition-corps.txt data/proposition-enveloppe.json
           if [ -z "$(git status --porcelain data/proposition-envoyee.json)" ]; then
             echo "Aucun changement d'état à retenir."; exit 0
           fi
           git add data/proposition-envoyee.json
-          git commit -m "Proposition d'arbitrages envoyée — ${{ needs.calculer.outputs.ordres }} ordre(s)"
+          git commit -m "Proposition d'arbitrages envoyée — $ORDRES ordre(s)"
           git push

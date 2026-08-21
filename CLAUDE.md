@@ -1743,6 +1743,32 @@ travail d'envoi s'écrit donc `inputs.essai != true` et non
 `!inputs.essai` : la seconde forme serait vraie sur `null` et
 **bloquerait tous les envois automatiques**.
 
+### ⚠ Une sortie de travail qui contient un secret est CAVIARDÉE
+
+GitHub efface une `job output` dont la valeur est celle d'un secret. Elle
+arrive **vide** dans le travail suivant, sans avertissement, sans ligne de
+journal, sans échec — le travail démarre et découvre une chaîne vide.
+
+C'est arrivé sur l'envoi réel : l'adresse du destinataire est aussi la
+valeur du secret `EMAIL_CONTROLE`, donc `--a=""`. Et le piège est
+retors : **à l'intérieur d'un même travail, la sortie d'étape passe très
+bien** — l'avis de contrôle affichait l'adresse correctement trois lignes
+plus haut. C'est le FRANCHISSEMENT entre deux travaux qui la perd.
+
+L'adresse, l'objet et le décompte voyagent donc dans
+`data/proposition-enveloppe.json`, **par l'artefact**, comme le corps du
+message. C'est d'ailleurs plus juste : ils appartiennent au message, pas
+au protocole entre deux travaux.
+
+Le fichier est **gitignoré** : il porte l'adresse du client. Seul
+`data/proposition-envoyee.json` est versionné, et il ne porte qu'une
+empreinte.
+
+Ce qui a permis de le voir en un coup d'oeil : `envoyer-mail.mjs` refuse
+une adresse vide en décrivant sa forme — « 0 caractère(s), 0 arrobase(s) ».
+Sans cette description, Brevo aurait répondu son habituel « email is not
+valid in to » sur une valeur masquée.
+
 ### ⚠ `socle.js` et `dossier.js` doivent rester exécutables hors navigateur
 
 C'est une propriété fragile et invisible. Ajouter un

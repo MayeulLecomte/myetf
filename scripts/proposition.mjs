@@ -209,6 +209,20 @@ function principal() {
   const corps = a.texte + reserve;
   mkdirSync(join(RACINE, 'data'), { recursive: true });
   writeFileSync(join(RACINE, 'data', 'proposition-corps.txt'), corps);
+
+  /* L'ENVELOPPE VOYAGE AVEC LE MESSAGE, ET NON PAR LES SORTIES DU TRAVAIL.
+     GitHub CAVIARDE une sortie de travail qui contient un secret : l'adresse
+     du destinataire est aussi la valeur d'un secret, et elle arrivait VIDE
+     dans le travail d'envoi. À l'intérieur d'un même travail elle passe très
+     bien — c'est le franchissement qui la perd, et rien ne le signale.
+
+     Le fichier, lui, voyage par l'artefact, comme le corps. C'est d'ailleurs
+     plus juste : l'adresse et l'objet appartiennent au message, pas au
+     protocole entre deux travaux. */
+  const objet = 'Proposition d\'arbitrages' + (a.nom ? ' — ' + a.nom : '') +
+                ' — ' + new Date().toISOString().slice(0, 10);
+  writeFileSync(join(RACINE, 'data', 'proposition-enveloppe.json'),
+    JSON.stringify({ destinataire: a.destinataire, objet, ordres: a.ordres }, null, 1) + '\n');
   writeFileSync(ETAT_ENVOI, JSON.stringify({
     empreinte: emp,
     date: new Date().toISOString().slice(0, 10),
@@ -220,8 +234,7 @@ function principal() {
     envoyer: 'oui',
     motif: avant ? 'la proposition a changé' : 'première proposition',
     destinataire: a.destinataire,
-    objet: 'Proposition d\'arbitrages' + (a.nom ? ' — ' + a.nom : '') +
-           ' — ' + new Date().toISOString().slice(0, 10),
+    objet,
     ordres: String(a.ordres)
   });
 }
