@@ -879,6 +879,68 @@ console.log('\n== Contexte macro : pas de contexte = stratégique ==');
      'trois choisis sur onze ⇒ le bandeau annonce 3 / 11, huit au repli');
 })();
 
+console.log('\n== La proposition tourne hors navigateur ==');
+/* CE QUE CE CONTRÔLE PROTÈGE, ET POURQUOI IL EST ICI.
+
+   `scripts/proposition.mjs` envoie la proposition d'arbitrages par e-mail
+   sans que personne ne soit devant l'écran. Pour cela il charge
+   `js/ui/socle.js` et `js/ui/dossier.js` dans un `vm` — deux fichiers de
+   l'interface qui, EUX SEULS parmi les neuf, ne touchent pas au DOM.
+
+   C'est une propriété fragile et invisible : ajouter un
+   `document.querySelector` dans `dossier.js` ne casse rien à l'écran,
+   ne lève aucune erreur au navigateur, et fait échouer la tâche
+   planifiée le lendemain matin — en silence, puisque personne ne la
+   regarde. Le contrôle la rend visible ici.
+
+   Il vérifie aussi que `texteProposition()` est bien atteignable : le
+   jour où on la remet dans `vues-allocation.js`, l'e-mail perd son
+   texte. Il n'y a QU'UNE définition, partagée par le navigateur et par
+   Node — mesuré : la même empreinte SHA-256 des deux côtés. */
+(function () {
+  const fs = require2('fs'), vm2 = require2('vm'), p2 = require2('path');
+  const ctx2 = { console: { log() {}, error() {} } };
+  vm2.createContext(ctx2);
+  let casse = null;
+  ['js/data/libelles.js', 'js/data/questionnaire.js', 'js/data/allocations.js',
+   'js/data/macro.js', 'js/data/etf-univers.js', 'js/data/fiscalite.js',
+   'js/data/historique.js', 'js/data/cours-marche.js', 'js/data/cours-historique.js',
+   'js/data/catalogue-etf.js', 'js/data/ecarts-univers.js',
+   'js/engine/profil.js', 'js/engine/allocation.js', 'js/engine/selection.js',
+   'js/engine/arbitrage.js', 'js/engine/revenus.js', 'js/engine/backtest.js',
+   'js/engine/situation.js', 'js/engine/contrat.js', 'js/engine/univers.js',
+   'js/ui/socle.js', 'js/ui/dossier.js'].forEach(f => {
+    if (casse) return;
+    try { vm2.runInContext(fs.readFileSync(p2.join(RACINE_TEST, f), 'utf8'), ctx2, { filename: f }); }
+    catch (e) { casse = f + ' : ' + e.message; }
+  });
+  ok(!casse, 'socle.js et dossier.js s\'exécutent hors navigateur' + (casse ? ' — ' + casse : ''));
+  if (casse) return;
+
+  const dispo = ['texteProposition', 'signatureProposition', 'resultatProfil',
+                 'selectionCourante', 'lignesDetenues', 'apportDisponible', 'universSelection']
+    .filter(n => vm2.runInContext('typeof ' + n, ctx2) !== 'function');
+  ok(dispo.length === 0,
+     'les sept fonctions dont l\'envoi a besoin sont atteignables en Node' +
+     (dispo.length ? ' — manquent : ' + dispo.join(', ') : ''));
+
+  /* Un texte réellement produit, pas seulement une fonction qui existe. La
+     réserve est la phrase qui ne doit jamais disparaître : un message sans
+     elle se lit comme un ordre. */
+  const texte = vm2.runInContext(`(function () {
+    Etat.identite.montant = 250000; Etat.identite.enveloppe = 'AV';
+    QUESTIONS.forEach(q => { Etat.reponses[q.id] = q.options.length > 2 ? 2 : 1; });
+    Etat.detention = [{ isin: 'IE00B4L5Y983', libelle: 'Test', montant: 100000, pvLatente: 0 }];
+    const sel = selectionCourante();
+    const a = MoteurArbitrage.analyser(lignesDetenues(), sel.lignes,
+      { enveloppe: 'AV', apport: apportDisponible() }, universSelection());
+    return a ? texteProposition(a, Infinity) : '';
+  })()`, ctx2);
+  ok(texte.length > 100 && /Rien n'est exécuté/.test(texte),
+     'le texte de la proposition se construit en Node, réserve comprise — ' +
+     texte.length + ' caractères');
+})();
+
 console.log('\n== Espace de noms ==');
 (function () {
   const fichiers = Object.keys(typeof SOURCES !== 'undefined' ? SOURCES : {});

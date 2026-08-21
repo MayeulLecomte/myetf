@@ -1676,6 +1676,69 @@ bandeau se lit là où l'on atterrit, une fois.
 du même calcul finiraient par diverger, et c'est le portefeuille détenu
 qu'elles décriraient de deux façons.
 
+## L'envoi automatique : l'application n'envoie toujours rien, la tâche planifiée si
+
+Deux chemins, et ils ne se confondent pas. **L'application** ouvre un
+brouillon dans le logiciel de messagerie de celui qui clique — rien ne
+quitte le navigateur, c'est la section suivante. **La tâche planifiée**,
+elle, envoie pour de bon, sans que personne ne soit devant l'écran.
+
+**Un seul texte pour les deux, et c'est la raison du déménagement.**
+`texteProposition()` et `signatureProposition()` ont quitté
+`js/ui/vues-allocation.js` pour `js/ui/dossier.js`. Ce ne sont pas des
+vues : c'est ce que le dossier VAUT, mis en lignes. Surtout,
+`dossier.js` ne touche pas au DOM — il s'exécute donc en Node, et
+`scripts/proposition.mjs` appelle la MÊME fonction. Mesuré : la même
+empreinte SHA-256 du texte des deux côtés, `2b5bff82ebe03f08`.
+
+**Le dossier arrive par un secret, jamais par un fichier.** Le dépôt est
+public et `.gitignore` interdit `dossier-*.json` : un dossier commité
+publierait nom, patrimoine, revenus et lignes détenues. Il passe donc par
+le secret `DOSSIER_CLIENT`, chiffré, invisible dans le site.
+
+**Le dossier est une photo, les cours sont frais.** L'export fige la
+composition du portefeuille ; les cours, eux, sont relevés chaque matin.
+Les montants et la dérive restent donc justes tant que la composition n'a
+pas changé — c'est ce qui rend l'idée tenable. Passé `PEREMPTION_J`
+(120 jours), le message le dit lui-même : une photo périmée qui se tait
+passerait pour une lecture fraîche.
+
+**Ce qui déclenche un envoi** : la proposition a changé. L'empreinte
+porte sur le TEXTE, pas sur la liste des ordres — deux jours où la dérive
+bouge sans changer un seul montant arrondi ne valent pas deux e-mails.
+L'état est versionné dans `data/proposition-envoyee.json`, donc public :
+il ne porte qu'une empreinte, une date et un décompte. Une empreinte ne
+se remonte pas.
+
+**L'état n'est committé qu'APRÈS l'envoi.** Le corps et l'état voyagent
+en artefact entre les deux travaux ; si la course est annulée pendant le
+délai, rien n'est retenu et la proposition repartira demain. L'ordre
+inverse ferait taire l'envoi suivant.
+
+### Trois verrous, indépendants
+
+| Verrou | Où | Ce qu'il fait |
+|---|---|---|
+| **L'interrupteur** | variable de dépôt `PROPOSITION_ENVOI` | tant qu'elle ne vaut pas `actif`, rien ne part. Deux clics, sans déploiement |
+| **Le délai** | environnement GitHub `proposition`, règle `wait_timer` (30 min) | la course attend, et reste annulable d'un clic depuis Actions. Remplaçable par des *required reviewers* sans toucher au workflow |
+| **L'avis de contrôle** | secret `EMAIL_CONTROLE` | un e-mail part D'ABORD vers vous, avec le texte exact et le lien d'annulation |
+
+Le troisième n'est pas un confort : **sans lui le deuxième ne protège de
+rien**, puisque personne ne saurait qu'il y a quelque chose à annuler.
+
+### ⚠ `socle.js` et `dossier.js` doivent rester exécutables hors navigateur
+
+C'est une propriété fragile et invisible. Ajouter un
+`document.querySelector` dans `dossier.js` ne casse rien à l'écran, ne
+lève aucune erreur au navigateur, et fait échouer la tâche planifiée le
+lendemain matin — en silence, puisque personne ne la regarde.
+
+`node test/runner.js` la tient par trois contrôles : les deux fichiers
+s'exécutent dans un `vm`, les sept fonctions dont l'envoi a besoin y sont
+atteignables, et le texte se construit réellement, réserve comprise.
+Vérifié qu'il échoue : une ligne `document.querySelector` ajoutée à
+`dossier.js` donne « document is not defined ».
+
 ## L'e-mail de proposition : l'application n'envoie rien
 
 « Préparer l'e-mail » ouvre le logiciel de messagerie avec un brouillon

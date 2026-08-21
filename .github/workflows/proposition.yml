@@ -1,0 +1,196 @@
+name: Proposition d'arbitrages par e-mail
+
+# Recalcule les arbitrages du dossier avec les cours du jour et, s'ils ont
+# changé depuis le dernier envoi, écrit au client.
+#
+# TROIS VERROUS, ET ILS SONT INDÉPENDANTS :
+#
+#   1. L'INTERRUPTEUR — la variable de dépôt PROPOSITION_ENVOI. Tant qu'elle
+#      ne vaut pas « actif », rien ne part. Elle se change en deux clics dans
+#      Settings → Secrets and variables → Actions → Variables, sans toucher
+#      au code et sans attendre un déploiement. C'est le geste à faire quand
+#      on part en vacances, ou quand on ne veut plus rien envoyer du tout.
+#
+#   2. LE DÉLAI — l'envoi passe par un « environment » GitHub nommé
+#      `proposition`. Si cet environnement porte une règle « wait timer »,
+#      le travail attend d'autant avant de partir, et la course reste
+#      annulable d'un clic depuis l'onglet Actions. S'il porte au contraire
+#      des « required reviewers », rien ne part sans approbation explicite —
+#      c'est le réglage le plus prudent, et il n'y a rien à changer ici pour
+#      passer de l'un à l'autre.
+#
+#   3. L'AVIS DE CONTRÔLE — si le secret EMAIL_CONTROLE existe, un e-mail
+#      part D'ABORD vers cette adresse (la vôtre) avec le texte exact qui
+#      sera envoyé et le lien pour annuler. Sans lui, le délai du verrou 2
+#      ne sert à rien : personne ne saurait qu'il y a quelque chose à
+#      annuler.
+#
+# ⚠ LE DOSSIER NE VIT PAS DANS CE DÉPÔT, et ne doit jamais y vivre : il
+# porte nom, patrimoine, revenus et lignes détenues, le dépôt est public, et
+# `.gitignore` interdit `dossier-*.json` pour cette raison. Il arrive par le
+# secret DOSSIER_CLIENT, chiffré, jamais publié avec le site.
+
+on:
+  # Après le relevé des cours, jamais avant : la proposition doit être
+  # calculée sur les cours du jour, pas sur ceux de la veille.
+  workflow_run:
+    workflows: ["Mise à jour des cours"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      forcer:
+        description: "Envoyer même si la proposition n'a pas changé"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: proposition
+  cancel-in-progress: false
+
+jobs:
+  calculer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Le relevé des cours a pu échouer : on ne calcule pas une proposition
+    # sur des cours qui n'ont pas été rafraîchis.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+
+    # DÉCLARÉ AU NIVEAU DU JOB, et ce n'est pas un détail de style : un
+    # `if: env.…` posé sur une étape ne voit PAS le bloc `env` de cette
+    # étape — il est évalué avant. Le workflow des cours porte déjà la
+    # même remarque, pour la même raison.
+    env:
+      BREVO_API_KEY:    ${{ secrets.BREVO_API_KEY }}
+      EXPEDITEUR_EMAIL: ${{ secrets.EXPEDITEUR_EMAIL }}
+      EXPEDITEUR_NOM:   ${{ vars.EXPEDITEUR_NOM }}
+      EMAIL_CONTROLE:   ${{ secrets.EMAIL_CONTROLE }}
+
+    outputs:
+      envoyer:      ${{ steps.calcul.outputs.envoyer }}
+      motif:        ${{ steps.calcul.outputs.motif }}
+      destinataire: ${{ steps.calcul.outputs.destinataire }}
+      objet:        ${{ steps.calcul.outputs.objet }}
+      ordres:       ${{ steps.calcul.outputs.ordres }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Le workflow des cours vient de committer : on prend son commit,
+          # pas celui qui a déclenché la course.
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Vérifier l'interrupteur
+        id: interrupteur
+        run: |
+          if [ "${{ vars.PROPOSITION_ENVOI }}" != "actif" ]; then
+            echo "PROPOSITION_ENVOI = « ${{ vars.PROPOSITION_ENVOI }} » (attendu : actif)."
+            echo "Envois suspendus — rien ne sera calculé ni envoyé." >> "$GITHUB_STEP_SUMMARY"
+            echo "suspendu=oui" >> "$GITHUB_OUTPUT"
+          else
+            echo "suspendu=non" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Calculer la proposition
+        id: calcul
+        if: steps.interrupteur.outputs.suspendu == 'non'
+        env:
+          DOSSIER_CLIENT: ${{ secrets.DOSSIER_CLIENT }}
+        run: |
+          node scripts/proposition.mjs \
+            ${{ inputs.forcer && '--forcer' || '' }} | tee /tmp/calcul.txt
+          {
+            echo "### Proposition d'arbitrages"
+            echo '```'
+            cat /tmp/calcul.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Le corps ET l'état d'envoi voyagent ensemble. L'état n'est PAS
+      # committé ici : une course annulée pendant le délai marquerait sinon
+      # la proposition comme envoyée, et la suivante se tairait.
+      - name: Emporter le message
+        if: steps.calcul.outputs.envoyer == 'oui'
+        uses: actions/upload-artifact@v4
+        with:
+          name: proposition
+          path: |
+            data/proposition-corps.txt
+            data/proposition-envoyee.json
+          retention-days: 7
+
+      # L'AVIS DE CONTRÔLE, avant le délai. Il porte le texte exact et le
+      # lien d'annulation — sans lui, le délai ne protège de rien.
+      - name: Prévenir avant l'envoi
+        if: steps.calcul.outputs.envoyer == 'oui' && env.EMAIL_CONTROLE != ''
+        run: |
+          LIEN="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          {
+            echo "Ceci part chez ${{ steps.calcul.outputs.destinataire }} après le délai."
+            echo "Pour annuler : ouvrez la course et cliquez « Cancel workflow »."
+            echo "$LIEN"
+            echo
+            echo "Pour tout suspendre : variable de dépôt PROPOSITION_ENVOI ≠ actif."
+            echo
+            echo "-----------------------------------------------"
+            echo
+            cat data/proposition-corps.txt
+          } > /tmp/avis.txt
+          node scripts/envoyer-mail.mjs \
+            --a="$EMAIL_CONTROLE" \
+            --objet="[à valider] ${{ steps.calcul.outputs.objet }}" \
+            --corps=/tmp/avis.txt
+
+  envoyer:
+    needs: calculer
+    if: needs.calculer.outputs.envoyer == 'oui'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # C'est CET environnement qui porte le délai ou l'approbation. Le
+    # workflow n'a pas à savoir lequel des deux est configuré.
+    environment: proposition
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: proposition
+          path: data
+
+      - name: Envoyer au client
+        env:
+          BREVO_API_KEY:    ${{ secrets.BREVO_API_KEY }}
+          EXPEDITEUR_EMAIL: ${{ secrets.EXPEDITEUR_EMAIL }}
+          EXPEDITEUR_NOM:   ${{ vars.EXPEDITEUR_NOM }}
+        run: |
+          node scripts/envoyer-mail.mjs \
+            --a="${{ needs.calculer.outputs.destinataire }}" \
+            --objet="${{ needs.calculer.outputs.objet }}" \
+            --corps=data/proposition-corps.txt
+
+      # APRÈS l'envoi seulement. C'est ce commit qui fait que la même
+      # proposition ne repart pas demain.
+      - name: Retenir ce qui vient de partir
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f data/proposition-corps.txt
+          if [ -z "$(git status --porcelain data/proposition-envoyee.json)" ]; then
+            echo "Aucun changement d'état à retenir."; exit 0
+          fi
+          git add data/proposition-envoyee.json
+          git commit -m "Proposition d'arbitrages envoyée — ${{ needs.calculer.outputs.ordres }} ordre(s)"
+          git push

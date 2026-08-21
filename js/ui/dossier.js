@@ -563,3 +563,76 @@ function figerArretesFranchis() {
   franchis.forEach(d => figerSituation(d, 'automatique'));
   return franchis.length;
 }
+
+
+/* ============================================================
+   LA PROPOSITION D'ARBITRAGES, EN TEXTE SIMPLE
+   ------------------------------------------------------------
+   Venue de `js/ui/vues-allocation.js`, et pour une raison
+   précise : ce fichier ne touche pas au DOM, donc il S'EXÉCUTE
+   EN NODE. `scripts/proposition.mjs` charge socle + dossier dans
+   un `vm` et appelle `texteProposition()` — le MÊME texte que le
+   bouton « Préparer l'e-mail » et que « Copier le texte ».
+
+   Trois copies du même message finiraient par diverger, et c'est
+   toujours celle qu'on envoie qui serait la mauvaise.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   LA PROPOSITION EN TEXTE SIMPLE
+   ------------------------------------------------------------
+   Un e-mail n'a ni tableau ni police : la liste s'écrit en lignes.
+   Le même texte sert au `mailto:` et au presse-papier — deux
+   versions du même message finiraient par diverger, et c'est
+   celle qu'on envoie qui serait la mauvaise.
+
+   La seule différence est la LONGUEUR : un `mailto:` au-delà de
+   deux mille caractères est tronqué ou refusé par certains
+   clients de messagerie. On coupe alors la liste, et l'on dit
+   qu'on l'a coupée. LA RÉSERVE NE SE COUPE JAMAIS : « rien n'est
+   exécuté » doit survivre à la troncature, sans quoi le message
+   tronqué devient un ordre.
+   ------------------------------------------------------------ */
+function texteProposition(analyse, limite) {
+  const l = [];
+  l.push(T('arbitrages.mail.entete', { date: dateFr() }));
+  l.push('');
+
+  const lignes = analyse.ordres.map(o =>
+    '- ' + o.sens + ' · ' + o.libelle + ' (' + o.isin + ') · ' + euro(o.montant));
+
+  /* On mesure ce que la liste peut prendre : l'en-tête, le total, la réserve
+     et la signature sont incompressibles. */
+  const ventes = analyse.ordres.filter(o => o.sens === 'Vente').reduce((a, o) => a + o.montant, 0);
+  const achats = analyse.ordres.filter(o => o.sens === 'Achat').reduce((a, o) => a + o.montant, 0);
+  const pied = [
+    '',
+    T('arbitrages.mail.total', { ventes: euro(ventes), achats: euro(achats) }),
+    '',
+    T('arbitrages.mail.reserve')
+  ];
+  const signature = signatureProposition();
+  if (signature) pied.push('', signature);
+
+  const fixe = l.join('\n').length + pied.join('\n').length;
+  let place = limite - fixe;
+  const retenues = [];
+  let tronque = false;
+  lignes.forEach(ligne => {
+    if (place - (ligne.length + 1) > 0) { retenues.push(ligne); place -= ligne.length + 1; }
+    else tronque = true;
+  });
+
+  return l.concat(retenues,
+    tronque ? ['', T('arbitrages.mail.tronque')] : [],
+    pied).join('\n');
+}
+
+/* Le conseiller signe de son nom quand il l'a renseigné. Un particulier qui
+   s'envoie sa propre liste n'a personne à qui se présenter. */
+function signatureProposition() {
+  if ((Etat.mode || MODE_DEFAUT) === 'particulier') return '';
+  const nom = [Etat.identite.prenom, Etat.identite.nomFamille]
+    .map(x => (x || '').trim()).filter(Boolean).join(' ');
+  return nom ? nom : '';
+}

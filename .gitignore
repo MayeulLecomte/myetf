@@ -9,6 +9,13 @@ clients/
 *.client.json
 *.local.json
 
+# Le corps du message de proposition : construit à chaque passage de la
+# tâche planifiée, il porte les lignes détenues du client. Il ne fait que
+# transiter entre deux travaux, et n'a rien à faire dans le dépôt.
+# `data/proposition-envoyee.json`, lui, EST versionné — il ne porte qu'une
+# empreinte, une date et un décompte.
+data/proposition-corps.txt
+
 # Univers ETF personnalisé (peut refléter la liste des supports
 # d'un contrat, information commercialement sensible).
 univers-etf.json
