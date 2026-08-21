@@ -5,6 +5,7 @@
   "description": "Outils de mise à jour des données. Les scripts sont en .mjs (toujours des modules ES) : pas de \"type\": \"module\" ici, qui casserait le harnais de tests en CommonJS. L application elle-même n a aucune dépendance.",
   "scripts": {
     "cours": "node scripts/maj-cours.mjs",
+    "actu": "node scripts/actualites.mjs",
     "note": "node scripts/note-marche.mjs",
     "test": "node test/runner.js"
   },

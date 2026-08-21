@@ -21,7 +21,9 @@ function rendreNote() {
       'La rédaction quotidienne n\'est pas encore activée.</div>' +
       '<div class="carte"><h3>Activer la note</h3>' +
       '<p class="intro">La note est rédigée par l\'API Claude à partir des cours relevés chaque matin, ' +
-      'puis publiée avec le site. Elle coûte environ <strong>1,30 $ par mois</strong> en appels d\'API.</p>' +
+      'et des titres de presse relevés le matin même, puis publiée avec le site. Elle coûte environ ' +
+      '<strong>2 à 3 $ par mois</strong> en appels d\'API — l\'actualité a fait passer l\'invite ' +
+      'de deux mille à près de huit mille jetons d\'entrée.</p>' +
       '<ol style="font-size:13px;line-height:1.8">' +
       '<li>Créez une clé sur <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> ' +
       'et créditez le compte (5 $ minimum, soit environ quatre mois).</li>' +
@@ -41,7 +43,8 @@ function rendreNote() {
     '<div class="message alerte"><strong>Document de travail interne.</strong> ' +
     'Cette note décrit des mouvements de marché et des points à contrôler. Elle ne constitue pas une ' +
     'recommandation d\'investissement et ne doit pas être remise à un client en l\'état. Rédigée ' +
-    'automatiquement à partir des cours : vérifiez ce qu\'elle avance avant de vous en servir.</div>' +
+    'automatiquement à partir des cours et de titres de presse non vérifiés : contrôlez ce qu\'elle '+
+    'avance avant de vous en servir.</div>' +
 
     '<div class="carte">' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px">' +
@@ -65,6 +68,26 @@ function rendreNote() {
           '</div>').join('') +
       '</div>' : '') +
 
+    /* CE QUE LA PRESSE RAPPORTE — et le mot « rapporte » n'est pas un
+       ornement. Les mouvements du dessus sont MESURÉS sur des cours ; ceci
+       est repris de titres de journaux, et chaque ligne porte le sien.
+
+       La carte disparaît quand la liste est vide, et c'est le cas de la
+       note d'avant l'actualité comme celui d'un jour où les fils n'ont
+       rien donné : dans les deux cas, rien à afficher vaut mieux qu'un
+       encart vide qui laisserait croire à une panne. */
+    (n.actualite && n.actualite.length ?
+      '<div class="carte"><h3>Ce que la presse rapporte</h3>' +
+        '<p class="intro" style="font-size:12px">Repris de titres de presse, non vérifié. ' +
+        'Un rapprochement avec les mouvements ci-dessus reste une hypothèse.</p>' +
+        n.actualite.map(a =>
+          '<div style="border-left:3px solid var(--bleu-clair);padding-left:14px;margin-bottom:16px">' +
+          '<div style="font-weight:600;margin-bottom:2px">' + echapper(a.fait) + '</div>' +
+          '<div style="font-size:13px">' + echapper(a.portee) + '</div>' +
+          '<div style="font-size:12px;color:var(--gris-doux);margin-top:2px">' + echapper(a.source) + '</div>' +
+          '</div>').join('') +
+      '</div>' : '') +
+
     '<div class="grille deux">' +
       (n.aVerifier && n.aVerifier.length ?
         '<div class="carte"><h3>À vérifier dans les dossiers</h3><ul style="font-size:13px;line-height:1.7">' +
@@ -76,14 +99,27 @@ function rendreNote() {
         'Ouvrir le contexte macro →</button></div></div>' : '') +
     '</div>' +
 
-    /* D'où vient la note, en une ligne. Elle est rédigée à partir du SEUL
-       relevé de cours : `scripts/note-marche.mjs` ne reçoit que
-       `data/variations.json`. Le contexte macro saisi par le conseiller
-       n'y entre pas, et la mention ne peut donc pas le dire — écrire
-       « et du contexte renseigné » serait faux même un jour où le
-       contexte est rempli. */
-    '<p class="intro" style="font-size:11px">Note calculée à partir des cours relevés le ' +
-    echapper(dateFr(NOTE_MARCHE.genere)) + ' — sans source d\'actualité.</p>';
+    /* D'OÙ VIENT LA NOTE, EN UNE LIGNE — et la ligne suit ce qui a
+       RÉELLEMENT servi, note par note.
+
+       Elle se lit dans `NOTE_MARCHE.actualite`, écrit à la rédaction, et
+       non dans l'état du jour : une note publiée un matin où les fils
+       étaient muets doit continuer de dire « sans source d'actualité »
+       même relue un mois plus tard, quand ils remarchent. Les vieilles
+       notes, écrites avant que l'actualité n'existe, n'ont pas le champ —
+       elles retombent donc sur la phrase d'origine, qui était vraie pour
+       elles.
+
+       Le contexte macro saisi par le conseiller n'entre toujours pas dans
+       la rédaction, et la mention ne le dit donc pas. */
+    (function (a) {
+      const socle = 'Note calculée à partir des cours relevés le ' + echapper(dateFr(NOTE_MARCHE.genere));
+      if (!a || !a.nb) return '<p class="intro" style="font-size:11px">' + socle + ' — sans source d\'actualité.</p>';
+      return '<p class="intro" style="font-size:11px">' + socle + ' et de ' + a.nb +
+        ' titres de presse parus dans les ' + a.fenetre + ' heures précédentes, relevés sur ' +
+        a.sources.length + ' sources : ' + echapper(a.sources.join(', ')) + '. ' +
+        'Les titres ne sont pas vérifiés ; les cours, si.</p>';
+    })(NOTE_MARCHE.actualite);
 }
 
 /* ============================================================

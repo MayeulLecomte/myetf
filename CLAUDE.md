@@ -612,6 +612,37 @@ la colonne les portait. La colonne partie, un « ••• » est ajouté à la 
 basse — masqué sur téléphone, où l'en-tête fait déjà le travail. Il ouvre la
 même feuille : une seule feuille, deux portes, jamais deux contenus à tenir.
 
+## La barre basse OCCUPE plus que sa hauteur, et sur écran large surtout
+
+La barre ne pousse rien : elle flotte par-dessus. Le bas de page doit donc
+lui réserver sa place — et **ce qu'il faut réserver n'est pas sa hauteur,
+c'est ce qu'elle occupe** : `hauteur + distance au bord`. Sur écran large
+elle est détachée de 24 px : **79 px de haut, 103 px occupés**. Sur
+téléphone elle touche presque le bord : 72 px de haut, 84 px occupés.
+
+C'est l'écart entre ces deux nombres qui a laissé passer un bug pendant
+tout le chantier : `.contenu` réservait 100 px et `.pied` 92 px, valeurs
+écrites du temps où la barre allait d'un bord à l'autre. La **dernière
+ligne du pied passait 11 px SOUS la pastille, sur les seize vues**, sur
+tous les grands écrans. Les valeurs téléphone (136 / 128 px) étaient
+justes ; le grand écran n'avait jamais eu les siennes. Il les a
+maintenant : **132 px pour `.contenu`, 124 px pour `.pied`**, sous
+`min-width: 821px`.
+
+**`.pied` n'est fils d'aucune vue** — il est frère de `.corps`, et c'est
+le vrai bas du document. Le contrôle du harnais qui surveillait « le
+dernier élément de chaque vue » ne le voyait donc pas, et mesurait de
+surcroît la HAUTEUR de la barre et non ce qu'elle occupe : deux angles
+morts qui se recouvraient exactement. `test/fumee.html` porte désormais
+un second contrôle, sur le pied, **rejoué à 430 px ET à 1 280 px** —
+le cadre du harnais fait 430 px, donc ce harnais n'avait jamais mesuré
+autre chose qu'un téléphone.
+
+**⚠ `--marge-barre` vaut 76 px et ment sur les deux largeurs.** Il n'a
+pas été corrigé avec le reste : il sert aussi à sept `min-height` et au
+calage de l'invitation à descendre, qui bougeraient tous ensemble. Le
+jour où on y touche, c'est une passe à part, mesurée vue par vue.
+
 ## Un seul dessin par écran, et un seul « ••• » par largeur
 
 **Les états vides n'ont plus de dessin.** Ils en portaient un — un carnet
@@ -686,16 +717,27 @@ deuxième jeton et cesse de regarder. La grille passe donc à **douze colonnes**
 et chaque bulle est posée là où elle n'est attendue ni de sa voisine ni de
 celle du dessus.
 
-| | colonne | décalage |
-|---|---|---|
-| Encours | 1 | 0 |
-| Dérive maximale | 8 | 96 px |
-| Supports cibles | 3 | 34 px |
-| Dernière revue | 9 | 132 px |
+| | colonne | rangée | décalage |
+|---|---|---|---|
+| Encours | 1 | 1 | 0 |
+| Dérive maximale | 8 | 1 | 96 px |
+| Supports cibles | 3 | 2 | 34 px |
+| Dernière revue | **5 — centrée** | **3** | 20 px |
 
 Les valeurs ne sortent pas d'un chapeau : **aucune n'est répétée**, ni en
-abscisse ni en ordonnée, et l'écart croît vers le bas pour que la dispersion
-se lise en descendant.
+abscisse ni en ordonnée.
+
+**« Dernière revue » fait exception à la dispersion, et sur demande.** Elle
+était la plus excentrée des quatre — colonne 9, 132 px de retrait, le coin
+bas-droit d'un écran vide à cet endroit. Elle est passée au milieu :
+colonnes 5 à 8 sur 12, donc quatre colonnes de chaque côté, et son centre
+tombe exactement sur celui de la page.
+
+**Elle a changé de RANGÉE en même temps, et ce n'est pas décoratif.**
+« Supports cibles » occupe les colonnes 3 à 6 de la rangée 2 ; deux
+placements explicites qui se croisent se SUPERPOSENT — la grille ne les
+écarte pas, elle les empile. Toute bulle recentrée devra descendre d'une
+rangée pour la même raison.
 
 `align-items: start` sur cette grille, sinon une tuile s'étire à la hauteur de
 sa RANGÉE : celle de gauche prenait la hauteur de sa voisine décalée et se
@@ -1097,25 +1139,119 @@ investissement » passe **en tête du document**, pas seulement en annexe : il
 n'y a plus de professionnel entre l'outil et celui qui décide. C'est le seul
 endroit où le mode particulier est plus exigeant que l'autre.
 
-## La note dit d'où elle vient, et elle ne vient que des cours
+## La note dit d'où elle vient, note par note
 
-En pied de la note du jour : « Note calculée à partir des cours relevés
-le [date] — sans source d'actualité. »
+En pied de la note du jour, et **calculée à la rédaction, pas à
+l'affichage** :
 
-**Elle ne mentionne pas le contexte macro, et ce n'est pas un oubli.**
-`scripts/note-marche.mjs` ne reçoit que `data/variations.json` : les
-indicateurs saisis par le conseiller n'entrent pas dans la rédaction.
+> Note calculée à partir des cours relevés le [date] **et de N titres de
+> presse parus dans les 48 heures précédentes, relevés sur M sources :
+> […]. Les titres ne sont pas vérifiés ; les cours, si.**
+
+et, quand aucune actualité n'a servi, la phrase d'origine :
+
+> Note calculée à partir des cours relevés le [date] — sans source
+> d'actualité.
+
+**La mention se lit dans `NOTE_MARCHE.actualite`, écrit au moment où la
+note est rédigée.** C'est délibéré : une note publiée un matin où les
+fils étaient muets doit continuer de dire « sans source d'actualité »
+même relue un mois plus tard, quand ils remarchent. Les notes écrites
+avant que l'actualité n'existe n'ont pas le champ et retombent sur la
+phrase d'origine — qui était vraie pour elles.
+
+**Elle ne mentionne toujours pas le contexte macro, et ce n'est pas un
+oubli.** `scripts/note-marche.mjs` reçoit `data/variations.json` et
+`data/actualites.json`, jamais les indicateurs saisis par le conseiller.
 Écrire « et du contexte renseigné » serait faux même un jour où le
 contexte est rempli.
 
-La phrase d'avant — « le modèle ne dispose d'aucune information
-d'actualité et n'a pas connaissance des dossiers clients » — disait ce
-que la note N'EST PAS. Celle-ci dit ce qu'elle est, et tient sur une
-ligne. Elle n'existe qu'à l'écran : le rapport client ne l'a jamais
+La mention n'existe qu'à l'écran : le rapport client ne l'a jamais
 portée, et n'a pas à la porter — il ne reprend pas la note.
 
 L'état vide d'un contexte non renseigné ne change pas : voir
 « Un contexte non renseigné n'applique aucune déviation ».
+
+## Ce qui est MESURÉ et ce qui est RAPPORTÉ ne se mélangent pas
+
+La note reçoit désormais deux matières, et **l'invite les sépare par un
+titre** — « Ce qui est MESURÉ », « Ce qui est RAPPORTÉ ». Ce n'est pas de
+la mise en forme : c'est la seule chose qui empêche une note de dire
+qu'un marché a baissé « à cause » d'une nouvelle qu'un journal a titrée
+le même jour.
+
+Quatre règles tiennent dans la consigne, et aucune n'est facultative :
+
+| Règle | Ce qu'elle empêche |
+|---|---|
+| **Un titre se cite avec son journal** — « selon Les Échos » | qu'une manchette devienne un fait dans la bouche de la note |
+| **La corrélation n'est pas la cause** — « pourrait tenir à », jamais « en raison de » | qu'une coïncidence de calendrier passe pour une explication |
+| **Le hors-sujet s'écarte SANS être mentionné** | qu'une note d'allocation commente un vélo électrique — les fils généralistes en charrient beaucoup |
+| **Aucune valeur individuelle, même titrée** | qu'un résultat semestriel entre dans une note qui raisonne par classes d'actifs |
+
+À l'écran, la séparation se voit : les mouvements sont dans « Ce qui a
+bougé », l'actualité dans une carte à part, **« Ce que la presse
+rapporte »**, qui porte sa propre mise en garde et le nom du journal sous
+chaque ligne. La carte disparaît quand la liste est vide — un encart vide
+laisserait croire à une panne.
+
+## Dix-huit fils de presse, dont aucun n'a le droit de casser la chaîne
+
+`scripts/actualites.mjs` relève les titres du jour et écrit
+`data/actualites.json`. Aucune dépendance, aucune clé : ce sont des flux
+RSS ou Atom publics, analysés à la main.
+
+**Le script ne fait jamais échouer le relevé des cours.** Chaque source
+est relevée pour elle-même, son échec est **consigné dans le fichier de
+sortie**, et le script sort en 0 dès qu'UNE source a répondu. Il ne sort
+en erreur que si toutes ont échoué — là, c'est le réseau, pas la presse.
+Dans le workflow, l'étape porte en plus `continue-on-error: true`.
+
+**Boursorama, Les Échos, Zonebourse et La Tribune n'ont plus de flux
+direct** — 404 ou 403 selon le jour. Ils passent par l'index de Google
+Actualités, qui les republie titre pour titre : l'horodatage et le titre
+sont ceux de l'éditeur, le lien pointe chez lui. Le jour où l'un d'eux
+rouvre son fil, il suffit d'échanger l'URL.
+
+**Reuters rend zéro** : Google Actualités ne l'indexe plus. D'où deux
+sources définies **par sujet et non par éditeur** — « Séance
+américaine », « Taux et obligations » — parce que c'est le sujet qu'on
+veut, quel que soit le journal qui le raconte.
+
+**Le WSJ a été essayé et retiré.** Son fil « Markets » répond 200 et sa
+dernière dépêche date de janvier 2025. C'est exactement le cas que la
+fenêtre de 48 h attrape sans bruit : un fil abandonné qui reste en ligne.
+Un `statut: ok` avec `retenus: 0` dans `data/actualites.json` est le
+signe à surveiller.
+
+Trois pièges d'analyse, tous rencontrés :
+
+- **Le HTML des descriptions est ÉCHAPPÉ.** Le flux porte `&lt;a href=…&gt;`,
+  pas `<a href=…>`. Retirer les balises d'abord ne trouve rien, et décoder
+  les entités ensuite rend un `<a>` intact dans le texte — c'est ce qui
+  remplissait les résumés d'URL Google. L'ordre est : entités, PUIS
+  balises, PUIS entités (les flux doublement échappés existent).
+- **Google Actualités suffixe le titre du nom de l'éditeur.** Le suffixe
+  fausse le dédoublonnage : la même dépêche reprise par deux journaux
+  porte alors deux clés. On coupe le dernier segment court introduit par
+  un tiret — sans le comparer au nom de la source, qui s'écrit « Les
+  Échos — Marchés » ici et « Les Echos » là-bas.
+- **Certains fils horodatent dans le futur.** La fenêtre est donc bornée
+  des DEUX côtés : un titre daté de demain remonterait en tête du tri et
+  y resterait.
+
+Le relevé est **périmé à 36 h** côté note : une note du vendredi rédigée
+sur les titres du lundi serait pire qu'une note sans actualité — elle
+aurait l'air informée.
+
+**Le coût de la note a doublé, et c'est assumé** : l'invite passe de
+deux mille à près de huit mille jetons d'entrée, soit **2 à 3 $ par
+mois** au lieu de 1,30. Le chiffre affiché dans l'état vide de la vue
+« Note du jour » doit suivre s'il rebouge.
+
+`node scripts/note-marche.mjs --blanc` imprime l'invite complète sans
+appeler l'API ni rien écrire. C'est ce qu'on relit le jour où la note dit
+quelque chose d'inattendu.
 
 ## Le questionnaire se dit autrement à qui répond sur son propre argent
 
@@ -1553,6 +1689,15 @@ entre elles, et il faut le savoir avant de les lire :
 | **Cours** · Euronext | chaque séance, du mardi au samedi (`cours.yml`) | 4 jours |
 | **Notations** · Morningstar | le 1er de chaque mois (`catalogue.yml`) | 45 jours |
 | **Caractéristiques** · justETF | **aucune — c'est un relevé à la main** | 90 jours |
+| **Actualité** · 18 fils de presse | juste avant la note, même workflow (`cours.yml`) | **36 h** |
+
+Le seuil de l'actualité est le plus court des quatre, et pour une raison
+qui n'est pas la fraîcheur des données : une note du vendredi rédigée sur
+les titres du lundi serait **pire** qu'une note sans actualité — elle
+aurait l'air informée. Passé 36 h, `scripts/note-marche.mjs` ignore le
+fichier et le dit dans sa mention de provenance. Ce seuil-là ne porte
+aucune pastille : il n'y a rien à surveiller à l'écran, la note se
+contente de dire ce qui a servi à l'écrire.
 
 **Rien n'écrit `donneesLe`.** Ni script, ni tâche planifiée : les frais,
 encours, réplication, devise, capi/dist et éligibilité PEA des 42 supports

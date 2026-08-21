@@ -3888,3 +3888,45 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
      demanderait de la sortir de la grille, donc de toucher au balisage. */
   #vue-profil .grille.deux > .carte-caracteristiques { grid-column: 1 / -1; }
 }
+
+/* ---------- La pastille de navigation occupe plus que ce qu'on lui laissait ----------
+   Sur grand écran, la barre basse n'est plus une barre : c'est une pastille
+   flottante, `bottom: 24px` et 79 px de haut. Elle mange donc 103 px de
+   fenêtre — quand `.contenu` ne lui en réservait que 100 et `.pied` que 92.
+
+   La dernière ligne du pied passait 11 px SOUS la pastille, sur les seize
+   vues. Le correctif existait pour le téléphone (136 px sous 820 px) ; le
+   grand écran n'en avait jamais eu, parce que la barre y était pleine
+   largeur du temps où ces valeurs ont été écrites.
+
+   Les deux nombres sont mesurés, pas devinés : 103 px occupés, plus une
+   vingtaine de pixels d'air pour que la dernière ligne ne frôle pas le
+   verre.
+
+   ⚠ `--marge-barre` (76 px) ment sur cet écran et n'est pas corrigé ici :
+   il sert aussi à sept `min-height` et au calage de l'invitation à
+   descendre, qui bougeraient tous ensemble. Le jour où on y touche, c'est
+   une passe à part, mesurée vue par vue. */
+@media (min-width: 821px) {
+  .contenu { padding-bottom: calc(132px + env(safe-area-inset-bottom)); }
+  .pied    { padding-bottom: calc(124px + env(safe-area-inset-bottom)); }
+}
+
+/* ---------- La quatrième bulle de l'accueil se centre ----------
+   « Dernière revue » était la plus excentrée des quatre : colonne 9 sur 12,
+   132 px de retrait — le coin bas-droit d'un écran par ailleurs vide à cet
+   endroit. Elle passe au milieu (colonnes 5 à 8 sur 12, donc quatre
+   colonnes de chaque côté) et ne garde qu'un souffle de retrait.
+
+   Elle change de RANGÉE en même temps, et ce n'est pas décoratif : la
+   troisième bulle occupe les colonnes 3 à 6 de la rangée 2, et deux
+   placements explicites qui se croisent se superposent — la grille ne les
+   écarte pas.
+
+   La règle de dispersion tient toujours : 1, 8, 3, 5 en colonne et
+   0, 96, 34, 20 en retrait — aucune valeur deux fois. */
+@media (min-width: 901px) {
+  #accueil-contenu > .grille.quatre > .kpi:nth-child(4) {
+    grid-column: 5 / span 4; grid-row: 3; margin-top: 20px;
+  }
+}

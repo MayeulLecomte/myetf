@@ -511,6 +511,54 @@ async function lancer() {
          'le dernier élément de chaque vue reste au-dessus de la barre basse' +
          (recouverts.length ? ' — recouvert sur : ' + recouverts.join(', ') : ''));
     }
+
+    /* --- ET LE PIED DE PAGE, QUI N'EST DANS AUCUNE VUE ---
+       Le contrôle ci-dessus mesure le dernier enfant de chaque `.vue`. Or
+       `.pied` est frère de `.corps`, pas fils d'une vue : il est le vrai
+       bas du document, et il passait donc entre les mailles. Sur grand
+       écran, sa dernière ligne est restée onze pixels SOUS la pastille de
+       navigation, sur les seize onglets, sans qu'aucun contrôle ne bronche.
+
+       La mesure diffère aussi sur un second point, et c'est celui qui
+       comptait : on compare à ce que la barre OCCUPE — `innerHeight -
+       haut de la barre` — et non à sa seule hauteur. Sur grand écran elle
+       flotte à 24 px du bord : 79 px de haut, 103 px occupés. Mesurer la
+       hauteur seule pardonnait précisément l'écart qui manquait. */
+    {
+      const pied = d.querySelector('.pied');
+
+      /* DEUX LARGEURS, ET C'EST TOUT L'INTÉRÊT. Le cadre fait 430 px : ce
+         harnais a toujours mesuré un téléphone. Or la barre basse CHANGE
+         DE FORME à 821 px — elle cesse d'aller d'un bord à l'autre et
+         devient une pastille flottante, plus haute et détachée du bas.
+         Les valeurs qui la dégageaient sur téléphone ne la dégageaient
+         pas sur ordinateur, et le harnais ne pouvait pas le voir.
+
+         Le cadre est élargi le temps de la mesure, puis rendu à sa
+         largeur. Une lecture de `offsetHeight` force le recalcul : sans
+         elle on mesurerait la mise en page d'avant. */
+      const largeurInitiale = cadre.style.width;
+      [430, 1280].forEach(largeur => {
+        cadre.style.width = largeur + 'px';
+        void cadre.offsetHeight;
+        const barre = d.querySelector('.tabbar');
+        const br = barre ? barre.getBoundingClientRect() : null;
+        const dernier = pied && [...pied.children].reverse()
+          .find(c => c.getBoundingClientRect().height > 0);
+        if (!br || !br.height || !dernier) return;
+        w.scrollTo(0, d.documentElement.scrollHeight);
+        void cadre.offsetHeight;
+        const occupe = Math.round(w.innerHeight - br.top);
+        const air = Math.round(br.top - dernier.getBoundingClientRect().bottom);
+        ok(air >= 4,
+           'à ' + largeur + ' px, le pied de page reste au-dessus de la barre basse — ' +
+           air + ' px d\'air, barre haute de ' + Math.round(br.height) +
+           ' px et occupant ' + occupe + ' px');
+        w.scrollTo(0, 0);
+      });
+      cadre.style.width = largeurInitiale;
+      void cadre.offsetHeight;
+    }
   }
 
   /* --- Les textes d'aide ne sont pas écrasés ---

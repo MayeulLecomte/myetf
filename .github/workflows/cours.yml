@@ -44,6 +44,19 @@ jobs:
         id: releve
         run: node scripts/maj-cours.mjs | tee /tmp/rapport.txt
 
+      # L'ACTUALITÉ EST RELEVÉE MÊME SANS CLÉ D'API, et ce n'est pas un
+      # oubli : data/actualites.json est publié avec le site, donc lisible
+      # et vérifiable, que la note soit rédigée ou non.
+      #
+      # `continue-on-error` parce que dix-huit fils de presse ne sont jamais
+      # tous debout le même matin. Le script encaisse déjà les échecs un par
+      # un et ne sort en erreur que si TOUS ont échoué — auquel cas la note
+      # se rédige sur les seuls cours, comme avant. Faire échouer le relevé
+      # des cours parce qu'un journal a changé d'URL serait absurde.
+      - name: Relever l'actualité
+        continue-on-error: true
+        run: node scripts/actualites.mjs | tee -a /tmp/rapport.txt
+
       # La note est facultative : sans le secret ANTHROPIC_API_KEY le script
       # s'arrête proprement et l'application affiche la marche à suivre.
       - name: Installer les dépendances de rédaction
