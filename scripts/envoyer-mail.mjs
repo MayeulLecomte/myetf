@@ -74,6 +74,27 @@ function adresse(brut, quoi) {
   return net;
 }
 
+/* -------------------------------------------------------------
+   UNE ADRESSE NE S'IMPRIME PAS EN ENTIER DANS UN JOURNAL PUBLIC
+   -------------------------------------------------------------
+   Le dépôt est public, donc les journaux d'exécution le sont
+   aussi. GitHub masque les valeurs de secrets — mais seulement
+   dans les travaux qui portent le secret en question. Le travail
+   d'envoi ne l'a pas : l'adresse du client s'y écrivait en clair,
+   à chaque passage, lisible par n'importe qui.
+
+   Réduite, elle reste vérifiable — on voit d'un coup d'oeil si
+   c'est la bonne — sans être récoltable.
+   ------------------------------------------------------------- */
+function reduite(adr) {
+  const [avant, apres] = String(adr).split('@');
+  if (!apres) return '(adresse illisible)';
+  const court = avant.length <= 2
+    ? avant[0] + '…'
+    : avant[0] + '…' + avant[avant.length - 1];
+  return court + '@' + apres;
+}
+
 const a = adresse(arg('a'), 'Le destinataire');
 const objet = arg('objet');
 const chemin = arg('corps');
@@ -90,7 +111,7 @@ const expediteurBrut = process.env.EXPEDITEUR_EMAIL;
 const nom = (process.env.EXPEDITEUR_NOM || 'Allocation ETF').trim();
 
 if (blanc) {
-  console.log(`À      : ${a}`);
+  console.log(`À      : ${reduite(a)}`);
   console.log(`De     : ${nom} <${expediteurBrut || '(EXPEDITEUR_EMAIL manquante)'}>`);
   console.log(`Objet  : ${objet}`);
   console.log(`Corps  : ${corps.length} caractères, ${corps.split('\n').length} lignes`);
@@ -136,4 +157,4 @@ if (!rep.ok) {
   process.exit(1);
 }
 
-console.log(`Envoyé à ${a} — ${texte}`);
+console.log(`Envoyé à ${reduite(a)} — ${texte}`);

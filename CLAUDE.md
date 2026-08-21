@@ -1743,6 +1743,27 @@ travail d'envoi s'écrit donc `inputs.essai != true` et non
 `!inputs.essai` : la seconde forme serait vraie sur `null` et
 **bloquerait tous les envois automatiques**.
 
+### ⚠ Le dépôt est public, donc ses journaux d'exécution le sont
+
+GitHub masque les valeurs de secrets — **mais seulement dans les travaux
+qui portent le secret en question**. Le travail d'envoi ne porte pas
+`EMAIL_CONTROLE` : l'adresse du client s'y écrivait donc en clair, à
+chaque passage, dans un journal lisible par n'importe qui.
+
+Trois gestes, et ils vont ensemble :
+
+- **`envoyer-mail.mjs` réduit l'adresse** avant de l'imprimer :
+  `m…e@gmail.com`. Assez pour vérifier d'un coup d'oeil que c'est la
+  bonne, pas assez pour la récolter.
+- **Le workflow passe par une VARIABLE de shell**, jamais par une
+  interpolation `${{ }}`. Le journal imprime la commande telle qu'elle est
+  écrite — « $DEST » — et non sa valeur. L'avis de contrôle, lui, part
+  dans un fichier : le destinataire y est en clair, et c'est bien le
+  moins, puisque c'est ce qu'on demande de relire.
+- **Une seule sortie franchit la frontière entre les deux travaux** :
+  `envoyer`, qui vaut « oui » ou « non ». Jamais une donnée. Les autres
+  seraient soit caviardées, soit publiques.
+
 ### ⚠ Une sortie de travail qui contient un secret est CAVIARDÉE
 
 GitHub efface une `job output` dont la valeur est celle d'un secret. Elle

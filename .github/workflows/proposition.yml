@@ -72,12 +72,13 @@ jobs:
       EXPEDITEUR_NOM:   ${{ vars.EXPEDITEUR_NOM }}
       EMAIL_CONTROLE:   ${{ secrets.EMAIL_CONTROLE }}
 
+    # Seul `envoyer` franchit la frontière, et c'est un « oui » ou un
+    # « non » — jamais une donnée. Tout le reste voyage par l'artefact :
+    # une sortie de travail portant un secret serait caviardée, et une
+    # sortie portant une adresse serait publique.
     outputs:
-      envoyer:      ${{ steps.calcul.outputs.envoyer }}
-      motif:        ${{ steps.calcul.outputs.motif }}
-      destinataire: ${{ steps.calcul.outputs.destinataire }}
-      objet:        ${{ steps.calcul.outputs.objet }}
-      ordres:       ${{ steps.calcul.outputs.ordres }}
+      envoyer: ${{ steps.calcul.outputs.envoyer }}
+      motif:   ${{ steps.calcul.outputs.motif }}
 
     steps:
       - uses: actions/checkout@v4
@@ -142,14 +143,20 @@ jobs:
         if: steps.calcul.outputs.envoyer == 'oui' && env.EMAIL_CONTROLE != ''
         run: |
           LIEN="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # L'adresse passe par une VARIABLE et non par une interpolation.
+          # Le journal d'un dépôt public imprime la commande telle qu'elle
+          # est écrite — « $DEST », pas sa valeur. L'avis, lui, part dans un
+          # fichier : le destinataire y est en clair, et c'est bien le
+          # moins, puisque c'est ce qu'on demande de relire.
+          DEST=$(node -p "require('./data/proposition-enveloppe.json').destinataire")
           {
             if [ "${{ inputs.essai }}" = "true" ]; then
-              echo "ESSAI — rien ne partira chez ${{ steps.calcul.outputs.destinataire }}."
+              echo "ESSAI — rien ne partira chez $DEST."
               echo "Ce message ne sert qu'à vérifier que Brevo, l'expéditeur et le"
               echo "dossier sont correctement configurés. Le texte ci-dessous est"
               echo "EXACTEMENT celui qui serait envoyé en vrai."
             else
-              echo "Ceci part chez ${{ steps.calcul.outputs.destinataire }} après le délai."
+              echo "Ceci part chez $DEST après le délai."
               echo "Pour annuler : ouvrez la course et cliquez « Cancel workflow »."
               echo "$LIEN"
               echo
