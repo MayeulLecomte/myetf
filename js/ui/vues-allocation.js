@@ -642,7 +642,7 @@ function rendreArbitrages() {
         '<th>Motif</th></tr></thead><tbody>' +
         analyse.ordres.map(o =>
           '<tr><td><span class="badge ' + (o.sens === 'Achat' ? 'vert' : 'rouge') + '">' + o.sens + '</span></td>' +
-          '<td>' + echapper(o.libelle) + '</td>' +
+          '<td>' + lienFiche(o.isin, o.libelle) + '</td>' +
           '<td style="font-family:monospace;font-size:12px">' + echapper(o.isin) + '</td>' +
           '<td class="num"><strong>' + euro(o.montant) + '</strong></td>' +
           '<td class="num">' + pct(o.pct) + '</td>' +

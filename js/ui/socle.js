@@ -172,6 +172,15 @@ function tailleOuverture(dessin) {
   return Math.round(TAILLE_ILLUSTRATION_OUVERTURE * (ECHELLE_DESSIN[dessin] || 1));
 }
 
+/* Le nom d'un support, cliquable, qui ouvre sa fiche. Sans ISIN il n'y a
+   rien à ouvrir — une ligne saisie à la main peut n'en porter aucun — et le
+   nom reste alors du texte simple plutôt qu'un bouton qui ne fait rien. */
+function lienFiche(isin, libelle) {
+  const nom = echapper(libelle || isin || '');
+  if (!isin) return nom;
+  return '<button class="lien-support" data-fiche="' + echapper(isin) + '">' + nom + '</button>';
+}
+
 function illustration(nom, taille) {
   /* Le marqueur de version, comme sur les scripts et la feuille de style.
      Sans lui, un navigateur qui a déjà ouvert l'application garde les

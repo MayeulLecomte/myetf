@@ -3860,3 +3860,31 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
   #accueil-contenu > .grille.quatre > .kpi:nth-child(3) { grid-column: 3 / span 4;  grid-row: 2; margin-top: 34px; }
   #accueil-contenu > .grille.quatre > .kpi:nth-child(4) { grid-column: 9 / span 4;  grid-row: 2; margin-top: 132px; }
 }
+
+/* ---------- L'ouverture qui suit, et celle qui reste ----------
+   L'ouverture à deux colonnes est collante : le titre et sa phrase
+   accompagnent le défilement du contenu de droite. Sur trois vues, cet
+   accompagnement gêne plus qu'il n'aide — ce sont les plus longues, et
+   voir un titre glisser sur trois mille pixels de tableau donne le
+   sentiment que la page ne tient pas en place.
+
+   Elles sont visées par leur identifiant, qui est un contrat du dépôt et
+   ne bougera pas, plutôt que par un rang de grille qui changerait au
+   premier bloc ajouté. */
+@media (min-width: 1024px) {
+  #vue-portefeuille.deux-colonnes.actif > .ouverture-vue,
+  #vue-arbitrages.deux-colonnes.actif > .ouverture-vue,
+  #vue-profil.deux-colonnes.actif > .ouverture-vue {
+    position: static;
+  }
+
+  /* « Caractéristiques du profil » cesse de partager sa rangée : c'est un
+     tableau de huit lignes qu'on lit d'un bloc, et une demi-largeur
+     l'obligeait à replier ses libellés sur deux lignes.
+
+     Elle est visée dans SA grille et non comme fille de la vue : elle vit
+     deux niveaux plus bas, dans un `.grille.deux`. Elle est donc centrée
+     sur la colonne de contenu, pas sur la fenêtre — l'y centrer vraiment
+     demanderait de la sortir de la grille, donc de toucher au balisage. */
+  #vue-profil .grille.deux > .carte-caracteristiques { grid-column: 1 / -1; }
+}

@@ -558,7 +558,10 @@ function rendreAccueil() {
         '<th class="num">Montant</th><th>Motif</th></tr></thead><tbody>' +
         analyse.ordres.map(o =>
           '<tr><td><span class="badge ' + (o.sens === 'Achat' ? 'vert' : 'rouge') + '">' + echapper(o.sens) + '</span></td>' +
-          '<td>' + echapper(o.libelle) + '</td>' +
+          /* Le nom ouvre la fiche du support. C'est ici qu'on se demande ce
+             qu'est « L&G EM Govt Bd USD 0-5 Yr » avant de valider un ordre,
+             et non trois écrans plus loin dans l'univers. */
+          '<td>' + lienFiche(o.isin, o.libelle) + '</td>' +
           '<td class="num">' + euro(o.montant) + '</td>' +
           '<td style="font-size:12px;color:var(--gris-doux)">' + echapper(o.motif || '') + '</td></tr>').join('') +
         '</tbody></table></div>' +
@@ -800,7 +803,7 @@ function carteCaracteristiques(r, metriques) {
   const particulier = T('profil.carte.titre') !== 'profil.carte.titre';
 
   if (!particulier || !montant) {
-    return '<div class="carte"><h3>' +
+    return '<div class="carte carte-caracteristiques"><h3>' +
         echapper(mot('profil.carte.titre.sansMontant', 'Caractéristiques du profil')) + '</h3>' +
       '<p>' + echapper(r.profil.description) + '</p>' +
       '<table><tbody>' +
