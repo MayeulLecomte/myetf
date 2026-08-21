@@ -1726,6 +1726,23 @@ inverse ferait taire l'envoi suivant.
 Le troisième n'est pas un confort : **sans lui le deuxième ne protège de
 rien**, puisque personne ne saurait qu'il y a quelque chose à annuler.
 
+### Le mode essai passe outre l'interrupteur, et c'est voulu
+
+`workflow_dispatch` porte une case **« essai »** : le calcul se fait, le
+message s'écrit, il part **vers `EMAIL_CONTROLE` et nulle part ailleurs**
+— le travail d'envoi au client ne démarre pas. C'est ce qui permet de
+vérifier Brevo, l'expéditeur validé et le dossier sans risquer un envoi.
+
+Il ignore `PROPOSITION_ENVOI` **délibérément**. Exiger d'armer l'envoi
+pour vérifier la plomberie reviendrait à charger l'arme pour tester la
+sécurité — et c'est précisément au moment où l'on n'est sûr de rien qu'on
+veut essayer.
+
+⚠ `inputs.essai` vaut `null` hors déclenchement manuel. La garde du
+travail d'envoi s'écrit donc `inputs.essai != true` et non
+`!inputs.essai` : la seconde forme serait vraie sur `null` et
+**bloquerait tous les envois automatiques**.
+
 ### ⚠ `socle.js` et `dossier.js` doivent rester exécutables hors navigateur
 
 C'est une propriété fragile et invisible. Ajouter un

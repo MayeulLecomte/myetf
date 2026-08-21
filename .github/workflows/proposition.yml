@@ -42,6 +42,10 @@ on:
         description: "Envoyer même si la proposition n'a pas changé"
         type: boolean
         default: false
+      essai:
+        description: "Essai : n'écrire QU'À EMAIL_CONTROLE, jamais au client"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -89,7 +93,13 @@ jobs:
       - name: Vérifier l'interrupteur
         id: interrupteur
         run: |
-          if [ "${{ vars.PROPOSITION_ENVOI }}" != "actif" ]; then
+          # L'ESSAI PASSE OUTRE L'INTERRUPTEUR, et c'est voulu : il n'écrit
+          # qu'à EMAIL_CONTROLE. Exiger d'armer l'envoi pour vérifier la
+          # plomberie reviendrait à charger l'arme pour tester la sécurité.
+          if [ "${{ inputs.essai }}" = "true" ]; then
+            echo "Mode ESSAI — l'interrupteur est ignoré, rien ne partira au client."
+            echo "suspendu=non" >> "$GITHUB_OUTPUT"
+          elif [ "${{ vars.PROPOSITION_ENVOI }}" != "actif" ]; then
             echo "PROPOSITION_ENVOI = « ${{ vars.PROPOSITION_ENVOI }} » (attendu : actif)."
             echo "Envois suspendus — rien ne sera calculé ni envoyé." >> "$GITHUB_STEP_SUMMARY"
             echo "suspendu=oui" >> "$GITHUB_OUTPUT"
@@ -132,11 +142,18 @@ jobs:
         run: |
           LIEN="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           {
-            echo "Ceci part chez ${{ steps.calcul.outputs.destinataire }} après le délai."
-            echo "Pour annuler : ouvrez la course et cliquez « Cancel workflow »."
-            echo "$LIEN"
-            echo
-            echo "Pour tout suspendre : variable de dépôt PROPOSITION_ENVOI ≠ actif."
+            if [ "${{ inputs.essai }}" = "true" ]; then
+              echo "ESSAI — rien ne partira chez ${{ steps.calcul.outputs.destinataire }}."
+              echo "Ce message ne sert qu'à vérifier que Brevo, l'expéditeur et le"
+              echo "dossier sont correctement configurés. Le texte ci-dessous est"
+              echo "EXACTEMENT celui qui serait envoyé en vrai."
+            else
+              echo "Ceci part chez ${{ steps.calcul.outputs.destinataire }} après le délai."
+              echo "Pour annuler : ouvrez la course et cliquez « Cancel workflow »."
+              echo "$LIEN"
+              echo
+              echo "Pour tout suspendre : variable de dépôt PROPOSITION_ENVOI ≠ actif."
+            fi
             echo
             echo "-----------------------------------------------"
             echo
@@ -144,12 +161,14 @@ jobs:
           } > /tmp/avis.txt
           node scripts/envoyer-mail.mjs \
             --a="$EMAIL_CONTROLE" \
-            --objet="[à valider] ${{ steps.calcul.outputs.objet }}" \
+            --objet="${{ inputs.essai && '[ESSAI]' || '[à valider]' }} ${{ steps.calcul.outputs.objet }}" \
             --corps=/tmp/avis.txt
 
   envoyer:
     needs: calculer
-    if: needs.calculer.outputs.envoyer == 'oui'
+    # `inputs.essai` vaut null hors déclenchement manuel : la comparaison à
+    # 'true' est donc fausse, et un passage automatique envoie normalement.
+    if: needs.calculer.outputs.envoyer == 'oui' && inputs.essai != true
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # C'est CET environnement qui porte le délai ou l'approbation. Le
