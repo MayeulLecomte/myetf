@@ -69,6 +69,16 @@ function dossierComplet(w, Etat) {
      utilisateur, et celui où le plan d'investissement initial se lit. */
   Etat.detention = [];
   Etat.suiviAmorce = false;
+  /* `?detenu=1` bascule sur un dossier où les lignes sont RÉELLEMENT
+     détenues — c'est l'accueil d'un dossier suivi, pas d'un dossier
+     qui vient d'être rempli. */
+  if (P.get('detenu')) {
+    Etat.detention = [
+      { isin: 'IE00B4L5Y983', libelle: 'iShares Core MSCI World', montant: 60000, pvLatente: 8000 },
+      { isin: 'IE00B4WXJJ64', libelle: 'iShares Core € Govt Bond', montant: 40000, pvLatente: 0 }
+    ];
+    Etat.suiviAmorce = true;
+  }
   /* Aucun besoin de revenu : sinon le coussin monétaire déforme
      l'allocation, et la vue « Allocation cible » montrerait des écarts
      qui ne viennent d'aucune vue de marché. */

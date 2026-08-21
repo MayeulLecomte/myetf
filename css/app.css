@@ -3787,3 +3787,64 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ============================================================
+   (i) L'ACCUEIL D'UN DOSSIER REMPLI
+   ------------------------------------------------------------
+   Trois gestes, et le premier explique les deux autres : l'écran
+   d'accueil réservait une hauteur de fenêtre entière et CENTRAIT son
+   corps dedans. Le salut se retrouvait au milieu du vide, à six cents
+   pixels du fil qui le précède.
+   ============================================================ */
+@media (min-width: 901px) {
+  /* 1. LE SALUT REMONTE.
+        Le corps ne se centre plus : il suit le fil. La hauteur réservée
+        tombe de ce fait — ce n'est plus un écran de garde, c'est le haut
+        d'une page qui continue. */
+  .ecran-aujourdhui { min-height: 0; margin-bottom: 56px; }
+  .ecran-aujourdhui-corps {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    padding-top: 40px;
+    padding-bottom: 0;
+  }
+
+  /* 2. LE FIL DES POCHES PREND TOUTE LA PAGE.
+        Il est le premier mot de l'écran et il défile horizontalement :
+        le borner à la colonne de contenu lui coupait ses dernières
+        poches sans raison.
+
+        Le débord se fait par marges négatives et non par `width: 100vw` :
+        `100vw` ignore la barre de défilement et déborde d'une quinzaine
+        de pixels, ce qui ferait défiler la page ENTIÈRE de côté. Le
+        rembourrage rend au premier jeton l'alignement qu'il avait sur la
+        colonne. */
+  .ecran-aujourdhui > .fil-entete,
+  .ecran-aujourdhui > .fil {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: calc(50vw - 50%);
+    padding-right: calc(50vw - 50%);
+  }
+
+  /* 3. LES QUATRE BULLES SE DISPERSENT.
+        Quatre tuiles en rang serré se balaient ; posées en quinconce et
+        au large, on les lit une par une. Deux colonnes, un décalage
+        vertical sur la seconde, et de l'air entre les deux. */
+  #accueil-contenu > .grille.quatre {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px 96px;
+    margin: 8px 0 64px;
+    /* Sans cela, une tuile s'étire à la hauteur de sa RANGÉE : celle de
+       gauche prenait la hauteur de sa voisine décalée de cinquante-six
+       pixels et se retrouvait à moitié vide. En quinconce, chaque tuile
+       garde sa taille propre — c'est tout l'intérêt du décalage. */
+    align-items: start;
+  }
+  #accueil-contenu > .grille.quatre > .kpi {
+    max-width: 360px;
+    min-height: 0;
+  }
+  #accueil-contenu > .grille.quatre > .kpi:nth-child(odd)  { justify-self: start; }
+  #accueil-contenu > .grille.quatre > .kpi:nth-child(even) { justify-self: end; margin-top: 56px; }
+}

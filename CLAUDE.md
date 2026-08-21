@@ -665,6 +665,30 @@ Elles gardent leur boîte pleine sur téléphone, où deux colonnes serrées ont
 besoin d'une séparation — et c'est là que le harnais mesure ses témoins, ce
 qui explique qu'il ne voie pas ce changement.
 
+## L'accueil sur écran large — trois gestes
+
+**Le salut remonte.** Le corps de l'écran d'accueil se CENTRAIT verticalement
+dans une hauteur de fenêtre entière : « Bonjour X » se retrouvait au milieu du
+vide, à six cents pixels du fil qui le précède. Le corps suit désormais le
+fil, et la hauteur réservée tombe avec lui — ce n'est plus un écran de garde,
+c'est le haut d'une page qui continue.
+
+**Le fil des poches prend toute la page.** Il est le premier mot de l'écran et
+il défile horizontalement : le borner à la colonne de contenu lui coupait ses
+dernières poches sans raison. Le débord se fait par **marges négatives**, et
+non par `width: 100vw` — `100vw` ignore la barre de défilement, déborde d'une
+quinzaine de pixels, et ferait défiler la page entière de côté. Le rembourrage
+rend au premier jeton l'alignement qu'il avait sur la colonne.
+
+**Les quatre bulles se dispersent en quinconce.** Deux colonnes, la seconde
+décalée de 56 px vers le bas, 48 × 96 px d'écart. Quatre tuiles en rang serré
+se balaient ; au large et décalées, on les lit une par une.
+
+`align-items: start` sur cette grille, sinon une tuile s'étire à la hauteur de
+sa RANGÉE : celle de gauche prenait la hauteur de sa voisine décalée et se
+retrouvait à moitié vide. En quinconce, chaque tuile garde sa taille propre —
+c'est tout l'intérêt du décalage.
+
 ## L'accueil, dans l'ordre : ce qui a bougé, ce qu'il y a à faire, le reste
 
 Sur un dossier complet, « Aujourd'hui » se lit de haut en bas dans cet ordre,
