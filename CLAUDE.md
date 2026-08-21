@@ -680,9 +680,22 @@ non par `width: 100vw` — `100vw` ignore la barre de défilement, déborde d'un
 quinzaine de pixels, et ferait défiler la page entière de côté. Le rembourrage
 rend au premier jeton l'alignement qu'il avait sur la colonne.
 
-**Les quatre bulles se dispersent en quinconce.** Deux colonnes, la seconde
-décalée de 56 px vers le bas, 48 × 96 px d'écart. Quatre tuiles en rang serré
-se balaient ; au large et décalées, on les lit une par une.
+**Les quatre bulles se dispersent, et sans régularité.** Deux colonnes avec un
+décalage constant donnaient un zigzag RÉGULIER : l'oeil attrape la règle au
+deuxième jeton et cesse de regarder. La grille passe donc à **douze colonnes**,
+et chaque bulle est posée là où elle n'est attendue ni de sa voisine ni de
+celle du dessus.
+
+| | colonne | décalage |
+|---|---|---|
+| Encours | 1 | 0 |
+| Dérive maximale | 8 | 96 px |
+| Supports cibles | 3 | 34 px |
+| Dernière revue | 9 | 132 px |
+
+Les valeurs ne sortent pas d'un chapeau : **aucune n'est répétée**, ni en
+abscisse ni en ordonnée, et l'écart croît vers le bas pour que la dispersion
+se lise en descendant.
 
 `align-items: start` sur cette grille, sinon une tuile s'étire à la hauteur de
 sa RANGÉE : celle de gauche prenait la hauteur de sa voisine décalée et se
