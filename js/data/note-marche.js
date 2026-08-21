@@ -12,8 +12,8 @@ const NOTE_MARCHE = {
   "genere": "2026-08-20",
   "modele": "claude-opus-5",
   "tokens": {
-    "entree": 10359,
-    "sortie": 1973
+    "entree": 12562,
+    "sortie": 2303
   },
   "actualite": {
     "nb": 120,
@@ -38,74 +38,94 @@ const NOTE_MARCHE = {
       "Macro France"
     ],
     "fenetre": 48,
-    "releve": "2026-08-21T10:38:13.811Z"
+    "releve": "2026-08-21T10:58:00.176Z"
   },
   "note": {
-    "titre": "Repli des actions, or et matières premières en soutien",
-    "synthese": "La semaine est négative pour l'ensemble des poches actions, avec un repli marqué sur le Japon et la technologie, tandis que les États-Unis et le Monde développé cèdent environ 2,5 %. À l'inverse, l'or et les matières premières diversifiées progressent, et les poches obligataires restent quasi stables sur la semaine. Les performances depuis le 1er janvier demeurent nettement positives sur les actions, ce qui replace ce mouvement hebdomadaire dans un contexte annuel encore favorable.",
+    "titre": "Repli des actions, tensions obligataires, or en hausse",
+    "synthese": "La semaine se solde par un recul généralisé des poches actions, le Japon et la technologie corrigeant le plus nettement, tandis que l'or et les matières premières progressent. Les poches obligataires reculent modestement, ce qui coïncide avec les tensions sur les taux longs rapportées par la presse. Les performances depuis le 1er janvier restent largement positives sur les actifs risqués, ce qui relativise l'ampleur du mouvement hebdomadaire.",
     "mouvements": [
       {
         "poche": "Actions Japon",
-        "constat": "Recul de 4,68 % sur la semaine, alors que la poche reste en hausse de 0,63 % sur le mois et de 19,20 % depuis le 1er janvier.",
-        "lecture": "Le repli le plus prononcé de la semaine sur les actions, dont l'effet sur un portefeuille diversifié dépend surtout du poids accordé à cette poche et du traitement du risque de change yen."
+        "constat": "Recul de 4,68 % sur la semaine, alors que la poche reste en hausse de 19,20 % depuis le 1er janvier.",
+        "lecture": "Une correction de cette ampleur sur une poche géographique concentrée peut modifier sensiblement le poids relatif des actions internationales dans un portefeuille diversifié."
       },
       {
         "poche": "Actions Technologie / Innovation",
-        "constat": "Baisse de 3,94 % sur la semaine et de 2,01 % sur le mois, la performance annuelle restant à +15,72 %.",
-        "lecture": "Une poche thématique concentrée corrige plus vite que les indices larges ; l'écart mérite d'être mesuré dans les allocations où elle vient en surpondération des actions Monde."
+        "constat": "Baisse de 3,94 % sur la semaine et de 2,01 % sur le mois, pour un gain de 15,72 % depuis le 1er janvier.",
+        "lecture": "La poche la plus sensible aux taux longs recule plus vite que les indices larges, ce qui rappelle sa contribution asymétrique à la volatilité d'ensemble."
       },
       {
-        "poche": "Actions Monde (développées)",
-        "constat": "Repli de 2,48 % sur la semaine, avec les États-Unis à -2,55 %, alors que le mois reste stable (+0,12 %).",
-        "lecture": "Le cœur actions des portefeuilles absorbe le mouvement sans rupture de tendance annuelle, la performance depuis janvier restant supérieure à 13 %."
+        "poche": "Actions Petites capitalisations",
+        "constat": "Repli de 2,60 % sur la semaine, malgré une progression de 21,73 % depuis le 1er janvier.",
+        "lecture": "Les petites valeurs amplifient le mouvement des grandes capitalisations, ce qui peut peser davantage sur les profils dynamiques."
       },
       {
         "poche": "Or",
-        "constat": "Hausse de 2,43 % sur la semaine et de 6,27 % sur le mois, portant la progression annuelle à 5,52 %.",
-        "lecture": "La poche joue cette semaine son rôle de contrepoids aux actions, ce qui peut expliquer une partie de la résistance des allocations diversifiées."
+        "constat": "Hausse de 2,43 % sur la semaine et de 6,27 % sur le mois, à contre-courant des actions.",
+        "lecture": "La poche joue son rôle de diversification dans une phase de repli des actifs risqués, sans que la cause de sa progression soit établie."
       },
       {
         "poche": "Matières premières diversifiées",
-        "constat": "Progression de 1,49 % sur la semaine et de 2,17 % sur le mois, avec +33,75 % depuis le 1er janvier.",
-        "lecture": "La poche la plus performante de l'année amortit le repli actions, mais son poids relatif a pu dériver sensiblement à la hausse depuis janvier."
+        "constat": "Progression de 1,49 % sur la semaine et de 33,75 % depuis le 1er janvier, la plus forte performance annuelle du panel.",
+        "lecture": "L'écart cumulé avec les autres poches peut avoir sensiblement dévié le poids réel de cette ligne par rapport à l'allocation cible."
       }
     ],
     "aVerifier": [
-      "Le poids effectif des poches technologie et Japon dans les allocations, après une semaine où elles ont reculé nettement plus que les actions Monde.",
-      "La dérive d'allocation des matières premières et de l'or, dont les performances annuelles s'écartent fortement du reste du portefeuille.",
-      "La sensibilité aux taux longs des poches obligataires et de l'immobilier coté, ce dernier reculant de 3,37 % sur le mois.",
-      "Le traitement du risque de change dans les portefeuilles exposés au Japon et aux États-Unis, les performances étant ici exprimées en euros."
+      " Le poids effectif des poches actions internationales après une semaine de repli marqué sur le Japon et la technologie, au regard des allocations cibles.",
+      "La dérive des matières premières et de l'or par rapport à leur pondération d'origine, compte tenu de leur avance depuis le 1er janvier.",
+      "L'exposition obligataire des dossiers les plus prudents, dans un contexte de tensions sur les taux longs évoquées par la presse.",
+      "La sensibilité des portefeuilles concentrés sur la thématique innovation, dont la volatilité relative ressort nettement sur la période."
     ],
     "indicateursASurveiller": [
-      "Les rendements souverains longs, américains comme européens, dont la tenue conditionne les poches obligataires et l'immobilier coté.",
-      "Les indicateurs d'inflation en zone euro et au Royaume-Uni, ainsi que les anticipations d'inflation des consommateurs.",
-      "Les indices PMI d'activité en France, en Allemagne et au Royaume-Uni, publiés cette semaine."
+      "Contexte budgétaire et fiscal, en lien avec les tensions rapportées sur le spread français",
+      "Cycle économique en zone euro, après la publication des enquêtes d'activité d'août",
+      "Dynamique d'inflation, au regard des mouvements sur le pétrole"
     ],
     "actualite": [
       {
-        "fait": "Le Monde et Investing.com rapportent une remontée des taux souverains, notamment américains, après un bref répit sur les rendements mondiaux.",
-        "portee": "Ce contexte de taux longs porterait sur les poches obligataires et sur l'immobilier coté, dont les variations hebdomadaires restent toutefois limitées.",
-        "source": "Le Monde, Investing.com"
+        "fait": "Boursorama et Les Échos rapportent que l'écartement du spread français met les marchés d'actions sous pression et que la Bourse de Paris hésite en surveillant les tensions sur les taux.",
+        "portee": "Ce point concerne les poches obligataires souveraines et les actions européennes ; il coïncide avec le repli hebdomadaire de ces deux poches, sans qu'un lien de cause à effet soit établi.",
+        "source": "Boursorama, Les Échos — Marchés"
       },
       {
-        "fait": "Selon Le Monde, le secrétaire américain au Trésor a annoncé un doublement des rachats de dette américaine à long terme afin de peser sur les taux longs.",
-        "portee": "Une telle mesure concernerait directement la partie longue de la courbe américaine et, par extension, les poches obligataires globales.",
+        "fait": "Le Monde rapporte que le secrétaire américain au Trésor a annoncé un doublement des rachats de dette américaine à long terme afin de faire baisser les taux longs.",
+        "portee": "Cette annonce porte sur la partie longue de la courbe américaine et pourrait influencer la valorisation des poches obligataires globales et des actifs de duration.",
         "source": "Le Monde — Économie"
       },
       {
-        "fait": "Les Échos et Investing.com rapportent une semaine sans direction en Europe, entre pétrole élevé et tensions sur l'obligataire.",
-        "portee": "Ce contexte coïncide avec le repli hebdomadaire des actions européennes (-1,32 %) et la hausse des matières premières diversifiées, sans qu'un lien de cause à effet soit établi.",
-        "source": "Les Échos — Marchés, Investing.com"
+        "fait": "L'Insee indique, selon Les Échos et Capital, que l'activité du secteur privé français recule plus que prévu en août, lestée par les services, tandis que le climat des affaires poursuit sa remontée.",
+        "portee": "Ces signaux divergents portent sur le cycle de la zone euro et peuvent peser sur la lecture des actions européennes.",
+        "source": "Les Échos — Marchés, Macro France"
       },
       {
-        "fait": "L'Insee note une nouvelle amélioration du climat des affaires en août, tandis que les enquêtes PMI font état d'un recul de l'activité du secteur privé français, selon Les Échos et Investir.",
-        "portee": "Ces signaux divergents concernent la lecture de la croissance en zone euro et, indirectement, la poche actions Europe.",
-        "source": "Macro France, Les Échos — Marchés, Investir"
-      },
-      {
-        "fait": "La BCE observe une légère baisse des anticipations d'inflation des consommateurs de la zone euro, tandis que l'inflation britannique remonterait à 2,9 % sur un an selon les fils de presse.",
-        "portee": "Ces éléments touchent la lecture des obligations indexées sur l'inflation et des poches souveraines courtes, stables sur la semaine.",
+        "fait": "La BCE observe une légère baisse des anticipations d'inflation des consommateurs, tandis que d'autres titres évoquent des craintes d'inflation ravivées par le pétrole.",
+        "portee": "Ces éléments concernent la poche obligataire indexée sur l'inflation, dont le recul hebdomadaire reste toutefois marginal.",
         "source": "BCE"
+      },
+      {
+        "fait": "Franceinfo et BFM rapportent que les États-Unis font pression sur leurs alliés et sur la Chine pour isoler économiquement l'Iran, Pékin s'y opposant.",
+        "portee": "Ce contexte touche l'énergie et les matières premières ; il coïncide avec la hausse hebdomadaire de cette poche, sans qu'on puisse l'établir comme cause.",
+        "source": "franceinfo — Économie, BFM — Économie"
+      }
+    ],
+    "lecturesMacro": [
+      {
+        "indicateur": "cycle",
+        "option": "ralentissement",
+        "motif": "Les Échos rapportent que l'activité du secteur privé français recule plus que prévu en août, lestée par les services, et Investir indique que l'activité allemande progresse moins que prévu.",
+        "source": "Les Échos — Marchés, Investir"
+      },
+      {
+        "indicateur": "fiscalite",
+        "option": "derapage",
+        "motif": "Franceinfo et Challenges rapportent qu'un rapport de l'Inspection générale des finances et de la DGFiP alerte sur les risques d'une loi spéciale prolongée pour le budget 2027, tandis que Boursorama évoque un écartement du spread français.",
+        "source": "franceinfo — Économie, Challenges, Boursorama"
+      },
+      {
+        "indicateur": "geopolitique",
+        "option": "eleve",
+        "motif": "Franceinfo et BFM rapportent que Washington menace d'une guerre économique les partenaires de l'Iran et que Pékin s'y oppose ; Investir évoque l'impact de la situation au Moyen-Orient sur le trafic aérien mondial.",
+        "source": "franceinfo — Économie, BFM — Économie, Investir"
       }
     ]
   }

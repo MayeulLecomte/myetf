@@ -1,5 +1,5 @@
 {
- "genere": "2026-08-21T10:38:13.811Z",
+ "genere": "2026-08-21T10:58:00.176Z",
  "fenetreHeures": 48,
  "sources": [
   {
@@ -108,7 +108,7 @@
    "id": "macro-fr",
    "nom": "Macro France",
    "statut": "ok",
-   "retenus": 10
+   "retenus": 11
   }
  ],
  "articles": [
@@ -121,12 +121,164 @@
    "sourceId": "challenges"
   },
   {
+   "titre": "Nvidia earnings could rescue a stalling stock market — if the AI chip maker breaks this trend",
+   "lien": "https://www.marketwatch.com/story/nvidia-earnings-could-rescue-a-stalling-stock-market-if-the-ai-chip-maker-breaks-this-trend-9b6504bc?mod=mw_rss_topstories",
+   "resume": "Shares of Jensen Huang’s company have struggled to make headway since its previous results day.",
+   "date": "2026-08-21T10:54:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Hauts-de-France : Au 1 trimestre 2026 selon l’Insee – Hausse persistante du chômage",
+   "lien": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQWERKdXhsRjRiM1FudV9WWXNXRm1zcHhSeC0wVGllZDdZY3hKWWVBcE41SlAtbUFtMUplUHAxdFlBNWpCM09DdlQ1UU1hTjNqSWRrclpsVEplbmFVUTh0TTlkRUY5b2t3UkJIWWgxTTZMcUpyYTdwZjZZdHJSZHNNQnlsVnNRUTBndEN4ZXlZdWNDOS1hVFpUZ1g0Mm94YUhFWHNDSzE0azZBX2tsSTJhdw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:50:16.000Z",
+   "source": "Macro France",
+   "sourceId": "macro-fr"
+  },
+  {
+   "titre": "Le Cac 40 en pleine hésitation, le bitcoin en plein envol, les taux obligataires enfin plus calmes en attendant la suite",
+   "lien": "https://news.google.com/rss/articles/CBMimAJBVV95cUxQUURXQ1NUWVlpZkE5Y2Jhd3dPVWpVN0dKRmloOWhyOW1LRlZFQ21LTzB3ZXQ3VG52NFNzaVpIU2lUamgxbDU3N0JpdTR3Yzg3Mm5MWmREQkVESENoeGVCTGJuVTlBb1otXzhjbXBRczFINGlSNFdydnlxb1k3UDVHRTd1M0d0bzBELVZrTmdBaTFhb0FUNGRvS0t1THVfQXRFYVZwRG9sMkx2YmRLLVZtUVA3UzBvRXRyUFA2QU9yS3h3aVhpT183Mnp2T0ktNWxVWDd2R0VDWVpuVTJ3RVhxem1qMHVwcHg4NGZyMnMzY05xYUNBejJXT0QtV3MzSm8tNGtyU0tzQ0R1T2pZR01WNzRnZWJTMl8x?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:46:16.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Le spread français met les marchés d'actions sous pression",
+   "lien": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOQTJkYl9zNHV2NC1wMlJjUjUwa1JiRzU1NUt5OVVJWVo3VngxVkxkdlpGYWVoeDQ3OU5Va19RemFmTl9zbkxYc3d4Q29lY1hBYzkxcUlJMms4Q1o2Vk44NEowV2ljZHg4NTNKQTVCTXpwaVBDd0R3bC1SVnBxdDktU2M3N3VzbHpXM2F6LXExT1NEMkxSdzV6aUxWc1E3ejNHcWhNSTY5RUVEakVoTV9vMzBQQTV1NjZ4c2xrR0hueHpFTTdDZHJoZEF6TlFsQXROeHfSAdcBQVVfeXFMT09hN0JvT1E1aEJuWExfY0lLdENLRWJXVDJnSm4yREY3SThGMU93Sm9IWDFyNGZEdHNlOUtlenZwTHJMUVBZRHBzMnluQnhjVjZzdHRzQWJVTm5XYVg2N0JpX3JSUXZCWENIMHVYT2h6ek9LSzB1dDZ4WXgxNnRWTXNkd1hXTkxLQ3lzZlBxdjFuRTdCOXQtdWhLVEdEUGM2VHZsdmNxU0x3X01VZGFuVGNmM2pXX1gzMVo2SmtlZVZvS2N6bFllRXJIbnhjck9rXzl6b2RMdGc?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:44:01.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Chery’s robot affiliate AiMOGA eyes IPO, targets overseas market",
+   "lien": "https://www.investing.com/news/stock-market-news/cherys-robot-affiliate-aimoga-eyes-ipo-targets-overseas-market-4871220",
+   "resume": "",
+   "date": "2026-08-21T10:42:29.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Array shifts to integrated solar platform with record orderbook",
+   "lien": "https://www.investing.com/news/stock-market-news/array-shifts-to-integrated-solar-platform-with-record-orderbook-93CH-4871345",
+   "resume": "",
+   "date": "2026-08-21T10:41:46.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Atlas Copco : les prévisions relevées après les résultats",
+   "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPX0ZnX2t2eksyNE1USWE3WlIxSTl2NVk2MHppMFExTmVLUXhBbXhPQWpHWVV1azQ2MVBUd3U2bVJQeEFBMlNISWJJSGdUaWl4clZzSDRhWk1sMnY1VUJQc3R3N2Nsb0Q0OHVkWmt0TkUwVDFHYm8yWncyM2JwcF9CdFExRmYxekJibDFyV3o0QnB4QlRKcFRXbUJacG5RaU1OYXhRNzBxdDhDeWptb3FseVB4QzJsUQ?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:38:26.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Fret ferroviaire: pas de renforcement des mesures de sécurité (TAF)",
+   "lien": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPNVZtTjhycEc3R1FvOGhwYTZvWXZlNzNZVTZjcW83cDlQcmF6MUZhRWpwTnczeDNVOUU1TUs4RUpURXctTUE0dllsRXRLS2RZNEZ4Q1JXTUc4U0N0NF9oV0dJaWE4ejFMdDFFalpsWWV4bXd2NllYQkQwUjdyZnVtcUdPNExEZGZIQkNHX1Q4R19GTTl6SDlWMjNObDA0MkZfWDE3bXVpTWVIN0JUamlfMTVxYWhqNDJnYng3RnVtYTQxZw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:36:18.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Getlink : nous restons favorables à notre stratégie haussière à effet de levier",
+   "lien": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOUGtSQnZtTzJrWnhGLVdUX1NIWlN2N3dNVXVPOFl1bjlGekgyY2p6S0YwRUpjYlJvbnNaWlZBdUw0MkFjTDRQZ2dqWE5ocWk5MVhMWS1pOUJkcW52RVYtY3V5cXBMaUdnWWxVSVd6M2djSS1jNjlfamc0c01aLUpZaU5MRkkzdldybVRtSlJYaERUSS0tTmZ3QUZNdFZQOFBLc3l2VjJXOTVqRkM3Wjk4cHo0X2pHR2E3OUQxbzRuRWpZaUR1YU9nVGt6cDhZRmFpTFc4bm5ZeURDaXBjam9ZeUtZSmQ?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:36:09.000Z",
+   "source": "Investir",
+   "sourceId": "investir"
+  },
+  {
+   "titre": "S&P 500 may pull back before midterms, but Citi says buy the dip",
+   "lien": "https://www.investing.com/news/stock-market-news/sp-500-may-pull-back-before-midterms-but-citi-says-buy-the-dip-4871329",
+   "resume": "",
+   "date": "2026-08-21T10:36:07.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Zone euro: Les consommateurs abaissent leurs anticipations d'inflation, selon une enquête de la BCE",
+   "lien": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxQcnpSdEN0YUs1STByWmRJSGRsek9xWk1aSzh0M01ySTlGVmtyMFp0MHB1OFNLOVpueFRHUlhMcHhyZTUwWHB2R3FSX3AtdENDaUxRZEoteTkxQUpCQW9OQmFLWmQzUFk0MTFGaU1Kd2JpMHZ1ZVhfc2pHUDJxMWo3Nzd2bXFuRGlDMm42ZGQxdF9xVHQwRGFURG9XOE5SSldzVVF1bWJqbHBiOTNucE9nZnVyTFRWYW5keFNmeVNTQXIxUEJnN1NhMWJSSllxNWtVWVRJZ3Ntc0RPSU5fcEg2TnNlZE5yN2RzV3BjM0FR?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:35:49.000Z",
+   "source": "BCE",
+   "sourceId": "bce"
+  },
+  {
+   "titre": "Bénéfices des grandes entreprises : la surtaxe \"exceptionnelle\" créée en 2025 vers une nouvelle prolongation e",
+   "lien": "https://news.google.com/rss/articles/CBMirAJBVV95cUxPNWpfb2R4Y3JuRFczTmYzREhjRmFTV2N6bXpHakpwQlVYQVlBbkRfVDZKOHU2dF9wUDcwRkd0YVRmS3U0RHpJWlJBOGVPWGVNNDJGOWxDczFBNmctVTJaWjAyTkdmSmUwdU9LblZpMzZSRG9kb3JjMHd1MWgxYUZlU0NQSzg3QWl2X1VjWTdIaXhHV2xfcWNwUEl2RjVoNHFEUzR3eVEwMjh0OEJreTB6cGx5NUJ0cGwxUnJubGFQV05rNi1EMkNOTVp2OG9ZdXg3SFNIM3FvcHlKWWlzajhBTDVKYkQ3Wkd4V1dQeG54VU9VRWM5dlVpb21OZVNLTUZuTHhMUENHN2JjMjdySVpLc09mRWZyWGdCVHBhNEVuWmx2SDdMMTRCU0pKTWvSAbICQVVfeXFMTXZ2OTl2YWc4TDVnd011NncwNTF6Rld3aUs4cWR6YzA4V3d4Sk1WY0x3OUtram9xWlZValRpMDZhY0ljV3ZZb2tuU3psUk10OGFDQ3BTbFF1OEFWaXQ4b2ZnNnYxVko0ZDd1M3FrZ3JuU01GQlZfYnJNWHBtVGVzMEs2Rjd3TTEwTnFHaUJ6VDkxSkpSQ2lOYUxjYWx0bVpfdE5FLUluOUtnQ3ZfbHF1b3BweDQ0cmVLSWY5MThWVWo4ekN4Qzh2RjNIM1RNeENpVGVhUUljUm5yZTRIaGZoakZoSkNGY0ZBOWVyTDVZaUk0N19od3VmSVJrWVdvRncwNGwwX2FXNklfRy10THJ0S1hFdlFXVTNreFpYZms4OWdSa1ZCWXV2Q2RhUHp5ekdmYzVR?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:35:38.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Why is ZKH stock rallying today?",
+   "lien": "https://www.investing.com/news/stock-market-news/why-is-zkh-stock-rallying-today-93CH-4871328",
+   "resume": "",
+   "date": "2026-08-21T10:35:38.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "L'Ofcom attribue des concessions FM sans enchères",
+   "lien": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOMXB1anV2Tl9vY25oWTRHM3pQN1QteUFwbUxlemRQMDFuZUpZVTNmT3NlTlhiVkIzdGJaYklrRTlMOXBvWXNDcGc5cDViQVotejBfYkdkRTcwM0FhRGhMQUZoU0ZRTHFfR1YwenpDQldIbzIzRldiZC1WTVNxaUlMUkZ5VjFlZFh3aUlhZUFnTWd1VGh0Q0VEMXVoNzlGNTJTZHVmX1NGdFdnRXlLT0E?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:35:22.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
    "titre": "Bourses européennes : le pétrole ravive les craintes d’inflation",
    "lien": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNb19CNEs2a1VWeF9SVjg0NElTcTFPYm1VYnZRaTdkWUhTazR0aHNKQTFVb2tBTHhZMzV1eDZXdDJoWEhNQnBvT1hna2xJM3hibDdpU0FOX1VRQ0I0dlVpRW5mNXJ4THJzMl9MSkRvZC1DWm5tZ1lMa2lwZVhKendoMy16WG1kWHBYMnBKYzNiQkgxNTh5MVRtQmZjTzA1bUMtSWhTMVVIWHJMdTg5OTlj?oc=5",
    "resume": "",
    "date": "2026-08-21T10:34:35.000Z",
    "source": "BCE",
    "sourceId": "bce"
+  },
+  {
+   "titre": "MORNING BID AMERICAS - Le redoutable marché obligataire",
+   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQazdCNkxBLWlYTktPY0N2VU9yVWQ3bTYtVC1hajdXc2NqZzJzeEk2ZjJ1R1dVRzJucjRsSjJHRU50Zkk1MWs0VDltMjF5dFQzRjRLU3llV0NfaXYxb096VGxhdTNKM2hLb3pLM2UzbEhkdmNpb1V2SkV0LU50YzVZNFFoZ2FrYnh4Wl9XWlJ6TGxTNjV1N0VUMWY5enN0UG1rT3pMUGZyOTY0VnVNazdhNHBaQQ?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:33:25.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "TAUX-Le spread français met les marchés d'actions sous pression",
+   "lien": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxPcEJramh3elgxaWVyU0N2Q292cHB4WXp6WGs5TlZzQUlsNlc3Si1MNUdZdG5hZjdQQ05tUlZwVlJZSm5COTQwUmxteFVQMno1YmJIdTgtNDVzaGVtVDRNb1MzQ1l3VGJnTTZnWkRZZzQ2eFQ2djBsV3ZhY0lfOXBXQS1vbThCb3Q0Vk9NU2d3VjE0S3lRVlF0M3RBUmNMdnBQd3JEdmEtMTZIMkMyTk45U3FxbUdkYkdRekRPQU9pQ1Z4RVVQRmgtajJqTGVOeVliaEstQkZUdWzSAd4BQVVfeXFMUDRwSDNsV3ZlRnVtR2xpWGI0RnhqT3VkWXN5X1l2RHd0ei0wX0puV29IWktsQmZCbWdRZmUwSGc3S0NLcHB0NUtHVHB4RHVUMWdGMERpWG5FclR4T3Bka2o1emlKMWk1c1g5blZvQnZiOUV2SjQ3c3ZnMFRLRmZMWWtSQjZXN2xGbWVuM0pBWnJyXzQ3Y1hDQ2NmOEkyUFRBamQtS0xGTHpiQm9wUUdONHpmM0JpbVFuVG5EWXFIUkUyd21zeWxkdDgxd2t1cmdwd3ViUUlXQUV3SzRYYUJ3?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:33:11.000Z",
+   "source": "Taux et obligations",
+   "sourceId": "taux"
+  },
+  {
+   "titre": "Global shipping in 2026: falling demand, elevated rates, and rising chokepoint risks",
+   "lien": "https://www.investing.com/news/stock-market-news/global-shipping-in-2026-falling-demand-elevated-rates-and-rising-chokepoint-risks-93CH-4871313",
+   "resume": "",
+   "date": "2026-08-21T10:32:10.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Dollar stores see mixed outlook ahead of earnings next week, Gordon Haskett comments",
+   "lien": "https://www.investing.com/news/stock-market-news/dollar-stores-see-mixed-outlook-ahead-of-earnings-next-week-gordon-haskett-comments-93CH-4871299",
+   "resume": "",
+   "date": "2026-08-21T10:30:31.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "India stocks higher at close of trade; Nifty 50 up 0.08%",
+   "lien": "https://www.investing.com/news/stock-market-news/india-stocks-higher-at-close-of-trade-nifty-50-up-008-4871298",
+   "resume": "",
+   "date": "2026-08-21T10:30:05.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
   },
   {
    "titre": "GB-PMI: Le secteur des services reprend de la vigueur en août",
@@ -145,10 +297,26 @@
    "sourceId": "challenges"
   },
   {
+   "titre": "BofA’s Hartnett sees dollar slump, risk selloff if bond intervention fails",
+   "lien": "https://www.investing.com/news/stock-market-news/bofas-hartnett-sees-dollar-slump-risk-selloff-if-bond-intervention-fails-4871294",
+   "resume": "",
+   "date": "2026-08-21T10:28:58.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
    "titre": "Le FTSE 100 atone au terme d'une semaine volatile",
    "lien": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRHRHb3ZMSzR0cmNWMUQzcHR0a1VSb2R2elhGSGg3X1hoRWpLcVNQY3VIeGczd01laXNGZVBQWUdQLUdVby1sN1BfbzJYeDIzUU5ydlE3LW5jVEE0N3NLSlVkMU9HcHV4TWpfajh1c3F5dHRJLWF4cUxwNG5GVE9BWVNDWEUzTXBmUHgtUDY5ejRsTWsxZjZFYlJaQUJ5a1Zic2VBUExYMnhYVmNOSUE?oc=5",
    "resume": "",
    "date": "2026-08-21T10:28:29.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "SB1 Markets juge le changement de direction de Fasadgruppen nettement négatif",
+   "lien": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQR0N1N050b0hoZi1HZGVDc2tpZlJ3aXNCNU9wY1NBLUJ3QTZXRUdwZHdXaE9reXhYLW83NWFHYnJXYnF3aGJOdjdXQzhzWnp4VlFkeElRUHN2QTB2cThlRW1HS29lTVNUS0pmTm9LVUI5dHdqLVJrWE9hclI2bUdDV1doMDhLLXJnLUN6WU01N0tWZUp5UDVVd2tRSFZ0WlJsZVI4b1dpY0tWT011Z0tBSER6YVdjYXE1RU9hNU94UXlBT1RqLVVURHhkel9kMEpMWXRZMw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T10:28:23.000Z",
    "source": "Zonebourse",
    "sourceId": "zonebourse"
   },
@@ -159,6 +327,14 @@
    "date": "2026-08-21T10:28:08.000Z",
    "source": "Les Échos — Marchés",
    "sourceId": "lesechos"
+  },
+  {
+   "titre": "Kepler starts bullish Jet2 coverage as margins recover despite lower volumes",
+   "lien": "https://www.investing.com/news/stock-market-news/kepler-starts-bullish-jet2-coverage-as-margins-recover-despite-lower-volumes-4871287",
+   "resume": "",
+   "date": "2026-08-21T10:27:10.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
   },
   {
    "titre": "European stocks on course to cap worst week since July on oil, bond pressure",
@@ -185,14 +361,6 @@
    "sourceId": "macro-fr"
   },
   {
-   "titre": "Washington IndyCar race touted by Trump draws Boeing, Starlink, Delta as new sponsors",
-   "lien": "https://www.investing.com/news/stock-market-news/washington-indycar-race-touted-by-trump-draws-boeing-starlink-delta-as-new-sponsors-4871232",
-   "resume": "",
-   "date": "2026-08-21T10:25:24.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
    "titre": "Carnet d'ordres acheteur ; MPS sur le devant de la scène",
    "lien": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPUDhoaTdCZG1IM1VhSV9UTHBYSERVXzNxUnBRTTUtZk1fYW5xWmEyaThnR3ZsbFptSTNGdF81a24tWnN4Z1ZxT01QV3RodGVERjV2SGhwZ1NoTFVsTGJFRFpSeEtmU09lWWJXZm5ENE0tYU5RUlhXTmo3RmhTLVJlWHpjQVhpd2JUaXlFSmY1ZGVGUkptWWJ4VzYwVFZFZW03M1Exa0R6S1lRN25BT3JJNGhvejM?oc=5",
    "resume": "",
@@ -209,30 +377,6 @@
    "sourceId": "taux"
   },
   {
-   "titre": "European Commission closes antitrust probe into RTX unit",
-   "lien": "https://www.investing.com/news/stock-market-news/european-commission-closes-antitrust-probe-into-rtx-unit-93CH-4871259",
-   "resume": "",
-   "date": "2026-08-21T10:20:51.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "U.S. stock futures inch higher after Wall St slides on rising Treasury yields",
-   "lien": "https://www.investing.com/news/stock-market-news/us-stock-futures-steady-after-wall-st-slides-on-rising-treasury-yields-4870666",
-   "resume": "",
-   "date": "2026-08-21T10:20:50.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Analysis-US corporate AI debt surge tests investor limits as fatigue emerges",
-   "lien": "https://www.investing.com/news/stock-market-news/analysisus-corporate-ai-debt-surge-tests-investor-limits-as-fatigue-emerges-4871227",
-   "resume": "",
-   "date": "2026-08-21T10:18:43.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
    "titre": "Ils vont être remboursés à 65% au lieu de 30%: deux traitements phares contre la bronchiolite seront bientôt mieux pris en charge par la Sécu",
    "lien": "https://www.bfmtv.com/economie/economie-social/ils-vont-etre-rembourses-a-65-au-lieu-de-30-deux-traitements-phares-contre-la-bronchiolite-seront-bientot-mieux-pris-en-charge-par-la-secu_AD-202608210291.html",
    "resume": "Deux avis publiés au Journal officiel ce vendredi 21 août relèvent le niveau de remboursement du Beyfortus et de l'Abrysvo, des traitements préventifs contre la bronchiolite développés par les laboratoires Pfizer et Sano",
@@ -241,20 +385,12 @@
    "sourceId": "bfm-eco"
   },
   {
-   "titre": "US regulator probes nearly 1 million GM vehicles for engine failure",
-   "lien": "https://www.investing.com/news/stock-market-news/us-regulator-probes-nearly-1-million-gm-vehicles-for-engine-failure-93CH-4871248",
+   "titre": "Dans la ville la plus chaude d'Europe, les canicules bouleversent le quotidien",
+   "lien": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOTDF4RDYxdjFDcHRGRk1iaU5fZGZOZnEzclFyMjZWdmlMQnJOLUVWZENkcl9LejJwRkJNZVBDd3hoM3JyeVYwOXA3dlZPcEZvaXB2NEFUOVh2WU1IVWdZNkliY0lIcDBjVkhEaS1uTHM4QlZHekdIU215UG92UndvVDVvNDVXZS1PRTdfVFNzbENKc3N4aTlHWktybjVMb1l4ZmdMekVqVDR6X0VqV3JzaEdIQmZxS2xsU0cxSmppVnM5Nnc5TjNaNG5QYkR1TVBrN0V0TlVXQVVtNjBUZXM5ZGlydnpxUFUxYk1xTjVWQnpmbEtIVXAwQUJVR1NhZ9IBgwJBVV95cUxQbjNEeTRzSENIYWRPYWNkQkx4WnhadU51UjU4bFh5WHdJY3gwUTJyLTBuUEcxaHNpMlRwYUVNSlgxZC1sOGFXY1JkRlAwc0xlWF9RdWV3WXFnRlp5X2VDbmZ1TnRCc21zQ3VDcnVYUWU0U2gwYk5ITnBsb245c2xGMnBjRmVsVXRlUWhtd3YwV1hrXzBLZnN1MXIzMjlZN00tYXNtdkZMbjg2QVlsUGlTQjJzeW9kZ2xnYVUyVW1acUdpVkxyaEZiRGdqTkdBb2dESG5wQXZDZnNRU3FjRDVOTFY2Z1daNWR4SnlCM25sbHl3UU82cVFtS2RLbVRUaU14dXFr?oc=5",
    "resume": "",
-   "date": "2026-08-21T10:17:13.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "US shoppers tighten budgets, but still find room for treats and splurges",
-   "lien": "https://www.investing.com/news/stock-market-news/us-shoppers-tighten-budgets-but-still-find-room-for-treats-and-splurges-4871230",
-   "resume": "",
-   "date": "2026-08-21T10:12:57.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
+   "date": "2026-08-21T10:16:14.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
   },
   {
    "titre": "Samsung va racheter jusqu'à 80 milliards de dollars d'actions",
@@ -263,14 +399,6 @@
    "date": "2026-08-21T10:12:49.000Z",
    "source": "Zonebourse",
    "sourceId": "zonebourse"
-  },
-  {
-   "titre": "BofA tracks building products sales momentum in second quarter",
-   "lien": "https://www.investing.com/news/stock-market-news/bofa-tracks-building-products-sales-momentum-in-second-quarter-93CH-4871243",
-   "resume": "",
-   "date": "2026-08-21T10:12:44.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
   },
   {
    "titre": "12h de retard: la galère des passagers d'un train Hendaye-Paris bloqués après une rupture de caténaire",
@@ -313,22 +441,6 @@
    "sourceId": "zonebourse"
   },
   {
-   "titre": "Chery’s robot affiliate AiMOGA eyes IPO, targets overseas market",
-   "lien": "https://www.investing.com/news/stock-market-news/cherys-robot-affiliate-aimoga-eyes-ipo-targets-overseas-market-4871220",
-   "resume": "",
-   "date": "2026-08-21T10:07:31.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Crypto stocks continue rallying as Bitcoin extends gains on regulation push",
-   "lien": "https://www.investing.com/news/stock-market-news/crypto-stocks-continue-rallying-as-bitcoin-extends-gains-on-regulation-push-4871101",
-   "resume": "",
-   "date": "2026-08-21T10:06:58.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
    "titre": "Le cimentier Holcim bétonne sa trajectoire",
    "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNcXZJaElXQ0Nqc2FMZmphWFZIQjhfYnhoWk5CR09ESWZfcklQOU9XSWlGMnEzd0hPeHRxVWJJby0wUFB2cmJVeVRVZXhoaklkbVh3aERQeG91bGllNnlEdkg4VzJtZUZGU3NUVXRYejZIVzlVVVYxY0tDWFpiRE1rMEpZRGNwWkplOXN0OUVwMGk3U3RoSThZNFRFYnlGU1lSWnlVaEt0czRNeGtxYS1RbDFuVUR4UQ?oc=5",
    "resume": "",
@@ -349,30 +461,6 @@
    "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOS2hVd3pSRTJfQjlQQ2hKOVFLREtaOXJtS181Sl8wRFowRVY5SS1Pc0g5bDdMQV9iY1BSZXdmRjQ2RHN0a013RzVJQzFDSFdFOGtqSklkOTRCaXZRckpySXpUaUV2RTlFUDY3R2FKUWc5dnlXbzV0c2dlUFEzRzVwcGNWUVVDU0s5ZWl4cWxGdXhIRjg2MDRUWHkzMmhvNnZ4NmhJdmZsV0duWFU5eG16QU1PWnkwQQ?oc=5",
    "resume": "",
    "date": "2026-08-21T10:04:37.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Teradyne, Inc. : Baird révise son opinion et passe à neutre",
-   "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNOURocXRBajlxTnRWeE1RYjFCVHp6bHh6ZkZxVVhfM0Jtc1RiYm1xNTBtUGZEdXc2WEZCNVpCWHlpc1YwVlVFRkxiR3phcGlnVUpGdXZER2N5aGJvNm85NnVBTHpFY1VTcTZOQURLaTdXZl9RSmtHWlN6WVNVSlMzNEdCY0VUR0h6aU5kRGFiYVJBVExPdzViZEt5eks0OUtrNmFyUUs2bV9DRmR6T0VBSUEtZTd0QQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:01:52.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Walmart Inc. : JP Morgan réitère son opinion positive sur le titre",
-   "lien": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNMlcxTnk5WjQwaG1iMGtaY3FVdlJ2UFg5UFZBWHZNWktCcE9keVgyeF9kbnY1ek1peGQzc1hjc3liazNzX1g3eVZOWGs2Y2ZsNzBGUzhsYUpZVmhuN216MTk5YWExVHBrN2EtclJmMTZieXpkalgtVEdWSEtrNFlERW5keENUbVRwOXdfWWZNNWJ2MGZIQk5ESUJRbXdmcm1oQzB1UmNtTEVoSjNqQjhEODNXci1xQWpDQXpFbTE4RzR3dw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:01:38.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "MPS lance des offres pour Banco BPM et Banca Generali",
-   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQdXNEaTlMT01ybXIwdHRaZnNRRm1YRW1PYkZTdXc1eklmeENNV0JfRHRZUHhJeHEtNDY4cUYzQWNqcUQ5RWJsOHpES3pTZEdnU1MwRDgyanB1Q3hld2VhMmZoVDlpaHBLbkNsWXplMlg1bWJoN3VNTm9yWmpPTkNjRkZUV2lFUG1pRjJzemx3YVJDRXU2VnRHNmVuSllMS09BdGxDdVNYRm1kU0tfbzdfb2FmQQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:01:24.000Z",
    "source": "Zonebourse",
    "sourceId": "zonebourse"
   },
@@ -401,22 +489,6 @@
    "sourceId": "latribune"
   },
   {
-   "titre": "Richemont: restructuration chez IWC, 18 postes affectés",
-   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPeVB6QTNIYWZ5N1gwY1lTMlFlMjlSN08yeXpCa3QtT3FyUVlfYUt5VXhZYTlMakZHSVVYUlJZUUtzcnBNNDB6RWlwMHBaTnJVOTl3WTA3dmxScXVpNmZxZkg0VkliZ0xfQ0dpQ21odmV2NkVFY2gyTjBHUDBGVXFnNFRZSEktejBRMEZsLVZ2VWtKNUhzbnY4alFvSjgxQ0J5QXltSUI4dEFsNnNmT2NwcUdvdw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:55:23.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Zone euro-Les consommateurs abaissent leurs anticipations d'inflation - enquête BCE",
-   "lien": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNRzBVd1lDZkF6cU9wQjVWNS16dUlQQ3B2R3ZfeHhmNnAtaXZxNkxEY0NIN3FSR0tEMFNiSlZwVF85TDJtQ05aZU5BNmFza3c3NWJUNW5hNEc2QzB3Z0VkVE9FRkx5VlBIbmltLXJLdEprSTJUb3UwZnc3VWJYdDM3c3ptRFhpbTRvUWVEc2xyTW5OdlBzSDNYMGNZdEpOX2Z6WGVUVVlaVm9yVnNFX2FKajQtcjhqdEMwa3FqZEVVNlh3MTJWUURyd2tpVWlnSDZQZjBUMWxhNHVfQQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:53:17.000Z",
-   "source": "BCE",
-   "sourceId": "bce"
-  },
-  {
    "titre": "Paris et Berlin appellent à la libération de la militante hongkongaise Chow Hang-tung",
    "lien": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxPSUJWZ3JQMFR2V3VUN3EybWJiZFA0YWxFWHdnaTQzSU1ySkVrdFhUVmJoVFRSbjdwNmxkQURHWUZ4XzFYMHJnME5MZ3Q5QmhOYXR3YUNoTHFoZnZVTWlaQzljLVRWaGF5YTh4RDRHcGF4OW9zdnBqUllpOWRTTWtoMXRTV3lXY2NMMFBtay1qNnFtdEVXNnBoajlYNl9ZanliUGI3cWNDcldzM0Zwc2xkaE9NeHktNDF5RDAxcUJXR0pDRjBKbThZS0NET1NFT1pKU05HWjBLVThCUzVlcWpxLTRTZmpoZWJOM01zVXVZazRKM1FLZ1EzQ2FBTmloNVNmQWlxSUhFbE3SAY4CQVVfeXFMTUpMWnRJNmhtYUVXUWtTU0hLNGliRDkwQ2Zna3FuVzVXbThIZ2FCbmNzSkFpR1FpNi1OSlJ5TVlodkRXWjY2Zjg1T3BTaVZ3NTB5R1FHVWJRTzlwUVhIaVIyQXNCZkJSV2F3d1F0akJSMmxBbng3Tmdwblg4MWU3MEFBNUJXQ2Z5eWdrTzM2dGxBeVd2VlhkZ29OSFllZEluZzNHR29NZnY2SkFuQjBNZ3FmYmdETXVVcXFkZENRUXJYTkUycjZqN3ZXQjlmTkt4VkRlSjBGd1JOU2RyQm5Na2Y1ajhBbkloSkpYWWNkUkI4RmhIOGpZU0R5X0JrYzBiSE1KTVFCYUExVG9zTG1n?oc=5",
    "resume": "",
@@ -442,7 +514,7 @@
   },
   {
    "titre": "La BCE observe une légère baisse des attentes d'inflation des consommateurs",
-   "lien": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPMmN6ci1XVHZIYmJOTVlCTmptTHhZYVBMelBYUE0xT1RiZ2M4M3NOSXZOaEpKMHMyV2RkenFENlFBc3AxSHJnSkY4akpib2RtTC1meEV6ZWt5ZEQybnZvTWV6OXU5MkROb1VhbFF2MFlqbXJLaWtJMlZra01zUXgzNnVFeVQ4TzdXei1CaFBrM0tubG1va3BHTjNReEgtY1BDZ2VCZjlSYW5hMHNTR3h4ZjVmZDBRZndL0gG4AUFVX3lxTE8yY3pyLVdUdkhiYk5NWUJOam1MeFlhUEx6UFhQTTFPVGJnYzgzc05Jdk5oSkowczJXZGR6cUQ2UUFzcDFIcmdKRjhqSmJvZG1MLWZ4RXpla3lkRDJudm9NZXo5dTkyRE5vVWFsUXYwWWptcktpa0kyVmtrTXNReDM2dUV5VDhPN1d6LUJoUGszS25sbW9rcEdOM1F4SC1jUENnZUJmOVJhbmEwc1NHeHhmNWZkMFFmd0s?oc=5",
+   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOQlM4dHFody1sWGZHTjU3NEZyZnY1cWJEMV9hOE5URl83c3ZSaWlYN0hvdkVkXzRoNG1jYmlHN1NIcDJsWXU5cWxQdG5EVk1qeV9vOURjR2JFWFN1QU9IV3J6YmQtSjlVMk1XZE10czE2NEJ3WUdPM1NrbzhGTUZEcE0tY2l2Z0pVT1pyRjhlaWxlWFNVX3Y4bllVelpHY1RySVpMU2RXMWs4LXZURGhpSnZfQdIBuAFBVV95cUxPMmN6ci1XVHZIYmJOTVlCTmptTHhZYVBMelBYUE0xT1RiZ2M4M3NOSXZOaEpKMHMyV2RkenFENlFBc3AxSHJnSkY4akpib2RtTC1meEV6ZWt5ZEQybnZvTWV6OXU5MkROb1VhbFF2MFlqbXJLaWtJMlZra01zUXgzNnVFeVQ4TzdXei1CaFBrM0tubG1va3BHTjNReEgtY1BDZ2VCZjlSYW5hMHNTR3h4ZjVmZDBRZndL?oc=5",
    "resume": "",
    "date": "2026-08-21T09:43:02.000Z",
    "source": "BCE",
@@ -513,18 +585,18 @@
    "sourceId": "investir"
   },
   {
-   "titre": "Forum Bourse OSE Immuotherapeutics - 20/08/2026 19:18:15 - G24",
-   "lien": "https://news.google.com/rss/articles/CBMickFVX3lxTE8zQTRXWFQtWURNa1RlZXZBWlg4VVdOZlJtYmZtNWMyLVg2T2VUb01RRWVrRWZ4QWluT0VWN29RQ0ZndDB1REYzTTNuRzhFYU9ULVlKbGxtVlhBNld0Sjhad3dnaUhTc180UE13QTVnT19Jdw?oc=5",
+   "titre": "Forum Bourse VALLOUREC - 21/08/2026 09:57:36 - Avis",
+   "lien": "https://news.google.com/rss/articles/CBMicEFVX3lxTFB1ZTBkS25OUzBfLTlxTjd5cGJNY3NqX29VNUljUFhMczUtZ3ZnamQ1Q0VEVS1BOGxsSkZiNm03R3Jsd1RHMUEwdTJoWkM4MG50bFpPbnp1bGdRckJwejZHX3J1Y2VaM3BSeVo5WkotcXI?oc=5",
    "resume": "",
-   "date": "2026-08-21T09:21:13.000Z",
+   "date": "2026-08-21T09:23:19.000Z",
    "source": "Boursorama",
    "sourceId": "boursorama"
   },
   {
-   "titre": "Les entrées de capitaux dans les fonds d'actions mondiaux ont atteint leur plus haut niveau en trois semaines",
-   "lien": "https://news.google.com/rss/articles/CBMizwJBVV95cUxPX0hVNHBsM3dwQzJNQTZ0eTR0VTN4R09kdWRFUWVmcGt6cXgxanJMS1VlaktrWEctVWpoN1NOc3VMSEgwemtOdjZBcU4xV0RvS2kzdjBsLW5TQlNSblN3czVlQk5lRW81c1kzU3VKaE9Ncl8zTG53ajdFdE9FdTVKamtIYi1vb1ZidEFBWGl6cVdhTkt1ZmloWGt2RXktVkpDaTJSb2ZrUlNMVDVBQVpDTktfMXBGemtwTXlqSWo3RW96U01jRGRoZXY0VUl2TjlDOHVXcUFkTUFFaDAyNFZUUVF6UmRaRkVTdG5WakotME9BX2RhbGxPbXdXTGhqdWc5TVJGbG5XQlVHdm5STWZLXzJWaFhWSXIyNVpuMVQwcWZsZkxLSzhVU21SdFdzWmlqT1o5MWtTQV9uUE5KdHR2NUxtS1lYSk9xUjh4LXRDNNIB1AJBVV95cUxQbllUX3FndDJCaU5SOFpTVmxTLW5VU0RuZTlmMU14c1RxZ1MycFFtRF9maTlZZWh3emU1b2p1Yld1MFVweGVEdDd2RGx4OTBJT2g2NzdrUXVYM0FSX3pqdEFYbm1Ybll6Q1JoUW81ajliRnZDQmkxcHZndWYtVWItcVN0NE1uSmtxU2xzbkdKN21TaWdUWFBkNkMtV2JabndYNmR6ZnhqOEY2c21qeWd0ZEtpTVdIQXYwMUNNNEFudEZ1MjV1WV9Ba0lMVVJNUE5Zck80Mnh4TjZwamxJb0xMWEZtaFYxZnhTVXBSV3duTGIzRWhwalJpRkRwVmU0dUNrTXlyRXk1NDlTOG1HT01ZRGhNT2xraUxCb0RvUWRqZVhMbFp1eEpRMG9UcF9ORjRaSi12eWtCa2M0amJ4dXFSMkQtcWhGWjJUQThkWmdfSUl5Y1hZ?oc=5",
+   "titre": "Forum Bourse OSE Immuotherapeutics - 20/08/2026 19:18:15 - G24",
+   "lien": "https://news.google.com/rss/articles/CBMickFVX3lxTE8zQTRXWFQtWURNa1RlZXZBWlg4VVdOZlJtYmZtNWMyLVg2T2VUb01RRWVrRWZ4QWluT0VWN29RQ0ZndDB1REYzTTNuRzhFYU9ULVlKbGxtVlhBNld0Sjhad3dnaUhTc180UE13QTVnT19Jdw?oc=5",
    "resume": "",
-   "date": "2026-08-21T09:19:40.000Z",
+   "date": "2026-08-21T09:21:13.000Z",
    "source": "Boursorama",
    "sourceId": "boursorama"
   },
@@ -545,14 +617,6 @@
    "sourceId": "marketwatch"
   },
   {
-   "titre": "USA-Les valeurs à suivre à Wall Street",
-   "lien": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPRDRXQVhUM3RabjE1UVZuN3ZmcTRqTEQtR3ZfNEpERDZySWFjb2VjdXdJcGdYTHUzOGJ5Qm1iWm02TDdqbVBhWkRYNTZWeTM3dk4zMm5MX0ZWbHRjT2s1VHk1Q0R0SVhzNVlqMml0bnJsRHFBbGRkTjExMTRUVW5FZUZjMThGaTE0dFZEeWpyRXhQT1JfY1dFbWhzd2FZV21GdFdycllwOEtVeHFveV9hdHk0WmZaOFXSAbwBQVVfeXFMTThaT0g4SGM0cy1KZ0pHV29QT0dfUHh4blI4YXdwaUlDN0toZFVJZHc5RTY5WnVoUk5PT3BsZkhEVGdqV1RBRmM3OHAzV0dGLXN2blhnRUlxbF9ieGxSbExQeVRMQU12Vjl2MlpfaUlVOFRWc29MYm5XUlFnRGM0Z0JSQldVN2ZpQ08wZlV3cm9DU0VVdFpFWXJjbnVraGxmRFdtdjZfd1YtLTN4Z2JBNEdaRzhydWpFMWxWUW4?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:14:12.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
    "titre": "Hedge funds are doubling down on Big Tech even after summer volatility triggered a massive portfolio cleanup",
    "lien": "https://www.marketwatch.com/story/hedge-funds-are-doubling-down-on-big-tech-even-after-summer-volatility-triggered-a-massive-portfolio-cleanup-57dbbf8a?mod=mw_rss_topstories",
    "resume": "Hedge funds entered the second quarter all-in on the AI trade, but have begun to diversify their portfolios lately. They’re dipping into healthcare, energy and financials.",
@@ -567,14 +631,6 @@
    "date": "2026-08-21T09:08:18.000Z",
    "source": "CNBC — World Markets",
    "sourceId": "cnbc-monde"
-  },
-  {
-   "titre": "Société Générale en léger repli, KBW passe à \"sous-performance\"",
-   "lien": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxNRUd1V3B6amtkQVhoVDcwNmlLdTAyWjZjTVViNFVzTGZuaVVGYi1vRmMyZ2tMNXVMVzhxZzNwQmk1NEhWUGNTejNHSi1zbk5IVWN3VGt1cVhrUGl0WDZLVlhTTFI4SF9DaWZZUnZDQ2F5T25pb2pkVmY1UEZRcmNzMnRhVHQzUmI3RnZFN1FlVnJyMkVuMG96YVhvNENkUURhZGVVdjBOblQ3R2dHQWxPbnBvR3lpdC1mRHowMlZsc2hiVEthSlRDSm1Oa1hpRWVHS2otLdIB2gFBVV95cUxOTFQwZXpuLWhkdF83UHhXUnJsQjgxVzFHeU8zREU4dEFzS09MbkE0Q1phaGIxdGxNbjNJTm1hdTh6dlBLbTY4anlMNC10UGdTZlluazdoRzJYb3h0b2lSRGJJcDQ5bkZEWk9NVy1jb013aFVWbTFVTzR2SmtJbVFLSThMQ2VrQmwzM0s1NEZtSnpVQ0RTUU1CcnVxV3NyajZ4LXRFWmpmQkFJemZnd00tclNoMWlUSVNlRFZtN3p0TlBJSHI1Z05tZWYyRldGN1J4WmFtdFpTa05lQQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:07:00.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
   },
   {
    "titre": "Legendary film editor Billy Weber of ‘Miss Congeniality’ and ‘Top Gun’ lists historic L.A. home for $4 million",
@@ -697,14 +753,6 @@
    "sourceId": "investir"
   },
   {
-   "titre": "Zone euro : les rendements obligataires reculent légèrement, l'inflation et les craintes budgétaires restent au centre de l'attention",
-   "lien": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxQYTJnb1I2MUJsT2w2UklVMk0zdzB6T2NJOHlOdlNwQWV1UHMzczlDTldGUkhGMy1IN0RBakVhQXVyWjd1aFpsdmZRSk11MV9iOUM1SkhFWWVWcjYzaVp4MWl0akZmcExvcXY1SVVuU3ZnOWo3YTNRRkNKNl9yTEU2UmtNM3FUY3NTWXJjeXR6WDA5RzkzSzJmaDF4MVY0bWV1T0NKZDJxeEdZc05KNXVHb2U5Z2gta3QwaXBUWUFzay0wSXdNeXh2TEI2TGJ3NVBFQ1RubUY0M0YyWlZRYk53Nl95cWhQTDQ4aVBHUjNtQQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:49:35.000Z",
-   "source": "BCE",
-   "sourceId": "bce"
-  },
-  {
    "titre": "Climat des affaires : l’industrie repasse au vert, le bâtiment reste à la traîne",
    "lien": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOQTJtUXZ3dkkxNEswRy1uRUxUQ1ROdk1sMkFicWNGUWFFY3liOUNEdWFVVTZFRHU5ZEg2aGo2Z19NS1lqMThMTk8tcS1rZkstV3ZkZFVDOXhtSjRNWlE3ZWVKalNTOUtMeFF0M0VmYnhnZm9Yd2ZEd0xGWUFUNkhNVXo2SGJ5V1dkWVN2Zm15LUx6aUt4bWU0TnllTUxQWVkwZHlwOEJSWnV3SkhfUEV6Qjhpb0FlcWhKM2RFTmtKR1NJMUxaWTVyTEhUY29MRk0?oc=5",
    "resume": "",
@@ -781,14 +829,6 @@
    "lien": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOZkRQa3JJUkVPa2hub2ZTR0xzWTlRSl9GVFRyTERKUWo5b1U2TzV6WXNYcDVhQTJrdGdyM041VVVwTUhEaW1TLUZsUW9pWTNNQXpEY0xXT2pvZ21YLTNHU2oyTWZxd0x2aEFpZkhPemFkWDdHNE5ZeWpTUjZFRnBPVW5WTDl3RGtKNTVmYkxTZGdjek5OUjZR?oc=5",
    "resume": "",
    "date": "2026-08-21T07:25:42.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "- Les Echos",
-   "lien": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPY2ZzVnJMMXRrODdCNjhfM1Fudngwa2xvbDVuM1BBaHdLanBfR0RlSDl5Wl9iRVZzLUJyWENYRVZQRUlmMy0wd1FjanlPbHQ0Y3REQzRmdHB3eTJZdTJFVjQweUVTT2ozMUZOeXBtbE5wVDVHMU5ZOGl2WXYtc2VmZVptQk0?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:25:41.000Z",
    "source": "Investir",
    "sourceId": "investir"
   },
@@ -887,14 +927,6 @@
    "date": "2026-08-21T06:54:27.000Z",
    "source": "franceinfo — Économie",
    "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "504.000 dollars par départ : HSBC met la main à la poche pour se séparer de 134 cadres stratégiques",
-   "lien": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxPdDdoNWVWeF8wUjIzeGc4RzZKS19mU205ZjhXdDBCb2hJWERpS0tYUlVXRVZzYi11NENRT0pMYkRGT3BjV1ZkempzbGRCbWNDUWlNOXZvZDhTZ09uaGtKMnNxY0t0WG9WNjVVQ196REpwbmFwTGQ0QWFvUmQ3b0VNQkhOa3Iyd045MU9rS1drM0RyelRZUWZHSUtLdV8tS3ZWMzZobGV5a01rV001VXk2bnk1bmc0Y2s0cVF2WHRUOThrU1g3OXVJZGlZSWEySGczV1dLZGNoY0t5WFFqX3d6eGZCMmsyX2x0R1VJaVk4Qk9kenIz?oc=5",
-   "resume": "",
-   "date": "2026-08-21T06:53:21.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
   },
   {
    "titre": "Franchises médicales : \"Il faut que le gouvernement renonce à toute augmentation\", estime la CGT",
@@ -1039,38 +1071,6 @@
    "date": "2026-08-20T22:00:00.000Z",
    "source": "MarketWatch",
    "sourceId": "marketwatch"
-  },
-  {
-   "titre": "We’re in our 50s and have $1.5 million in traditional 401(k)s. Is it too early to start Roth conversions?",
-   "lien": "https://www.marketwatch.com/story/were-in-our-50s-and-have-1-5-million-in-traditional-401-k-s-is-it-too-early-to-start-roth-conversions-2d0f9287?mod=mw_rss_topstories",
-   "resume": "“The last adviser we worked with lost a significant portion of our portfolio.”",
-   "date": "2026-08-20T21:01:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
-  },
-  {
-   "titre": "Wall Street dans le rouge, obligations et consommation pèsent",
-   "lien": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNOWxKU3F2aTNCdVZqWTNtaTk3MDJqUjhCbHZVdTJkSXhIYVR1aExGZTVwR3NwZXcxWXNUNnFpVG9WUnFLeGNoX1g5LWNFZ1RkdjhWbXhnR1dkU3RfNG1wa0JMREt3VFlpaUxFMlZJaHRNLWI5RUdxbjF0SGFVUXBwVFFJUlBqbFk5QzJsbUpxU0UyQWhxMU5kNWpJYjZCamlpdmttNjhCTWdzU2NDdk1lYkl4NVBrOFpobmZ0S08xTDJqWjQxS09IUkNyU1A4SWdKVzhxd25tTk8wUdIB2gFBVV95cUxNOWxKU3F2aTNCdVZqWTNtaTk3MDJqUjhCbHZVdTJkSXhIYVR1aExGZTVwR3NwZXcxWXNUNnFpVG9WUnFLeGNoX1g5LWNFZ1RkdjhWbXhnR1dkU3RfNG1wa0JMREt3VFlpaUxFMlZJaHRNLWI5RUdxbjF0SGFVUXBwVFFJUlBqbFk5QzJsbUpxU0UyQWhxMU5kNWpJYjZCamlpdmttNjhCTWdzU2NDdk1lYkl4NVBrOFpobmZ0S08xTDJqWjQxS09IUkNyU1A4SWdKVzhxd25tTk8wUQ?oc=5",
-   "resume": "",
-   "date": "2026-08-20T20:51:44.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "Marchés en Asie: séance contrastée après le recul à Wall Street, le yen se raffermit",
-   "lien": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5UTld2SmJ0Zm9QZy1mUnFXakFWMVhCMTJEdDhxMFU4MmlDMmhXUjY4RmhSZlNiUlpZM2xUTkZ4cHZDUkpXVGNNWWw5azdPMGc2cm85eFhJTUJLUzJwLVJJU0tR?oc=5",
-   "resume": "",
-   "date": "2026-08-20T20:35:00.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "Federal Reserve Board announces approval of application by National Westminster Bank Plc",
-   "lien": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260820a.htm",
-   "resume": "",
-   "date": "2026-08-20T20:00:00.000Z",
-   "source": "Réserve fédérale",
-   "sourceId": "fed"
   }
  ]
 }
