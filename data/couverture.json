@@ -1,5 +1,5 @@
 {
-  "genere": "2026-08-19",
+  "genere": "2026-08-20",
   "couverture": [
     {
       "isin": "FR0007052782",
@@ -8,8 +8,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": false
     },
     {
@@ -19,8 +19,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -30,8 +30,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -41,8 +41,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -52,8 +52,19 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
+      "capitalisation": true
+    },
+    {
+      "isin": "FR0013411980",
+      "nom": "Amundi PEA Japon (TOPIX) UCITS ETF EUR Acc",
+      "poche": "act-japon",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-22",
+      "fin": "2026-08-20",
+      "points": 509,
       "capitalisation": true
     },
     {
@@ -63,8 +74,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -74,8 +85,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -85,8 +96,19 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2025-03-11",
-      "fin": "2026-08-19",
-      "points": 368,
+      "fin": "2026-08-20",
+      "points": 369,
+      "capitalisation": true
+    },
+    {
+      "isin": "IE0002XZSHO1",
+      "nom": "iShares MSCI World Swap PEA UCITS ETF EUR (Acc)",
+      "poche": "act-monde",
+      "mic": "XPAR",
+      "statut": "ok",
+      "debut": "2024-08-22",
+      "fin": "2026-08-20",
+      "points": 509,
       "capitalisation": true
     },
     {
@@ -96,8 +118,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -107,8 +129,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": false
     },
     {
@@ -118,8 +140,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": false
     },
     {
@@ -135,8 +157,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": false
     },
     {
@@ -146,8 +168,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -157,8 +179,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -168,8 +190,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -185,8 +207,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": false
     },
     {
@@ -196,8 +218,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -207,8 +229,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -230,8 +252,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -253,8 +275,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -264,8 +286,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -287,8 +309,8 @@
       "mic": "XAMS",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -322,8 +344,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -333,8 +355,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -344,8 +366,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -355,8 +377,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -366,8 +388,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -377,8 +399,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -388,8 +410,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2024-08-16",
-      "fin": "2026-08-19",
-      "points": 512,
+      "fin": "2026-08-20",
+      "points": 513,
       "capitalisation": true
     },
     {
@@ -399,8 +421,8 @@
       "mic": "XPAR",
       "statut": "ok",
       "debut": "2025-04-11",
-      "fin": "2026-08-19",
-      "points": 345,
+      "fin": "2026-08-20",
+      "points": 346,
       "capitalisation": true
     }
   ]
