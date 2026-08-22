@@ -357,14 +357,21 @@ function donut(segments, taille, epaisseur, centre) {
      voisines se touchent et la frontière devient une illusion
      d'optique plutôt qu'une donnée. */
   const jeu = 2 / r;
-  let angle = -Math.PI / 2, contenu = '';
+  let angle = -Math.PI / 2, contenu = '', rang = 0;
   segments.forEach(s => {
     if (s.valeur <= 0) return;
     const arc = 2 * Math.PI * s.valeur / total;
     const fin = angle + arc;
     /* La couleur passe par `style` et non par l'attribut `stroke` :
-       un attribut de présentation SVG n'accepte pas var(--…). */
-    const trait = 'style="stroke:' + s.couleur + '" stroke-width="' + epaisseur + '" fill="none"';
+       un attribut de présentation SVG n'accepte pas var(--…).
+
+       `pathLength="1"` ramène la longueur de chaque arc à 1, quelle que
+       soit sa taille réelle : le pointillé qui le fait se dessiner se
+       règle alors en CSS, sans que la feuille ait à connaître le rayon
+       ni la part de la poche. `--i` porte le rang, et rien d'autre —
+       c'est lui qui décale l'arrivée des arcs l'un après l'autre. */
+    const trait = 'class="segment-donut" pathLength="1" style="stroke:' + s.couleur +
+      ';--i:' + (rang++) + '" stroke-width="' + epaisseur + '" fill="none"';
     if (arc >= 2 * Math.PI - 0.0001) {
       contenu += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + trait + '/>';
     } else {

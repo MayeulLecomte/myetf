@@ -391,11 +391,25 @@ avant que le camembert ne les prenne, et `arbitrages.png`, libre depuis plus
 longtemps encore. Les garder tant qu'aucune vue ne les réclame, ou les
 supprimer au prochain rangement.
 
-**HUIT DESSINS SUR SEIZE PORTENT ENCORE LE BLEU `#2F6BFF`** de l'ancien
-registre : `enveloppe`, `contexte`, `profil`, `revenus`, `journal`,
-`rapport`, `univers`, `methode`. Les neuf autres ont été repeints en violet.
-Une vue sur deux ouvre donc sur un signe qui n'est plus celui de
-l'application — c'est le même défaut que le favicon, en plus visible.
+**LES SEIZE DESSINS SONT VIOLETS.** Huit portaient encore le `#2F6BFF`
+de l'ancien registre — `enveloppe`, `contexte`, `profil`, `revenus`,
+`journal`, `rapport`, `univers`, `methode` : une vue sur deux ouvrait sur
+une couleur que l'application n'emploie plus.
+
+Ils ont été **repeints par déplacement de teinte**, `scripts/repeindre-dessins.py`,
+et non redessinés. Le trait ne bouge pas d'un pixel — redessiner huit
+illustrations aurait fait dériver le style, et l'on aurait eu seize dessins
+en deux traits au lieu d'une couleur en trop.
+
+**La cible n'est pas une rotation de teinte.** Les dessins déjà violets
+sont moins saturés que les bleus — 0,59 contre 0,81 — et tourner la seule
+teinte aurait donné un violet électrique accordé à rien. C'est la famille
+entière, saturation comprise, qui est déplacée : les seize tiennent
+désormais la même teinte 244 et la même saturation que le logo.
+
+Le script est **idempotent** — après un passage, plus aucun pixel n'est
+dans la fenêtre du bleu — et il reste au dépôt pour le jour où un dessin
+arriverait encore dans l'ancienne couleur.
 
 **Deux tailles, et deux seulement**, tenues par `TAILLE_ILLUSTRATION_TITRE`
 (38 px) et `TAILLE_ILLUSTRATION_BANNIERE` (180 px) dans `js/ui/socle.js`. Elles
@@ -1050,6 +1064,76 @@ garde-fous, et chacun répond à une façon de rester coincé derrière :**
 Il est monté par `poserEcranOuverture()` et non écrit dans `index.html` : écrit
 dans la page, il resterait à l'écran si un script échouait à se charger, et
 l'application entière serait derrière un voile qu'aucun clic ne lève.
+
+## Le signe est le même partout, onglet compris
+
+`icone-180/192/512.png` et le favicon portaient **les trois barres** de
+l'ancien signe quand l'en-tête porte la pousse : deux dessins pour une même
+application, et celui de l'onglet n'était pas celui de la page.
+
+`scripts/icones.py` ne redessine plus rien — **il DÉRIVE l'icône de
+`img/logo.png`**. C'est ce qui l'empêche de diverger à nouveau : il n'y a
+plus de géométrie recopiée à tenir d'accord avec un SVG qui, lui, avait
+déjà disparu. Le jour où la pousse est redessinée, relancer le script
+suffit.
+
+Trois choix, et ils se tiennent :
+
+- **fond plein et lavande** — plein parce qu'iOS applique son propre masque
+  arrondi, et qu'un coin déjà arrondi laisse une frange claire ; lavande
+  parce que c'est le fond de l'application. Un fond violet aurait avalé le
+  dessin, qui est violet ;
+- **le dessin est cadré sur son encre**, boîte englobante de la couche
+  alpha, et non sur le fichier — `logo.png` porte une marge transparente
+  irrégulière, s'y fier décentrerait la pousse d'une douzaine de pixels ;
+- **68 % du côté** : une icône iOS est rognée par le masque, un dessin qui
+  touche les bords se fait manger ses extrémités.
+
+`theme-color` et le `theme_color` du manifeste suivent — ils annonçaient
+encore le bleu `#1f5aa8`, que la barre du navigateur affichait autour d'une
+application violette. Le `background_color` passe au lavande.
+
+Le script dépend désormais de **Pillow**. L'ancien écrivait son propre
+encodeur PNG : tenable pour trois rectangles, pas pour lire un PNG et le
+rééchantillonner. **L'application, elle, n'a toujours aucune dépendance.**
+
+## Le mouvement se pose sur ce qui porte un chiffre
+
+Trois gestes, un seul principe : ce qui se construit sous l'oeil se lit
+mieux que ce qui est déjà posé quand on arrive.
+
+| Geste | Où |
+|---|---|
+| **L'anneau se trace**, poche après poche | `.segment-donut`, 0,5 s, décalage 0,11 s |
+| **Les barres se remplissent** jusqu'à leur repère | `.barres .part`, 0,55 s, décalage 0,08 s |
+| **Les pastilles du fil arrivent** l'une après l'autre | `.fil-item`, 0,34 s, décalage 0,05 s |
+
+**Aucune ligne de JavaScript**, et une seule dépendance côté balisage : le
+rang de l'arc, que `donut()` écrit en `--i`. Les barres et le fil se
+décalent par `:nth-child`, qui sait déjà compter. `pathLength="1"` ramène
+chaque arc à une longueur de 1 : la feuille règle le pointillé sans
+connaître ni le rayon ni la part de la poche.
+
+**⚠ L'état de départ vit dans les keyframes, jamais sur le sélecteur.**
+C'est le même piège que `animation-timeline` : un `stroke-dashoffset: 1`
+posé sur `.segment-donut` laisserait l'anneau **invisible pour toujours**
+sur un navigateur qui n'anime pas. Écrit dans un `from`, il n'existe que
+pendant l'animation — sans animation, l'arc se rend plein, ce qui est le
+bon repli.
+
+**⚠ Le fil ne bouge que son opacité.** Une animation en `both` garde son
+dernier keyframe et l'emporte sur les déclarations normales : un
+`transform: none` final aurait neutralisé le `scale(.93)` de
+`.fil-item:active`, et la pastille n'aurait plus répondu au doigt.
+
+**Les barres se coupent au `clip-path`, pas au `scaleX`.** Une pilule mise
+à l'échelle horizontalement écrase ses arrondis pendant toute la course :
+on voit la barre s'aplatir puis reprendre sa forme.
+
+Le papier et `prefers-reduced-motion` montrent l'état d'arrivée, tout de
+suite. Le premier n'est pas une politesse : le rapport peut s'imprimer
+avant la fin des animations, et un anneau à moitié tracé partirait au
+client.
 
 ## Le rapport imprimé échappe à tout cela
 
@@ -2127,6 +2211,5 @@ de la revue en cours avec un CGP.
 | **Univers ETF dégrossi** | 3 482 mots et 42 lignes de tableau sur une vue, trois cartes empilées. Un premier visiteur n'y comprend pas ce qu'on attend de lui. La ligne d'entonnoir a réglé la question « sur quoi choisit-il ? », pas celle du volume |
 | **Note du jour en vitrine** | le seul écran immédiatement lisible sans dossier, rangé derrière deux niveaux de navigation. En mode particulier elle est carrément masquée |
 | **Position des actions (A/B/C/D)** | **à trancher après la revue.** Les quatre options ne sont pas encore écrites : les consigner ici dès qu'elles le seront, avec ce qui les départage |
-| **Favicon et icônes d'écran d'accueil** | l'en-tête porte la pousse depuis le chantier 9, mais `icone-180/192/512.png` et le favicon portent **encore les trois barres** de l'ancien signe. Deux dessins pour une même application. `scripts/icones.py` les régénère depuis une géométrie SVG qui n'existe plus |
 | **Indicateurs macro prioritaires** | onze indicateurs présentés à plat ; il manque « les trois qui pèsent le plus », faute de quoi aucun n'est rempli — donc aucune déviation. Ne concerne que le mode conseiller |
 | **Mode sombre** | retiré au chantier 9, faute d'une seconde palette arrêtée. À rouvrir comme une palette à définir, pas comme une bascule à rétablir |

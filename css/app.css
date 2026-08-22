@@ -4048,3 +4048,96 @@ h2:has(.souligne), h3:has(.souligne) { line-height: 1.34; }
     justify-self: center;
   }
 }
+
+/* ============================================================
+   (n) LE MOUVEMENT SE POSE SUR CE QUI PORTE UN CHIFFRE
+   ------------------------------------------------------------
+   Trois gestes, et un seul principe : ce qui se construit sous
+   l'oeil se lit mieux que ce qui est déjà posé quand on arrive.
+   L'anneau se trace poche après poche, les barres se remplissent
+   jusqu'à leur repère, les pastilles du fil arrivent l'une après
+   l'autre.
+
+   AUCUNE LIGNE DE JAVASCRIPT, et une seule dépendance côté
+   balisage : le rang de l'arc, que `donut()` écrit en `--i`. Les
+   barres et le fil se décalent par `:nth-child`, qui sait déjà
+   compter.
+
+   ⚠ L'ÉTAT DE DÉPART VIT DANS LES KEYFRAMES, jamais sur le
+   sélecteur. C'est le même piège que `animation-timeline` : un
+   `stroke-dashoffset: 1` posé sur `.segment-donut` laisserait
+   l'anneau INVISIBLE POUR TOUJOURS sur un navigateur qui n'anime
+   pas. Écrit dans un `from`, il n'existe que pendant l'animation ;
+   sans animation, l'arc se rend plein, ce qui est le bon repli.
+
+   ⚠ LE FIL NE BOUGE QUE SON OPACITÉ. Une animation en `both` garde
+   son dernier keyframe et l'emporte sur les déclarations normales :
+   un `transform: none` final aurait neutralisé le `scale(.93)` de
+   `.fil-item:active`, et la pastille n'aurait plus répondu au
+   doigt. C'est aussi ce que font les items du questionnaire —
+   l'opacité seule.
+   ============================================================ */
+
+/* L'anneau se dessine, poche après poche. */
+.segment-donut {
+  /* Avec `pathLength="1"`, un tiret de 1 couvre l'arc entier : sans
+     animation, l'anneau est plein. */
+  stroke-dasharray: 1;
+  animation: tracer-anneau .5s var(--ressort) both;
+  animation-delay: calc(var(--i, 0) * .11s);
+}
+@keyframes tracer-anneau {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Les barres se remplissent jusqu'à leur repère. `clip-path` et non
+   `scaleX` : une pilule mise à l'échelle horizontalement écrase ses
+   arrondis pendant toute la course, et l'on voit la barre s'aplatir. */
+.barres .piste > .part {
+  animation: remplir-barre .55s var(--ressort) both;
+}
+@keyframes remplir-barre {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.barres .barre:nth-child(1) .part { animation-delay: 0s; }
+.barres .barre:nth-child(2) .part { animation-delay: .08s; }
+.barres .barre:nth-child(3) .part { animation-delay: .16s; }
+.barres .barre:nth-child(4) .part { animation-delay: .24s; }
+.barres .barre:nth-child(5) .part { animation-delay: .32s; }
+.barres .barre:nth-child(6) .part { animation-delay: .40s; }
+
+/* Les pastilles du fil arrivent l'une après l'autre. */
+.fil-item { animation: arriver-poche .34s ease-out both; }
+@keyframes arriver-poche {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fil-item:nth-child(1)  { animation-delay: .02s; }
+.fil-item:nth-child(2)  { animation-delay: .07s; }
+.fil-item:nth-child(3)  { animation-delay: .12s; }
+.fil-item:nth-child(4)  { animation-delay: .17s; }
+.fil-item:nth-child(5)  { animation-delay: .22s; }
+.fil-item:nth-child(6)  { animation-delay: .27s; }
+.fil-item:nth-child(7)  { animation-delay: .32s; }
+.fil-item:nth-child(8)  { animation-delay: .37s; }
+.fil-item:nth-child(9)  { animation-delay: .42s; }
+.fil-item:nth-child(10) { animation-delay: .47s; }
+.fil-item:nth-child(11) { animation-delay: .52s; }
+.fil-item:nth-child(n+12) { animation-delay: .57s; }
+
+/* Le papier ne montre rien de tout cela, et surtout pas un anneau à
+   moitié tracé : le rapport peut s'imprimer avant la fin des animations. */
+@media print {
+  .segment-donut { animation: none; stroke-dashoffset: 0; }
+  .barres .piste > .part { animation: none; clip-path: none; }
+  .fil-item { animation: none; opacity: 1; }
+}
+
+/* Qui a demandé moins de mouvement voit l'état d'arrivée, tout de suite. */
+@media (prefers-reduced-motion: reduce) {
+  .segment-donut { animation: none; stroke-dashoffset: 0; }
+  .barres .piste > .part { animation: none; clip-path: none; }
+  .fil-item { animation: none; opacity: 1; }
+}
