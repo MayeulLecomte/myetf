@@ -1,5 +1,5 @@
 {
- "genere": "2026-08-21T10:58:00.176Z",
+ "genere": "2026-08-22T06:57:04.940Z",
  "fenetreHeures": 48,
  "sources": [
   {
@@ -78,7 +78,7 @@
    "id": "cnbc-monde",
    "nom": "CNBC — World Markets",
    "statut": "ok",
-   "retenus": 7
+   "retenus": 5
   },
   {
    "id": "yahoo-fin",
@@ -96,13 +96,13 @@
    "id": "fed",
    "nom": "Réserve fédérale",
    "statut": "ok",
-   "retenus": 4
+   "retenus": 3
   },
   {
    "id": "bce",
    "nom": "BCE",
    "statut": "ok",
-   "retenus": 12
+   "retenus": 11
   },
   {
    "id": "macro-fr",
@@ -113,6 +113,758 @@
  ],
  "articles": [
   {
+   "titre": "Route arctique : Séoul teste son alternative maritime au Moyen-Orient… et se place sous dépendance russe",
+   "lien": "https://news.google.com/rss/articles/CBMiggJBVV95cUxOd0ZDQUlOa2l5TDBrRklJQlQ5b2tZUU81ZjNlWktONjlEVXJvSnh5dVczYmtjWG9WSEFzWnM4MXJBY3ZWa0JDWW1WX3haU0hBNUVFMDV0eEJNRVpnc2FOSGFTVmNuYnJHd3dIMnNYWks0RHYzSVMxQnNyaFctQWxRU1l5NEd6dDFrdFEwMllfZEFFVVg3YkZYYktfVnN3bTNOVEZOZmFKNlNXaWFwRTAzazRoX0wtNC0xNWRXQXJZTmZ2SGpJTklINTRxT3cyNi1vY3FXeE01enpTVU9VdWFzZ1F1NWVwYVQ2elJpMmhuM2tSUDZsbnk1cXVuS2NLRkVoVlE?oc=5",
+   "resume": "",
+   "date": "2026-08-22T06:55:01.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "Droits de douane : Trump taxe le Canada, Carney promet une riposte « au dollar près »",
+   "lien": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQY2RNWEdsTnhKTkxBWHlVbEhZdEtmdV94UGVCQmNGdWRyN0RrcjFiUHVHNDNjY2hIMTQycm91Z2pZem5pd25TWm9GZVgtSTBWQ3hWNC1ZQWZsZDE2b1FNcEdZVHJ5NTZGbGdNbDMzUTQ4eENid0doa1pnUE9tOGNUbnJIcENNT2NlcV9leDBzZUthcnZ5SngxUHF2a2QyMWNLUEtIYTdEQkpVbVYzOURXTUdlQXpfMDA4UnJLZkdvbzlLd2FnNEphNHNNNHRwOTllc092Q1h1cTlkZndPSjhwOVA2NA?oc=5",
+   "resume": "",
+   "date": "2026-08-22T06:09:26.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "Transcript : Simplex Castings Limited, Q1 2027 Earnings Call, Aug 19, 2026",
+   "lien": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxPQWVaNElyaDBabG1KLS12ajZKR3VVU1lmT3VyU0JVa0VDMm9uX1dIdjVjZDFqd0Jud3dqRFl4eTMwQmxYano5bDhfRzhrcUtvZjl0VGdqZGF2VmMycGZNLUhOdkRJWG9JUWZoVWdjVEdDeThwaXpVUWdYeUs5dWU0aXZTeVhoRDd6RzZGLXh3UXNONS1pcjlOTmxBZXNzNS02MXJJN0wxbWFRN0dSZ3ZBNU1tMnB2TmRzY3c0MXdZczJzRWQzOWRhTzh3eGVfd3hPcWkyMHY1VDFSdUtMZko0SjRiTVlPem9rc1NtRlh3SXZaeEU3cmNz?oc=5",
+   "resume": "",
+   "date": "2026-08-22T06:05:28.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Les navettes fluviales sur le Rhin reprennent du service",
+   "lien": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQTVNhYi01OXgwZ3NCa1AzbWpvTUFjUmRjOTJ5SnFUdWJtQjlIMl82TzV5LS1LRjhQeU1DMmlGTjVsRmUwMHFhM3F5dzgzYi1IVlIwTnJ4UndHTXp1NmZ6WUQ2N1NtT0VlSXJ0NEx6TnBVS3Q5ejFoTFNyODZ5aGpjSUpDUDdBSGREZ3hVU0pQOEFmQ1EtU1U4M2tWOEVNYXZIeFNhNmhiQW5hdnN1ajdxZjJYNHNsSmY4?oc=5",
+   "resume": "",
+   "date": "2026-08-22T06:04:48.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "L'intérêt pour la téléphonie fixe continue de décliner",
+   "lien": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQWFMtaExkY0hQaUE0MUd3M1IwOWwwTXpKNTlNS1h1VkJrSG1VLVhhTDc1MWJXZGI5YzlIdW1YTnBQaDdTMG5nRGQzYjBKcTIxZGJxcVB3Ql9hVkFSMnpEbTUxelk0QURvMVNpeHlxVjdneGdRclJleWoyOGdRQ0FGQlpLVTY0c2k5ejVISFZjU1k0MlduRUlZRWZnd2JtdjBIdW83aHoxLUc5T0dXRjdEVHBpMmQ?oc=5",
+   "resume": "",
+   "date": "2026-08-22T06:04:31.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Exportations d'armes : Inde, Indonésie et Grèce, le tiercé des plus gros clients de la France en 2025",
+   "lien": "https://news.google.com/rss/articles/CBMigwJBVV95cUxQQmxIR0xVN0FjdlFJSEVOS0VFcGRYMlQ1a0NHbkoxcmUtSGo2Q3ZSaXZJanJldWxqOW9oSjlYYVZVZzNsaUNBYlMzNzIxdG1Udkk5aGdPbEpmRjRZZjYtVllUX0NOLVNlYjg2ODYxV2xEUkNjc1BLQzg0NmlldTg0cFNkWVBGdGtkT05Vak9HRDhlTDN1RXNoVTN4Y2w3d2JDek96UnBZNUJnQWJ5dV90T1Y1X002QVZjNWt3QlJZS3R6dFItc1Jqbm80RGYycktCWWlVVE9xX1VXeC1JakJ6eEtuTFVjd3JVazdacDJ3RWlQRGpoZ0RxSzFpSGM1U0tqT3Bz?oc=5",
+   "resume": "",
+   "date": "2026-08-22T06:00:01.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "De Tahiti à l’île de Pâques : cette agence marseillaise qui réinvente le tour du monde de luxe",
+   "lien": "https://www.challenges.fr/fortunes/de-tahiti-a-lile-de-paques-cette-agence-marseillaise-qui-reinvente-le-tour-du-monde-de-luxe_645167",
+   "resume": "500 FORTUNES - Depuis près de quarante ans, la discrète agence marseillaise TMR vend à une clientèle triée sur le volet des voyages en avion et croisières exclusifs.",
+   "date": "2026-08-22T06:00:00.000Z",
+   "source": "Challenges",
+   "sourceId": "challenges"
+  },
+  {
+   "titre": "Près de 190.000 entreprises ont fermé en Allemagne l'année dernière: le chiffre est au plus haut depuis 2014 mais seule 1 boîte sur 8 était en situation d'insolvabilité",
+   "lien": "https://www.bfmtv.com/economie/economie-social/union-europeenne/pres-de-190-000-entreprises-ont-ferme-en-allemagne-l-annee-derniere-le-chiffre-est-au-plus-haut-depuis-2014-mais-seule-1-boite-sur-8-etait-en-situation-d-insolvabilite_AV-202608220039.html",
+   "resume": "L'industrie automobile allemande, la restauration et la santé sont les secteurs les plus touchés par la hausse des fermetures d'entreprises outre-Rhin. En l'espace d'un an, l'automobile a perdu 42.300 emplois en juin, et",
+   "date": "2026-08-22T05:59:00.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "OPINION. La bataille des talents a commencé, la France est-elle prête ?",
+   "lien": "https://news.google.com/rss/articles/CBMivgFBVV95cUxObEpPcjVwem9ITHV4SWJvd2JwRWxRRUhXeERNVlU3S0hLSEhHbWNrVVlhQjBILTZnbm1vT1RxZVVmVkNvN0RnQm1fdklKTWM5cW5LSE9oaTg2Yk84eVpBLXBUd0ttbXN5RXhJTTk3M0FFbmo1RHhNZ3h5MzRfSFpyeHBsemVBdGtXdlNxcWRjdDJvMFpRc1c4ZThHNHZJTUZnV3pqblVYdlM3dzl2S0x0OHhrbmQyV1R0am8zbjJ3?oc=5",
+   "resume": "",
+   "date": "2026-08-22T05:40:03.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "Comment réduire les dépenses de rentrée et faire le ménage dans son budget ?",
+   "lien": "https://www.franceinfo.fr/replay-radio/c-est-mon-budget/comment-reduire-les-depenses-de-rentree-et-faire-le-menage-dans-son-budget_8071895.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Rentrée scolaire, impôts, taxe foncière, activités extrascolaires ou encore abonnements : les dépenses s'accumulent à la rentrée. Anticiper et faire le tri dans son budget peut permettre de réaliser d'importantes économi",
+   "date": "2026-08-22T05:30:01.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "« Personne n’est prêt à parier qu’il sera encore là à Noël » : le chancelier Friedrich Merz face à la révolte de son propre parti",
+   "lien": "https://www.challenges.fr/monde/personne-nest-pret-a-parier-quil-sera-encore-la-a-noel-le-chancelier-friedrich-merz-face-a-la-revolte-de-son-propre-parti_645293",
+   "resume": "Depuis son accession au pouvoir en mai 2025, le chancelier allemand Merz n’a cessé de dégringoler dans les sondages. Au cours des dernières semaines, son impopularité a encore grandi, atteignant 87 %. Son style cassant, ",
+   "date": "2026-08-22T05:30:00.000Z",
+   "source": "Challenges",
+   "sourceId": "challenges"
+  },
+  {
+   "titre": "\"J'ai vu qu'il y avait un trou\": les vols de carburant explosent face à la montée des prix de l'essence",
+   "lien": "https://www.bfmtv.com/economie/video-j-ai-vu-qu-il-y-avait-un-trou-les-vols-de-carburant-explosent-face-a-la-montee-des-prix-de-l-essence_VN-202608220059.html",
+   "resume": "Face à la montée des prix du carburant, les voleurs n'hésitent pas à siphonner et percer les voitures des particuliers pour tenter de récuperer l'or noir.",
+   "date": "2026-08-22T05:04:10.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "Rentrée scolaire: les prix des fournitures scolaires en net recul cette année, vigilance sur le lieu d'achat du matériel",
+   "lien": "https://www.bfmtv.com/economie/video-rentree-scolaire-les-prix-des-fournitures-scolaires-en-net-recul-cette-annee-vigilance-sur-le-lieu-d-achat-du-materiel_VN-202608220058.html",
+   "resume": "180 euros: c'est la moyenne de coût pour équiper un éleve de sixième cette année. Une facture en net baisse de trente euros, comparée à l'année dernirèe selon l'étude annuelle de Famille de France.",
+   "date": "2026-08-22T04:59:32.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "524.000 dollars la journée: les tarifs des pétroliers flambent dans le détroit d’Ormuz et font la fortune des armateurs",
+   "lien": "https://www.bfmtv.com/economie/entreprises/transports/524-000-dollars-la-journee-les-tarifs-des-petroliers-flambent-dans-le-detroit-d-ormuz-et-font-la-fortune-des-armateurs_AV-202608220038.html",
+   "resume": "L'enlisement de la guerre au Moyen-Orient maintient les tarifs des superpétroliers à des niveaux historiquement élevés. Pour en profiter, certains armateurs comme le sud-coréen Sinokor se bousculent pour acheter de nouve",
+   "date": "2026-08-22T04:59:00.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "Droits de douane : pas d’accord de dernière minute entre le Canada et les Etats-Unis ; Ottawa imposera des surtaxes d’un même montant, « au dollar près », affirme Mark Carney",
+   "lien": "https://www.lemonde.fr/international/article/2026/08/22/apres-l-echec-des-negociations-de-la-derniere-chance-les-nouveaux-droits-de-douane-americains-entrent-en-vigueur-contre-le-canada_6752728_3210.html",
+   "resume": "Faute d’entente entre les deux pays, les nouveaux droits de douane de 50 % voulus par Donald Trump contre un certain nombre de produits canadiens sont entrés en vigueur samedi.",
+   "date": "2026-08-22T04:43:26.000Z",
+   "source": "Le Monde — Économie",
+   "sourceId": "lemonde-eco"
+  },
+  {
+   "titre": "Transcript : Milbon Co., Ltd., Q2 2026 Earnings Call, Aug 10, 2026",
+   "lien": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNTEh5UWk4d0tIMEdHSFljWjg5Rlk3ZHhWYllWZVlBcFM1ZFRuVTJZYWZmemZGWkw0dTRZS0Z1YTVUajZlZHpDY19BdktCSlNwdS1YMnVrLTltdHkyUTdXVWZpQTNkQjlETzhtZ1ctYk10bTRTS0JIeTAtbEF6M0tuS3haaXRORDN2UkwzTVpqZUhhR3czSTktQ1ctc3FwVjNiU1ZxMGY2YjBsOHZLZllIb0RkaU9PZDRycTJ2VEJfWmdyc1g5VUpKMHRYZE1zMU1JaDQwSTJZZw?oc=5",
+   "resume": "",
+   "date": "2026-08-22T04:33:44.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Présidentielle 2027 : les syndicats, inquiets par les reculs dans des pays dirigés par l’extrême droite, essaient de se mobiliser contre le RN",
+   "lien": "https://www.lemonde.fr/politique/article/2026/08/22/presidentielle-2027-les-syndicats-inquiets-par-les-reculs-dans-des-pays-diriges-par-l-extreme-droite-essaient-de-se-mobiliser-contre-le-rn_6752695_823448.html",
+   "resume": "Une note de la Fondation Jean Jaurès et de son équivalent allemand, la Fondation Friedrich-Ebert, publiée à la fin du mois de juillet, fait un bilan de l’action menée par les gouvernements aux Etats-Unis, en Hongrie et e",
+   "date": "2026-08-22T04:30:07.000Z",
+   "source": "Le Monde — Économie",
+   "sourceId": "lemonde-eco"
+  },
+  {
+   "titre": "Transcript : OncoSil Medical Limited - Special Call",
+   "lien": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPc0FPd0t5MEFEX3A0RFNFM1N5OExFRmNFWFk2RTI0RFhqU3FnMkJsUXBqZTRBYW5NOHpuZ3ctRnVvckhMNmd0M2xtYWFxbXl0Rnl0WFEwbXFlYnMxU2plcHNEclR0bS1tLXFmRlJVTHprRER6VTVKZkNWcUFGSlhZaXdiTzIwM3ppNWNHbVhXUW56a0pXVVhrQXFyNnQ1Um14WWQyV0prQk9pbjIySjI5MF9ZSVFUbTFJa1lfUHVGMFZQVTdsZndiOWVTYjdfdkF3R0tEa24yNA?oc=5",
+   "resume": "",
+   "date": "2026-08-22T04:22:16.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Pas d'accord commercial entre les Etats-Unis et le Canada",
+   "lien": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNY2xQYjUtVjBwc2NrQ0Q2UWw1amktZmxLWnRpLV9tVlpreDhmUHdwRWJTck9PUHNnMmZ0bU5IdlZJeU9qbWdQS3FJR19VaXZJb1FIaVVXRFBidlk3N09fLW9tQVZUSFZIYThLTTRJWXZjandOcUROMXRndG1LZlZDbTBTbDhIR1ZoOTRJRURLbVd6bks2R0diQmQtc2ZkOWVyeUlmOGxCdi1pQVRKTi0wcktGM01ycEtC?oc=5",
+   "resume": "",
+   "date": "2026-08-22T04:18:20.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Droits de douane de Trump",
+   "lien": "https://www.bfmtv.com/economie/international/droits-de-douane-de-trump_DN-202504040609.html",
+   "resume": "Le président américain a annoncé le 2 avril une montagne de droits de douane visant les pays du monde entier, dont une surtaxe de 20% sur les produits européens. Une décision qui sonne officiellement le début de la guerr",
+   "date": "2026-08-22T04:02:20.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "De nouveaux droits de douane américains visant le Canada entrent en vigueur après l'échec des négociations, Mark Carney dénonce des positions \"injustes\" posées par Washington",
+   "lien": "https://www.bfmtv.com/economie/international/pas-d-accord-trouve-entre-les-etats-unis-et-le-canada-pour-eviter-de-nouveaux-droits-de-douane-mark-carney-denonce-des-positions-injustes-posees-par-washington_AN-202608220044.html",
+   "resume": "Le Canada a refusé vendredi 21 août au soir d'accepter les conditions posées par Washington afin d'éviter l'entrée en vigueur de droits de douane punitifs.",
+   "date": "2026-08-22T04:02:19.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "Agenda des résultats de la semaine : Nvidia en guest-star",
+   "lien": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPY1UwLUpRaEJ4OTBvR05MTGJSRElJb0ZzMUp1ZkR4ei1aRGx0R2thQVNMYnZIYUk2cjB0Y1R6eXNZUDdMR1laZl9lUmlUcENvTHVXb1dDX2hOLWVXNE9SYlJmRUxYQmxUQkVFUFRJNGN6cmdvQkFEWVNPZzVMLXBxbW90eF9URUlKNUJSM1hJOFo4TVA1REZDQWttdVY2TDRoNWpYdm5NdFJLUkRhdUE?oc=5",
+   "resume": "",
+   "date": "2026-08-22T03:44:28.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Agenda Economique Zonebourse : cap sur l'inflation PCE et le PIB américain",
+   "lien": "https://news.google.com/rss/articles/CBMizAFBVV95cUxPb3l4Y2FPX2lDeUpSanBCZ1J3eUxIdExqQTNjYWc1Q0R1aGZBVi16aFk0VFoxaV9kZnVGQmR1bW5VT0xKMFhIRVNjYlZ4N24zWEpOdm45QllYYzJhTFNYZXNESzMwZFhfRy1hNzhnWUNrWkpZa3VyV0E2SkdZQmMtX3VNY3ZucVFsRnVJMnlET1F6WUtOdWxHRUwwM2Izc25CSmt2eTBpT3B0Um4yUzJZVmpGVzhjMlNCd2tZeW5XcnhhOGhoUFRuTDJwS04?oc=5",
+   "resume": "",
+   "date": "2026-08-22T03:41:01.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Wall Street a clôturé la semaine sur une note négative, mais a finalement terminé en territoire positif. - Vietnam.vn",
+   "lien": "https://news.google.com/rss/articles/CBMiggFBVV95cUxQSWFESHEwalhPdDNnb1AwRjZaYW5pZkVnY2RmOGpQSDQ3cTFVX1lCUVB0c19CdFZ4S1FDNjRYZGV2OG1xUE8xbW9UbkYydFA2M29aZEd1SUotVlBsSzZSb2NMTHJlVHNXSnlWSkJkdTd3YnAzVXROWHh5aHp1ZVkzdmJn?oc=5",
+   "resume": "",
+   "date": "2026-08-22T03:30:38.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
+  },
+  {
+   "titre": "Top 5 IA du 21/08/2026",
+   "lien": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNWEZTZXZCQ001SWRNVENQMmtGSGVwRjZqdjFBTlpWc2k4b0stTUtkVC0xSkxrV2JndkZJWWFpWDljMmlqOFRRbG9pTG9lZFB3ZHUwaVNPUjBWNTJGcTU4QnNfMVpPV0xSdkItY3ZJQkNqUEdiNURxVTRLOThid1FFUXVUMGZ5ZVVqOEhGcEIzbFhxNlN5SW1iaUVRa01OWUhyRGfSAacBQVVfeXFMT3psVG1rSzRncFhlSDFXRXVrMkRwTUV5MllYQ0w0a0w2UEsxRTVlNjFsY2RzU0tWenpwMmRFRlRvX2JQdzRILTJzSzRjakZjMWtFUWR1SGZEY2NUc0ItN2x5Y3QzQXFXSjY4NGRHS2hRMkRCRWItcjhyOWdHazhocDFlc3dLQzJPbzliTFNBS1VpVk5LS3Fmb1BEOEdOVFQwYkRCQTRtcGM?oc=5",
+   "resume": "",
+   "date": "2026-08-22T03:00:10.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Des avions militaires américains ont survolé le détroit de Taïwan",
+   "lien": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxNVFFOWnlMYWpwTldDb3M1dHJYR0NXdXFFOW5nT3NOT2JrMFZtQlRCaHFJZzhXWDBRUEYwc3ZaYnZTOElUWmRpNUdrajRYbUsyT0NYQlpwQWVHbzRMcTdnaWdFVDVIY2dHVmJHeGc2N2VMbUMwdXFKSThEMzlwSEp5bktrelNDMzIzdGZCRzh2QVhJeDN2ZU9sNU1aUXdrQkJRMUU1d21vUzBGdWxHeTRSWENxQlZkNFpFZ1ZidW1oMlZHVXdOdG1mMnFvUXJOeVI5ektQQ0M4MFRzbHpld05tWXRCdm9aRTdsS04zSlJn0gHzAUFVX3lxTE9kc05Yd1VpY2FUSnNlcjAyeVdJdklEYWcyRmFaRERNblpKS3NKRnp5bWw4Tm9LdHFsVS0yTDIyREJFWVVUWkhtUnhGR2EzWENQZDd0RE1EZ3BxemhWYTNMTkI1Y0Q4ZHQzMkJjYkVOU3ZEa2NLS1Zxa3VHcWpULWFkaE5FRnpkbGtRdHpQWmFNVTdhWHpvMUlXdlA2OERtdTdTbGpvUWZKUEZTZlRFRVphVGFZdkRtbFBQWUVlTkJmdnBGUDRsMWhNRlR5NlhmQW5jZGd2TjJoa2k5U1cwcXFGdEtWYXhjektLdnVvRGtfOG1XWQ?oc=5",
+   "resume": "",
+   "date": "2026-08-22T01:41:11.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Au moins 13 disparus après un naufrage au large de la Tunisie-association",
+   "lien": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxQYzFsaGJGZjlkN2RxZTJINU81V1JfUDdtOVphdVlPWWIzSGtHUmRIVldvYW5Yb1g2RWp6dGxaeWNrVDRscEp1RUVBTzZtZkdyRzhsekJod21ERlBBVngyVjBrb0pJZlFlMno0T1ZXbXZjV2pXRkh5a2NXaTd6NzhZaW1VODJ6a3RFbU5UWGtROVRab3lqckFFbkZTNVdLX2FjZlMzQ0ViR1AtYi1JQU5RVHAyUG5wTXFnTkp0Y0VlSnpkVFh5MkFwNGVJOWFuem04QjBRQjZmYXM3UUZ6cUVVTjlYNHVNcjdjN19rdW5GLWJtNkFHT01WNdIB_gFBVV95cUxOeTU2cC04cURaeS10ZlRvalBDc1ZOdXJvb2E4MGxJVVBwd0N3S0pkM09FQmNqWkdhWVM5VTdlcUVNeE9PbVZ1ZWNEaVh4ejU3aEhDOHhxYkRNQXAxWGZRdFoxbHhQZndKcDFRMXpaUmt5RW5DbzVyZmJYZjdLbVBwdzlQQXMtVGpLdnAyN3FNRkFLbDFMMkZyd3NSTUphNGpQU1I3ZFN2RjJBM1d5d3FIWThtMnNWQjhXdDhBajc0WlBxWTRna241UjY1WlJYMmlPV1hRTTFSNWs4dFFWdHQzdS1YUUF0a1dVaUZ5VUc5X25QUkRHeThYcWVqWFYtdw?oc=5",
+   "resume": "",
+   "date": "2026-08-22T00:57:03.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Is the Fed’s stock valuation model working again?",
+   "lien": "https://www.investing.com/news/stock-market-news/is-the-feds-stock-valuation-model-working-again-4872237",
+   "resume": "",
+   "date": "2026-08-22T00:37:50.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Judge narrows Ben & Jerry’s lawsuit accusing Unilever of silencing social activism",
+   "lien": "https://www.investing.com/news/stock-market-news/judge-narrows-ben--jerrys-lawsuit-accusing-unilever-of-silencing-social-activism-4872236",
+   "resume": "",
+   "date": "2026-08-22T00:36:36.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "La mise en service de l'usine de regazéification Pacific en Colombie, sous contrat avec Ecopetrol, est retardée",
+   "lien": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxORnJndGh6b3dYdng3UG50NGNqQUNiSldCUlB2c3B6b1dMY2RhTEY3U1kxcUZNRUF6Qy1tck95Uy13b2J6UDRHTDdyMEdvMU9SVGREUlhnNEh1QmhmTEFSOTB6eGFmekY0UEQ1RGludmJQNGFKc2xVZHBjRWV2NW1qSXJ6RGdnZG96cWpkYWV0Zi1tQ0g3aDhHQmd2a0x5Qm5rdVJidENhVjhEZWJUNjdWc3A1UEFIa3BOUUJyN3VwdUZMS2I0azhaYmNuRUdHY21HbmN0YmVtTV9QbEdHVFRsWHpoaEwxOEJOUjFfRm1qVUE?oc=5",
+   "resume": "",
+   "date": "2026-08-21T23:43:22.000Z",
+   "source": "Zonebourse",
+   "sourceId": "zonebourse"
+  },
+  {
+   "titre": "Actualités du 21 août 2026",
+   "lien": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFB1b0JZSDRZZjBRTnlJZWVBR1ZwTHcxNFZCQXZSajNRdUwxdFRRTlY3c29PWHBWeHVLVDdqQm1oLTdPZG1qQXlvZDJxV2I1VURKMlRGbDROdkt1bDI2YXBmcExXWQ?oc=5",
+   "resume": "",
+   "date": "2026-08-21T23:23:09.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Boeing engineers, technical workers reject contract offer",
+   "lien": "https://www.investing.com/news/stock-market-news/boeing-whitecollar-union-contract-vote-results-expected-today-4871891",
+   "resume": "",
+   "date": "2026-08-21T22:54:30.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Explainer-What we know about the door handles that triggered China’s record auto recall",
+   "lien": "https://www.investing.com/news/stock-market-news/explainerwhat-we-know-about-the-door-handles-that-triggered-chinas-record-auto-recall-4872176",
+   "resume": "",
+   "date": "2026-08-21T22:30:31.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Forum Bourse BIOPHYTIS - 22/08/2026 00:27:00 - On parle de baisse de volume mais..",
+   "lien": "https://news.google.com/rss/articles/CBMidEFVX3lxTE0wTGoxME83ZHZDQmQwRUV2LVhJMXZDY0xTWTZScnRhV1dKdVdTWTdOZWU0VUtWRDJId1dsOGZpbUdxZUloUUNMdnZzNnpMZ0xRVEVqQlhpUUt2WDFPVWprVHExTXhmWGltdmtwMkFNTmFDdmZ5?oc=5",
+   "resume": "",
+   "date": "2026-08-21T22:27:00.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Trump, pressé de faire baisser les prix, lève temporairement les taxes sur le boeuf importé",
+   "lien": "https://news.google.com/rss/articles/CBMijgJBVV95cUxOS093a0N6Yjc4QXhJVnF5aWtRMndjVEgybm9MblIxT282THBoV3pZSlVXUkJiRWFrdXY2aUtCNFY0eFA0bDFuTERKRjhCTlZZNXVicDlUNkduaE9TSUJqUW96dmQ0Nlk3enpfNTFWaDFtUkE3eExranFyN3Q1dkoxM0RkU002RjNDNDA4OHNDWUl4cDV0TzQ4UThCVlREQXhmTzhjWWNRTFZiLVZQRmtrZ1B0Z3NldXo2NmZoNnJXdU5RWHZsQkYxSExvMWdkbmlyLTh2Z3JQbkR2UGJTNWMtOFBEVkhMZ2gydkd1VzBNSkpFRFZLWXh1Wm5LSEdUWm91V0V6MG5NMEdxd1JXRlHSAZMCQVVfeXFMT3FWc3ZRRkppUmgyREtsbm9NYVBGZ3BXYU5laFFySnkxemU4VkVpbG1sM3BLRDBkZnE3WnlLVWZfa1dyWFdlbTFOZEpPUFBfOTFVVGZjVVBDb01JNDd3ZDkyclBMVkRSVi1kbWJ3WlU0R3RnbVVTSG1aWFl4TlM2a216NlJpNTVtZVB0Nmw5cVpoT2tEb0REbkRGRlZXZHJtaVpOY0hMZ0NhWmcxa0N6dW5IOVdQY09JMFl3djZ4Wkx6VFZTXzJXTFBvRmJXX3dBSzEyMlhkdUhIM1g1S2ZWUTNYVGF6bEZlUWRzNU5JdFNDZEUxay15RnZ2STNCLWJXcjVJc1hiOFl4NHU0c0UtTlVZRXc?oc=5",
+   "resume": "",
+   "date": "2026-08-21T22:25:00.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Démission de M. Guinta, directeur financier de New Fortress Energy",
+   "lien": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNM0lIY3BTWjBpM3lIcjNVWWJGUWtDVlZwa1FidjdhUmIwOGdWQ1RYMVpXRkJOVXZ2Vl8zc2taQTdkZUZWZGE2QkFxRWtacFVQSVk1Sk5XQWVCN25zSXJ6aTdvRVdwRVgzbEpSUW9kZjlzU0RQZXAtMEFQcXVIWkFlZnF6MmNzVmdFRl9QLTBtdTdEc1Ftd3lZa3Z0czNxT2JSZnRQSS0xMzlDRS1NLWRrVHJXbXYwckY0Zi15RlcyWVJDVEs1WjQyeHRreE9NSUtRX3psTHQ2aDB5Z9IB3wFBVV95cUxQbGt0b3hLNFYtNWdzTFY5cTdBVkg4SWl5cERsRTRYZE1DRUlxVHc3Ml8yT3FLRTlHR0lDa0dzajVTaGFRRkhqdGZ3bkFEdEV0a1NaRDNVdGdZQTR5SWZzMk1WYlBrRktCZ2FDaGRoVkl3U2g4cXV3QzMzMHFOcVNhcktoSWFnTHZ3Yk1Dcno4X2xkNU10TkMwZTNuWDJKZnlwc0pmMDBYRVVubDRpaW1zSnFwc056MkJVM0NKZWhUWUpoXzR2TjF5YWRZeGtJUFgyZDQ4N2JGeVVUWU1WSGZj?oc=5",
+   "resume": "",
+   "date": "2026-08-21T21:34:54.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "OpenAI cuts developer pricing for frontier GPT-5.6 Sol model by more than 20%",
+   "lien": "https://www.investing.com/news/stock-market-news/openai-cuts-developer-pricing-for-frontier-gpt56-sol-model-by-more-than-20-4872186",
+   "resume": "",
+   "date": "2026-08-21T21:31:32.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Les ingénieurs et les techniciens de Boeing rejettent l'offre de contrat",
+   "lien": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxPb2xvWmdWandtZ2M4ZUJYRVpOY1RweE9tUWVKMWlJNkZ0andoWENUbnZ3OG1hRkszdzE1ZVNyZFF2bTlrdnBzVk05SE9VVHRlME94REFVZDRyWE9iZG84VW9WYmhXQ3padUpfMk9mQUE2ajNDbmFkTTVnVFFvUGIxcHF2VkN1cWYyc0xNVWt6dzFzckp0aHd5dTdEcnJpZnFhZFpQR25RdmZvN1NUREhUaDBpa3dZbjlqQkdQLWpaZndfRUlLNFI5OHhTNHltUkg2QnQ4aVZ0NzlGV1l0NDJGTnlrNjPSAeoBQVVfeXFMT3Z5VXd5LUs2QmV4VEc0blJTLXpuc0VMbzlsZU9kbHViNEE5c29zMkx4VEVjR2szZEZQWHdGejktVWhvay1IaWdDbGFsU0ZzNE9KVmI1aTlzRXQwWW1qSG55VHpXNzZDNXZVU0t1LUNhaUNIaGFmQ3g1a2c4TkNLYmViRG5hWjN6YWxsQlVpTXRUSjNCdUgybURWVEtSM041NFFlNTUyaWJVRXlMd2JtQ3hEaExMMktIUndZNl9RSWxmYTFHOW90alRhb2xQSTNMYXAyREp6ZWRrM3ktbmtsMGtRRHh5dWRaZ1NB?oc=5",
+   "resume": "",
+   "date": "2026-08-21T21:31:03.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Mexico stocks higher at close of trade; S&P/BMV IPC up 2.14%",
+   "lien": "https://www.investing.com/news/stock-market-news/mexico-stocks-higher-at-close-of-trade-spbmv-ipc-up-214-4872182",
+   "resume": "",
+   "date": "2026-08-21T21:30:05.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Fitch upgrades Summit Midstream rating on financial strength",
+   "lien": "https://www.investing.com/news/stock-market-news/fitch-upgrades-summit-midstream-rating-on-financial-strength-93CH-4872180",
+   "resume": "",
+   "date": "2026-08-21T21:29:09.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "TTM Technologies outlook raised by Moody’s on strong AI demand",
+   "lien": "https://www.investing.com/news/stock-market-news/ttm-technologies-outlook-raised-by-moodys-on-strong-ai-demand-93CH-4872179",
+   "resume": "",
+   "date": "2026-08-21T21:26:50.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Colombia stocks higher at close of trade; COLCAP up 0.61%",
+   "lien": "https://www.investing.com/news/stock-market-news/colombia-stocks-higher-at-close-of-trade-colcap-up-061-4872177",
+   "resume": "",
+   "date": "2026-08-21T21:25:03.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "Russia stocks higher at close of trade; MOEX Russia Index up 0.60%",
+   "lien": "https://www.investing.com/news/stock-market-news/russia-stocks-higher-at-close-of-trade-moex-russia-index-up-060-4872173",
+   "resume": "",
+   "date": "2026-08-21T21:20:02.000Z",
+   "source": "Investing.com",
+   "sourceId": "investing"
+  },
+  {
+   "titre": "You can now Venmo your kid’s college tuition. But should you?",
+   "lien": "https://www.marketwatch.com/story/should-you-venmo-your-tuition-heres-what-to-know-as-colleges-add-new-payment-options-1a70ae96?mod=mw_rss_topstories",
+   "resume": "Some universities will begin accepting the nontraditional payment method as consumers seek flexible spending options.",
+   "date": "2026-08-21T21:20:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "\"Pour moi, c'est la liberté\" : la caravane toujours chère aux Français",
+   "lien": "https://www.franceinfo.fr/culture/pour-moi-c-est-la-liberte-la-caravane-toujours-chere-aux-francais_8156756.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Chère aux Français, la caravane s'est démocratisée à l'aube des années 50. Devenue culte, elle connaît aujourd'hui un retour en grâce.",
+   "date": "2026-08-21T21:19:02.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Soon you can buy Medicare Advantage plans at Costco. What you need to know.",
+   "lien": "https://www.marketwatch.com/story/soon-you-can-buy-medicare-advantage-plans-at-costco-what-you-need-to-know-34e03242?mod=mw_rss_topstories",
+   "resume": "The warehouse club becomes the latest consumer brand to offer health insurance.",
+   "date": "2026-08-21T21:17:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Forum Bourse GENFIT - 21/08/2026 22:53:41 - Dans INVESTIR",
+   "lien": "https://news.google.com/rss/articles/CBMic0FVX3lxTFAxRC1Oam9nRzNQenlVR1FmVkVRM3ZvbUY1QjQtamY0b0c4NS0yaVRVUVcta0FoaFJ1T05QOXNYTUl6ZThKRkRXcTBnQU5tbE9JSV9ndnBGa2N3M0VqbmpyQ19XT2RFTG5pRElza2ZwWDdlbk0?oc=5",
+   "resume": "",
+   "date": "2026-08-21T20:53:41.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Le Coin des épargnants du 21 août 2026 : le retour de la menace des taux souverains ?",
+   "lien": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNTEFGdHB1MEE0VGdxdy1ZMW16SGU5dm91WGNIOVZyblVPU05wdDZNVnJEUzZycnV6bnR6blc3MWw5OVBjOWdnaDZMdXMxYk1TMXA4YU5SamR6eFhiTmRCTVhJVHduUWJ6d0NIS1RwVjFfRjE3b2xCM0V2ZmdydzR6dXJfb2FvcTVXNFBkLUFhZGV4SUxvY1kyQWJjbmZvcUU5UU9j?oc=5",
+   "resume": "",
+   "date": "2026-08-21T20:52:44.000Z",
+   "source": "Taux et obligations",
+   "sourceId": "taux"
+  },
+  {
+   "titre": "Wall Street termine en hausse, l'obligatoire et la géopolitique restent un frein",
+   "lien": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPY3U1Q3hiaTBJOEtTX2JZR0hVWXBMb0hNNDJJTXI4WVU4SkFMWnN1R1BqMzRacVBITEp5aFFsdHJReXlaUHhqZEd1dVlPMW9OYllYR1hpT01ITWVPVGVuaEtGamVnMzBUVmVlWUVQTU5OY2MwdjdTNDU3TVRqUGY2YVE0bV9oYThBZmktSHNSX01kUVNMLXBHYkxjdXhFNlZsczNSZ3p6eS1WQmQ5dndBOHREOXV6alZGUWNzTE9jZ0ZwRnA0Y3JHSmRiekVKMWRCSEFpZVZ1UkJiMFlGWjdQcXNFUlBEVVNScEh6X2xB0gHzAUFVX3lxTE1qNGhtS3ZEdUZmRDBMUWZvWVYyYnlCTERsT3JqR3BRWExSTVRJb1hZNGFkX25BbmREUXdoN0dpUnYzWlY1aEtjcWM5TlY4NUpVR3pJM3JDeUU5TnZJZkQ1MmFra1JmbW1rRUplODBsejNrUUxoZ3dhZUN4R1hlS3haWlVkOTZiWGtaQ01zeVJWckFDRnhSQXV2Ynk2ZGI3SF9GMmRiY0Z6MjlMb1l3OF81N2NhZmZQVUtVNlVSV284ZU1FQmVfVUN4R09ENlFrd0VYMWhuNGNPSVlLZkVDbkg1NXVVM0QzdTF3c2UzLTVnUFMxbw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T20:50:54.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "Tesla’s stock jumps as the company gets cleared for a Las Vegas robotaxi launch",
+   "lien": "https://www.marketwatch.com/story/tesla-stocks-jumps-as-the-company-gets-ready-for-a-robotaxi-push-c680f87f?mod=mw_rss_topstories",
+   "resume": "The automaker plans to soon launch its Cybercab in Austin, Texas, and got the nod to deploy thousands of vehicles in Nevada.",
+   "date": "2026-08-21T20:34:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "TGV Hendaye-Paris : des passagers bloqués pendant douze heures après un impact de foudre",
+   "lien": "https://www.lemonde.fr/economie/article/2026/08/21/tgv-hendaye-paris-des-passagers-bloques-pendant-douze-heures-apres-un-impact-de-foudre_6752288_3234.html",
+   "resume": "Le train parti jeudi à 16 heures d’Hendaye devait rallier Paris dans la soirée. Les 500 passagers sont finalement repartis vendredi 21 août à 6 heures de Bordeaux.",
+   "date": "2026-08-21T20:25:50.000Z",
+   "source": "Le Monde — Économie",
+   "sourceId": "lemonde-eco"
+  },
+  {
+   "titre": "I plan to leave money to grandkids — but they must pass financial-literacy classes to get it. Is that fair?",
+   "lien": "https://www.marketwatch.com/story/im-leaving-my-grandkids-money-but-they-must-pass-financial-literacy-classes-to-get-it-is-that-fair-8a630648?mod=mw_rss_topstories",
+   "resume": "“I do believe very much in delayed gratification.”",
+   "date": "2026-08-21T20:11:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Retirees: This investment gives you a guaranteed 5% safe withdrawal rate",
+   "lien": "https://www.marketwatch.com/story/retirees-this-investment-gives-you-a-guaranteed-5-safe-withdrawal-rate-facdfd76?mod=mw_rss_topstories",
+   "resume": "TIPS yields are at or close to 20-year highs.",
+   "date": "2026-08-21T20:11:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Here’s how Bessent’s newly activist Treasury Department is undercutting the Fed’s Warsh",
+   "lien": "https://www.marketwatch.com/story/heres-how-bessents-newly-activist-treasury-department-is-undercutting-the-feds-warsh-480455c2?mod=mw_rss_topstories",
+   "resume": "The surprising move this week by Treasury Secretary Scott Bessent to intervene in Treasury markets to lower the cost of government debt undercuts the credibility of Federal Reserve Chairman Kevin Warsh to make interest-r",
+   "date": "2026-08-21T20:11:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Sports betting to build wealth is becoming the new American dream",
+   "lien": "https://www.marketwatch.com/story/sports-betting-to-build-wealth-is-becoming-the-new-american-dream-1e29b728?mod=mw_rss_topstories",
+   "resume": "More people under 30 are using gambling as a shortcut to buying a home or paying student loans",
+   "date": "2026-08-21T20:01:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "\"Ma voiture s'est arrêtée plusieurs fois\" : les pièges de la location longue durée",
+   "lien": "https://www.franceinfo.fr/economie/automobile/ma-voiture-s-est-arretee-plusieurs-fois-les-pieges-de-la-location-longue-duree_8156699.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "De plus en plus d'automobilistes choisissent de louer un véhicule neuf, plutôt que d'en faire l'acquisition. Mais attention aux mauvaises surprises du leasing, notamment au moment de la restitution de la voiture.",
+   "date": "2026-08-21T19:53:45.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Près de 12 heures de retard : le calvaire des passagers d'un train reliant Hendaye à Paris",
+   "lien": "https://www.franceinfo.fr/economie/transports/sncf/pres-de-12-heures-de-retard-le-calvaire-des-passagers-d-un-train-reliant-hendaye-a-paris_8156687.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Les orages ont fortement perturbé le trafic ferroviaire dans le Sud-Ouest. Un TGV Hendaye-Paris est arrivé dans la matinée du vendredi 21 août avec près de 12 heures de retard. Une nuit éprouvante pour les 500 passagers,",
+   "date": "2026-08-21T19:47:39.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Former JPMorgan exec takes on Social Security advisory role",
+   "lien": "https://www.marketwatch.com/story/former-jpmorgan-exec-takes-on-social-security-advisory-role-d0cf6e4f?mod=mw_rss_topstories",
+   "resume": "Matt Zames will take on an unpaid adviser position at the Social Security Administration, according to reports.",
+   "date": "2026-08-21T19:11:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Le président iranien veut mettre fin à la guerre, jugeant l'Iran \"en position de force\"",
+   "lien": "https://news.google.com/rss/articles/CBMihwJBVV95cUxOQW9obWV0V3gwV0xYTHNKNmJZUG1kVjFlOTJfSE50UnpBQlYwRlU0Tml2aEdVQjRZUUFtMDliRVQxSExiMjdMTm4yOWZLZUxqNnM5VzNfRVpHNnNXOTFUNlVSbk5WQXpFTVIzTkVNQWRmWm80NXF0MGh2UzFUcXlwQTd4MG8yUnczZW5TNFZxNDhpWWtXbUNwT0xZSG8zcGM5a1lJdE82b2lNWEdzeEY4dVNlbUU0cmtVVWNoSzFXSEx1dkVkV3diYVFha29hLUhLMFRKYkkwTEhLbmNRajN2SUNVQUNCamNqYUctdDV1emliLThYZXFOMEM2cU52OXdFZUM3WHA1Y9IBjAJBVV95cUxPQTdyRkhOYjJxNzBjMHJiMmNzMEpaRU1QRWtXYnpwdlVyVHRGSmg1My1sM2ZvOFlONU5fYjR5S19qNm4xN2VXWlBFSU5wUzhzY1ZiWnlkWl94SFJOZ3NFWHZGenV0dnVGZDk4YWNtZmNHdVFjcUtPeDkwOHFxNWhYZU1EbW5IcHhjTGFxMnpvVi1kTVBseFNpVFNmcG9mdWpaWGxYZ2VLVW1scnZTcV9hMGRxSU45Mlc4clVFV0NrdVZMMF82ZlR2cnBCci1wMWN5NXZSbUhoQmd5V0IzRzRod2taekFoTUZwa3lzZjFyRFNjVk5pX3U4LWdaVWtNWXZFN0lHZDdfdHFYc0RW?oc=5",
+   "resume": "",
+   "date": "2026-08-21T19:02:00.000Z",
+   "source": "Boursorama",
+   "sourceId": "boursorama"
+  },
+  {
+   "titre": "‘The estrangement isn’t about politics’: My daughter hasn’t spoken to me for 4 years. Do I leave her a monthly annuity?",
+   "lien": "https://www.marketwatch.com/story/its-truly-a-tragedy-my-daughter-hasnt-spoken-to-me-for-4-years-but-it-has-nothing-to-do-with-politics-86c4bcf6?mod=mw_rss_topstories",
+   "resume": "“You’ll have to trust me when I tell you that she had love, support and opportunities.”",
+   "date": "2026-08-21T19:00:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "Wall Street progresse sur la séance mais recule sur la semaine ; les rendements obligataires et l'Iran au centre de l'attention",
+   "lien": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxNMGhScGxobG9HQ1gwRFlpclZNc0lsUlZCQ0dMODJvNS1fV3VzTVJBQVdsNTlmWkRrazhoZE5nTGl1ZEx0RjIzdmFieHU1c0d4UWxxMDRtdXEtVzRNZ0lUWEdWbnpQVC1pSV9JN2FEVnRETThXMjlreUN1Sk1yak1zajhsdV8yMm5sRXluV3gzRHlYY1YycUlKM2liWExON0tELUZYd1lMUVlNWFlXYTJfVG55TERLMmxVanI0NmhJWnJDaXYxckM4TWRVUWNhb2VKdVJxRjJzcFRyeTQ2ejNhTDNiVmg0T09XclMyVndJcw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T18:57:30.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
+  },
+  {
+   "titre": "U.S. Bank Business Shield Visa review: Solid 0% APR offer, but little long-term rewards value",
+   "lien": "https://finance.yahoo.com/personal-finance/credit-cards/review/us-bank-business-shield-visa-card-185336564.html",
+   "resume": "",
+   "date": "2026-08-21T18:53:36.000Z",
+   "source": "Yahoo Finance",
+   "sourceId": "yahoo-fin"
+  },
+  {
+   "titre": "Des dizaines de milliers de préservatifs \"non conformes\" vendus en France ces derniers mois, les autorités recommandent des dépistages et tests de grossesse",
+   "lien": "https://www.franceinfo.fr/sante/des-dizaines-de-milliers-de-preservatifs-non-conformes-vendus-en-france-ces-derniers-mois-les-autorites-recommandent-des-depistages-et-tests-de-grossesse_8156171.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "L'alerte concerne des préservatifs vendus en ligne mais également en pharmacie ou dans d'autres commerces.",
+   "date": "2026-08-21T18:47:50.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Confirmée par la justice, l’exclusion des Girondins de Bordeaux des championnats nationaux de football pousse le club au bord du précipice",
+   "lien": "https://www.challenges.fr/entreprise/sports/confirmee-par-la-justice-lexclusion-des-girondins-de-bordeaux-des-championnats-nationaux-de-football-pousse-le-club-au-bord-du-precipice_645294",
+   "resume": "Confirmée par le tribunal administratif de Paris, l’exclusion des Girondins de Bordeaux des championnats nationaux relègue le club en Régional 1, la sixième division du football français. De quoi menacer le projet de rep",
+   "date": "2026-08-21T18:42:00.000Z",
+   "source": "Challenges",
+   "sourceId": "challenges"
+  },
+  {
+   "titre": "Le climat des affaires en France s'améliore de nouveau en août, selon l'Insee",
+   "lien": "https://www.franceinfo.fr/economie/le-climat-des-affaires-en-france-s-ameliore-de-nouveau-en-aout-selon-l-insee_8156693.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "L'indicateur des affaires augmente dans l'industrie, dans les services et dans le commerce de détail. Il reste stable dans le bâtiment.",
+   "date": "2026-08-21T18:34:08.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Trump, Vance and Bessent try to calm the bond market with ‘alternative facts’",
+   "lien": "https://www.marketwatch.com/story/trump-vance-and-bessent-try-to-calm-the-bond-market-with-alternative-facts-8e424378?mod=mw_rss_topstories",
+   "resume": "Maybe this stuff works on TV or on the stump. But it doesn’t work on Wall Street, where people can count.",
+   "date": "2026-08-21T18:29:00.000Z",
+   "source": "MarketWatch",
+   "sourceId": "marketwatch"
+  },
+  {
+   "titre": "U.S. Bank Smartly Visa Signature Card review: Earn 2% cash back or more on every purchase",
+   "lien": "https://finance.yahoo.com/personal-finance/credit-cards/review/us-bank-smartly-visa-signature-card-182536863.html",
+   "resume": "",
+   "date": "2026-08-21T18:25:36.000Z",
+   "source": "Yahoo Finance",
+   "sourceId": "yahoo-fin"
+  },
+  {
+   "titre": "Les bourses en direct | Wall Street monte grâce au retour de l'appétit pour le risque, le bitcoin repasse la barre des 75.000 dollars",
+   "lien": "https://news.google.com/rss/articles/CBMihAJBVV95cUxOQzlpWi1Db2lBbnQ5NVNfWHlmVW9HQnkwbjFjbjRCTTVscnZMODlKVi0wYTVSV2lnbTNMbzN1VXAySlRjSGJpaXVaZjVIT1JWdG82dzNtODR1RkhUUGFDTjgxdDFwMWxvS1lPVUJOMEp5dWFhUzdZVm5lajlvSU84cjF6QmlXRWFBWDVNSDZIQ1haenFSSU8zNFZVa0tXS1hVV1FoNHhTbm9hQjhVOVhiOEJsY1VLdGx6V0dnNzkyNWI2VnVsbm5uZm9mQXdjRXFoMm1Idk1MVEU5cGVEV0dUaGYzQ1NRVUIwWGEzNkkzaERZekR5TTVVSHZzTEpvS1B6Mk5YdA?oc=5",
+   "resume": "",
+   "date": "2026-08-21T18:14:51.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
+  },
+  {
+   "titre": "Le 18h Eco",
+   "lien": "https://www.bfmtv.com/economie/replay-emissions/le-18h-eco/le-18h-eco-vendredi-21-aout_EN-202608210543.html",
+   "resume": "Retrouvez l’émission le 18h Eco présentée par Stéphanie Coleau du lundi au jeudi et réécoutez-la en podcast.",
+   "date": "2026-08-21T18:08:43.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "Derrière le succès des consoles « rétro », un marché illégal de jeux anciens",
+   "lien": "https://www.lemonde.fr/pixels/article/2026/08/21/derriere-le-succes-des-consoles-retro-un-marche-illegal-de-jeux-anciens_6752283_4408996.html",
+   "resume": "Souvent produits en Chine et peu onéreux, ces émulateurs permettent de jouer à des milliers de titres produits pour des consoles datées, comme la GameBoy ou la PS1. Si leur existence même n’est pas illégale, ils entretie",
+   "date": "2026-08-21T18:00:06.000Z",
+   "source": "Le Monde — Économie",
+   "sourceId": "lemonde-eco"
+  },
+  {
+   "titre": "Kalshi traders think the bitcoin rally could end the year near current levels",
+   "lien": "https://www.cnbc.com/2026/08/21/kalshi-traders-say-bitcoin-rally-wont-go-much-higher-by-end-of-2026.html",
+   "resume": "Speculators on the prediction market platform think it's most likely that the cryptocurrency will end 2026 close to where it's now trading.",
+   "date": "2026-08-21T17:43:25.000Z",
+   "source": "CNBC — World Markets",
+   "sourceId": "cnbc-monde"
+  },
+  {
+   "titre": "La consommation d'eau du robinet interdite dans trois communes de Savoie en raison d'une concentration trop importante d'uranium",
+   "lien": "https://www.franceinfo.fr/france/auvergne-rhone-alpes/savoie/la-consommation-d-eau-du-robinet-interdite-dans-trois-communes-de-savoie-en-raison-d-une-concentration-trop-importante-d-uranium_8156660.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "De nouvelles normes européennes, plus restrictives, sont entrées en vigueur cette année. Le taux d'uranium dans l'eau de ces trois communes est désormais supérieur à ces normes.",
+   "date": "2026-08-21T17:26:03.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Placements : voici les bonnes décisions à prendre si vous investissez après 60 ans",
+   "lien": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQanB3dEhyRnNjVmdOSkc2UVJMZ2l4ME1JSjc2eGtEUGZmQlRMUTQ1M09yQTMyUy1pT2dTbVF3dGZrYzdad1NtOFZIY0ljbzczb2d4TW1pNWpLVWNFZ0QyY2lqamRiNjFfVDNtTnh2OTBINmowVUZxQi16T1JZMG9lVGlLZ0Yzb3JyVlRzeFQyS1VzQTZZSWtVRzVRQzlQMTN6MjB4UFJvQmpmcTB1SjhneTc5M01VSjk1QzR5Y3VvWl9xdTMzbGVGMkhfWUxzSERV?oc=5",
+   "resume": "",
+   "date": "2026-08-21T17:20:08.000Z",
+   "source": "Investir",
+   "sourceId": "investir"
+  },
+  {
+   "titre": "Vaccin contre le cancer : à Wall Street, Moderna ouvre la voie et le marché s'emballe",
+   "lien": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPMWtHNU11TEhvbzNYVHltdTFCTWp1VEpoOV9vbUNuNWxQYTVxVjBMOXgzdW1ia05zZ3hjdm1DSVVOUVBLcTl3WmVtOEcteDVOcS1rU0E0eUxMZ0txUHlhcXppM1lWdTBXZDhIVjF5cjlzV2pka3NpdU1oanVoeEpDX1lJSExNSWd0aERQLXBITkVvRVlmTmp1cmJnWktpeEtJRTZVMm1yTXlHNGtGdVZlS2xFT2VXMFhWVmE2VGtldjFTZi1FWXNjN25xbWxtQlZveUJDVURKN1k1dFF0UTZLRG9B?oc=5",
+   "resume": "",
+   "date": "2026-08-21T17:10:19.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Taux : les pertes se creusent brusquement aux US, +9Pts sur nos OAT en hebdo",
+   "lien": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOLU9Lb2ZFNzdUNmRFZXMyTGlmNFpVbGtjTlpSMGFla0gzRkFyYXNZTktHNGdZRi1FekRicmxTN25iS0VfcDQwWWFwRERMaUctSmFNOGxwMWlOUE1zTU9ySFZwakNTMUM1YmN3cnpJNXRyNWhzN3BvSmx2SFhxTU9KMExZU0RWb1RGVEhzMzNmSXl4S3ZmazVyRGREUEtHUE5fSU5LLXRvbzEzVm9nRGFYUWFvSHhVQmp5X240c01mMnVYMnBDTDVPMktyZmxvdw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:54:19.000Z",
+   "source": "Taux et obligations",
+   "sourceId": "taux"
+  },
+  {
+   "titre": "Selon lui, les droits de douane américains sont \"infondés\": après un appel avec Donald Trump, Lula veut que le Brésil et les États-Unis \"restent à la table des négociations\"",
+   "lien": "https://www.bfmtv.com/economie/international/selon-lui-les-motivations-aux-droits-de-douane-americains-sont-infondees-apres-un-appel-avec-donald-trump-lula-veut-que-le-bresil-et-les-etats-unis-restent-a-la-table-des-negociations_AD-202608210490.html",
+   "resume": "Selon le président brésilien Lula, les \"allégations\" qui ont motivé les droits de douane imposés par les États-Unis sont \"infondées\".",
+   "date": "2026-08-21T16:45:40.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "Budget 2027 : les pistes qui restent sur la table",
+   "lien": "https://www.bfmtv.com/economie/video-budget-2027-les-pistes-qui-restent-sur-la-table_VN-202608210489.html",
+   "resume": "\"Le budget 2027 est un sujet si sensible que le premier ministre a dû démentir des rumeurs sur les réseaux sociaux. Sur X, Il écarte le gel du RSA ou le minimum vieillesse comme piste d'économies.\"",
+   "date": "2026-08-21T16:42:28.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "L'Europe finit dans le vert, l'obligataire et la géopolitique restent un frein",
+   "lien": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxONW9RaXNSbE1BaUFuTFdqcHZTeEw0MDlpMG9kR0czNEpqN2JSV3gtMUdNOW0xdHlZaTZROGp6RW9xZmtfa25mbVVJeTlIaVBpQTltNG5xRmYxVXNxNXFKS2JOWG8xR3FJeEN1ZDZsczVXT0c2cmpWN3RrQnFYcV9RakM4c01UZzlLQ1p5cDBYRHYtUXlaZWpVVklZOU9Ddk5LU2YxdFpyX0NHRllfVFd2TlRMSmVBR3ItUTNmejhMN2xRZmNPZTUzdGhLUEdvTVBZMGdBNU9lNWZtdTdHMjJWQ2puYkliUVlSb1dZUnRxUXHSAfABQVVfeXFMTjVvUWlzUmxNQWlBbkxXanB2U3hMNDA5aTBvZEdHMzRKajdiUld4LTFHTTltMXR5WWk2UThqekVvcWZrX2tuZm1VSXk5SGlQaUE5bTRucUZmMVVzcTVxSktiTlhvMUdxSXhDdWQ2bHM1V09HNnJqVjd0a0JxWHFfUWpDOHNNVGc5S0NaeXAwWER2LVF5WmVqVVZJWTlPQ3ZOS1NmMXRacl9DR0ZZX1RXdk5UTEplQUdyLVEzZno4TDdsUWZjT2U1M3RoS1BHb01QWTBnQTVPZTVmbXU3RzIyVkNqbmJJYlFZUm9XWVJ0cVFx?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:40:07.000Z",
+   "source": "Taux et obligations",
+   "sourceId": "taux"
+  },
+  {
+   "titre": "Vangart marie la broderie et l'art contemporain",
+   "lien": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNRHFEMmQ4U0kxeG5ldzBVWGRWNG1Sd3Q5UXplcWxVM0NzeWlTV3A1M0l1eHhzWVR6MWZjWkNfeDBiR2tiQ1dRY1Rybm5MdlZ3YnFFdy0xeFdCV1R6U3ZIUVF0Wm9Ea2RoMzR6Y2dUTFFRbEN5WXNMX3JIQUp3V1d0MzRPNFRSQ29iZVhka0F5TGpxaTAwRUtHQVRYSVdnNXBLamhiOV9TNUE1WFZmTnp1UQ?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:35:48.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "La hausse des taux longs inquiète en Bourse",
+   "lien": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOVjk4NHRVdldNTTVIbzhxYmtoU29oUWRMc3oxUWtFSklUekpiLTBtZlozVmRZRUJ3TmI2aUI2SEdIZXN1MWdPNWhEdDBodGV4QWxCVXFQcjhqbFFNSXZmbUJ6Nk9WdGtGaWZNTmJPX3F5Nm9xdEtnY1pTZzYxSXVrRmk0LXRzLThmZUY1Z3VIU3VVX1dhVHAxRExaMUZsMjEwMDI0UU9Obw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:35:28.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Semaine difficile pour les sélections Investir 10, mais nos Valeurs moyennes ont bien résisté",
+   "lien": "https://news.google.com/rss/articles/CBMigAJBVV95cUxQaG5TbFNBWFl4QVVUUjZRbGJKc3ROTVBsXy00SUs4X3pSbTYtOWJSaWFUbDNWOXFjMkE5M2NDOXNDa1RscTVucVlMR1JHMl9kem1DRS1ObmFUanFfSEVGcWZvaDlnZUFkVlFCODZjOW16d0xFei1GcldWZXV2YXJjWndEVkxCOTJKeXRVYzNGakxTY2xVcGFiOUFwR08tQVluakJxcVgwM0F2a1dDQllJNzJKZXlxOW1BaU1PaW5tcTd5NDlyVzFMZmJDeXJkNVdudkNObHMxZzY5RXRJZnhsSlEzLWxPdDRORXdCVEdlZHFzdGNBaXhrTE9qTzYyT2JF?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:35:24.000Z",
+   "source": "Investir",
+   "sourceId": "investir"
+  },
+  {
+   "titre": "Un ancien magnat des assurances menacé d'un procès pour viols et traite de mineure",
+   "lien": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxNQ3V4aEszYVVZZ2pPVmlRcEVPdkdmeFYzeTVJMW9fekNhbWZ2eVdEenhDcFgyWXhBX2NvanRKQ1J1YVdQMW03TEhMM29KUHEzYU4yX3gtQTl2bzhpNUJuWHlkQ3Bnd18zT1RSUzFKbFZqU3ZhQnJLYmRuQVJJTGdNR08takk3bnVCUmhvWmZlNW5vNTBIQnhVUTYxNUYyNWlzdDFWSjFsamU1RmdjQUFrX2szeE1jS2dxbG1zeHNPSHJncF9YZ3d5WUd0dy1FdndhX3A5ejNEUzVPSjNsU1VyaA?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:22:47.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "183 % d’augmentation d'impôts fonciers pour les habitants de cette ville où Meta siège gratuitement",
+   "lien": "https://www.challenges.fr/economie/183-daugmentation-dimpots-fonciers-pour-les-habitants-de-cette-ville-ou-meta-siege-gratuitement_645292",
+   "resume": "« Ma grande, ne te mets pas dans cet état, vote simplement contre. » Les habitants d'Eagle Mountain vont subir une augmentation de 183 % des impôts fonciers après un vote unanime du conseil municipal. Les habitants criti",
+   "date": "2026-08-21T16:21:04.000Z",
+   "source": "Challenges",
+   "sourceId": "challenges"
+  },
+  {
+   "titre": "Bitcoin and ethereum prices today, Friday, August 21, 2026: Cryptos continue rally sparked by Treasury repurchase announcement",
+   "lien": "https://finance.yahoo.com/personal-finance/investing/article/bitcoin-and-ethereum-prices-today-friday-august-21-2026-cryptos-continue-rally-sparked-by-treasury-repurchase-announcement-161633891.html",
+   "resume": "",
+   "date": "2026-08-21T16:16:33.000Z",
+   "source": "Yahoo Finance",
+   "sourceId": "yahoo-fin"
+  },
+  {
+   "titre": "Silver prices today, Friday, August 21, 2026: Silver pushes higher on weaker dollar",
+   "lien": "https://finance.yahoo.com/personal-finance/investing/article/silver-prices-today-friday-august-21-2026-silver-pushes-higher-on-weaker-dollar-161325787.html",
+   "resume": "",
+   "date": "2026-08-21T16:13:25.000Z",
+   "source": "Yahoo Finance",
+   "sourceId": "yahoo-fin"
+  },
+  {
+   "titre": "Gold prices today, Friday, August 21, 2026: Gold remains strong amid U.S. debt concerns",
+   "lien": "https://finance.yahoo.com/personal-finance/investing/article/gold-prices-today-friday-august-21-2026-gold-remains-strong-amid-us-debt-concerns-161052751.html",
+   "resume": "",
+   "date": "2026-08-21T16:10:52.000Z",
+   "source": "Yahoo Finance",
+   "sourceId": "yahoo-fin"
+  },
+  {
+   "titre": "L'Europe finit dans le vert malgré l'incertitude géopolitique, les PMI en soutien",
+   "lien": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPN1Z2QUhKRVNaSERYYnhRc3Z5aURHSERfa3M0VFpFRzluWTBYM1NSUEVfMm5uNkpCTjloeEJaYjFyWmpFaVVtM2hvZ2NTajlUUEdlMy1UVXJjWlhSYWJnMU4xeTJEc2RMd2F4ZnR5dmJPM2FydUhyNENxdHE2ZzVwcFBCc29JcTVLdzY5NFJWc08wTmdkZ2VjUHFscVRYOXllMWVfR3pJbHlNYlBNUDhNTjF5bHNhNFZlY3RyNw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T16:08:48.000Z",
+   "source": "Taux et obligations",
+   "sourceId": "taux"
+  },
+  {
+   "titre": "\"Un taux de remboursement à 5% n'a absolument aucun sens\": le président de la Mutualité française dénonce les \"arbitrages purement comptables\" du gouvernement sur la santé",
+   "lien": "https://www.bfmtv.com/economie/economie-social/un-taux-de-remboursement-a-5-n-a-absolument-aucun-sens-le-president-de-la-mutualite-francaise-denonce-les-arbitrages-purement-comptables-du-gouvernement-sur-la-sante_AV-202608210462.html",
+   "resume": "Si les mutuelles se réjouissent de l'abandon du doublement du plafond des franchises médicales, elles déplorent les transferts de charges programmés en 2027, sur plusieurs postes de soins, notamment certains médicaments ",
+   "date": "2026-08-21T16:08:15.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "On refait la séance : PMI manufacturé, au plus haut depuis 4 ans et demi",
+   "lien": "https://www.bfmtv.com/economie/replay-emissions/bfm-bourse/on-refait-la-seance-pmi-manufacture-au-plus-haut-depuis-4-ans-et-demi-21-08_EN-202608210460.html",
+   "resume": "Ce vendredi 21 août, Olivier Malteste, directeur des Investissements de Althéis by Yomoni, Marc-Antoine Barbé, gérant actions small caps chez MCA Finance, ainsi que Gilles Santacreu, trader algorithmique et administrateu",
+   "date": "2026-08-21T16:05:33.000Z",
+   "source": "BFM — Économie",
+   "sourceId": "bfm-eco"
+  },
+  {
+   "titre": "En Afrique du Sud, le développement encore contrarié du pétrole offshore",
+   "lien": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxORXdUUTJheTBoOWF6TnhxOXRkclp2U0VHWGtvdDFuSHpFQkFRN0p0OGFSYnNuNnpBcEZsRExIWmJ3Mm41dXVGa1c1dWQ3NHFGRk54cGZCLVFJMzFObS1PRVlhelJkZWxIbVg1STFGQnFLVXB3WFRKalpMMWZhaUN6MDJFanozVUZZc2RFbzdDNnl5ODFhWnpyTXBUak9neFpCTldycE1TMWl6QW1hdHlQSXZZdFVmcWQ3Mnd1RzRlUHdmemZtVmxGeUZ1THBEUFhIbmM0emdSREZjTlJD?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:58:10.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Malgré le plan américain de rachats d'obligations, les retours de capitaux vers le Japon pèsent sur les marchés de taux",
+   "lien": "https://news.google.com/rss/articles/CBMikAJBVV95cUxPVFBRQU5xdDFKTmRiTVBJOV81Zk9PZFJ0S2ZYa2hHSFRiTXVQNS1tWlVaaEVYb0JPc3AyREd6dUpZX0k4TGt2a1NkT1JLYTJCaF9Dc2hRWlJPTHFsaV91eTF3UzBDZkZ3WHBQZm42dkppYzl0dU1XbXFmV2VQQUFucE94bmdiU3BtSVpNeUNDQ0pfYndzYVpWNlEyRk9ZOGtGYVhFYjVMellBdnhFM3ZZNTlwcGNvLXZxak44UTRKby15MC1CMkNJdFRzQ3g2TWxaam1pclZaRjJUZTJTRzA3bS1sSTN3QzZfREVOV1pSMnZtSkY1UnBiZVJtU1FIQVdnak5GSHd6ejJHR1hTY0d2Mw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:51:57.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "CAC 40: La Bourse de Paris finit dans le vert et limite son repli hebdomadaire",
+   "lien": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxNRTFSUzVfUHdGR2RJS1NsaC00RGh5b2pqX1NKOW0wNURNZWJQU29qYk1TbVNfUXVuZzVpeTVXcEFfLS1xWE4yajlMdVdFMEYxZW9Odm5uVDdMNXBDWkt0QlluMWNJVWVCOHE4MGp4MU01MFc1SkIzMF9ZaXExemhfVXNMRGZFdjFWanFWWWdwSm5hSnFULUZhbXI5ZUt2N1BNdnFidUVYVE95dVRxR2Z2aVpUWkk0dWlRaGVEVXlFRnZPYjZRWUR3ZkhnbEY5TldDMzhYWVF1RnhYb1lGNUFkQ0lHR08?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:51:00.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Cours ETF Invesco Markets II plc - Invesco All Country World Enhanced Equity UCITS ETF - IQAW IE000S0JMIY6",
+   "lien": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQemFpZENSZy1oZ3d6cV9JVi1ZMzE3Ymp1VlJaQW5DQi11cDViLXc5OFdicTNZaldKREF5MmhNTllQU0NxWms2UEJzbkxYRGVhcE1XZDBHR3NFRDZvS1oyNEJ6WkphMndFYzNscXlGREdKSjRRUGJkT29VZTAzOW9hVFFtRTVqU0pTTlh5SEpObXMteGd6dVY5cjVWUGc4UENLcnlYcy1ZXzhkc0lVME9wRkN3dG1kWnZiMDZVOTNua3otcURMNU1EVnY1SlZjbGhaQ0E?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:41:00.000Z",
+   "source": "Investir",
+   "sourceId": "investir"
+  },
+  {
+   "titre": "Le Cac 40 rebondit après huit séances de baisse d'affilée",
+   "lien": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQUE5WYm5HRkd5X3Rza2g2NEd0VUdoc1UxWFczTF9UdlF2NE42Z1l6UEl2S01obV9GSTN1cXlsaGZQS2RKaE5jU2l5b2lyYWlxYTJ6VGswQXVIb2UwSkpwa2VjT3JJakN1dlBLWHVIUlNsMWtncXE4YWhob2tlQjMwSElmZjQ5UXR1bTRVTHJUNFd0UFdBVW1KU21ENFJySXdXTGp3TnVYeUM0MlBRYnk0Vl9ERmFrUmEzVUNRampZbkhoeVhQdHc?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:37:16.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
    "titre": "PEA après 5 ans : faut-il le débloquer ou continuer à investir ?",
    "lien": "https://www.challenges.fr/partenaires/meilleurtaux-placement/pea-apres-5-ans-faut-il-le-debloquer-ou-continuer-a-investir_645139",
    "resume": "Le cinquième anniversaire d'un PEA est souvent considéré comme le moment idéal pour récupérer son argent. Pourtant, ce cap ne vous oblige en rien à effectuer un retrait. Il marque surtout l'accès à un régime beaucoup plu",
@@ -121,956 +873,204 @@
    "sourceId": "challenges"
   },
   {
-   "titre": "Nvidia earnings could rescue a stalling stock market — if the AI chip maker breaks this trend",
-   "lien": "https://www.marketwatch.com/story/nvidia-earnings-could-rescue-a-stalling-stock-market-if-the-ai-chip-maker-breaks-this-trend-9b6504bc?mod=mw_rss_topstories",
-   "resume": "Shares of Jensen Huang’s company have struggled to make headway since its previous results day.",
-   "date": "2026-08-21T10:54:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
-  },
-  {
-   "titre": "Hauts-de-France : Au 1 trimestre 2026 selon l’Insee – Hausse persistante du chômage",
-   "lien": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQWERKdXhsRjRiM1FudV9WWXNXRm1zcHhSeC0wVGllZDdZY3hKWWVBcE41SlAtbUFtMUplUHAxdFlBNWpCM09DdlQ1UU1hTjNqSWRrclpsVEplbmFVUTh0TTlkRUY5b2t3UkJIWWgxTTZMcUpyYTdwZjZZdHJSZHNNQnlsVnNRUTBndEN4ZXlZdWNDOS1hVFpUZ1g0Mm94YUhFWHNDSzE0azZBX2tsSTJhdw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:50:16.000Z",
-   "source": "Macro France",
-   "sourceId": "macro-fr"
-  },
-  {
-   "titre": "Le Cac 40 en pleine hésitation, le bitcoin en plein envol, les taux obligataires enfin plus calmes en attendant la suite",
-   "lien": "https://news.google.com/rss/articles/CBMimAJBVV95cUxQUURXQ1NUWVlpZkE5Y2Jhd3dPVWpVN0dKRmloOWhyOW1LRlZFQ21LTzB3ZXQ3VG52NFNzaVpIU2lUamgxbDU3N0JpdTR3Yzg3Mm5MWmREQkVESENoeGVCTGJuVTlBb1otXzhjbXBRczFINGlSNFdydnlxb1k3UDVHRTd1M0d0bzBELVZrTmdBaTFhb0FUNGRvS0t1THVfQXRFYVZwRG9sMkx2YmRLLVZtUVA3UzBvRXRyUFA2QU9yS3h3aVhpT183Mnp2T0ktNWxVWDd2R0VDWVpuVTJ3RVhxem1qMHVwcHg4NGZyMnMzY05xYUNBejJXT0QtV3MzSm8tNGtyU0tzQ0R1T2pZR01WNzRnZWJTMl8x?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:46:16.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Le spread français met les marchés d'actions sous pression",
-   "lien": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOQTJkYl9zNHV2NC1wMlJjUjUwa1JiRzU1NUt5OVVJWVo3VngxVkxkdlpGYWVoeDQ3OU5Va19RemFmTl9zbkxYc3d4Q29lY1hBYzkxcUlJMms4Q1o2Vk44NEowV2ljZHg4NTNKQTVCTXpwaVBDd0R3bC1SVnBxdDktU2M3N3VzbHpXM2F6LXExT1NEMkxSdzV6aUxWc1E3ejNHcWhNSTY5RUVEakVoTV9vMzBQQTV1NjZ4c2xrR0hueHpFTTdDZHJoZEF6TlFsQXROeHfSAdcBQVVfeXFMT09hN0JvT1E1aEJuWExfY0lLdENLRWJXVDJnSm4yREY3SThGMU93Sm9IWDFyNGZEdHNlOUtlenZwTHJMUVBZRHBzMnluQnhjVjZzdHRzQWJVTm5XYVg2N0JpX3JSUXZCWENIMHVYT2h6ek9LSzB1dDZ4WXgxNnRWTXNkd1hXTkxLQ3lzZlBxdjFuRTdCOXQtdWhLVEdEUGM2VHZsdmNxU0x3X01VZGFuVGNmM2pXX1gzMVo2SmtlZVZvS2N6bFllRXJIbnhjck9rXzl6b2RMdGc?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:44:01.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Chery’s robot affiliate AiMOGA eyes IPO, targets overseas market",
-   "lien": "https://www.investing.com/news/stock-market-news/cherys-robot-affiliate-aimoga-eyes-ipo-targets-overseas-market-4871220",
-   "resume": "",
-   "date": "2026-08-21T10:42:29.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Array shifts to integrated solar platform with record orderbook",
-   "lien": "https://www.investing.com/news/stock-market-news/array-shifts-to-integrated-solar-platform-with-record-orderbook-93CH-4871345",
-   "resume": "",
-   "date": "2026-08-21T10:41:46.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Atlas Copco : les prévisions relevées après les résultats",
-   "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPX0ZnX2t2eksyNE1USWE3WlIxSTl2NVk2MHppMFExTmVLUXhBbXhPQWpHWVV1azQ2MVBUd3U2bVJQeEFBMlNISWJJSGdUaWl4clZzSDRhWk1sMnY1VUJQc3R3N2Nsb0Q0OHVkWmt0TkUwVDFHYm8yWncyM2JwcF9CdFExRmYxekJibDFyV3o0QnB4QlRKcFRXbUJacG5RaU1OYXhRNzBxdDhDeWptb3FseVB4QzJsUQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:38:26.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Fret ferroviaire: pas de renforcement des mesures de sécurité (TAF)",
-   "lien": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPNVZtTjhycEc3R1FvOGhwYTZvWXZlNzNZVTZjcW83cDlQcmF6MUZhRWpwTnczeDNVOUU1TUs4RUpURXctTUE0dllsRXRLS2RZNEZ4Q1JXTUc4U0N0NF9oV0dJaWE4ejFMdDFFalpsWWV4bXd2NllYQkQwUjdyZnVtcUdPNExEZGZIQkNHX1Q4R19GTTl6SDlWMjNObDA0MkZfWDE3bXVpTWVIN0JUamlfMTVxYWhqNDJnYng3RnVtYTQxZw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:36:18.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Getlink : nous restons favorables à notre stratégie haussière à effet de levier",
-   "lien": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOUGtSQnZtTzJrWnhGLVdUX1NIWlN2N3dNVXVPOFl1bjlGekgyY2p6S0YwRUpjYlJvbnNaWlZBdUw0MkFjTDRQZ2dqWE5ocWk5MVhMWS1pOUJkcW52RVYtY3V5cXBMaUdnWWxVSVd6M2djSS1jNjlfamc0c01aLUpZaU5MRkkzdldybVRtSlJYaERUSS0tTmZ3QUZNdFZQOFBLc3l2VjJXOTVqRkM3Wjk4cHo0X2pHR2E3OUQxbzRuRWpZaUR1YU9nVGt6cDhZRmFpTFc4bm5ZeURDaXBjam9ZeUtZSmQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:36:09.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "S&P 500 may pull back before midterms, but Citi says buy the dip",
-   "lien": "https://www.investing.com/news/stock-market-news/sp-500-may-pull-back-before-midterms-but-citi-says-buy-the-dip-4871329",
-   "resume": "",
-   "date": "2026-08-21T10:36:07.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Zone euro: Les consommateurs abaissent leurs anticipations d'inflation, selon une enquête de la BCE",
-   "lien": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxQcnpSdEN0YUs1STByWmRJSGRsek9xWk1aSzh0M01ySTlGVmtyMFp0MHB1OFNLOVpueFRHUlhMcHhyZTUwWHB2R3FSX3AtdENDaUxRZEoteTkxQUpCQW9OQmFLWmQzUFk0MTFGaU1Kd2JpMHZ1ZVhfc2pHUDJxMWo3Nzd2bXFuRGlDMm42ZGQxdF9xVHQwRGFURG9XOE5SSldzVVF1bWJqbHBiOTNucE9nZnVyTFRWYW5keFNmeVNTQXIxUEJnN1NhMWJSSllxNWtVWVRJZ3Ntc0RPSU5fcEg2TnNlZE5yN2RzV3BjM0FR?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:35:49.000Z",
-   "source": "BCE",
-   "sourceId": "bce"
-  },
-  {
-   "titre": "Bénéfices des grandes entreprises : la surtaxe \"exceptionnelle\" créée en 2025 vers une nouvelle prolongation e",
-   "lien": "https://news.google.com/rss/articles/CBMirAJBVV95cUxPNWpfb2R4Y3JuRFczTmYzREhjRmFTV2N6bXpHakpwQlVYQVlBbkRfVDZKOHU2dF9wUDcwRkd0YVRmS3U0RHpJWlJBOGVPWGVNNDJGOWxDczFBNmctVTJaWjAyTkdmSmUwdU9LblZpMzZSRG9kb3JjMHd1MWgxYUZlU0NQSzg3QWl2X1VjWTdIaXhHV2xfcWNwUEl2RjVoNHFEUzR3eVEwMjh0OEJreTB6cGx5NUJ0cGwxUnJubGFQV05rNi1EMkNOTVp2OG9ZdXg3SFNIM3FvcHlKWWlzajhBTDVKYkQ3Wkd4V1dQeG54VU9VRWM5dlVpb21OZVNLTUZuTHhMUENHN2JjMjdySVpLc09mRWZyWGdCVHBhNEVuWmx2SDdMMTRCU0pKTWvSAbICQVVfeXFMTXZ2OTl2YWc4TDVnd011NncwNTF6Rld3aUs4cWR6YzA4V3d4Sk1WY0x3OUtram9xWlZValRpMDZhY0ljV3ZZb2tuU3psUk10OGFDQ3BTbFF1OEFWaXQ4b2ZnNnYxVko0ZDd1M3FrZ3JuU01GQlZfYnJNWHBtVGVzMEs2Rjd3TTEwTnFHaUJ6VDkxSkpSQ2lOYUxjYWx0bVpfdE5FLUluOUtnQ3ZfbHF1b3BweDQ0cmVLSWY5MThWVWo4ekN4Qzh2RjNIM1RNeENpVGVhUUljUm5yZTRIaGZoakZoSkNGY0ZBOWVyTDVZaUk0N19od3VmSVJrWVdvRncwNGwwX2FXNklfRy10THJ0S1hFdlFXVTNreFpYZms4OWdSa1ZCWXV2Q2RhUHp5ekdmYzVR?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:35:38.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Why is ZKH stock rallying today?",
-   "lien": "https://www.investing.com/news/stock-market-news/why-is-zkh-stock-rallying-today-93CH-4871328",
-   "resume": "",
-   "date": "2026-08-21T10:35:38.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "L'Ofcom attribue des concessions FM sans enchères",
-   "lien": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOMXB1anV2Tl9vY25oWTRHM3pQN1QteUFwbUxlemRQMDFuZUpZVTNmT3NlTlhiVkIzdGJaYklrRTlMOXBvWXNDcGc5cDViQVotejBfYkdkRTcwM0FhRGhMQUZoU0ZRTHFfR1YwenpDQldIbzIzRldiZC1WTVNxaUlMUkZ5VjFlZFh3aUlhZUFnTWd1VGh0Q0VEMXVoNzlGNTJTZHVmX1NGdFdnRXlLT0E?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:35:22.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Bourses européennes : le pétrole ravive les craintes d’inflation",
-   "lien": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNb19CNEs2a1VWeF9SVjg0NElTcTFPYm1VYnZRaTdkWUhTazR0aHNKQTFVb2tBTHhZMzV1eDZXdDJoWEhNQnBvT1hna2xJM3hibDdpU0FOX1VRQ0I0dlVpRW5mNXJ4THJzMl9MSkRvZC1DWm5tZ1lMa2lwZVhKendoMy16WG1kWHBYMnBKYzNiQkgxNTh5MVRtQmZjTzA1bUMtSWhTMVVIWHJMdTg5OTlj?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:34:35.000Z",
-   "source": "BCE",
-   "sourceId": "bce"
-  },
-  {
-   "titre": "MORNING BID AMERICAS - Le redoutable marché obligataire",
-   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQazdCNkxBLWlYTktPY0N2VU9yVWQ3bTYtVC1hajdXc2NqZzJzeEk2ZjJ1R1dVRzJucjRsSjJHRU50Zkk1MWs0VDltMjF5dFQzRjRLU3llV0NfaXYxb096VGxhdTNKM2hLb3pLM2UzbEhkdmNpb1V2SkV0LU50YzVZNFFoZ2FrYnh4Wl9XWlJ6TGxTNjV1N0VUMWY5enN0UG1rT3pMUGZyOTY0VnVNazdhNHBaQQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:33:25.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "TAUX-Le spread français met les marchés d'actions sous pression",
-   "lien": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxPcEJramh3elgxaWVyU0N2Q292cHB4WXp6WGs5TlZzQUlsNlc3Si1MNUdZdG5hZjdQQ05tUlZwVlJZSm5COTQwUmxteFVQMno1YmJIdTgtNDVzaGVtVDRNb1MzQ1l3VGJnTTZnWkRZZzQ2eFQ2djBsV3ZhY0lfOXBXQS1vbThCb3Q0Vk9NU2d3VjE0S3lRVlF0M3RBUmNMdnBQd3JEdmEtMTZIMkMyTk45U3FxbUdkYkdRekRPQU9pQ1Z4RVVQRmgtajJqTGVOeVliaEstQkZUdWzSAd4BQVVfeXFMUDRwSDNsV3ZlRnVtR2xpWGI0RnhqT3VkWXN5X1l2RHd0ei0wX0puV29IWktsQmZCbWdRZmUwSGc3S0NLcHB0NUtHVHB4RHVUMWdGMERpWG5FclR4T3Bka2o1emlKMWk1c1g5blZvQnZiOUV2SjQ3c3ZnMFRLRmZMWWtSQjZXN2xGbWVuM0pBWnJyXzQ3Y1hDQ2NmOEkyUFRBamQtS0xGTHpiQm9wUUdONHpmM0JpbVFuVG5EWXFIUkUyd21zeWxkdDgxd2t1cmdwd3ViUUlXQUV3SzRYYUJ3?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:33:11.000Z",
-   "source": "Taux et obligations",
-   "sourceId": "taux"
-  },
-  {
-   "titre": "Global shipping in 2026: falling demand, elevated rates, and rising chokepoint risks",
-   "lien": "https://www.investing.com/news/stock-market-news/global-shipping-in-2026-falling-demand-elevated-rates-and-rising-chokepoint-risks-93CH-4871313",
-   "resume": "",
-   "date": "2026-08-21T10:32:10.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Dollar stores see mixed outlook ahead of earnings next week, Gordon Haskett comments",
-   "lien": "https://www.investing.com/news/stock-market-news/dollar-stores-see-mixed-outlook-ahead-of-earnings-next-week-gordon-haskett-comments-93CH-4871299",
-   "resume": "",
-   "date": "2026-08-21T10:30:31.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "India stocks higher at close of trade; Nifty 50 up 0.08%",
-   "lien": "https://www.investing.com/news/stock-market-news/india-stocks-higher-at-close-of-trade-nifty-50-up-008-4871298",
-   "resume": "",
-   "date": "2026-08-21T10:30:05.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "GB-PMI: Le secteur des services reprend de la vigueur en août",
-   "lien": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxQMklPRHphTGtwZWhNbU1KUmdibGMtS2JDcTNPdUdYSXdzdm5vYzNEMmtSbVRtU2RrMGE1T0RnU0RZMm9ObmhDZXFEMmY1YkJZX1VDR3FWTEt1N3dKcmEyWjV6MGFSU25hSGNfeXJoVWZYYjZsc1dSWXEtaDkxSzhmVEx5Q0poVjlLUVNMUzM4cHBEeHVFMHN2b3NXWmNfeVQyZmE4bW5XRzlvWFZkU0V5WVdQelFUWW5yWHNLMmdfeDJOX253Vlc1dWlxcXEzWWtlWWM4SGdITFhCUC14aElmWkV1Y0poMFHSAewBQVVfeXFMTlYwdnpkM01weFdfaG82dUdkY0ZEN2xsaklkQ3R3UVlsVWREOFNZamx2QWVDeEVXbUg1TXVRc3ZxeFFKNlV4c21PaHBpQ2tMeXJOc2VwcGRjUTVzR1RVejBhLWlBb0NSZ3BYdF9jNHp3Uk1oRDN2bWpfU1RzU1otRDFTTGQ3eEZteXo5RkF6UU9nc3g2WXRqbHBzVUNLTThqU2FTWC1yVl8yLWNkOWp1b2ZnZGhCRko0TmVFeEU2cEZ4Y3FhQmZHVjBTQ3BPSDRkQm8xSnRjN0hCVUJDNEtsRW1IcnBwZ0pORjFFbTY?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:30:01.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Docteur à 21 ans, look détonnant et créateur d’une licorne : qui est ce génie de la tech qui vient d’entrer au classement des fortunes ?",
-   "lien": "https://www.challenges.fr/fortunes/docteur-a-21-ans-look-detonnant-et-createur-dune-licorne-qui-est-ce-genie-de-la-tech-qui-vient-dentrer-au-classement-des-fortunes_645044",
-   "resume": "Ce duo étonnant a créé fin 2019 un système de chiffrement et de protection des données sur le cloud et les blockchains. Zama est devenu une licorne en 2025.",
-   "date": "2026-08-21T10:30:00.000Z",
-   "source": "Challenges",
-   "sourceId": "challenges"
-  },
-  {
-   "titre": "BofA’s Hartnett sees dollar slump, risk selloff if bond intervention fails",
-   "lien": "https://www.investing.com/news/stock-market-news/bofas-hartnett-sees-dollar-slump-risk-selloff-if-bond-intervention-fails-4871294",
-   "resume": "",
-   "date": "2026-08-21T10:28:58.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Le FTSE 100 atone au terme d'une semaine volatile",
-   "lien": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRHRHb3ZMSzR0cmNWMUQzcHR0a1VSb2R2elhGSGg3X1hoRWpLcVNQY3VIeGczd01laXNGZVBQWUdQLUdVby1sN1BfbzJYeDIzUU5ydlE3LW5jVEE0N3NLSlVkMU9HcHV4TWpfajh1c3F5dHRJLWF4cUxwNG5GVE9BWVNDWEUzTXBmUHgtUDY5ejRsTWsxZjZFYlJaQUJ5a1Zic2VBUExYMnhYVmNOSUE?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:28:29.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "SB1 Markets juge le changement de direction de Fasadgruppen nettement négatif",
-   "lien": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQR0N1N050b0hoZi1HZGVDc2tpZlJ3aXNCNU9wY1NBLUJ3QTZXRUdwZHdXaE9reXhYLW83NWFHYnJXYnF3aGJOdjdXQzhzWnp4VlFkeElRUHN2QTB2cThlRW1HS29lTVNUS0pmTm9LVUI5dHdqLVJrWE9hclI2bUdDV1doMDhLLXJnLUN6WU01N0tWZUp5UDVVd2tRSFZ0WlJsZVI4b1dpY0tWT011Z0tBSER6YVdjYXE1RU9hNU94UXlBT1RqLVVURHhkel9kMEpMWXRZMw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:28:23.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Après le coup de torchon du mois de juillet, Samsung et SK Hynix sont prêts à sortir le carnet de chèques pour rassurer les investisseurs",
-   "lien": "https://news.google.com/rss/articles/CBMiqwJBVV95cUxQMlR3aFBTcmtqMU83ZldrMllhLUhQX0xOOVlfMmlzXzFpeWdhLXRfd0dhc2gya2lYcHJEUUttZFN6eENxZmJaZU5pTGpreGJwYlMwbG9SbWlZWDRPZ1VTWXVwS0lkY0w2aWQ2TlFqYmd4ak50ekI3dTFkbGRmNGd2U2lYMENQZmFKN3RWZ1hHMlhKQWNHM1Rqc05FQ3RyaEdManhYZ3JQLWhhYXRscmd0aXRHMGRRc3B6ZTdHdURuVUdCRlZTSnQ5NDZIaU83NHVwcHVJRTNEdi0zZFI5dlRiUnlHOWhuMHdHeDl0U19jd1VWbmlWQjRtZGp5Z0lBWVBjeUxJV0RfTkxzaEFsYjB5Nko4dzVCVGVVNjdqN1FkYzc3SF9QcGI4alVlOA?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:28:08.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Kepler starts bullish Jet2 coverage as margins recover despite lower volumes",
-   "lien": "https://www.investing.com/news/stock-market-news/kepler-starts-bullish-jet2-coverage-as-margins-recover-despite-lower-volumes-4871287",
-   "resume": "",
-   "date": "2026-08-21T10:27:10.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "European stocks on course to cap worst week since July on oil, bond pressure",
-   "lien": "https://www.investing.com/news/stock-market-news/european-stocks-on-course-to-cap-worst-week-since-july-on-oil-bond-pressure-4870879",
-   "resume": "",
-   "date": "2026-08-21T10:26:54.000Z",
-   "source": "Investing.com",
-   "sourceId": "investing"
-  },
-  {
-   "titre": "Les déchets agricoles, nouvelle mine d'or pour fabriquer des emballages biosourcés",
-   "lien": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxQWm1VcGRkdzREYVJzMURCOF94dmR0Ry1RYWg3dXFmRzhfWlBQcWhSODRjN2ZuU2ZfcGJ4NC0tX0FZVFRhUXp6UTN6cnRYR2FLaUVPWjNDVXhxSFZnV3M0WkxZd2hWZzhGRWRQeDBUemdwV0czSmRhNkxrNExyZERMX1RkdzlOQ3lhc2dtY01hT21MakRuQ0VmSnRSdjlYNy1HdndQU3BBTlhjcnI0OHp0dWsycm5pVkFtdDFBRGZ0b1BTWjNjUjFUQlBOT1ViQm5scm5UQlEyOGttcHQxTlJwRHdmOHhvdms1bnROUVNXcktzbENRRkE?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:26:24.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Les industriels digèrent l'impact de la guerre en Iran",
-   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOdzRiTnpYS3dOc2F3ZE1aWXlwQmFuUElkbUt2NGxRVlRkbm5VdEs5MEpUTGFLaDEycm5nVEJ5cHZnUFc5bnNrc2JqVUt1WVVOSVBCZEJSZEYySHMtMFgyMy03NFlDNGZBaGNONzY2Z3dQaWZzYTluQkJUbWUwSE5DbGpYbG1RckdLcVNXUVVSZlpjVml1X0lGUzNQVnNic3BzSU9QdVNxVkp1N1JZQmY5YjRnWQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:25:44.000Z",
-   "source": "Macro France",
-   "sourceId": "macro-fr"
-  },
-  {
-   "titre": "Carnet d'ordres acheteur ; MPS sur le devant de la scène",
-   "lien": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPUDhoaTdCZG1IM1VhSV9UTHBYSERVXzNxUnBRTTUtZk1fYW5xWmEyaThnR3ZsbFptSTNGdF81a24tWnN4Z1ZxT01QV3RodGVERjV2SGhwZ1NoTFVsTGJFRFpSeEtmU09lWWJXZm5ENE0tYU5RUlhXTmo3RmhTLVJlWHpjQVhpd2JUaXlFSmY1ZGVGUkptWWJ4VzYwVFZFZW03M1Exa0R6S1lRN25BT3JJNGhvejM?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:24:29.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Comment les marchés financiers font bondir les taux souverains européens - Le Monde.fr",
-   "lien": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNcG9sa3NqcmkxdGQ3Um5VdTJyWFctS2hyWHk4Y19JY0dGVFozQlItZXBaZm9OekQzUVFxeUZRRW9maWZ0WmZ3Y0FNTHFQUEpvMnJYTFdmTjk5ZHlPaFdmbjdOdWVKQ1BmNS16VlhVeGlYS2RGcWFHZy1Ld3hwekhwOGVXZHhudEYzQjVqNTh2YW8wWUl1b0tGdER1THF1cGU0dlEyRTJuWUV0LXpvNnU2aVE2bU5Ec0w5VVQyM2NjYmk5SDNUcGVBQXp4R2ZleGNmc2F2bmx0YUc?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:21:26.000Z",
-   "source": "Taux et obligations",
-   "sourceId": "taux"
-  },
-  {
-   "titre": "Ils vont être remboursés à 65% au lieu de 30%: deux traitements phares contre la bronchiolite seront bientôt mieux pris en charge par la Sécu",
-   "lien": "https://www.bfmtv.com/economie/economie-social/ils-vont-etre-rembourses-a-65-au-lieu-de-30-deux-traitements-phares-contre-la-bronchiolite-seront-bientot-mieux-pris-en-charge-par-la-secu_AD-202608210291.html",
-   "resume": "Deux avis publiés au Journal officiel ce vendredi 21 août relèvent le niveau de remboursement du Beyfortus et de l'Abrysvo, des traitements préventifs contre la bronchiolite développés par les laboratoires Pfizer et Sano",
-   "date": "2026-08-21T10:18:02.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "Dans la ville la plus chaude d'Europe, les canicules bouleversent le quotidien",
-   "lien": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOTDF4RDYxdjFDcHRGRk1iaU5fZGZOZnEzclFyMjZWdmlMQnJOLUVWZENkcl9LejJwRkJNZVBDd3hoM3JyeVYwOXA3dlZPcEZvaXB2NEFUOVh2WU1IVWdZNkliY0lIcDBjVkhEaS1uTHM4QlZHekdIU215UG92UndvVDVvNDVXZS1PRTdfVFNzbENKc3N4aTlHWktybjVMb1l4ZmdMekVqVDR6X0VqV3JzaEdIQmZxS2xsU0cxSmppVnM5Nnc5TjNaNG5QYkR1TVBrN0V0TlVXQVVtNjBUZXM5ZGlydnpxUFUxYk1xTjVWQnpmbEtIVXAwQUJVR1NhZ9IBgwJBVV95cUxQbjNEeTRzSENIYWRPYWNkQkx4WnhadU51UjU4bFh5WHdJY3gwUTJyLTBuUEcxaHNpMlRwYUVNSlgxZC1sOGFXY1JkRlAwc0xlWF9RdWV3WXFnRlp5X2VDbmZ1TnRCc21zQ3VDcnVYUWU0U2gwYk5ITnBsb245c2xGMnBjRmVsVXRlUWhtd3YwV1hrXzBLZnN1MXIzMjlZN00tYXNtdkZMbjg2QVlsUGlTQjJzeW9kZ2xnYVUyVW1acUdpVkxyaEZiRGdqTkdBb2dESG5wQXZDZnNRU3FjRDVOTFY2Z1daNWR4SnlCM25sbHl3UU82cVFtS2RLbVRUaU14dXFr?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:16:14.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Samsung va racheter jusqu'à 80 milliards de dollars d'actions",
-   "lien": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPVVZHOFZaQmtMZnBBc1ZHV2NPTThpVG50b0ZLMFJMUFFva0tBUzNnZUZnNzVhTjVZTWFSbE1VSmZLX2NUV2FTY09sQVhvSTE0cGVDOWF0TktqM3JZc3pLQUlNblZOYXBpazZVVU9hYlhpX1haNkIxaVJoVXpMSnZuSnpGSjdyQV9PeTF1TXNNTmN3d2Q5V3c3SXZIRHJXenBJYUtnMm9EMFdCdVNYTXFDaEd5MndHcEs2QXpQTEZB?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:12:49.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "12h de retard: la galère des passagers d'un train Hendaye-Paris bloqués après une rupture de caténaire",
-   "lien": "https://www.bfmtv.com/economie/entreprises/transports/11h30-de-retard-la-galere-des-passagers-d-un-train-hendaye-paris-bloques-apres-une-rupture-de-catenaire_AV-202608210084.html",
-   "resume": "Des centaines de passagers sont restés bloqués dans un TGV reliant Hendaye (Pyrénées-Atlantiques) à Paris en raison de la rupture d'une caténaire due à un impact de foudre. Certains ont passé une nuit blanche en gare de ",
-   "date": "2026-08-21T10:12:30.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "La mission de Mazumdar-Shaw : élargir l'accès aux médicaments essentiels",
-   "lien": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOV2JMM1lXZF9aZlphR21ncDNpRkFsbFNKM3lNc0M1bTM0SUV3ZWZMMHpIMXJQSE5TZXVBcG4wVFc1NU0tS3UwZ2cydGJaRjl0b2xfY0gzV190ZmhIdGtQMi1CTzRibWNKeFVYM0d0NjBxVnA1V3VFbEhHSEZvM2E3RkRlNTZBUmw0bkZnUE5lYUJQbHJsV01NVUVuUFdBLVc4QmpaTVp3ek14TFdoUkNMMDVvXzdjNXBYdWlzWHMtdDhDU2RLV015Q0ZRbw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:12:19.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "UBS anticipe une hausse des actions de la zone euro de 10% d'ici à la fin juin 2027",
-   "lien": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxPdGVGaDg0OXhkN2g4SDYzMW1MLU5YYkN2b0pkcjBCRDllV2IwUW5WQ05RQjYyQU4tVVpkQ1dmRUlwNUd5S2JtVG1pVmtWZzBUdWVpQWpSYUtlTVo3VmZraFdsQWhQR1htRUVBck9lZTk4WVRkb3ZRazhyLTdPbS1VbTR5aG1fejZxV1Z1WnI5cWJJT2hMUi1feTJDaVZHMzdWdkpvVWZjZEFsWVhod3RDSThYLVRwVmVnQzFGb3FPUHFzSmJaTElXU0ctbXpPNk13TkpMOFVHUklsN1hSeVI0ZjFUTVAwVWs?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:09:03.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Un rebond difficile en Europe, entre indices PMI et rendements US",
-   "lien": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOalpSZnpvUDFTOGhsa1BkZFEyWVJqQnpxdGd2UWNQbTFqeTQyOHdTTGR0UVFENDZWOVFWT3ktWEZ4Vlp0Ny1ZOEF5T3Y2clpORUdIYnRKR25QZlhGeGVORjlOWUpKaXBJWHd5WFQtTG0wT3VJMzN2N083QjRXRm93T3RGeG9jSmw2aFJIc09POHl3R1lWVTNXdVE5WHBnMkZaZGUwdnl6bkkzU3VzOEJBcDJIUXpJRkpULWJpRUJ0N3FXdw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:08:28.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Walmart Inc. : Goldman Sachs à l'achat",
-   "lien": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQQzZXaURJTXE5cWFMUlMtV3R4eGVwZS0weXhKdmJPVE5CQjdiV2s2aTE3LTFON1ZyUGdFRGdjOTF3OEdkeHgtN2xkYXEyWndoUHBkeURQT0gzdEx5ZUhPUFM3ZFFwLVZSY3FuTlJyM09TQm5vWGQtZzhPZC0xb3ZOOVYzMDQ2ekxvZDJBSXlLVWZmbG5WamhUZkswOA?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:07:55.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Le cimentier Holcim bétonne sa trajectoire",
-   "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNcXZJaElXQ0Nqc2FMZmphWFZIQjhfYnhoWk5CR09ESWZfcklQOU9XSWlGMnEzd0hPeHRxVWJJby0wUFB2cmJVeVRVZXhoaklkbVh3aERQeG91bGllNnlEdkg4VzJtZUZGU3NUVXRYejZIVzlVVVYxY0tDWFpiRE1rMEpZRGNwWkplOXN0OUVwMGk3U3RoSThZNFRFYnlGU1lSWnlVaEt0czRNeGtxYS1RbDFuVUR4UQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:05:50.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "La situation au Moyen-Orient pèse sur le trafic aérien mondial et incite Amadeus à la prudence, mais le dossier a de beaux atouts",
-   "lien": "https://news.google.com/rss/articles/CBMipwJBVV95cUxQOE84ZGROWEpzY0NGWk9pRHZQdTZHOWNyNThVWmptMnJ6VXM0Q3AtUjdEdVVUSlptNWVRcERlWXA2c3pCNFYwSkROcUkza2Jmb0c1cllRQkhHdDRjWExzR0dPZzFhZkVDbENVVTBRSXB1NVBhZ0RzV3VxNWI2SWtQcG03dkJ6bng0clUycEhZeDFlTEllWGZiTjNqOEJJY3ZVMmdaeW5SMXNxeDREYnB6QXptSkpxSWxGbDRGM09HSEpWM2xCbDRReVJsalVnS0tDLXkzVWRCby0zelY2dmRFc01vN3YxV1B1c3huSXV3aXBDd3JYTlFJQW11dnNvWHFfak9WNXRsamFnYmRRbndlOTAzbEtILTlRclhuTUJQb1E5ZVVxb0k4?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:04:46.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "Edwards Lifesciences Corporation : Argus reste à l'achat",
-   "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOS2hVd3pSRTJfQjlQQ2hKOVFLREtaOXJtS181Sl8wRFowRVY5SS1Pc0g5bDdMQV9iY1BSZXdmRjQ2RHN0a013RzVJQzFDSFdFOGtqSklkOTRCaXZRckpySXpUaUV2RTlFUDY3R2FKUWc5dnlXbzV0c2dlUFEzRzVwcGNWUVVDU0s5ZWl4cWxGdXhIRjg2MDRUWHkzMmhvNnZ4NmhJdmZsV0duWFU5eG16QU1PWnkwQQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T10:04:37.000Z",
-   "source": "Zonebourse",
-   "sourceId": "zonebourse"
-  },
-  {
-   "titre": "Mortgage and refinance interest rates today, Friday, August 21, 2026: Rates stand on high ground despite bond market buybacks",
-   "lien": "https://finance.yahoo.com/personal-finance/mortgages/article/mortgage-and-refinance-interest-rates-today-friday-august-21-2026-rates-stand-on-high-ground-despite-bond-market-buybacks-100000222.html",
-   "resume": "",
-   "date": "2026-08-21T10:00:00.000Z",
-   "source": "Yahoo Finance",
-   "sourceId": "yahoo-fin"
-  },
-  {
-   "titre": "Best CD rates today, Friday, August 21, 2026: Up to 4.35% APY return available to boost savings",
-   "lien": "https://finance.yahoo.com/personal-finance/banking/article/best-cd-rates-today-friday-august-21-2026-up-to-435-apy-return-available-to-boost-savings-100000741.html",
-   "resume": "",
-   "date": "2026-08-21T10:00:00.000Z",
-   "source": "Yahoo Finance",
-   "sourceId": "yahoo-fin"
-  },
-  {
-   "titre": "Tourisme, sylviculture : l'économie drômoise frappée par les incendies",
-   "lien": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNQ0pCTWsteExJaW92cXVzay0xeGd4ZVAwWmFmZW9SYjhpUDQ3TTdveUZ2Qk1ZTzZQM0ljV3hNS3lSUGxsbjdIUThGd2VvaElqUDRjUExmVzR5Nlc1a0JoTFZBcURRcDZEOGlkdGs2cDFuWmhzNmkwUHRVbGJfSUs0ZEw0MFhvZVRCdGNjSThXMXNvUkhsVklEVHdBZUQxRXJKYTFvOXZCZHl4Y1dhSzF0R2tSSWtBTUozNXVadVJ5OWpIbG4takJHMDZpUFltMDhES0ZEdHdPc0V5ZjQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:59:11.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Paris et Berlin appellent à la libération de la militante hongkongaise Chow Hang-tung",
-   "lien": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxPSUJWZ3JQMFR2V3VUN3EybWJiZFA0YWxFWHdnaTQzSU1ySkVrdFhUVmJoVFRSbjdwNmxkQURHWUZ4XzFYMHJnME5MZ3Q5QmhOYXR3YUNoTHFoZnZVTWlaQzljLVRWaGF5YTh4RDRHcGF4OW9zdnBqUllpOWRTTWtoMXRTV3lXY2NMMFBtay1qNnFtdEVXNnBoajlYNl9ZanliUGI3cWNDcldzM0Zwc2xkaE9NeHktNDF5RDAxcUJXR0pDRjBKbThZS0NET1NFT1pKU05HWjBLVThCUzVlcWpxLTRTZmpoZWJOM01zVXVZazRKM1FLZ1EzQ2FBTmloNVNmQWlxSUhFbE3SAY4CQVVfeXFMTUpMWnRJNmhtYUVXUWtTU0hLNGliRDkwQ2Zna3FuVzVXbThIZ2FCbmNzSkFpR1FpNi1OSlJ5TVlodkRXWjY2Zjg1T3BTaVZ3NTB5R1FHVWJRTzlwUVhIaVIyQXNCZkJSV2F3d1F0akJSMmxBbng3Tmdwblg4MWU3MEFBNUJXQ2Z5eWdrTzM2dGxBeVd2VlhkZ29OSFllZEluZzNHR29NZnY2SkFuQjBNZ3FmYmdETXVVcXFkZENRUXJYTkUycjZqN3ZXQjlmTkt4VkRlSjBGd1JOU2RyQm5Na2Y1ajhBbkloSkpYWWNkUkI4RmhIOGpZU0R5X0JrYzBiSE1KTVFCYUExVG9zTG1n?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:50:50.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Prix, qualité… Les magasins d'usine font le plein de vacanciers cette année",
-   "lien": "https://www.franceinfo.fr/economie/commerce/prix-qualite-les-magasins-d-usine-font-le-plein-de-vacanciers-cette-annee_8156018.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "Quand certains préparent déjà la rentrée, d'autres savourent encore leurs derniers jours de vacances. Et cet été, les magasins d'usine cartonnent chez ceux qui sont en quête d'un petit souvenir à rapporter dans leurs val",
-   "date": "2026-08-21T09:46:58.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "Les tractations autour de la vente d'un géant mondial de l'huile d'olive agitent le secteur",
-   "lien": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxPN094ZzkyTWtmb0w2UnF2UHZPdGtLT1M4R2JUanJRd3Nod3ptaFQwTVhTYzhQdkdrbVhwTFNCd0NsYkR3RU1TWll2RkRSY1dWR1d4U3c4MUZady1IZ2I3WncwQ1pCb0ZOekp2eC1OWF9pTW5yZUFIdE9IU0xPUnJNUG5mdDB6VnRXdTUyM2NQTkJwVlRPeXlPWVpRUHNqSDR0cmYwMlRGZFhMaXh6WW1OZ3R6OF9ZdWk0bTRIbjBpN2I5N1VpRHp2UGRDSjlGcmc1VlVONWFzTVljVnRSZnhQTEI4MUViSTliWTF3YVZsNA?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:45:08.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "La BCE observe une légère baisse des attentes d'inflation des consommateurs",
-   "lien": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOQlM4dHFody1sWGZHTjU3NEZyZnY1cWJEMV9hOE5URl83c3ZSaWlYN0hvdkVkXzRoNG1jYmlHN1NIcDJsWXU5cWxQdG5EVk1qeV9vOURjR2JFWFN1QU9IV3J6YmQtSjlVMk1XZE10czE2NEJ3WUdPM1NrbzhGTUZEcE0tY2l2Z0pVT1pyRjhlaWxlWFNVX3Y4bllVelpHY1RySVpMU2RXMWs4LXZURGhpSnZfQdIBuAFBVV95cUxPMmN6ci1XVHZIYmJOTVlCTmptTHhZYVBMelBYUE0xT1RiZ2M4M3NOSXZOaEpKMHMyV2RkenFENlFBc3AxSHJnSkY4akpib2RtTC1meEV6ZWt5ZEQybnZvTWV6OXU5MkROb1VhbFF2MFlqbXJLaWtJMlZra01zUXgzNnVFeVQ4TzdXei1CaFBrM0tubG1va3BHTjNReEgtY1BDZ2VCZjlSYW5hMHNTR3h4ZjVmZDBRZndL?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:43:02.000Z",
-   "source": "BCE",
-   "sourceId": "bce"
-  },
-  {
-   "titre": "Offres du jour-Fusions et acquisitions",
-   "lien": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOWlVnTDBGSV9OSlVXTExnTlJGRkg0UFBYdU9NZzNrbnF4TENwcXhRS05WSk04TXdHOEsyTERKb0luZVZyalMyQUthYnZoblhJT1pHUndraGp3YmE3MVQ4WDJsaExSVUdoZ3Q1Sy1qc0VaMTRzckdQV0pxalE2dFN5ZmJPZjNVQzBPS3ZLWEJnbHQ5MGFqY2hxeUNVZzFGSVZkZk9HdkhqSkdSUjZDanl6R1V1SGVqS2_SAbwBQVVfeXFMT3JsQ3BDM1Y1VHZhOXBkaks3eGxyVFVCTEk5OUtKN0JyM1FFZWJ1Tnk5ZzB6UkpnaFhLOU5UUEFLUDUxZFVLRnpPRVA5eWx2c1RQOFN2aHp2cFpYcEY5Ul9pNjNma1RzYWZGNjBFbHh4VW5na2ZIa3U5NFMxcGpocHNHNUIxVkFkeE9XUzEzMFhYUGxWN1NqdTJONWRmSUY0ZFRLUVgwZ0VnWkhxMEkteVZXR01IWHA4UUVwQy0?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:41:33.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "UBS Global Wealth Management relève son objectif de fin d'année pour le S&P 500 à 8 100 points",
-   "lien": "https://news.google.com/rss/articles/CBMiggJBVV95cUxNVS1xNzdnLWhoSmZUSEt1NG5SN0Qwa05vOWk4T1ZjeUxSc1lISk9lY1MyYXpoX0JIaklUVzNkYkItZ2FKcUpVQ2VWbjRKbll3WE5HZXQzNDJkXzZPbDhCNmJuQ3JTcWtNUjF6R2lJX1RoMVZNbVF6RUZjVmZGVHo0ekxYenlhay1peVFyRDkzNnNFbHNCcjV1OFBoR25CeTBqNENYSkUzcUNnell1WlZMQWtCUGZ6b2gtS2Q1R2dVMjBvM0t4N0V3a0ZNcTRsLWRMM1ByOHVrZ2VQaVp2Yk0wcjdiOUIxa3U3anQtV0F6cXFUa0JaQjdkSDJScTFUTG1malHSAYcCQVVfeXFMTWhJZ0pxTFJBQi1ORzJBcC1hVklTZml4eXg2SlBONDBLaTV0ZnplWFRFdWxETTR3bmxkQnlVdzNzU282c05IV3hjRmJJZ0ZKb3Q5Q3ltRlhnSTdRelZGR0NFUmtxU2RLeUZiVmtaOGlYV0RSVjFEZFVoeXVqMzkzNW5MRlBqQTJLUnZYYVlOeGlOSU5DNmVBeHlmdF9Ra3dxVU1GQjFCVTVmUVNIRFFtNFlJeXZLZERnS2R2bERFTGNkNHJTeDVwQ1VCWEFsOFliclR4WWxwQ2xXSFRLZENaYWJBa01mMi1Rc1VsSjJwdHIwejlYdFU4emZUS0lsUFRwSHpJMVRVU1E?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:39:32.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "La société australienne Steadfast accepte l'offre de rachat de 5,51 milliards de dollars présentée par un cons",
-   "lien": "https://news.google.com/rss/articles/CBMitAJBVV95cUxNdUFiN2tZTVdwTFFGWnFmRkJQeHQ2T1dXZm5JTTBEcWp6NVotXzh6R2R0akZVM3RQeGpRZTFobm1HS0dzNVhPSGJEZGxta3ItU2MtZjdFczVDQlBZM3hGVG9xcGRWeUc4RldCemdtY0F4RTBfOGdOdkg3bHZaZExfR1BYODFZNmJ3VmVzd3paSDV3OVlVTjdLd1lxSHp5UlRrUzhZWWNxaW9QTldVeVoycUl4OFc1VEc0NjhPWXQyM2dpWmx2RGJrSDJNVXl2d2tQV0k0bEZDUUZCck1GMHJaVzZsM2o2VjlaVWJSWlgtM0hDbGgwcHN5YkpwRDE4Q014ekdZTkFqempHdktMQXNHckZ2Y2Q3M1h2eF9nWFJaVXAzVEw5V1R3RnoyaXpTQW9oLVQ4Y9IBugJBVV95cUxNd2VtS3JFYzQ5Y2xNcDhYN2RFZVdwYXE2ZEtpanBoRVAwQ0dVYloyQ2xvZVdrMmIyUjhvUVcxR3lIeDRzckg4Q2dtOVktNnkzd3Y0NXQ2ZjR6YjVUOXRocThDUXptZm1FSEliOUloNXRxTUsyTWVNRE9jeEJvSmJnZXZjYk1tenFnTU9kalNzdHZWLVI3ejdId3BCWkhvRENVTzdrSDduM2JXVHpNSG1WX250dkNQYlFWMXJUa1dTZ2Z4SWNhTFlfTVRRNDY1eHJJaXR3bGVVMnR0NG12ZlZOREtTSmtoOTZGeEtrQVZSdTdGMEltQWEtdlhmdjBvR0lDYVMzZUM1RTdQdWRod3IwUEV1dVliSk13R2xYX2Fnd0Q4OEpfcjdWVjBlNU1zOEJPc2lYcnhkX2VDZw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:36:26.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Loi d'urgence agricole : \"J'ai toujours été contre\" les néonicotinoïdes, \"mais voter quoi que ce soit dans une niche parlementaire n’aura aucune incidence\", selon Sylvain Maillard",
-   "lien": "https://www.franceinfo.fr/economie/emploi/metiers/agriculture/loi-d-urgence-agricole-j-ai-toujours-ete-contre-les-neonicotinoides-mais-voter-quoi-que-ce-soit-dans-une-niche-parlementaire-n-aura-aucune-incidence-selon-sylvain-maillard_8156063.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "La France insoumise a fait savoir qu'elle utiliserait sa niche parlementaire pour faire abroger l'introduction des néonicotinoïdes prévue dans la loi d'urgence agricole. \"Un effet d'annonce\", dénonce le député EPR de Par",
-   "date": "2026-08-21T09:33:17.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "\"Vous êtes soit avec nous, soit contre nous\" : les États-Unis font pression sur leurs alliés pour isoler économiquement l'Iran",
-   "lien": "https://www.franceinfo.fr/monde/iran/guerre-entre-les-etats-unis-israel-et-l-iran/vous-etes-soit-avec-nous-soit-contre-nous-les-etats-unis-font-pression-sur-leurs-allies-pour-isoler-economiquement-l-iran_8155961.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "Les États-Unis maintiennent la pression sur l'Iran. Washington demande à présent à ses alliés et à la Chine de se joindre à une opération de pression économique, afin de faire chuter le régime sans reprendre les opératio",
-   "date": "2026-08-21T09:32:17.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "Chinese humanoid robots' biggest obstacle: Humans are still (mostly) better",
-   "lien": "https://www.cnbc.com/2026/08/21/chinese-humanoid-robots-face-challenge-of-their-own-capabilities.html",
-   "resume": "Humanoid robots still struggle to perform as efficiently as humans in most labor scenarios.",
-   "date": "2026-08-21T09:30:55.000Z",
-   "source": "CNBC — World Markets",
-   "sourceId": "cnbc-monde"
-  },
-  {
-   "titre": "« L'épargne européenne ne ' fuit ' pas, elle est mal allouée »",
-   "lien": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNZHIzTDNsdmtQeXZCZzdLYjVyZy16X3VyeDlYMlh1bXE1LVNwcElYRFhORGFIVE1MVWtuRzAzdE5uSnFmdTVIdElfZXhTZVVXVVR6TVEtR1R6ZHRTT0ZCclMwcFZfVFlKaXFXOWNMV2FBeTYzTHBTcERpWXZnMEFkLWlOLXRDT2tabVczcmJjWHJCcWpJRmhKTW5mNUFXMV83Wm1fQUw1SQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:30:09.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Les résultats semestriels très corrects de Forvia n'ont pas convaincu pas le marché",
-   "lien": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxNdmZibUE3eXVId1hFTURkRGRqVVFyQmpwWEhic05udWo0U1dydm9RNjFyZG9taThKRmRmQjRVaVhEbzlHQTUzbVlieW1ScXE5azNDTkZZQ2sxTmZlM09kdFBxZGVGbTdQMms4VS1MdzY0V05mY2xlUEFXdzItWnFXeXVFaUhSeEdaRUxSTmlFeUtlODF3alQ3UnJ0SGFHZHVfT0JvdUJWQU9DWnlJUGM4Wm85YWw5ZHhHMlp3YlQ3QXBZTHAxdEdFZHVqMFU1OVo1VTQzLWltaGMtRXVZRkpwdWR3ZjlGZThub0Uw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:28:33.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "Forum Bourse VALLOUREC - 21/08/2026 09:57:36 - Avis",
-   "lien": "https://news.google.com/rss/articles/CBMicEFVX3lxTFB1ZTBkS25OUzBfLTlxTjd5cGJNY3NqX29VNUljUFhMczUtZ3ZnamQ1Q0VEVS1BOGxsSkZiNm03R3Jsd1RHMUEwdTJoWkM4MG50bFpPbnp1bGdRckJwejZHX3J1Y2VaM3BSeVo5WkotcXI?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:23:19.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "Forum Bourse OSE Immuotherapeutics - 20/08/2026 19:18:15 - G24",
-   "lien": "https://news.google.com/rss/articles/CBMickFVX3lxTE8zQTRXWFQtWURNa1RlZXZBWlg4VVdOZlJtYmZtNWMyLVg2T2VUb01RRWVrRWZ4QWluT0VWN29RQ0ZndDB1REYzTTNuRzhFYU9ULVlKbGxtVlhBNld0Sjhad3dnaUhTc180UE13QTVnT19Jdw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:21:13.000Z",
-   "source": "Boursorama",
-   "sourceId": "boursorama"
-  },
-  {
-   "titre": "L'Europe progresse, mais les taux longs et le Moyen-Orient restent scrutés",
-   "lien": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPRUhMb2hmU2tra0ZUZnF4aUVURXFyN1JXS3dRVzhjeXAtb2Z0b2RNcGtIa0dCYmg3dng2anRrak9uZ3hYWEI2VkN6UDd1OWdxMHZqQ0k1cnlxLUtsVktqcENhbWNaallIdlBDZVdOUnZ0T21kQ1VPZW5BWmltRndyZzJfeDEwbnlCZlJ4Q2xXbWJ0VjZhS0p2LUduZzQwQVl6cG9ReU9EUnRiYzZfUnZUVHFmblY?oc=5",
-   "resume": "",
-   "date": "2026-08-21T09:17:07.000Z",
-   "source": "Taux et obligations",
-   "sourceId": "taux"
-  },
-  {
-   "titre": "‘It’s truly a tragedy’: My daughter hasn’t spoken to me for 4 years, but it has nothing to do with politics",
-   "lien": "https://www.marketwatch.com/story/its-truly-a-tragedy-my-daughter-hasnt-spoken-to-me-for-4-years-but-it-has-nothing-to-do-with-politics-86c4bcf6?mod=mw_rss_topstories",
-   "resume": "“You’ll have to trust me when I tell you that she had love, support and opportunities.”",
-   "date": "2026-08-21T09:15:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
-  },
-  {
-   "titre": "Hedge funds are doubling down on Big Tech even after summer volatility triggered a massive portfolio cleanup",
-   "lien": "https://www.marketwatch.com/story/hedge-funds-are-doubling-down-on-big-tech-even-after-summer-volatility-triggered-a-massive-portfolio-cleanup-57dbbf8a?mod=mw_rss_topstories",
-   "resume": "Hedge funds entered the second quarter all-in on the AI trade, but have begun to diversify their portfolios lately. They’re dipping into healthcare, energy and financials.",
-   "date": "2026-08-21T09:11:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
-  },
-  {
-   "titre": "Samsung plans up to $80 billion in shareholder returns after SK Hynix buyback",
-   "lien": "https://www.cnbc.com/2026/08/21/samsung-shareholder-return-package-sk-hynix-buyback-ai-chip-boom.html",
-   "resume": "Samsung Electronics plans shareholder returns totaling 90 trillion won to 110 trillion won, including about 30 trillion won in third-quarter cash dividends.",
-   "date": "2026-08-21T09:08:18.000Z",
-   "source": "CNBC — World Markets",
-   "sourceId": "cnbc-monde"
-  },
-  {
-   "titre": "Legendary film editor Billy Weber of ‘Miss Congeniality’ and ‘Top Gun’ lists historic L.A. home for $4 million",
-   "lien": "https://www.marketwatch.com/story/legendary-film-editor-billy-weber-of-miss-congeniality-and-top-gun-lists-historic-l-a-home-for-4-million-465ee55b?mod=mw_rss_topstories",
-   "resume": "Film editor Billy Weber’s tranquil Los Angeles home has hit the market for $3.99 million.",
-   "date": "2026-08-21T09:01:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
-  },
-  {
-   "titre": "Une circulation \"très difficile\" vendredi et samedi : Bison futé lève le drapeau rouge sur une partie du territoire dans le sens des retours de vacances",
-   "lien": "https://www.franceinfo.fr/economie/transports/une-circulation-tres-difficile-vendredi-et-samedi-bison-fute-leve-le-drapeau-rouge-sur-une-partie-du-territoire-dans-le-sens-des-retours_8155979.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "Dimanche, la journée est catégorisée en orange dans le sens des retours sur toute la France.",
-   "date": "2026-08-21T08:59:49.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "El Niño historique : pourquoi 2027 pourrait faire grimper la facture climatique mondiale",
-   "lien": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxPMFdVT3pSaHBqcjVBdWs0dFVRWUFRMUNTd1NLRUtDa1RhWVlsWGtlQldEY29JUjVSRTgwTnhNWUREdzFmNVR3VjJqZ29mNjdsenR1TjhzeFVLZnZ3WS14bEpoYlh4dkhhVzZZWlhMankxUUNUSkt2Mnc1Z2otYklXempmREEyZlE2VXF6VUd1czlNTmlqcjZpOEllNnFST0RCcFlKT2lXSnZLaVM4dVZTMG90RGdXeWxfTWJpbE1kSjlQZnR1WHZKNWxJU3VkVHdGb3dvdC1abnZtaG1rQkRmcTl1WWQydGFtUVpXQkxmLW1yUzJScXY2MQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T08:55:02.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Test Fiido Nomads Pro : notre essai terrain d'un vélo électrique taillé pour le quotidien et les grandes escapades",
-   "lien": "https://www.challenges.fr/partenaires/test-fiido-nomads-pro-notre-essai-terrain-dun-velo-electrique-taille-pour-le-quotidien-et-les-grandes-escapades_645287",
-   "resume": "Le marché du vélo électrique continue de monter en gamme. Avec le Nomads Pro, Fiido s'attaque à un segment particulièrement concurrentiel : celui des vélos capables d'assurer les trajets domicile-travail tout en accompag",
-   "date": "2026-08-21T08:51:00.000Z",
-   "source": "Challenges",
-   "sourceId": "challenges"
-  },
-  {
-   "titre": "\"Les sanctions et les pressions ne résoudront pas le problème\": Pékin appelle à la diplomatie après la menace des États-Unis de mener une \"guerre économique\" aux partenaires de l'Iran",
-   "lien": "https://www.bfmtv.com/economie/international/les-sanctions-et-les-pressions-ne-resoudront-pas-le-probleme-pekin-appelle-a-la-diplomatie-apres-la-menace-des-etats-unis-de-mener-une-guerre-economique-aux-partenaires-de-l-iran_AD-202608210242.html",
-   "resume": "La Chine a réagi, ce vendredi 21 août, à la pression des États-Unis menaçant les pays \"partenaires\" de l'Iran d'une guerre économique. Pékin dit \"s'opposer aux sanctions unilatérales illégales qui n'ont aucun fondement e",
-   "date": "2026-08-21T08:50:13.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "Fisher Investments France livre son avis sur les risques d’un excès de liquidités",
-   "lien": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxQdS1ZdXFDVlNVTFBrODBJOHhoLWhkaE00a0I4a2tfbFR2azZLY1JheUFpay1yUFRnUVlWVXNJTzJjdDA4YnoyWjIwOXpLb2xXdlhPX2RGdjR0RjFrUl9ublRIamo5VC1ZRkVMWUxlV3VKRE9HNUdXQkxEMDhrV0N0dzFfVDdQWXpqYVByc0xqTHFoOHZScm1LckFwODU0eHlyeUpxRzBsTUs4cjdxSFlJNjlhalVUZWREMXhkZzJudHJ1M3ZPYlhMYzVOU1E1UHZtelNlRldvWHBMY2FFSF9oMmJHUjFrX2RCS3F4b3RsTTc1UQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T08:48:42.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Le climat des affaires poursuit sa remontée au mois d’août, selon l’Insee - Capital.fr",
-   "lien": "https://news.google.com/rss/articles/CBMivgFBVV95cUxOcXRoWUhqVWxpUDNPUmJMcjFyTnc3cERPSXZDcDBLQ3ctckNVRFBYdzNhX2QwUEM5bElsTEJoalFtU3FwdjN6UXVKekdnM0dmN2N1S2JsVmttLS13cDl6aTFaTXJKU2xobVo1OVlOMzUtTmhQS05oQ0RYWjU0MUxXcjBMX215TExFaDdhYUpoZzJYM1BUeE9ES1hvVTZSUGRITWJnekxienYxNUtQZnkydVltWF9vajZQRTVKbG9B?oc=5",
-   "resume": "",
-   "date": "2026-08-21T08:44:48.000Z",
-   "source": "Macro France",
-   "sourceId": "macro-fr"
-  },
-  {
-   "titre": "L'économie argentine gagne 0,8% en juin, après un premier semestre très inégal: Javier Milei exulte et affirme qu'il \"remplit\" son mandat",
-   "lien": "https://www.bfmtv.com/economie/international/l-economie-argentine-gagne-0-8-en-juin-apres-un-premier-semestre-tres-inegal-javier-milei-exulte-et-affirme-qu-il-remplit-son-mandat_AD-202608210234.html",
-   "resume": "L'Argentine a enregistré en juin une croissance de 2,7% en glissement annuel. Mais l'indice masque un premier semestre marqué de hauts et de bas, avec une hausse en janvier, une chute en février, un rebond en mars, et de",
-   "date": "2026-08-21T08:41:07.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "Wall Street : nouvelle baisse, les taux et Walmart pèsent",
-   "lien": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNbTV0S3J6Mk5PQ0lKMVBRNGhPVl95a0dqMHJMMkkyazFjdjlsdDVObFhhSGdJNWZmZGY0djh0bTZUVGxMNDNVT3pzcHZwZFdkNnY0ZDhTWlFTSnVRNk83WG5oeDh6bGpUTkFZNVl4V0Y3U2JzSUY5aFRGV1JvMFhXUzdMZmVHQi1uMDhOaUdyWWV1aXZzRnpPRjVn?oc=5",
-   "resume": "",
-   "date": "2026-08-21T08:38:00.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "Royaume-Uni : l'inflation repart à la hausse et atteint 2,9 % sur un an - AOL.com",
-   "lien": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPaU9lZE1sSzhwQmdLZ3NKWDhmbGEydlZxOHNtcU1QT2JIT2ZXZUZ1S09HdEZUcWhGVC1nRU9EYXdPMVdFdkwwWVlma29JV3BiM3Y4SXVpMkpqTVNlNFBkcjFWMTN0WHlWMk5vdEY5NHk0eWxXZ29nWmVqbEJmdDFoMEF3?oc=5",
-   "resume": "",
-   "date": "2026-08-21T08:01:01.000Z",
-   "source": "BCE",
-   "sourceId": "bce"
-  },
-  {
-   "titre": "Numérique : le chinois Guodong veut investir 256 millions d’euros sur le marché kényan",
-   "lien": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOUEF6RjVGRENxcnNxcTJWV1lfcVRlWkdFd1lQRWIyeHFaNUlUejR2c0VES19ub212UmJMM1Bidi00aXdqbTFLZkd2TDR4ZmJmTjE2WmJFR0lRNDhKRlRXSk1NQU5HNzBkak1wYnVOVV9LNlhYU0wxQ3NTSlZSclJaRlNySlJGWEdPRnRvX3ZvQlZGNXlISXRYVHNtNHNfM2pVUkNHd2hMRlhnWTA1SFlBY0RFY1pNSDFucU1rQUFhdi1MTHRsT0RkSS1MRy01WDczYmpVU1UtTQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T08:00:02.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Allemagne/PMI : L'activité du secteur privé progresse moins que prévu en août",
-   "lien": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxNRWtmb1hxRFg0TENydlMwMHNyT0pnTUtULU03STFIOG9kbUVTXzZPRHM0UG9SbGhCaFdJWG9fNVpPVE1pZUh2MDRwWTExSnFvenFoeWpQZkNjbEFGWEV1TzFIdXlONXpYcjFMMGxFSTdNbExrTUtFekRUMUZlNVZjUVh3N1hEeFJ1WFpLT2RMQjRld2dwREw1YkNvYzZCLTJ0VERlNTNUejN2V3A5VE5qazItUlVuT2JGdDVCMEExcnJxbDgwQ3Y4RFE1N3dRN0xHWVR6ckdhMUo0VnhSelE?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:58:00.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "Jusqu'à 11h30 de retard sur la ligne TGV Hendaye-Paris, notamment à cause des orages",
-   "lien": "https://www.franceinfo.fr/economie/transports/sncf/jusqu-a-11h30-de-retard-sur-la-ligne-tgv-hendaye-paris-notamment-a-cause-des-orages_8155943.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "Un train Hendaye-Paris arrivé vendredi matin, avec 11h30 de retard, en raison d'un défaut d'alimentation électrique \"très probablement provoqué par la foudre\", précise SNCF Réseau. La circulation reste perturbée jusqu'en",
-   "date": "2026-08-21T07:55:23.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "\"Pour répondre à la demande, il faudrait qu'on double\" : explosion de la consommation de poulet, les éleveurs français démunis face à la demande",
-   "lien": "https://www.franceinfo.fr/economie/emploi/metiers/agriculture/pour-repondre-a-la-demande-il-faudrait-qu-on-double-la-production-explosion-de-la-consommation-de-poulet-les-eleveurs-francais-demunis-face-a-la-demande_8155418.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "Les Français n'ont jamais autant mangé de poulet, avec près de 6% d'augmentation sur un an. Mais les éleveurs français ne parviennent pas à suivre. Résultat : plus d’un poulet sur deux est désormais importé, notamment de",
-   "date": "2026-08-21T07:54:27.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "1W30S - Investir - Les Echos",
-   "lien": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPY2FxVk54WWEzQkNzRmE1QVA2TWtEZlpMSnJkYm1penJTdHRDLTlxZ1VrdHczMVBPQ1BsdkIwNEVKOWVvR1RZUmRJS2lEUGFMYl82c0RkeWxxbWpMZzZxUDBEbUhPZ2Nwa2taTjJGdHdRWm5HSk5OY01SQ3hNVmUxbkpHVFNPWnJZeGxfRDBjaw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:51:33.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "Climat des affaires : l’industrie repasse au vert, le bâtiment reste à la traîne",
-   "lien": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOQTJtUXZ3dkkxNEswRy1uRUxUQ1ROdk1sMkFicWNGUWFFY3liOUNEdWFVVTZFRHU5ZEg2aGo2Z19NS1lqMThMTk8tcS1rZkstV3ZkZFVDOXhtSjRNWlE3ZWVKalNTOUtMeFF0M0VmYnhnZm9Yd2ZEd0xGWUFUNkhNVXo2SGJ5V1dkWVN2Zm15LUx6aUt4bWU0TnllTUxQWVkwZHlwOEJSWnV3SkhfUEV6Qjhpb0FlcWhKM2RFTmtKR1NJMUxaWTVyTEhUY29MRk0?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:48:37.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "France: le climat des affaires s'améliore de nouveau en août, selon l'Insee",
-   "lien": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOTTRydW1FUmZNNGR3V3lXMHFzYnFVTlMyN3RDcXRyRWUyaExqeHNXZzlRQlJvMlhYcVluUTJPd01fbzJzWHRyT1JuWUs3Um9MQkZaSEJCSjhhYXFmbW9qU0tfb1VyVUtXcXFXZ2hOWDkzdUFkc3Rlby1oSFVYNHdXT1NCN1kxZV9QZGowMjVYWjFxMXl1eGlVQkR0SGprNEFvTDl6WDlSZ3pQMDVNZ21SMHpGQ2ZYN3c?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:45:03.000Z",
-   "source": "Macro France",
-   "sourceId": "macro-fr"
-  },
-  {
-   "titre": "Le soulagement sur les rendements mondiaux s’évapore face à la remontée des taux américains - Investing.com France",
-   "lien": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxQcjlZaWlYUmRlc08wSmFpbHJxWHhFMFk4QmZoRUlpeTlXaEw1c1dXZldQMHlJeW1EN2lHdVRTS3JsRkZtWjE1eTJjRU9jNlZQeFRhWUdCWXFRLVkta3p0TndtMDdJdnBTQ0QyeUQzQ1c2ZEg4THZkZFU3eW9zc1E0akFNX29JanN6WVE3SlNldVlrTXlrRzJpSUtpUWVBNVlsQkY3Mzc2NkZUNERsb1dHYTdzVjFBWDJWMnVrTG1hVzZEWWJ4Tm9oRFdfQmR4UUlwcXhLTkV3?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:45:00.000Z",
-   "source": "Taux et obligations",
-   "sourceId": "taux"
-  },
-  {
-   "titre": "France/PMI : L'activité du secteur privé recule plus que prévu en août",
-   "lien": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQbTJpLUY3ejJDUjVUbmIxcE0tcXJtVC1CdHJRVXloeWpKRVl6VlY3UWYyMnRBU3BGcjQxR0YwU3hsaVdNcmN5UXdUM0RZTFV3OExpZ0ZhR3RQYzY3eHRMYTVDc3pvcE9DMm9FMnFlbDlCXzhjM1VtUHJaeGdCRURPQ19iMEk3SXZtU2NMY1VLOHVJMks4Slpja0luUUp6bldZOVhPUU9NV3hhRWNwYTdOYnVmTlRCb3ZjdDZxZEs4QW5XcXBjR3lSUDZ6YXZLVzhMOWlCZw?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:41:14.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "France : l'activité du secteur privé recule en août, lestée par les services",
-   "lien": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPYk56bkJiLTl6eW9uWGxuNHBaUGxGbXlQQ1NncEM2YVhaaVBBWHRXS211a3UzeThxWDl1S2RDYWtUcjVYVFlJVUVhNTNTNmtGLVJiOGlvQnotOUhPQjFzVnVjUVduZVRVcUp4enFNQmFsMjlnVTdNOWd3MV9mT0FMbW9HZzl4R0dpbEZ3NHFLMEJBaWlxNkdmcTJQTldYd0xDQ1BfTlQ5aUJ5V19rUko0QjExMlFUTmR1ZkJOS3I5aFJGaFlKUS1CNUNCOHpZRVQtcWpnM0dOdFF0b1N2REE?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:31:00.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Budget 2027 : « Le redressement des finances publiques serait impossible » en cas de loi spéciale prolongée, alerte un rapport",
-   "lien": "https://www.challenges.fr/economie/budget-2027-le-redressement-des-finances-publiques-serait-impossible-en-cas-de-loi-speciale-prolongee-alerte-un-rapport_645286",
-   "resume": "L’Inspection générale des finances avertit sur les « risques majeurs » pour la France en cas de recours à une loi spéciale prolongée sur le budget 2027, dans un rapport publié ce jeudi 20 août. Le service de l’Etat prévi",
-   "date": "2026-08-21T07:31:00.000Z",
-   "source": "Challenges",
-   "sourceId": "challenges"
-  },
-  {
-   "titre": "Thales a émis pour 1 milliard d'euros d'obligations pour financer le rachat d'Exail Technologies",
-   "lien": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxQVWxSUzkzZlNTdHNUNThINmJoZnJGdzAydFBBZmRFal9iZUc0Y0pmdDF5RU9fcnVPYWpfMXZ0NG5EVnFYOUFDT0JpbkE4b2pJZ2hGUlJfUGg3Z0J1Q2ozeGFadEpNVEl6aG1fYkR2RVI4YkYzc2U3amlRVXpPVVhiSGJxa0U4cnh0NFdMRUlfWVpnYzZ3WjBLcEVZakZkMTNfTUlqUzVVVHZOUEh6UHlPdkVfMEJnUHhlRml5Z0VyanUzTlRnWUwyRHNCSUxQTzRrVi1BbFdqVVM0ZnlVZUU4NjBPdmJpci1GRm16SG9NUU9lcEdERUNqM2dn?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:30:00.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "L'Europe ouvre sans direction, entre pétrole haut et tensions sur l'obligataire",
-   "lien": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxOYXJhZmhfeXY1Ui1xMEI4SjRkcXFrdUdPZHR0Q3ZTQkJIdThBcEt2c3hWZWZsTWlvOF82ODdMLUxRVFpodlU2WHdIY282eXBWYnFrUUJlZEd6cUNRNDRRRGt0djhJTUlERl9kMklzY2w4bXQ1bm9TaXd3amRLZEs2T1Uxd0F1b1liQll6bFBHRXJodHpKNE4zQzQ4VzhGSldYbGNkR0M0MlMyQldUWmg3bHdOaGlyMTdEeTR4TUlUbEFZMHRUWDhsUnNtMXppUlFhSXJhM1B0QzdyUTFqZmhxQnhYNA?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:27:45.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "L'intégrale de Good Morning Market du vendredi 21 août",
-   "lien": "https://www.bfmtv.com/economie/replay-emissions/good-morning-market/video-l-integrale-de-good-morning-market-du-vendredi-21-aout_VN-202608210193.html",
-   "resume": "Ce vendredi 21 août, Charles-Henry Monchau, chief Investment Officer de la Banque Syz, Christopher Dembik, conseiller en stratégie d'investissement chez Pictet AM, et Damien Ledda, directeur de la gestion de Galilee AM, ",
-   "date": "2026-08-21T07:27:33.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "Historique Actions Osprey Acqn III - OSPR KYG6841G1073",
-   "lien": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOZkRQa3JJUkVPa2hub2ZTR0xzWTlRSl9GVFRyTERKUWo5b1U2TzV6WXNYcDVhQTJrdGdyM041VVVwTUhEaW1TLUZsUW9pWTNNQXpEY0xXT2pvZ21YLTNHU2oyTWZxd0x2aEFpZkhPemFkWDdHNE5ZeWpTUjZFRnBPVW5WTDl3RGtKNTVmYkxTZGdjek5OUjZR?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:25:42.000Z",
-   "source": "Investir",
-   "sourceId": "investir"
-  },
-  {
-   "titre": "Labubu maker Pop Mart shares fall as key ex-China sales data drop, Citi cuts price target",
-   "lien": "https://www.cnbc.com/2026/08/21/labubu-maker-pop-mart-shares-fall-after-sales-drop-in-asia-americas-.html",
-   "resume": "Pop Mart shares fall after announcing first-half earnings.",
-   "date": "2026-08-21T07:18:33.000Z",
-   "source": "CNBC — World Markets",
-   "sourceId": "cnbc-monde"
-  },
-  {
-   "titre": "En portefeuille : Les clés pour choisir ses thématiques",
-   "lien": "https://www.bfmtv.com/economie/replay-emissions/good-morning-market/en-portefeuille-les-cles-pour-choisir-ses-thematiques-21-08_EN-202608210174.html",
-   "resume": "Ce vendredi 21 août, Damien Ledda, directeur de la gestion de Galilee AM, a expliqué comment fonctionne le système, comment faire son choix et comment concrétiser les allocations thématiques, dans l'émission Good Morning",
-   "date": "2026-08-21T07:17:55.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "CAC 40: La Bourse de Paris hésite en surveillant les tensions sur les taux",
-   "lien": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQNnNDWFMxb1BMREk3dVJNdzdmYTVSUy03VkkwdWxWM3VVeEs1MHQ5ZW1vZG9nd3BSQW1lem14US1oOGJOVlNTLUJuckh3Y01vNlR3dmNJTU0tbUZLellZMjJBZERxTC1RMS1rN0VWeVNrVDZaY2x3TGdST3N0M21Jc0RaTTBaMVJreG41cWpZcWV0UGVlSjEtX0R0X0JFVDJyczJaaHN2Z3NnNWo1NTBZT3lONHl0ZE85X3RKbDJIcDkwRV9JM3VvRUtUVXVJclpEcW9ZTTNYbGQtRm1uV1Nn?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:15:00.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Le club de la Bourse : Semaine négative pour les indices actions",
-   "lien": "https://www.bfmtv.com/economie/replay-emissions/good-morning-market/le-club-de-la-bourse-semaine-negative-pour-les-indices-actions-21-08_EN-202608210165.html",
-   "resume": "Retrouvez le club de la Bourse du vendredi 21 août dans l'émission Good Morning Market. Retrouvez l'émission du lundi au vendredi et réécoutez la en podcast.",
-   "date": "2026-08-21T07:06:05.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "Orages : le trafic ferroviaire régional perturbé dans les Landes et au Pays basque après un impact de foudre",
-   "lien": "https://www.franceinfo.fr/environnement/meteo/alertes-meteo-et-vigilances/orages-le-trafic-ferroviaire-regional-perturbe-dans-les-landes-et-au-pays-basque-apres-un-impact-de-foudre_8155895.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "L'impact de foudre, à proximité d'Ychoux (Landes), a endommagé les installations ferroviaires, provoquant une interruption du trafic jeudi en soirée et des retards vendredi matin, rapporte ICI Gascogne.",
-   "date": "2026-08-21T07:04:54.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "L'intégrale de Good Morning Business du vendredi 21 août",
-   "lien": "https://www.bfmtv.com/economie/replay-emissions/good-morning-business/l-integrale-de-good-morning-business-du-vendredi-21-aout_EN-202608210163.html",
-   "resume": "Ce vendredi 21 août, Romain Lucas, directeur général d'Homair vacances, Martin Charbonnel, co-fondateur de Veilio, et Olivier Germain, directeur général de Germain Collection, étaient les invités dans l'émission Good Mor",
-   "date": "2026-08-21T07:04:46.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "Good Morning Business",
-   "lien": "https://www.bfmtv.com/economie/replay-emissions/good-morning-business/video-good-morning-business-vendredi-21-aout_VN-202608210195.html",
-   "resume": "Ce vendredi 21 août, Romain Lucas, directeur général d'Homair vacances, Martin Charbonnel, co-fondateur de Veilio, et Olivier Germain, directeur général de Germain Collection, étaient les invités dans l'émission Good Mor",
-   "date": "2026-08-21T07:01:21.000Z",
-   "source": "BFM — Économie",
-   "sourceId": "bfm-eco"
-  },
-  {
-   "titre": "La construction neuve",
-   "lien": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOSkdBNlBXclBLSTJZcmtqa3h0Y184eE1VZUVySFY2dF9XRHNNUnpueGFGcl9fcWJGYWphZVZ2aDRUYUJKUnRYcEFmR2syVGc2cWNTVUdZSzF0MXQ0bEhRRGNqOFMwb05nQ0VzUXoxS0JwejgwcUtGNWE4ZEJzcUstcUhn?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:00:45.000Z",
-   "source": "Macro France",
-   "sourceId": "macro-fr"
-  },
-  {
-   "titre": "Des tonnes d'or sous Paris, une galerie dorée et la « piscine de Picsou » : la Banque de France livre ses secrets",
-   "lien": "https://news.google.com/rss/articles/CBMigAJBVV95cUxNX2dTbFZCY2x5WGRsZWZpQnlmV3htQ214MTYyQmhjU0ttbnp1VHpZXzlRdVExY2FRMTYyVFZpdi1xdVU2eHdfWnR4Rm82Zk1iSE1ab1MtYVgxY0RWeXQ5TDlIc3dJSVlhVGZtOVBCQnJjQ1JSaXVoXzVmdjZOVERBMFdxdi1BZHBlMThuQzZzbnRMdTdfTEI3NW1sZ2hQNWFvQXBaaXdCVS1seVpPWmhmdFpmV1RRTzdrMmk1dEpmMy1DV21vSUJ2Q2JLSC1tYXZTX2VJc3VZaHdmcmpMdmtqUS1EUFQ0Q3I3YkNKT0tTc25mSEQwdnZneHE2RHd3SmxY?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:00:14.000Z",
-   "source": "Les Échos — Marchés",
-   "sourceId": "lesechos"
-  },
-  {
-   "titre": "Cac 40 : L’indice parisien a ouvert la séance en baisse de -0.09%",
-   "lien": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNd3BOU2JMRDFaRDBiQ3BnWWRLR1RLbk9IcmJfeWY2NFVWV0pabjZSNDFUZllLQXo2Y3AzYVJsd295ZVRiTnRJbW1iYWoyWjdZdU5neE5KbE5Wd1V4VkxsLXQ5WnVGTzVmUFRrV2xaTG80S2hSTVMzcmNDZGFpYkgweURocmhvU19tRXk4QzA4QmdsRUpnTXFONFh6ZmQ5S21ZV1R5dk5QV3BVcHhjSndtczhMOTJKVkdzMjJiYkJza3p0Zi0tSVBSVmNB?oc=5",
-   "resume": "",
-   "date": "2026-08-21T07:00:00.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "Avant l'ouverture : Bitcoin grimpe à 75 000 dollars, Wall Street tente de stabiliser la situation - XTB.com",
-   "lien": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNYnJwZmZJejJSU2oyZGxLd3dMZTdWMzhkcm12V29MUkt3R0NLZm9UYXFLNjJEVUh0ZXZzSEZ2dFdHV1RMZVhrQXNBYlVvelB5SmlkcVhqb1NpM2JzSnFJMUlQWEppVWhZR2JHZmZGNDZfMHVQZUhkSGRxc2J2dmF3dUhVN1I3OEoxWVZKVm1BTUMwYnRsajNBOGx2NHVWcGhKblZwT3l4bDVsTFRaNWJleWdIVjlMXzZTT3RGN0pqZWwySkkxLWZIanJVd2tEQkE?oc=5",
-   "resume": "",
-   "date": "2026-08-21T06:58:00.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "L'avertissement de la direction générale des finances publiques : le non-vote d'un budget aura de lourdes conséquences pour la France",
-   "lien": "https://www.franceinfo.fr/replay-radio/le-decryptage-eco/l-avertissement-de-la-direction-generale-des-finances-publiques-le-non-vote-d-un-budget-aura-de-lourdes-consequences-pour-la-france_8129801.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "Une prolongation de la loi spéciale pourrait aggraver le déficit et fortement limiter la marge de manœuvre du prochain gouvernement, explique la DGFiP dans un rapport à l'adresse de la classe politique.",
-   "date": "2026-08-21T06:54:27.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "Franchises médicales : \"Il faut que le gouvernement renonce à toute augmentation\", estime la CGT",
-   "lien": "https://www.franceinfo.fr/sante/franchises-medicales-il-faut-que-le-gouvernement-renonce-a-toute-augmentation-estime-la-cgt_8155877.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "\"Ces franchises, même minimes, mettent à mal le principe de la Sécurité sociale de rembourser les soins de ceux qui en ont besoin\", ajoute Denis Gravouil, de la CGT, sur franceinfo. La veille, le gouvernement a abandonné",
-   "date": "2026-08-21T06:13:03.000Z",
-   "source": "franceinfo — Économie",
-   "sourceId": "ftvi-eco"
-  },
-  {
-   "titre": "Wall Street dans le rouge, les coûts d'emprunt repartent à la hausse",
-   "lien": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOdUgxU3d2c2Jnc0RLNzhlLXVkZ3pEWnJhNmxTRnAybldWNlAtMzU2MXBMd2JKSW5aRFctdWtPbFVEUXd5dnlDLXNJRXZSQkp2RTBIdk52YTlNb0VGU2RUTmpUdW5jQjJYRi1uemkwS1ZFNG8tQ29Wa0E3OWdTdVlTQkVBQjlCcV8zR1dIV0FfaWdlSEE?oc=5",
-   "resume": "",
-   "date": "2026-08-21T06:11:00.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "Dette et déficit : l'héritage empoisonné d'Emmanuel Macron",
-   "lien": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxQNFVHcGJ2QkxTOGtrLXo1SW5Xbzcwc1BvOHZmU3BZMnZOcFQ3OGdnVUptN0tjUVVlOXBaNHUwTjZZQlcwa3hCdFRIU2NFWnVGQW5jSXAwQk03Q2x1UUFxeUR1cC1Jek5xY2Y5M09ycmMwczlucU5qdjhyU19rTzZONDVMbEVBM1B5ZzVwT0FGU2JzQ3lZai1Jam5pYVhIaU5DeWJ4M2F1QU1SZ2VCZjhGWjJMZmp6RlZvekE2dEpnOV9KT0hRTzdYMmN0MVhfQ19OVUhXMWJBNTJJYUVsMFBKU1V3?oc=5",
-   "resume": "",
-   "date": "2026-08-21T06:00:01.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Armement : la France reste numéro 2 mondial, mais l’Europe décroche dans les commandes",
-   "lien": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxNeEhUbER3UG9OdzdYMXdNaWtyTWRrM2E5bUFxSlh6cFk2NkR4R2h3T2xFTkJncVJhcWNucm5yN1U3ZlVocmhBRG1vV1I5QXVMcEpLVlZBLW5qcFpEMnppV1RTaHFVUWFpOFBUVzMweWhhQ05Zblo5ejR2QnZieTd0X3hUNEVRbi10M3dBSUptYkRKVEdEVThlSnVyc1lFMVpnZnpzcWlkREhoT3N0UjBGQ3FUdk8wMDA5cWpRRFdXUkY2a2p4Y0V4YnNBUFRfZnhtVnoxZFFUc1RRQUg0NTVBaTZLRzE2c1c0bEp4eWU0QS1iejB6?oc=5",
-   "resume": "",
-   "date": "2026-08-21T05:54:10.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Franchises médicales : ce que vous pourriez payer en plus malgré le recul du gouvernement",
-   "lien": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxPYkFDUGh4aWVvLVZVbGdQYWdFRHhneWU2VmhkTllCOS11bDZ5NWtmeDJiMTA1VFg1aHQxXzdBVmlNcnMwZDBYbFlwdG5NRWV1bS16UEFWRm9KSl9maWtGYXh6SjBXVGpsaEZUVlBreFJmTWpnZDVsaEFpV2daVUhBUkw0SjRlTlRBeGxzTERyNkpicTBtbGNRcG1qaTNSXzBvMjlBSERzbWJHaG1tNlliMkZLQVp3Z2Y0cGN3TW1IQUt4alZhTWVERm5laE1RaWd5OHphRkhEN1F6T3BWb2owMVpiWmYtR2tObGxOT3hyTUZhdzFWOHU3RzBR?oc=5",
-   "resume": "",
-   "date": "2026-08-21T05:34:24.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Hier à Wall Street : clôture plombée par l'obligataire, Walmart et le pétrole",
-   "lien": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxPN05pZ3dBcC1zMGFFSHI0SmkzcU55d3lkbVV3VkFvUVNiLXBoaEwwdTdaenF0dlN0d0tDODdRSkh5SG5VdDFSWjNhZjhUSDh0dmJ2SFN6WlJXUXlnajQxSW90djEtNWZZYklQVzgtd3ZiQmZvT3Roa1ZCbmkyUV96Rm1BYXRpcWFrRnN4QmU2djFrc1JiTWJzOEhBTGxhT096RG9EOWdUUlI0NkZqMGtxcl9HeVBJQ3NWTXdzcnRsRTQ1Ni1oMnV4SFp3M1BSTkFwVHBmWTdaZ2p6Y2xtUVJqUC01RHRKY3dhQl96LdIB7AFBVV95cUxPN05pZ3dBcC1zMGFFSHI0SmkzcU55d3lkbVV3VkFvUVNiLXBoaEwwdTdaenF0dlN0d0tDODdRSkh5SG5VdDFSWjNhZjhUSDh0dmJ2SFN6WlJXUXlnajQxSW90djEtNWZZYklQVzgtd3ZiQmZvT3Roa1ZCbmkyUV96Rm1BYXRpcWFrRnN4QmU2djFrc1JiTWJzOEhBTGxhT096RG9EOWdUUlI0NkZqMGtxcl9HeVBJQ3NWTXdzcnRsRTQ1Ni1oMnV4SFp3M1BSTkFwVHBmWTdaZ2p6Y2xtUVJqUC01RHRKY3dhQl96LQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T05:08:00.000Z",
-   "source": "Séance américaine",
-   "sourceId": "wall-street"
-  },
-  {
-   "titre": "Reddit survivra-t-il à l’ère de l’IA ? La plateforme veut faire payer plus cher ses données aux géants de la tech",
-   "lien": "https://www.challenges.fr/entreprise/tech-numerique/reddit-survivra-t-il-a-lere-de-lia-la-plateforme-veut-faire-payer-plus-cher-ses-donnees-aux-geants-de-la-tech_645285",
-   "resume": "Face à l’essor des chatbots, Reddit cherche à défendre son modèle et à réduire sa dépendance aux géants de la tech. La plateforme de discussion veut plus d’argent pour ses données… et que les gens y consacrent davantage ",
-   "date": "2026-08-21T05:00:00.000Z",
-   "source": "Challenges",
-   "sourceId": "challenges"
-  },
-  {
-   "titre": "22 jours de mer, 3,5 % du commerce : pourquoi l’Arctique ne remplacera pas Suez ou Malacca",
-   "lien": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxQSWNlU1VpeUVPQUFfZFNJdjg0am5mSXZWUzFGQVNXbDhSRC1jcTh2MXZPQ3AzNExMMzFmc1dVSEhzT2p3N1NTdUJ2Zlk4czVtLWJzUHBVS1VKWlplcHhodnZEWXJCcFFmUm80SnpQS3duUWk0MXdKMUpWX2J2NG1UZzFaUTYwdU90R1FXR3RoZnYwdEtzV3l5WTNLUC1NZG1xZUMwUWpZUDl6QzIyRDNpbVd4N3NsTGc0el9wbkhDQkZ4TGk4bGZpNk5HTTh6R0VveE42VFBZaDd3cHNQbzZfSFE0UGxEZXU2RUtuZQ?oc=5",
-   "resume": "",
-   "date": "2026-08-21T04:55:01.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
-  },
-  {
-   "titre": "Où acheter son logement pour vivre loin du bruit de la circulation, des transports ou des touristes ?",
-   "lien": "https://www.lemonde.fr/argent/article/2026/08/21/ou-acheter-pour-vivre-loin-de-toute-agitation_6751575_1657007.html",
-   "resume": "« Nouveau logis, nouvelle vie » (6/6). Entendre seulement les bruits de la nature est un objectif pour de nombreux Français. Bonne nouvelle, dans la plupart des territoires où il est possible de trouver le calme, les pri",
-   "date": "2026-08-21T04:00:19.000Z",
+   "titre": "Uber condamné à 825 millions d’euros d’amende aux Pays-Bas pour la suspension automatisée de chauffeurs",
+   "lien": "https://www.lemonde.fr/economie/article/2026/08/21/uber-condamne-a-une-amende-825-millions-d-euros-d-amende-aux-pays-bas-pour-la-suspension-automatisee-de-chauffeurs_6752266_3234.html",
+   "resume": "L’affaire porte sur des incidents survenus en Europe de 2020 à 2022, à la suite d’une plainte déposée en France. Il s’agit de la deuxième plus importante sanction jamais infligée au titre du RGPD.",
+   "date": "2026-08-21T15:20:24.000Z",
    "source": "Le Monde — Économie",
    "sourceId": "lemonde-eco"
   },
   {
-   "titre": "À Cuba, ils font les poubelles pour \"survivre\"",
-   "lien": "https://www.franceinfo.fr/monde/cuba/a-cuba-ils-font-les-poubelles-pour-survivre_8155250.html#xtor=RSS-3-%5Bgeneral%5D",
-   "resume": "À Cuba, la flambée des prix poussent certains habitants à fouiller dans les poubelles pour se nourrir. En juin, le taux d’inflation dépassait les 18%, contre 15% le mois précédent, selon Trading Economics.",
-   "date": "2026-08-21T04:00:04.000Z",
+   "titre": "En Alsace et dans les Vosges, l'association pour la défense et la sauvegarde des grands prédateurs milite pour une meilleure connaissance",
+   "lien": "https://news.google.com/rss/articles/CBMimAJBVV95cUxQNlBLWDVucGs4RlRJZ01UckRTd1Juc21oMVV2SVk4QXBrOGZNRlBFeERiZEhqMVV1RlFvUkUyVHFqWlJxSHo2RDVweWRlUXF0bjZhMDhJRXBodVM2QWF3alYtSFJEUWtpU2V1a3pZYjF1aE04MThnVUhNZmdRaVJQVFNMLU5HRXA0RXFBTVRDVTE4WG9meU9hcHRkQ0hISUZuQWVORFZCbV9Wc3BpOFJOR3ZNWG9ieXlkRFdYTzIxQW9qM2plazNtMlVJX0NMd2Ztc1ZKZ192b3B1YnJLZi1uZW5WcGppdjQ0ZzBqa2RMU1V4ZG5OOFQwS20xbklEQWNEcDVmTmRubk5SZklXMXBfVUJvdk9rVi16?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:20:08.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Le café à moins d'un euro : comment Cotti Coffee, enseigne chinoise de coffee shops, parvient-elle à tirer les prix vers le bas ?",
+   "lien": "https://www.franceinfo.fr/economie/commerce/le-cafe-a-moins-d-un-euro-comment-cotti-coffee-enseigne-chinoise-de-coffee-shops-parvient-elle-a-tirer-les-prix-vers-le-bas_8156396.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Un coffee shop qui propose le café a moins d'un euro, c'est l'offre alléchante d'une enseigne chinoise qui vient d'ouvrir des boutiques dans plusieurs grandes villes en France. Le groupe connaît une ascension fulgurante ",
+   "date": "2026-08-21T15:14:29.000Z",
    "source": "franceinfo — Économie",
    "sourceId": "ftvi-eco"
   },
   {
-   "titre": "Transformation des processus",
-   "lien": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1HcUNRU2o1UTI4SEUyZzk3TmVvRkdxSG5XNF96V0lDUTY3Y21WTElHQ1hWTVB3cDNqQ2ozMlI2MFRfZHFVdEZ2XzlR?oc=5",
-   "resume": "",
-   "date": "2026-08-21T03:45:42.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
+   "titre": "Fausses promotions : comment être sûr des remises affichées en magasin et sur les sites de vente ?",
+   "lien": "https://www.franceinfo.fr/economie/fausses-promotions-comment-etre-sur-des-remises-affichees-en-magasin-et-sur-les-sites-de-vente_8156342.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Au total, 95% des annonces sont \"non conformes\" selon la Répression des fraudes, avec notamment l'utilisation du mot \"cuir\" pour des produits en réalité synthétiques. Alors, comment être sûr d'un achat en promotion ?",
+   "date": "2026-08-21T15:12:07.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
   },
   {
-   "titre": "« Spider-Man : Brand New Day » et « L’Odyssée », les deux films qui redonnent des couleurs au marché du cinéma en France",
-   "lien": "https://www.lemonde.fr/culture/article/2026/08/21/la-spider-mania-et-l-engouement-pour-l-odyssee-redonnent-des-couleurs-au-marche-hexagonal-du-cinema_6751536_3246.html",
-   "resume": "Les deux grands succès de l’été en salle ont déjà chacun dépassé 6 millions de spectateurs, ce qui contribue à doper les prévisions de fréquentation sur l’année.",
-   "date": "2026-08-21T03:40:05.000Z",
+   "titre": "Trump admin taps former JPMorgan Chase exec Matt Zames to advise Social Security agency",
+   "lien": "https://www.cnbc.com/2026/08/21/jpmorgan-matt-zames-social-security-administration.html",
+   "resume": "Matt Zames is taking an unpaid position to help his former JPMorgan colleague Frank Bisignano tackle modernization of the SSA, CNBC has learned.",
+   "date": "2026-08-21T15:10:31.000Z",
+   "source": "CNBC — World Markets",
+   "sourceId": "cnbc-monde"
+  },
+  {
+   "titre": "Aidé par le PMI, Wall Street oublie un peu la dette et regagne du terrain - boursedirect.fr",
+   "lien": "https://news.google.com/rss/articles/CBMitwJBVV95cUxPd21MUHIyVmF0LW9ZeV8wNFppVlZMMDFMSVJFWC1FbjhUUHp6SFBwS0N1TXFiWUp6VnZ1NU1IX0pLeXFONVFiUVNkNGdfaEI3UnQxQldPc1pGZC1YRDJCWjNJTF9YdEc1V0xyeEpDSHV2N0Q1eXlwelQzX09DeFY2QXNmOEk2UURBZEZNOXp1YkozMFAxdjBKWXprNWpfazhycnFqZnhTTkNlbnQ3eVhrb3NsRU1XWXU4M0Vrc19uajF6aVYyT3h2MHVCLTUtR1g1VVE1eHFGRnJCS1N5XzQta18yX1E1RTJieF9WMkdSUkVrY0JCdjduYjJWUXhieWtEdE45N3FXazMyTGhOaFdUOFR6Z0dLbWZRTndLQ3I4bHozcG9rQ3ZTSU54WG9QMHNnVHpsYm9BOA?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:07:00.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
+  },
+  {
+   "titre": "À Saintes, le maire souhaite taxer les propriétaires de logements vides : \"Il y a une tension\" sur le marché de la location, explique l'édile",
+   "lien": "https://www.franceinfo.fr/economie/immobilier/a-saintes-le-maire-souhaite-taxer-les-proprietaires-de-logements-vides-il-y-a-une-tension-sur-le-marche-de-la-location-explique-l-edile_8156306.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Une taxe pour les propriétaires de logements vides, c'est la décision du maire de Sainte, en Charente-Maritime, où 10% des biens sont vacants. L'édile veut inciter ses administrés à les mettre en location pour répondre à",
+   "date": "2026-08-21T15:06:16.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "La Bourse européenne, cette « secrète championne », selon Goldman Sachs Research",
+   "lien": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQSlN0Tm9EbUpPM1FvT0VsWkhlZnVrNDlFckdZVGNaY3ZhREF2SXN4YWFqTGxORHIyY0F2eDZmSkdENXQ1VFVMdWhjdHhVYTJaM3NMVWMyd2toVUo1S2ZSU2hzc09ZRGxvRWI1SFJzaU9feDRyZUQtcGtla3FWN1B5Y3VtamtocFVVYkR1RVNUYWtXbmdJQktjbkFUTTQ3OEdPTjZDRmZxbkdubEpyVUVzN05rR1ZYY2ZCRmlrYWJWYjlQSmpQaEFMQ2gxZEZMV21SLUtvcURzZ1Z4Rk82RHc?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:01:14.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Immobilier : avec 36 jours de travail pour 1m², la France figure-t-elle parmi les 72 pays où l’accès à la propriété est « difficile » ?",
+   "lien": "https://www.challenges.fr/immobilier/immobilier-avec-36-jours-de-travail-pour-1m2-la-france-figure-t-elle-parmi-les-72-pays-ou-lacces-a-la-propriete-est-difficile_645291",
+   "resume": "Un rapport de RationalFX a comparé les prix de l’immobilier et les salaires moyens de 100 pays, en calculant le nombre de jours de travail nécessaires pour acheter 1m². Dans l’écrasante majorité des cas, un mois plein ne",
+   "date": "2026-08-21T15:01:00.000Z",
+   "source": "Challenges",
+   "sourceId": "challenges"
+  },
+  {
+   "titre": "La hausse des taux n'est pas une menace si les bénéfices des entreprises sont au rendez-vous",
+   "lien": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNUnR3SEs3R09QUzc1YnhqaFprME1LWGR6a3hwNll0T3BXd19mME1Ub3paa0c1c0E2RUVJY0FydU9VMExWZC1FUHdjaFQtOUw3Z3R4UFAxeFB4dHBnRjNuZWw1Z202d2xTSVBaR2RoVzRfMXd6elhaSHFQY2Eta3lYR0U0bzN3MDY5UV9pbS03UmhWQUxuQjRGeFlsbHA0bl9waFJIRF8wQ1RFdTdFalFvbVNfMFZXQ3c5R0pmR3I3N0t3bnJnaUVBYTgzZ1ZHOEdpYXY5SjFNR0lMNmF3MGMzekNoMkVrS3Nh?oc=5",
+   "resume": "",
+   "date": "2026-08-21T15:00:29.000Z",
+   "source": "Les Échos — Marchés",
+   "sourceId": "lesechos"
+  },
+  {
+   "titre": "Les ventes décevantes de Boualem Sansal malgré un battage médiatique hors norme",
+   "lien": "https://www.lemonde.fr/economie/article/2026/08/21/les-ventes-decevantes-de-boualem-sansal-malgre-un-battage-mediatique-hors-norme_6752265_3234.html",
+   "resume": "Parue le 2 juin, « La Légende », publiée chez Grasset, a été vendue à 48 000 exemplaires. Hachette Livre avait accordé un à-valoir exceptionnel de 1 million d’euros à l’auteur.",
+   "date": "2026-08-21T15:00:19.000Z",
    "source": "Le Monde — Économie",
    "sourceId": "lemonde-eco"
   },
   {
-   "titre": "Les choix de Trump font aussi grimper les taux hypothécaires en Suisse",
-   "lien": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPUmp5eWcwaENIV1BYckRKNWlReldJNm1FaDJwV3dxd1N1Ml9OcTh0MU44MWozdmtDNTg0QkhYX0lwV0FPRlRCMnFoMUUyN0FTejBHc2xIUzJ5LW9kOW96bTAtWlZvYWRVUUhUQXdUSno5ZUl0bmVyNGFhWHZxR3ZzaHoxQmlseE1XX2J1TTcwZm5MbVZ1VHJUMVVBT1NSeEpheUc0N216ZUVpSEI4eUNiaW4wOUVPaksyOWd5NExoS2lodw?oc=5",
+   "titre": "Canal de Suez : le retour des armateurs s’accélère malgré un risque sécuritaire toujours élevé",
+   "lien": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxObjI1NlI0R3pISHQ2TTF5b2IyUmVDV0lISEFWWG82TDY2UE5ZWWpTSjRCMWVuOWdSXzY3d1h3Q0ZtUjhsaWw4S3JDMEFlZloxbkhqTFJ6ZjVSdjJsMmtpSjN3WVRLZGFQc2ZyRzB3czMtbzBySlpWSy0taHVzanRIWERzemdOaDB4RjcySE9lQnhraFRLME5wYjd1YXEwbUdaV2JIX1p5bTZpU1dKb3ZfZzN2dExrbEVJd1FDeXJaVUItNllCQ3MwU0VZaHYwdVNzX1B0bURNRUx6YXFqZnB0ZExR?oc=5",
    "resume": "",
-   "date": "2026-08-21T03:34:18.000Z",
+   "date": "2026-08-21T15:00:01.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "Près de 12 heures de retard : des passagers du TGV Hendaye-Paris racontent leur nuit de galère",
+   "lien": "https://www.franceinfo.fr/economie/transports/sncf/pres-de-12-heures-de-retard-des-passagers-du-tgv-hendaye-paris-racontent-leur-nuit-de-galere_8156252.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "Les intempéries dans le Sud-Ouest ont perturbé le trafic ferroviaire. Les passagers du TGV Hendaye-Paris sont arrivés dans la matinée du vendredi 21 août dans la capitale, avec 12 heures de retard. En cause, un défaut d'",
+   "date": "2026-08-21T14:59:56.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Singapour et Hong Kong se lancent dans une guerre fiscale pour attirer les fonds d’investissement",
+   "lien": "https://news.google.com/rss/articles/CBMijwJBVV95cUxQWloxekViMG5MaDV4Tm5mSk9TYmtMVGtzZmRKSndNTHhQMFlYeXJTaklBWURpLTlfUWVhbWQwZGw2c1BuUW83NU5ocVhJNDhqZmJMR1Z3YXhWTk1UaEV4VWpDSk8wZ2hDMWJpZnk1QnBhSnR0d284ZjdfU2NkcEYyNHAzYXNiTkVyZ0NYc0U2aDN2ejItbmZtVTM2WllSUUdCbUFGMk1zMkxQYWZVZDN4cDFQT3lZYXFRbms1dUtiYzY4Q2hvcVZJUFk2QkRrZzVYSS1VeEhSbmxVVGVqZWpqNG0zdWt1NDlBRm56SEFFOGdfOXhhYzJmTExsMHNQbmFCcWFFakotR2ZxaHh6VEJV?oc=5",
+   "resume": "",
+   "date": "2026-08-21T14:53:29.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "825 millions d’euros : pourquoi Uber vient d’écoper d’une amende RGPD record",
+   "lien": "https://news.google.com/rss/articles/CBMihwJBVV95cUxNSi0xSk1KTTBnZFVlYmF4V3lKd1FYRHphRVpuWGxyck9lR2RSZGVNa0tTdUxTLUxBZEVTTDMxbFY5a2JzTDZtdk5XQnA1MTZoaEt4WXI0YUwtTnpFUWFLMkcxM2Q3SU52cFRiUGRwSmdnaGs4NHMzRWRSX2lvNEtCSmFabjlyb2JxSWYyakE5NGtXck5Sb3BSOHZaQ1h6NThWWlRoaTRMWHBYT0Z6Q1l1ZGp2c1NNMjVmdUxXcm5GVmpNWDJBY0tJN2t4SE96ajBpR2RYZjNxM1JWQzktLXRwcHdhRmFHbEZFdnFINmRFcjNBLTFEZFhUWGYzVDRwYTk3Y0JUaVdGUQ?oc=5",
+   "resume": "",
+   "date": "2026-08-21T14:42:30.000Z",
+   "source": "La Tribune",
+   "sourceId": "latribune"
+  },
+  {
+   "titre": "Taux obligataires européens au plus haut, sur craintes d'inflation et guerre en Iran - AOL.com",
+   "lien": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQLVRlcW9DUl9tdWFuRTZhYW9KMTJIczdzMEdrOVNSSE1uMl8yV3hIZjJkRHhNMUg1RWlxTDdUOTM4VFNzbklwOFBfS09pRnFUR3hXWjBSRjZraXlvenQ5a21TQVphdTdTZENMUWFMOTRjb2E3WHJJMDYweUNKUlFCUW9DeWoycVI2NHZtbA?oc=5",
+   "resume": "",
+   "date": "2026-08-21T14:39:38.000Z",
    "source": "BCE",
    "sourceId": "bce"
   },
   {
-   "titre": "Scott Bessent, le secrétaire américain au Trésor, à l’assaut des marchés obligataires pour faire baisser les taux",
-   "lien": "https://www.lemonde.fr/economie/article/2026/08/21/scott-bessent-le-secretaire-americain-au-tresor-se-croit-capable-de-defier-la-toute-puissance-des-marches-obligataires_6751496_3234.html",
-   "resume": "En annonçant, mercredi, que le Trésor américain allait doubler ses rachats de dette américaine à long terme, Scott Bessent cherche à faire baisser les taux longs qui financent l’économie des Etats-Unis.",
-   "date": "2026-08-21T03:00:04.000Z",
+   "titre": "Un - nouveau - procès à hauts risques pour Meta Platforms",
+   "lien": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOVmVkQ3diOXJsNW5Vd084LUVfajQ1SzIySklvbS05VE1Sd3Z2eWZzbEx1TFpsUVdlSzljZVZPQXpFQkxvNGNpVTRKSlZjNGtQUlFvWGVQSFNVVjFmc3JoRGdOUGFNaFZfX1VwUUNwVTNoQ0NvZ1ZOamlGRVBuQlFkb2NQcjFrX19EZW1JN2FaRnlUV2FnTDRKZi1mRGFxWDdtMHlmN2luNWVPSmt0TTM2M0hjaWhrZ0RNeDNMc00wdVpDWEZR?oc=5",
+   "resume": "",
+   "date": "2026-08-21T14:39:26.000Z",
+   "source": "Investir",
+   "sourceId": "investir"
+  },
+  {
+   "titre": "Comment fonctionnent les franchises médicales, dont le plafond ne sera finalement pas doublé ?",
+   "lien": "https://www.franceinfo.fr/sante/comment-fonctionnent-les-franchises-medicales-dont-le-plafond-ne-sera-finalement-pas-double_8156339.html#xtor=RSS-3-%5Bgeneral%5D",
+   "resume": "La ministre de la Santé a annoncé jeudi le renoncement au doublement du plafond. La franchise médicale, qui concerne 48 millions de Français, est une somme qui est déduite directement de vos dépenses de santé.",
+   "date": "2026-08-21T14:17:09.000Z",
+   "source": "franceinfo — Économie",
+   "sourceId": "ftvi-eco"
+  },
+  {
+   "titre": "Appel à témoignages : vous êtes cadre, vos conditions de travail et votre rémunération vous satisfont-elles ? Racontez-nous",
+   "lien": "https://www.lemonde.fr/economie/appel-temoignages/2026/08/21/appel-a-temoignages-vous-etes-cadre-vos-conditions-de-travail-et-votre-remuneration-vous-satisfont-elles-racontez-nous_6752221_3234.html",
+   "resume": "Salaires en berne, arrêts-maladie en hausse, surcharge de travail, manque de reconnaissance, menace de l’intelligence artificielle… Ce statut, parfois jugé symbole d’ascension sociale, n’est pas à l’abri d’un certain nom",
+   "date": "2026-08-21T14:15:27.000Z",
    "source": "Le Monde — Économie",
    "sourceId": "lemonde-eco"
   },
   {
-   "titre": "Accélérer avec le Cloud",
-   "lien": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE1SbWoyUjVJLWp2OTIyeE51RFZQcUI3ZjFqUTBIdGhaSGVKZVZxS19LNXZQNkN5SlRvQTcxVC1xWlMyaWgzdmFJ?oc=5",
+   "titre": "La vive accélération de la croissance enregistrée par Alibaba dans le cloud n'éclipse pas le plongeon du bénéfice net, sur fond d'investissement massifs dans l'IA",
+   "lien": "https://news.google.com/rss/articles/CBMi0AJBVV95cUxNZXotNk5CRlAwVTRmRkpoQ05iUFU0RFpWTEpzSktZcWo0RnhYQklsOVZabkJyelUwak5wU0k4TWhvcFlpM3RIOGlaUjNQS0tHbFBwaVAzOXVvWGdNcXV5ZHRhUy1Ja2d4N3RPWnlRSFI2eVVFZkk1blFEVzY1X3VQLXFLMmo4alFwQUYyd0JJYnhHRi1zSXF0MHpOem0wdmpCdHV1Znl1Wlo4S1MzUHEtd0tyYndsUUlxZGpMUHZXNzI2UHhOZ0RJNzRiQ2dqMlBPZThGWG5sb2JpVHJZcW1US3l6WHhKaFh5WWpwb2xWNXFGbXlSb01KNzdRWVlJWkZ5cVZCYzZZNjBQcXFMREFYTzJsbjlDYjNlcV9pcWdpS21BLXdaVGZmLWFnU0czU1UzMzUxNWFoLUxLOHlpMkw4TER5Mk5HQVNhQ2tiUF8xTEo?oc=5",
    "resume": "",
-   "date": "2026-08-21T02:30:31.000Z",
-   "source": "La Tribune",
-   "sourceId": "latribune"
+   "date": "2026-08-21T14:11:26.000Z",
+   "source": "Investir",
+   "sourceId": "investir"
   },
   {
-   "titre": "My son does not work, yet pays $500 for Affordable Care Act health insurance. Is that fair?",
-   "lien": "https://www.marketwatch.com/story/my-son-does-not-work-yet-he-pays-500-for-aca-health-insurance-how-is-that-fair-92f578c4?mod=mw_rss_topstories",
-   "resume": "“I see people who have a lot of money but little or no taxable income who still qualify for ACA Marketplace subsidies.”",
-   "date": "2026-08-20T23:00:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
+   "titre": "« La hausse des ratios de dette n’est pas un problème si elle s’accompagne d’investissements dans les actifs d’avenir »",
+   "lien": "https://www.lemonde.fr/idees/article/2026/08/21/la-hausse-des-ratios-de-dette-n-est-pas-un-probleme-si-elle-s-accompagne-d-investissements-dans-les-actifs-d-avenir_6752217_3232.html",
+   "resume": "La dette publique d’un Etat est une question politique, et sa soutenabilité doit s’évaluer à l’aune des biens publics qu’elle permet de financer, explique, dans une tribune au « Monde », l’économiste Gilles Dufrénot.",
+   "date": "2026-08-21T14:00:08.000Z",
+   "source": "Le Monde — Économie",
+   "sourceId": "lemonde-eco"
   },
   {
-   "titre": "I hold my mother-in-law’s power of attorney. I’m also her executor and trustee. Do I have too much power over her affairs?",
-   "lien": "https://www.marketwatch.com/story/im-my-mother-in-laws-power-of-attorney-executor-and-trustee-do-i-hold-all-the-power-a11968a2?mod=mw_rss_topstories",
-   "resume": "“There is a lot of legal and financial power in my hands.”",
-   "date": "2026-08-20T22:45:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
+   "titre": "S&P 500 - Les actions à suivre vendredi: Strategy, Coinbase, Ross Stores, Moderna, Nvidia, Abbott Laboratories",
+   "lien": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQbnJ2UHBSQzdsbzU2Nk5WTEdsYUstaXByOU1fS3BRTnZUTUxPUm9GeEtoR1NycFRaZlFPbTJiUmxtNElMZlAtdklDV1VjMzBTNnRjQTRvZGlwdEprejdXazZmaTlBYXBqcUV3NjlIV1BselMwSWNobmZzRWlkeXRTb2pZSTNxYll6cFE4U1NaWWFLa2lhZ1VPZFo4THFpSURJbW01WTMybU55dzR6RVJXLTlnVnpydw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T13:59:34.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
   },
   {
-   "titre": "Our 4-year-old son has $100,000 in his 529 account. Is a bull market a bad time to buy him stocks instead?",
-   "lien": "https://www.marketwatch.com/story/our-4-year-old-son-has-100-000-in-his-529-account-should-we-buy-him-stocks-instead-3ca745b2?mod=mw_rss_topstories",
-   "resume": "“I’d love for our son to be able to attend college without needing to take out student loans.”",
-   "date": "2026-08-20T22:00:00.000Z",
-   "source": "MarketWatch",
-   "sourceId": "marketwatch"
+   "titre": "Wall Street ouvre en hausse, la prudence reste de mise",
+   "lien": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNLUt2VFRqSjBmMTlTMnBGOFR5VnBTVFRPSGg3YnlueVJHNTB6SEJwYWlRWmF0VGV1NnZpZ2l5WlhzczZkZnZmclFNc3FFejVCbkxRTjhjbERyYUh0UmxxUVdIbUtmOEdJRWVHSzZIbVBGb2tfbFE1cl9yVFN5Z1oxTGdJMWRDOXByMTItWFlRWG5YVE9TN3MzM2lITDAxU0pMWlVybC0zWThFQ2Vad3p0TlFab0haZDlZSGlpZzl0LXUyZw?oc=5",
+   "resume": "",
+   "date": "2026-08-21T13:54:27.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
+  },
+  {
+   "titre": "USA: Wall Street ouvre en hausse vendredi, le pétrole se stabilise",
+   "lien": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPTFFZYkhJWHdVelVwdU1FZXlZWWxmejRRYXc1TDhWSjVxTjdYZHVsbU9sTlh5VXd6Ty1wV19fWm9Lbmc0M3V3bVR0SC1qRE1vbkNSNXdwZmtYZGYwVjFIQWJ2R1hkbnBiSDZISXo3azFxZnhZZW1RZmxCS3hNNVNJS2lpMTA2TGc0VEJJbG9adEVoQzdlTFRtN052SXh2Q29RTXMxQ0VEREg?oc=5",
+   "resume": "",
+   "date": "2026-08-21T13:42:00.000Z",
+   "source": "Séance américaine",
+   "sourceId": "wall-street"
+  },
+  {
+   "titre": "Menaces de déménagement et guerre de caution : la contre-offensive choc du patron de Paramount face au blocage du rachat de Warner",
+   "lien": "https://www.challenges.fr/entreprise/medias/menaces-de-demenagement-et-guerre-de-caution-la-contre-offensive-choc-du-patron-de-paramount-face-au-blocage-du-rachat-de-warner_645290",
+   "resume": "Le rachat de Warner devait permettre à Paramount de changer d’échelle face aux géants du streaming. Mais l’offensive judiciaire des États américains transforme l’opération en coûteux bras de fer. Pour David Ellison, le p",
+   "date": "2026-08-21T13:37:00.000Z",
+   "source": "Challenges",
+   "sourceId": "challenges"
   }
  ]
 }
